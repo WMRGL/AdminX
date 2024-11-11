@@ -1,0 +1,101 @@
+﻿@model AdminX.ViewModels.ReviewVM
+@{
+    ViewData["Title"] = "Clinic-X - New Review";
+}
+
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>Patient Details</a>
+        </div>
+        <div class="col-md-9"></div>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h1>
+    </div>
+
+    <div>
+        <form id="ReviewForm" asp-action="Create">
+            <div class="row mb-5 g-5">
+                <div id="meta" hidden="true">
+                    <input asp-for=@Model.patient.MPI name ="mpi" />
+                    <input asp-for=@Model.referrals.RefID name="refID" />
+                    <input asp-for=@Model.referrals.PATHWAY name="pathway" />
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Category:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" name="category">
+                        <option value="standard">Standard</option>
+                        <option value="Non-standard">Non-standard</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Planned Date:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="revDate" />
+                </div>
+                <div class="col-md-2">
+                    <label>Review Recipient: (leave blank if the review is for yourself)</label>
+                </div>
+                <div class ="col-md-2">
+                    <select class="w-100" name="recipient">
+                        <option value=""></option>
+                        @foreach (var item in Model.staffMembers)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>                
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+               <div class="col-md-2">
+                    <label>Details:</label>
+                </div>
+                <div class="col-md-10">
+                    <textarea rows="8" cols="40" name="comments" id="txtComments"></textarea>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <button type="button" class="btn btn-default btn-success" id="btnSave">Save</button>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.getElementById("btnSave").addEventListener("click", DoSubmit);    
+
+    function DoSubmit()
+    {
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("ReviewForm").submit();
+        }
+    }    
+
+    function CheckFormValid() 
+    {        
+        if (document.getElementById("txtComments").value.match(/};.*/)) {
+            window.alert("Oi! Stop trying to inject SQL code into my form!");
+            return 0;
+        }
+        return 1;
+    }
+
+</script>
+

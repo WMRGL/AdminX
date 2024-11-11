@@ -1,0 +1,109 @@
+﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Admin-X - Relatives' Diagnoses";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
+            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
+        </div>        
+    </div>
+
+    <div class="row mb-5">
+        <hr />
+    </div>
+
+    @if (Model.relativesDiagnosisList.Count() > 0)
+    {
+        <div class="row mb-5 g-5">
+            <h1>Diagnoses for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h1>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Diagnosis</th>
+                        <th>Age at Diagnosis</th>
+                        <th>Hospital</th>
+                        <th>CReg Code</th>
+                        <th>Site Code</th>
+                        <th>Confirmed?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.relativesDiagnosisList)
+                    {
+                        <tr>
+                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-success">Edit</a></td>
+                            <td>@item.Diagnosis</td>
+                            <td>@item.AgeDiag</td>
+                            <td>@item.Hospital</td>
+                            <td>@item.CRegCode</td>
+                            <td>@if(item.SiteCode != null)
+                            {
+                                @item.SiteCode
+                            }
+                            </td>
+                            <td>@item.Confirmed</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+    }
+    else
+    {
+        <h1>No diagnosis exists for this relative</h1>
+    }
+    <div class=row mb-5 g-5>
+        <div class="col-md-2">
+            <div col-md-2>
+                @*<button id="btnAddNew" class="btn btn-default btn-success">Add New</button>*@
+                <a class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="metadata" hidden="true">
+        <span id="theurl">@Context.Request.Path</span>
+        <span id="thehost">@Context.Request.Host</span>
+        <span id="count">@Model.relativesDiagnosisList.Count()</span>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    //document.getElementById("btnAddNew").addEventListener("click", OpenDiagForm);   
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+
+    function OpenDiagForm() 
+    {
+        //this incredibly round-about method is necessary because of when there's no diagnoses present - 
+        // apparently it is impossible to simply pass the URL parameter into the button!
+        var surl = "http://" + document.getElementById("thehost").innerHTML + document.getElementById("theurl").innerHTML;
+        //surl = surl.replace("Index", "AddNew");
+        //window.alert(surl);
+        const _url = window.location.toString();  
+        const srelid = _url.substring(_url.indexOf("=")+1, _url.length);  
+        surl = surl + "/AddNew?id=" + srelid;
+        window.location.href = (surl);
+    }
+
+</script>

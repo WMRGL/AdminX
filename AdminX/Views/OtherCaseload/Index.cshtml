@@ -1,0 +1,127 @@
+﻿@model AdminX.ViewModels.CaseloadVM
+@{
+    ViewData["Title"] = "AdminX - Other Clinicians' Caseloads";
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container card">
+    @if(Model.caseLoad.Count() > 0)
+    {
+        <div class="row mb-5 g-5">
+            <h1>Caseload for @Model.name</h1>
+        </div>
+    }
+    else
+    {
+        <h1>Choose a clinician to see their caseload.</h1>
+    }
+
+    <div class="d-grid">
+        <form asp-action="Index">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Staff Member:</label>
+                </div>
+                <div class="col-md-4">
+                    <select name="staffCode" asp-for=@Model.staffCode>                        
+                        @foreach(var item in Model.clinicians)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-success">Select</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.caseLoad.Count() > 0)
+    {
+        <table id="myTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>CGU No</th>
+                    <th>Type</th>
+                    <th>Due Date</th>
+                    @*<th>Time</th>*@
+                    <th>Patient</th>
+                    <th>State</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.caseLoad)
+                {
+                    <tr>
+                        <td>@item.CGU_No</td>
+                        <td>
+                            @if (item.Type.Contains("App") || item.Type.Contains("Consultation") || item.Type.Contains("Clinic") || item.Type.Contains("Study"))
+                            {
+                                <a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Review")
+                            {
+                                <a asp-controller="Review" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Letter")
+                            {
+                                <a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type == "Triage")
+                            {
+                                <a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type.Contains("Cancer"))
+                            {
+                                <a asp-controller="Triage" asp-action="CancerReview" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else if (item.Type.Contains("Test"))
+                            {
+                                <a asp-controller="Test" asp-action="Edit" asp-route-id=@item.RecordPrimaryKey>@item.Type</a>
+                            }
+                            else
+                            {
+                                <span></span>
+                            }
+                        </td>                        
+                        @if(@item.BookedDate.HasValue)
+                        {
+                            <td>@item.BookedDate.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        @*@if (@item.BookedTime.HasValue)
+                        {
+                            <td>@item.BookedTime.Value.ToString("HH:mm")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        } *@                       
+                        <td>@item.Name</td>
+                        <td>@item.State</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<script>
+    window.addEventListener("load", LoadTable)
+
+    function LoadTable()
+    {
+        let table = new DataTable('#myTable',
+            {
+                "order": []
+            });
+    }
+</script>

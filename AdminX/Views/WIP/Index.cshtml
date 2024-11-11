@@ -1,0 +1,30 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Clinic-X - WIP";
+}
+
+<div class="container">
+    <div>
+        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    </div>
+
+    <h1 class="text-center">Here be dragons!!!</h1>
+
+    <p class="text-center"><img src="~/Images/dragon.jpg" /></p>
+
+    <h2 class="text-center">(this page is not yet ready, please return from whence thou came)</h2>
+</div>
+
+
+<script type="text/javascript">
+
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+    
+
+    function GoBack() {
+        window.history.back();
+    }
+
+</script>

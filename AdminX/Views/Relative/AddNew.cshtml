@@ -1,0 +1,136 @@
+﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+@{
+    ViewData["Title"] = "Clinic-X - Relative Details";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">            
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
+        </div>    
+    
+        <div class="col-md-6"></div>        
+    </div>
+
+    <div class="row mb-5">
+        <hr />
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h1>New Relative Details</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <form id="frmAddNew" asp-action="AddNew">
+            <div class="row" id="Metadata">
+                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden="true"/>
+            </div>
+            <dl class="row">        
+                <dt class="col-sm-1">
+                    Full Name:
+                </dt>
+                <dd class="col-sm-1">
+                    <label>Title:</label> 
+                </dd>
+                <dd class="col-sm-1">
+                    <input class="w-50" asp-for=@Model.relativeDetails.RelTitle name="title" />
+                </dd>
+                <dd class="col-sm-1">
+                    <label>First name(s):</label>
+                </dd>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
+                </dd>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
+                </dd>
+                <dd class="col-sm-2">
+                    <label>Surname:</label>
+                </dd>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurname name="surname" />
+                </dd>
+                <dt class="col-sm-2">
+                    Relation to Proband:
+                </dt>
+                <dd class="col-sm-2">
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.Relation name="relation">
+                        <option value="">Select...</option>
+                        @foreach(var r in Model.relationList)
+                        {
+                            <option value=@r.RelCode>@r.relation</option>
+                        }
+                    </select>
+                </dd>
+                <dt class="col-sm-2">
+                    DOB:
+                </dt>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="dob" />
+                </dd>               
+                <dt class="col-sm-2">DOD: (if deceased)</dt>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="dod" />
+                </dd>        
+                <dt class="col-sm-2">
+                    Sex:
+                </dt>
+                <dd class="col-sm-2">
+                    @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
+                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.genderList)
+                        {
+                            <option value=@r.SexCode>@r.Sex</option>
+                        }
+                    </select>
+                </dd>
+                <dt class="col-sm-2">
+                    Affected:
+                </dt>
+                <dd class="col-sm-2">
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
+                        <option value=0>No</option>
+                        <option value=1>Yes</option>
+                        <option value=2>Don't know</option>
+                    </select>
+                </dd>
+            </dl>
+        </form>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    document.getElementById("btnSave").addEventListener("click", AddRelative);
+        
+
+    function AddRelative() 
+    {
+
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("frmAddNew").submit();
+        }
+    }
+
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
+
+        
+        //if (document.getElementById("txtComments").value.match(/};.*/)) {
+        //    window.alert("Oi! Stop trying to inject SQL code into my form!");
+        //    return 0;
+        //}
+        return 1;
+    }
+
+</script>

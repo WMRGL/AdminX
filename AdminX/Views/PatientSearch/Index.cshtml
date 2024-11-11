@@ -1,0 +1,104 @@
+﻿@model AdminX.ViewModels.PatientSearchVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Search";
+}
+
+<div class="container card">
+    <div class="row mb-5 mt-2 g-2">
+        <form id="PatientSearch" asp-action="Index">
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label class="w-100">CGU/File Number:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="cguSearch" class="w-100" type="text" name="cguNo" asp-for=@Model.cguNumberSearch />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Forename:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="forenameSearch" class="w-100" type="text" name="firstname" asp-for=@Model.forenameSearch />
+                </div>
+                <div class="col-md-2">
+                    <label class="w-100">Surname:</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="surnameSearch" class="w-100" type="text" name="lastname" asp-for=@Model.surnameSearch />
+                </div>
+                
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>Date of Birth</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="dobSearch" class="w-100" type="date" name="dob" asp-for=@Model.dobSearch />
+                </div>
+                <div class="col-md-3">
+                    <label class="w-100">NHS Number (without spaces):</label>
+                </div>
+                <div class="col-md-2">
+                    <input id="nhsSearch" class="w-100" type="text" name="nhsNo" asp-for=@Model.nhsNoSearch />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+                <div class="col-md-8"></div>
+                <div class="col-md-2">
+                    <button class="btn btn-success" type="button" onclick="ClearForm()">Clear</button>
+                </div>
+            </div>            
+        </form>
+    </div>
+
+    @if(Model.patientsList!= null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>CGU Number</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>NHS Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.patientsList)
+                {
+                    <tr>
+                        <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-success">@item.CGU_No</a></td>
+                        <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
+                        @if(@item.DOB.HasValue)
+                        {
+                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        <td>@item.SOCIAL_SECURITY</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-success" asp-controller="Patient" asp-action="AddNew">Create New Patient</a>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    function ClearForm() 
+    {
+        document.getElementById("cguSearch").value = null;
+        document.getElementById("forenameSearch").value = null;
+        document.getElementById("surnameSearch").value = null;
+        document.getElementById("dobSearch").value = null;
+        document.getElementById("nhsSearch").value = null;
+        document.getElementById("PatientSearch").submit();
+    }
+</script>

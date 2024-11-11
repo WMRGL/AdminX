@@ -1,0 +1,101 @@
+﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+@{
+    ViewData["Title"] = "Admin-X - Relative Details";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back to Patient</button>*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
+        </div>
+        <div class="col-md-1">
+            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Record Diagnoses</a>
+        </div>
+        <div class="col-md-6"></div>       
+    </div>
+
+    <div class="row mb-5">
+        <hr />
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h1>Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <dl class="row">        
+            <dt class="col-sm-2">
+                Full Name:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+            </dd>
+            <dt class="col-sm-2">
+                Relation to Proband:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.relativeDetails.Relation)
+            </dd>
+            <dt class="col-sm-2">
+                DOB:
+            </dt>
+            <dd class="col-sm-4">
+                @if (Model.relativeDetails.DOB != null)
+                {
+                    @Html.DisplayFor(model => model.relativeDetails.DOB)
+                }
+                else
+                {
+                    <span>Not known</span>
+                }
+            </dd>       
+            @if (Model.relativeDetails.RelAlive == "No")
+            {
+                <dt class="col-sm-2">DOD:</dt>
+                <dd class="col-sm-4">
+                    @if (Model.relativeDetails.DOD != null)
+                    {
+                        @Html.DisplayFor(model => model.relativeDetails.DOD)
+                    }
+                    else
+                    {
+                        <span>Not known</span>
+                    }
+                </dd>
+            }
+            else
+            {
+                <dt class="col-sm-6"></dt>
+            }
+            <dt class="col-sm-2">
+                Sex:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.relativeDetails.Sex)
+            </dd>
+            <dt class="col-sm-2">
+                Affected
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.relativeDetails.RelAffected)
+            </dd>
+        </dl>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("btnBack").addEventListener("click", GoBack);
+
+    function GoBack() 
+    {
+        window.history.back();        
+    }
+
+</script>

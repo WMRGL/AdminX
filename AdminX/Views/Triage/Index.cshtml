@@ -1,0 +1,112 @@
+﻿@model AdminX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Clinic-X - Triages";
+}
+
+
+<div class="container card">
+    @*<div>
+        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    </div>*@
+
+    <div class="row g-2 mb-5 mt-2">
+        @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
+
+        <h2 class="text-center">Cases to Triage:</h2>
+    </div>
+
+    <div class="d-grid">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>File Number</th>
+                    <th>Pathway</th>
+                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Referral Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.triages)
+                {
+                    <tr>
+                        <td><a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.ICPID class="btn btn-success">Select</a></td>
+                        <td>@item.CGU_No</td>
+                        <td>@item.ReferralPathway</td>
+                        <td>@item.RefType</td>
+                        <td>@item.Name</td>
+                        <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>                
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.icpCancerListOwn.Count > 0 || Model.icpCancerListOther.Count > 0)
+    {
+        <div class="row mb-5 g-5">
+            <h2 class="text-center">Other Clinicians' ICPs to Review:</h2>
+        </div>
+
+        <div class="d-grid">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>File Number</th>
+                        <th>Name</th>
+                        <th>Referral Date</th>
+                        <th>Referral Action</th>
+                        <th>Additional Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.icpCancerListOther)
+                    {
+                        <tr>
+                            <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@item.ReferralAction</td>
+                            <td>@item.Comments</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <h2 class="text-center">My Cancer ICPs For Review:</h2>
+        </div>
+
+        <div class="d-grid">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>File Number</th>
+                        <th>Name</th>
+                        <th>Referral Date</th>
+                        <th>Referral Action</th>
+                        <th>Additional Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.icpCancerListOwn)
+                    {
+                        <tr>
+                            <td><a asp-action="CancerReview" asp-route-id=@item.ICP_Cancer_ID class="btn btn-success">Select</a></td>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@item.ReferralAction</td>
+                            <td>@item.Comments</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>        
+    }
+</div>

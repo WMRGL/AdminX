@@ -1,0 +1,196 @@
+﻿@model AdminX.ViewModels.ClinicVM
+@{
+    ViewData["Title"] = "Clinic-X - Appointment Details";
+}
+
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>Patient Details</a>
+        </div>    
+        <div class="col-md-1">
+            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>        
+        </div>
+
+    </div>
+    <hr />
+
+    <h1>Appointment Details</h1>
+
+    <div>
+        <dl class="row mb-5 mt-2">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Clinic.CGU_No):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Clinic.CGU_No)
+            </dd>
+            <dt class="col-sm-2">
+                Patient:
+            </dt>
+            <dd class="col-sm-10">            
+                <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>@Model.Clinic.FIRSTNAME @Model.Clinic.LASTNAME</a>
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Clinic.AppType):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Clinic.AppType)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Clinic.BOOKED_DATE):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Clinic.BOOKED_DATE)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Clinic.BOOKED_TIME):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Clinic.BOOKED_TIME)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Clinic.Clinic):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Clinic.Clinic)
+            </dd>
+            @if (Model.Clinic.Notes != null)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Clinic.Notes):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Clinic.Notes)
+                </dd>
+            }
+            @if (Model.Clinic.BOOKED_DATE <= DateTime.Now)
+            {
+                @if (@Model.Clinic.Attendance != null && @Model.Clinic.Attendance != "")
+                {
+                    <dt class="col-sm-2">
+                        @Model.Clinic.Attendance:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @if (@Model.Clinic.Attendance == "Attended")
+                        {
+                            <span>Seen by @Model.Clinic.SeenByClinician on @Html.DisplayFor(model => model.Clinic.BOOKED_DATE) at @Html.DisplayFor(model => model.Clinic.ArrivalTime)</span>
+                        }
+                        else
+                        {
+                            @Model.Clinic.Attendance
+                        }                    
+                    </dd>
+                }
+            }
+        </dl>
+    </div>
+    <hr />
+    <h1>Linked Referral Details</h1>
+
+    <div class="row mb-5 mt-2">
+        <dt class="col-sm-2">
+            Referral Type:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.RefType)
+        </dd>
+        <dt class="col-sm-2">
+            Referral Date:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.RefDate)
+        </dd>
+        <dt class="col-sm-2">
+            Pathway
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.PATHWAY)
+        </dd>
+        <dt class="col-sm-2">
+            Indication
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.INDICATION)
+        </dd>
+        <dt class="col-sm-2">
+            Referred To:
+        </dt>
+        <dd class="col-sm-10">
+            Lead Consultant: @Html.DisplayFor(model => model.linkedReferral.LeadClinician)
+        </dd>
+        <dt class="col-sm-2"></dt>
+        <dd class="col-sm-10">
+            Genetic Counsellor: @Html.DisplayFor(model => model.linkedReferral.GC)
+        </dd>
+        <dt class="col-sm-2"></dt>
+        <dd class="col-sm-10">
+            Admin Contact: @Html.DisplayFor(model => model.linkedReferral.AdminContact)
+        </dd>
+
+        <dt class="col-sm-2">
+            Referred By:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.ReferringClinician), @if(Model.linkedReferral.ReferringFacilityCode == "GP")
+            {
+                @Html.DisplayFor(model => model.linkedReferral.ReferringFacilityCode)
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.linkedReferral.ReferringFacility)
+            }
+        </dd>
+        <dt class="col-sm-2">
+            Indication Notes:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.linkedReferral.REASON_FOR_REFERRAL)
+        </dd>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    window.addEventListener("load", LoadClinic);
+    
+    function GoBack()
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    function LoadClinic() {
+        //window.alert("hello");
+        //apparently the date from SQL is not a date,
+        //so javascript makes it American unless I do all this!!!        
+        var bs = "@(Model.Clinic.BOOKED_DATE)".split("/");        
+        var clinicDate = new Date(bs[2].replace(" 00:00:00", "") + "-" + bs[1] + "-" + bs[0]);        
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        //because simply being able to compare dates without times is just too much for Javascript!!!
+        if (clinicDate.getFullYear() >= today.getFullYear() && (clinicDate.getMonth() > today.getMonth() || 
+            (clinicDate.getMonth() == today.getMonth() && clinicDate.getDate() > today.getDate())))
+        {           
+            //since disabled refuses to work, I have to hide it instead
+            document.getElementById("btnRecordOutcome").hidden = true;
+            document.getElementById("btnDiagnoses").hidden = true;
+            document.getElementById("btnTests").hidden = true;
+            document.getElementById("btnClinicalNotes").hidden = true;
+            document.getElementById("btnDictatedLetter").hidden = true;
+            document.getElementById("btnReview").hidden = true;
+        }       
+
+    }
+        
+    
+
+</script>

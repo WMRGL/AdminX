@@ -1,0 +1,334 @@
+﻿@model AdminX.ViewModels.ClinicVM
+@{
+    ViewData["Title"] = "Clinic-X - Edit Appointment Outcome";
+}
+
+<div class="container card">
+    <div class="row mb-5 mt-2">
+
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>
+        </div>
+    </div>
+
+    <h1>Record Outcome</h1>
+    <div>    
+        <dl class="row mb-5">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.activityItem.TYPE):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.activityItem.TYPE)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.activityItem.BOOKED_DATE):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.activityItem.BOOKED_DATE)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.activityItem.BOOKED_TIME)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.activityItem.FACILITY):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.activityItem.FACILITY)
+            </dd>
+        </dl>
+    </div>
+
+
+    <div class="mb-5">
+        <form id="ContactOutcome" asp-action="Edit">
+            <div class="row mb-5">
+                <div class="col-md-2">
+                    Ethnicity:
+                </div>
+                <div class="col-md-4">                   
+                </div>
+                <div class="col-md-6"></div>
+            </div>
+        
+            <div class="row mb-5">
+                <div class="col-md-2">
+                    Contact Outcome:
+                </div>
+                <div class="col-md-4">
+                    <select asp-for=@Model.activityItem.COUNSELED id="ddlContactOutcome" name="counseled" class="w-100">
+                        <option value="" selected>select...</option>
+                        @foreach(var o in Model.outcomes)
+                        {
+                            <option value="@o.CLINIC_OUTCOME">@o.CLINIC_OUTCOME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
+                </div>
+                <div class="col-md-4">                    
+                    <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="seenBy" class="w-100">
+                        <option value="" selected>select...</option>
+                        @foreach (var c in Model.staffMembers)
+                        {
+                            <option value="@c.STAFF_CODE">@c.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div id="ContactDetails">
+                <div class="row mb-5">
+                    <div class="col-md-2">
+                        <label for="txtArrivalTime" id="lblArrivalTime">Arrival Time:</label>
+                    </div>
+                    <div class="col-md-6">                        
+                        <input asp-for=@Model.activityItem.BOOKED_TIME id="txtArrivalTime" type="time" name="arrivalTime" class="w-100" />
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-md-2">
+                        <label for="txtNoPatientsSeen" id="lblNoPatientsSeen">No. Patients Seen:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input asp-for=@Model.activityItem.NOPATIENTS_SEEN id="txtNoPatientsSeen" name="noSeen" class="w-100" />
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-md-2">
+                        <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <select asp-for=@Model.activityItem.LetterReq id="ddlLetterRequired" name="letterRequired" class="w-100">
+                            <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
+                            <option value="Yes - Later">Yes - Later</option>
+                            <option selected value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-md-2">
+                        <label for="ddlClockStop" id="lblClockStop">Clock Stop:</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select asp-for=@Model.activityItem.ClockStop id="ddlClockStop" name="isClockStop" class="w-100">
+                            <option value="" selected></option>
+                            <option value="True">Yes</option>
+                            <option value="False">No</option>
+                        </select>
+                        <input asp-for=@Model.activityItem.RefID id="txtRefID" name="refID" hidden="true" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="ddlCloseRef" name="isComplete" class="w-100">
+                            <option value="True">Yes</option>
+                            <option selected value="False">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-5">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <input type="button" class="btn btn-default btn-success" value="Complete" id="btnCompleteCOF" />
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    document.getElementById("btnCompleteCOF").addEventListener("click", DoOutcome);
+    document.getElementById("ddlContactOutcome").addEventListener("change", LoadOutcome);
+    window.addEventListener("load", LoadClinic);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    function LoadClinic() 
+    {        
+        //document.getElementById("txtRefID").hidden = true;             
+        var _att = "@(Model.activityItem.COUNSELED)";        
+        document.getElementById("ContactDetails").hidden = true;
+        var _seenBy = document.getElementById("ddlSeenBy");
+        if ("@Model.activityItem.SEEN_BY" == "")
+        {
+            _seenBy.value = "@Model.activityItem.STAFF_CODE_1"
+        }
+        if (_att != null && _att != "")         
+        {            
+            document.getElementById("ddlContactOutcome").disabled = true;
+            document.getElementById("ContactDetails").hidden = false;            
+            var _arrivalTime = document.getElementById("txtArrivalTime");
+            var _noPatientsSeen = document.getElementById("txtNoPatientsSeen");
+            var _letterRequired = document.getElementById("ddlLetterRequired");
+            var _clockStop = document.getElementById("ddlClockStop");
+            var _complete = document.getElementById("ddlCloseRef");
+            var _ethnic = document.getElementById("ddlEthnicity");            
+            
+            if (_att.match("Att*")) 
+            {                
+                _seenBy.disabled = true;                
+                _arrivalTime.disabled = true;
+                //_duration.value = ""
+                //_duration.disabled = true;
+                _noPatientsSeen.disabled = true;                
+                _letterRequired.disabled = true;
+                _clockStop.disabled = true;
+                _complete.disabled = true;
+                _ethnic.disabled = true;
+                _complete.hidden = true;
+                document.getElementById("lblCloseRef").hidden = true;
+            }
+            else 
+            {
+                _arrivalTime.hidden = true;
+                document.getElementById("lblSeenBy").hidden = true;
+                _seenBy.hidden = true;
+                document.getElementById("lblArrivalTime").hidden = true;                
+                _noPatientsSeen.hidden = true;
+                document.getElementById("lblNoPatientsSeen").hidden = true;
+                _letterRequired.hidden = true;
+                document.getElementById("lblLetterRequired").hidden = true;
+            }
+            document.getElementById("btnCompleteCOF").disabled = true;
+            document.getElementById("ddlClockStop").disabled = true;
+        }
+    }
+
+    function LoadOutcome() 
+    {
+        if (document.getElementById("ddlContactOutcome").value != "") 
+        {
+            document.getElementById("ContactDetails").hidden = false;
+            if (document.getElementById("ddlContactOutcome").value != "Attended") 
+            {
+                //var today = new Date();                
+                document.getElementById("lblSeenBy").hidden = true;
+                document.getElementById("ddlSeenBy").hidden = true;
+                document.getElementById("lblArrivalTime").hidden = true;
+                //it simply MUST have something in the ARRIVAL_TIME field, but we can't simply get "now", so we have to use this function
+                TimeNow(document.getElementById("txtArrivalTime"));
+                document.getElementById("txtArrivalTime").hidden = true;
+                document.getElementById("lblNoPatientsSeen").hidden = true;
+                document.getElementById("txtNoPatientsSeen").hidden = true;
+                document.getElementById("lblLetterRequired").hidden = false;
+                document.getElementById("ddlLetterRequired").hidden = false;
+            }
+            else
+            {
+                //var today = new Date();                
+                document.getElementById("lblSeenBy").hidden = false;
+                document.getElementById("ddlSeenBy").hidden = false;                
+                document.getElementById("lblArrivalTime").hidden = false;
+                //it simply MUST have something in the ARRIVAL_TIME field, but we can't simply get "now", so we have to use this function
+                //TimeNow(document.getElementById("txtArrivalTime"));
+                document.getElementById("txtArrivalTime").hidden = false;
+                document.getElementById("lblNoPatientsSeen").hidden = false;
+                document.getElementById("txtNoPatientsSeen").hidden = false;
+                document.getElementById("lblLetterRequired").hidden = false;
+                document.getElementById("ddlLetterRequired").hidden = false;
+            }
+            
+        }
+    }
+
+    function DoOutcome() 
+    {
+        if(CheckFormValid() == 1)
+        {
+            //window.alert("Submitted!");
+            document.getElementById("ContactOutcome").submit();
+        }                      
+    }
+
+    function CheckFormValid()
+    { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlContactOutcome").value == null || document.getElementById("ddlContactOutcome").value == "")
+        {
+            window.alert("Please select an outcome.");
+            return 0;
+        }
+
+        if (document.getElementById("ddlContactOutcome").value == "Attended")
+        {
+
+            if (document.getElementById("ddlEthnicity").value == null || document.getElementById("ddlEthnicity").value == "") 
+            {
+                window.alert("Please select an ethnicity.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlSeenBy").value == null || document.getElementById("ddlSeenBy").value == "") 
+            {
+                window.alert("Please choose a clinician.");
+                return 0;
+            }
+
+            if (document.getElementById("txtArrivalTime").value == null || document.getElementById("txtArrivalTime").value == "") 
+            {
+                window.alert("Please enter an arrival time.");
+                return 0;
+            }
+
+            if (document.getElementById("txtNoPatientsSeen").value == null || document.getElementById("txtNoPatientsSeen").value == "") 
+            {
+                window.alert("Please enter the number of patients seen.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlLetterRequired").value == null || document.getElementById("ddlLetterRequired").value == "") 
+            {
+                window.alert("Please choose an option for post-clinic letter requirements.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlClockStop").value == null || document.getElementById("ddlClockStop").value == "") 
+            {
+                window.alert("Please choose an option for 18w clock stop.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlCloseRef").value == null || document.getElementById("ddlCloseRef").value == "") 
+            {
+                window.alert("Please choose an option for closing the referral.");
+                return 0;
+            }
+        }
+
+
+
+        return 1;
+    }
+
+    function TimeNow(i) 
+    { //gets the current time and puts it into a valid form
+        var d = new Date(),
+            h = (d.getHours() < 10 ? '0' : '') + d.getHours(),
+            m = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        i.value = h + ':' + m;
+    }
+
+</script>
+
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+            }

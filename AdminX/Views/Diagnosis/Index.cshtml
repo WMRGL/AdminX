@@ -1,0 +1,45 @@
+﻿@model AdminX.ViewModels.TestDiseaseVM
+
+@{
+    ViewData["Title"] = "Admin-X - Diagnoses";
+}
+
+<div class="container card">
+    <div class="mb-5 mt-2 g-2">
+        <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to Patient</a>
+    </div>
+
+    @if (Model.diagnosisList.Count() > 0)
+    {
+        <h1 class="text-center">Diagnoses for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
+
+        <div class="d-grid">
+            <table class="table">
+                <thead>
+                    <tr>                        
+                        <th>Disease Code</th>
+                        <th>Disease</th>
+                        <th>Status</th>
+                        <th>Comments</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.diagnosisList)
+                    {   
+                        <tr>                            
+                            <td>@item.DISEASE_CODE</td>
+                            <td>@item.DESCRIPTION</td>
+                            <td>@item.STATUS</td>
+                            <td>@item.MAIN_SUB</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <h1>There are no diagnoses  recorded for this patient.</h1>
+    }
+           
+</div>

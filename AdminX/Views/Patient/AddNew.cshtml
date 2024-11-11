@@ -1,0 +1,240 @@
+﻿@model AdminX.ViewModels.PatientVM
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="container">
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+<br />
+<br />
+    <form asp-action="AddNew">
+        <dl class="row">            
+            <dt class="col-sm-2">
+                <label>Name:</label>
+            </dt>
+            <dd class="col-sm-10">
+                <select name="title">
+                    <option value="" selected></option>
+                    @foreach(var item in Model.titles)
+                    {
+                        <option value=@item.Title>@item.Title</option>
+                    }
+                </select>
+                <input type="text" name="firstName" />
+                <input type="text" name="lastName" />
+            </dd>
+            
+
+            @*Row 2 - Preferred name (if any), GP*@
+        
+            <dt class="col-sm-2">
+                Preferred Name:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+    
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-4">
+        
+            </dd>
+
+            @*Row 3 - DOB/DOD*@
+            <dt class="col-sm-2">
+                Date of Birth:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="date" name="dob" />
+            </dd>
+    
+            <dt class="col-sm-2">
+                Date of death (if applicable):
+            </dt>
+            <dd class="col-sm-4">
+                <input type="date" name="dod" />
+            </dd>
+
+            @*Row 4 - NHS number, primary language*@
+            <dt class="col-sm-2">
+                NHS Number:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" name="nhsno" />
+            </dd>
+            <dt class="col-sm-2">
+                Primary Language:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" name="language" />
+            </dd>
+
+            @*Row 5 - Ethnicity, interpreter requirements*@
+            <dt class="col-sm-2">
+                Ethnicity:
+            </dt>
+            <dd class="col-sm-4">
+                <select name="ethnic">
+                    <option value="" selected>Select...</option>
+                    @foreach(var item in Model.ethnicities)
+                    {
+                        <option value=@item.EthnicCode>@item.Ethnic</option>
+                    }
+                </select>
+            </dd>
+            <dt class="col-sm-2">
+                Interpreter required:
+            </dt>
+            <dd class="col-sm-4">
+                <select name="isInterpreterReqd">
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </dd>
+
+            <dt class="col-sm-2">
+                GP Details:
+            </dt>
+            <dd class="col-sm-4">
+                <select id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
+                    <option value="" selected>Select...</option>
+                    @foreach (var item in Model.GPPracticeList)
+                    {
+                        <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                    }
+                </select>
+            </dd>
+            <dt class="col-sm-2"></dt>
+            <dd class="col-sm-4">
+                <select id="ddlGP" name="gpCode" hidden="true">
+                </select>
+            </dd>
+
+            <dd class="col-sm-12"><hr /></dd>
+
+          @*Row 6 - address, contact details*@
+            <dt class="col-sm-2">
+                Address:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+            <dt class="col-sm-2">
+                Contact number:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+
+            <dt class="col-sm-2">
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+            <dt class="col-sm-2">
+                Mobile:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+
+            <dt class="col-sm-2">
+            </dt>
+            <dd class="col-sm-10">
+                <input type="text" />
+            </dd>
+
+            <dt class="col-sm-2">
+            </dt>
+            <dd class="col-sm-10">
+                <input type="text" />
+            </dd>
+
+            <dt class="col-sm-2">
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+            <dt class="col-sm-2">
+                Email Address:
+            </dt>
+            <dd class="col-sm-4">
+                <input type="text" />
+            </dd>
+        </dl>
+
+        <div class="row">
+            <div action="col-md-2">
+                <button class="btn btn-success" type="submit">Save Patient</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+
+    function ShowGPList()
+    {        
+        var _practice = document.getElementById("ddlGPPractice");
+        var _gp = document.getElementById("ddlGP");
+        var options = _gp.options.length - 1;
+
+        for (i = options; i >= 0; i--)
+        {
+            _gp.remove(i);
+        }
+
+
+        var clinCodeArray = [];
+        var clinArray = [];
+        var facilityCodeArray = [];
+        var gpCodeArray = [];
+        var gpArray = [];
+
+        
+
+        @foreach (var item in Model.GPList)
+        {
+            @:clinCodeArray.push("@item.MasterClinicianCode");
+            @:clinArray.push("@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)");
+            @:facilityCodeArray.push("@item.FACILITY");
+        }
+
+        for (var i = 0; i < facilityCodeArray.length; i++)
+        {
+            if(facilityCodeArray[i] != _practice.value)
+            {
+                delete clinCodeArray[i];
+                delete clinArray[i];                
+            }
+        }
+
+        for (var i in clinCodeArray)
+        {
+            var opt = document.createElement('option');
+            opt.value = clinCodeArray[i];
+            opt.innerHTML = clinArray[i]
+            _gp.appendChild(opt);
+        }
+
+        _gp.hidden = false;
+    }
+
+</script>

@@ -1,0 +1,59 @@
+﻿@model AdminX.ViewModels.ReviewVM
+@{
+    ViewData["Title"] = "Admin-X - Reviews";
+}
+
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
+        </div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Patient Details</a>
+        </div>
+    </div>
+
+    <div class="row mb-5 g-2 mt-2">
+        <h2>Outstanding Reviews for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h2>
+    </div>
+
+    <div class="d-grid">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>CGU No</th>
+                    <th>Patient</th>
+                    <th>Category</th>
+                    <th>@Html.DisplayNameFor(model => model.review.Planned_Date)</th>
+                    <th>Owner/Requester</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.reviewList)
+                {
+                    <tr>
+                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID class="btn btn-success">Select</a></td>
+                        <td>@item.CGU_No</td>
+                        <td>@item.FIRSTNAME @item.LASTNAME</td>
+                        <td>@item.Category</td>
+                        @if (@item.Planned_Date != null)
+                        {
+                            <td>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        <td>@item.Owner</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @*
+    <div class="row mb-5 g-5">
+    <h2>Requested Reviews</h2>
+    </div>
+    *@
+</div>

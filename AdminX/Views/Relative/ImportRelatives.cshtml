@@ -1,0 +1,81 @@
+﻿@model AdminX.ViewModels.RelativeVM
+@{
+    ViewData["Title"] = "Clinic-X - Relatives Available in Phenotips";
+}
+
+<div class="container">
+    <h1 class="text-center">Available Relatives for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+
+    @if (Model.phenotipsRelativesList.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>DOD (if applicable)</th>
+                    <th>Sex</th>
+                </tr>
+            </thead>
+        
+            <tbody>
+                @foreach(var item in Model.phenotipsRelativesList)
+                {
+                    <tr>
+                        <form asp-action="ImportRelatives">
+                            <td>                            
+                                <input name="wmfacsid" value=@item.WMFACSID hidden="true" />                                                          
+                                <button class="btn btn-success">Import Relative</button>
+                                <input name="dob" value=@item.DOB hidden="true" />
+                                <input name="dod" value=@item.DOD hidden="true" />
+                            </td>
+                            <td>@item.RelForename1 @item.RelSurname <input name="firstname" value=@item.RelForename1 hidden="true" /> <input name="lastname" value=@item.RelSurname hidden="true" /></td>
+                            @if (item.DOB != DateTime.Parse("1900-01-01"))
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy") </td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            @if (item.DOD != DateTime.Parse("1900-01-01"))
+                            {
+                                <td>@item.DOD.Value.ToString("dd/MM/yyyy") </td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.RelSex <input name="sex" value=@item.RelSex hidden="true" /></td>
+                            <td>
+                                <select name="relation">
+                                    <option value="" selected>Not known</option>
+                                    @foreach(var rel in Model.relationslist)
+                                    {
+                                        <option value=@rel.RelCode>@rel.relation</option>
+                                    }
+                                </select>
+                            </td>
+                        </form>
+                    </tr>                    
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h2 class="text-center">No relatives on Phenotips to be imported.</h2>
+    }
+
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-2">
+            <a class="btn btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Return to patient details</a>
+        </div>
+    </div>
+
+
+
+
+</div>

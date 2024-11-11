@@ -1,0 +1,184 @@
+﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Clinic-X - Add New Relatives' Diagnosis";
+}
+
+<div class="container">    
+    <div class="row g-5 mb-5">
+        <div class="col-md-2">
+            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
+        </div>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <h1>Add new diagnosis</h1>
+    </div>
+    <div class="row g-5 mb-5">
+        <form id="frmAddNew" asp-action="AddNew">
+            <div class="row g-5 mb-5">
+                <h2>Diagnosis Details:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label>Reported Diagnosis:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="diagnosis" />
+                </div>
+                <div class="col-md-1">
+                    <label>Age:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="text" name="age" />
+                </div>
+                <div class="col-md-2">
+                    <label>Hospital(s):</label>
+                </div>
+                <div class="col-md-3">
+                    <input class="w-100" type="text" name="hospital" />
+                </div>
+            </div>
+
+            <div class="row g-5 mb-5">
+                <h2>Information Request:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label>Source:</label>
+                </div>
+                <div class="col-md-2">
+                    
+                </div>
+                <div class="col-md-2">
+                    <label>
+                        Date Requested:
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="dateRequested" />
+                </div>
+                <div class="col-md-2">
+                    <label>Consultant:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" id="ddlCons" name="consultant">
+                        <option value="">select...</option>
+                        @foreach (var s in Model.clinicianList)
+                        {
+                            <option value="@s.STAFF_CODE">@s.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-4 text-right">
+                    <label>Information Not Requested:</label>                
+                </div>
+                <div class="col-md-4">
+                    
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label>Consent Provided:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" id="ddlStatus" name="consent">
+                        <option value="">select...</option>
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                        <option value="N/A">Not Applicable</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Date Received:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="dateReceived" />
+                </div>
+                <div class="col-md-2">
+                    <label>Requested By:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" id="ddlStatus" name="reqBy">
+                        <option value="">select...</option>
+                        @foreach (var s in Model.staffList)
+                        {
+                            <option value="@s.STAFF_CODE">@s.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            @*<div class="row g-5 mb-5">
+                <h2>Request Outcome:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-1">
+                    <label>Confirmed:</label>
+                </div>
+                <div class="col-md-2">
+                    <select id="ddlStatus" name="sConfirmed">                        
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                        <option value="X">Unknown</option>
+                    </select>
+                </div>
+            </div>*@
+
+
+            <div id="metadata" hidden="true">
+                <input name="relID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
+            </div>
+        </form>
+
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script type="text/javascript">
+
+        document.getElementById("btnSave").addEventListener("click", AddDiag);
+        document.getElementById("btnBack").addEventListener("click", GoBack);
+
+        function GoBack() {
+            window.history.back();
+            //window.close();
+        }
+
+        function AddDiag() 
+        {
+
+            if (CheckFormValid() == 1) {
+                document.getElementById("frmAddNew").submit();
+            }
+        }
+
+        function CheckFormValid() { //validation to ensure all required data is entered
+
+            if (document.getElementById("ddlDiag").value == null || document.getElementById("ddlDiag").value == "") {
+                window.alert("Please select a diagnosis.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlStatus").value == null || document.getElementById("ddlStatus").value == "") {
+                window.alert("Please select a disease status.");
+                return 0;
+            }
+
+            if (document.getElementById("txtComments").value.match(/};.*/)) {
+                window.alert("Oi! Stop trying to inject SQL code into my form!");
+                return 0;
+            }
+            return 1;
+        }
+
+    </script>

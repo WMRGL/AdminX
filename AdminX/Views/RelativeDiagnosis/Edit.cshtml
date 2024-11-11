@@ -1,0 +1,248 @@
+﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Clinic-X - Edit Relatives' Diagnosis";
+}
+
+<div class="container">    
+    <div class="row g-5 mb-5">
+        <div class="col-md-2">
+            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativesDiagnosis.RelsID>Back to Diagnosis List</a>
+        </div>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <h1>Add new diagnosis</h1>
+    </div>
+    <div class="row g-5 mb-5">
+        <form id="frmAddNew" asp-action="Edit">
+            <div class="row g-5 mb-5">
+                <h2>Diagnosis Details:</h2>
+            </div>           
+"
+            <div class="row g-5 mb-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Reported Diagnosis:</label>
+                </div>
+                <div class="col-md-3">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.Diagnosis)
+                </div>
+                <div class="col-md-1" class="text-right">
+                    <label>Age:</label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.AgeDiag)
+                </div>
+                <div class="col-md-1" class="text-right">
+                    <label>Hospital(s):</label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.Hospital)
+                </div>
+            </div>
+
+            <div class="row g-5 mb-5">
+                <h2>Information Request:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Source:</label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.CRegCode)
+                </div>
+                <div class="col-md-2" class="text-right">
+                    <label>
+                        Date Requested:
+                    </label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.DateReq)
+                </div>
+                <div class="col-md-2" class="text-right">
+                    <label>Consultant:</label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.Cons)
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Information Not Requested:</label>                
+                </div>
+                <div class="col-md-8">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.Status)
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <label>Consent Provided:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" id="ddlStatus" name="consent" asp-for=@Model.relativesDiagnosis.Consent>
+                        <option value="">select...</option>
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                        <option value="N/A">Not Applicable</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Date Received:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="dateReceived" asp-for=@Model.relativesDiagnosis.DateRec />
+                </div>
+                <div class="col-md-2">
+                    <label>Requested By:</label>
+                </div>
+                <div class="col-md-2">
+                    @Html.DisplayFor(model => model.relativesDiagnosis.ReqBy)
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <h2>Request Outcome:</h2>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Confirmed:</label>
+                </div>
+                <div class="col-md-2">
+                    <select class="w-100" id="ddlStatus" name="confirmed" asp-for=@Model.relativesDiagnosis.Confirmed>
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                        <option value="X">Unknown</option>
+                    </select>
+                </div>
+                <div class="col-md-2" class="text-right">
+                    <label>Date of Diagnosis:</label>
+                </div>
+                <div class="col-md-2">
+                    <input class="w-100" type="date" name="confDiagDate" asp-for=@Model.relativesDiagnosis.ConfDiagDate />
+                </div>
+                <div class="col-md-2" class="text-right">
+                    <label>Age at Diagnosis:</label>
+                </div>
+                <div class="col-md-1">
+                    <input class="w-100" type="text" class="w-50" name="confDiagAge" asp-for=@Model.relativesDiagnosis.ConfDiagAge />
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Site (topography)</label>
+                </div>
+                <div class="col-md-2">
+                    
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Laterality (side):</label>
+                </div>
+                <div class="col-md-2">
+                   
+                </div>
+                <div class="col-md-1" class="text-right">
+                    <label>Grade/stage:</label>
+                </div>
+                <div class="col-md-3">
+                    <select class="w-100" name="grade" asp-for=@Model.relativesDiagnosis.Grade>
+                        <option value="">select...</option>
+                        <option value="1">Well differentiated</option>
+                        <option value="2">Moderately differentiated...</option>
+                        <option value="3">Poorly differentiated</option>
+                        <option value="4">Anaplastic</option>
+                    </select>
+                </div>
+                <div class="col-md-1" class="text-right">
+                    <label>Duke's:</label>
+                </div>
+                <div class="col-md-1">
+                    <select class="w-100" name="dukes" asp-for=@Model.relativesDiagnosis.Dukes>
+                        <option value="">select...</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        
+                    </select>
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Histology (morphology):</label>
+                </div>
+                <div class="col-md-2">
+                    
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-2" class="text-right">
+                    <label>Histology number:</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="histologyNumber" asp-for=@Model.relativesDiagnosis.HistologyNumber />
+                </div>
+                <div class="col-md-2" class="text-right">
+                    <label>Comments:</label>
+                </div>
+                <div class="col-md-2">
+                    <textarea name="sNotes"></textarea>
+                </div>
+            </div>
+
+
+            <div id="metadata" hidden="true">
+                <input name="tumourID" asp-for=@Model.relativesDiagnosis.TumourID />
+            </div>
+        </form>
+
+        <div class="row g-5 mb-5">
+            <div class="col-md-2">
+                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script type="text/javascript">
+
+        document.getElementById("btnSave").addEventListener("click", DoSubmit);
+        document.getElementById("btnBack").addEventListener("click", GoBack);
+
+        function GoBack() {
+            window.history.back();
+            //window.close();
+        }
+
+        function DoSubmit() 
+        {
+
+            //if (CheckFormValid() == 1) {
+                document.getElementById("frmAddNew").submit();
+            //}
+        }
+
+        function CheckFormValid() { //validation to ensure all required data is entered
+
+            if (document.getElementById("ddlDiag").value == null || document.getElementById("ddlDiag").value == "") {
+                window.alert("Please select a diagnosis.");
+                return 0;
+            }
+
+            if (document.getElementById("ddlStatus").value == null || document.getElementById("ddlStatus").value == "") {
+                window.alert("Please select a disease status.");
+                return 0;
+            }
+
+            if (document.getElementById("txtComments").value.match(/};.*/)) {
+                window.alert("Oi! Stop trying to inject SQL code into my form!");
+                return 0;
+            }
+            return 1;
+        }
+
+    </script>
