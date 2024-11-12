@@ -3,12 +3,18 @@
     ViewData["Title"] = "Admin-X Home Page";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5 card"> 
+    <div class="p-4  card"> 
         
         @if(!Model.isLive)
         {
-            <h1 class="text-center redtext">NOTE: This is a test system. Work completed here will not be reflected in production.</h1>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-icon">
+                <i class="far fa-fw fa-bell"></i>
+            </div>
+            <div class="alert-message">
+                <strong>NOTE:</strong> This is a test system. Work completed here will not be reflected in production.
+            </div>
+        </div>
         }
         
         @if (Model.notificationMessage != null && Model.notificationMessage != "")
