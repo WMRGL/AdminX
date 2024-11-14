@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
-using AdminX.Meta;
+using ClinicalXPDataConnections.Meta;
 using RestSharp;
 using Newtonsoft.Json.Linq;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {

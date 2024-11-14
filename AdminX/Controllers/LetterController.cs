@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AdminX.ViewModels;
-using AdminX.Data;
-using AdminX.Meta;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
 using System.Numerics;
 using System.Reflection.Metadata;

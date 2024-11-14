@@ -1,4 +1,4 @@
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;

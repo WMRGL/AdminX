@@ -1,6 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
-using AdminX.Models;
+﻿using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;

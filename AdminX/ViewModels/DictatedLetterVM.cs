@@ -1,5 +1,5 @@
-﻿using AdminX.Meta;
-using AdminX.Models;
+﻿using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.ViewModels

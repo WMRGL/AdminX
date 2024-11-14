@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {

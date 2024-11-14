@@ -1,4 +1,4 @@
-﻿using AdminX.Models;
+﻿using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.ViewModels

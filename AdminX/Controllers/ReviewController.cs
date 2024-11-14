@@ -1,7 +1,7 @@
-﻿using AdminX.Data;
+﻿using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using AdminX.Meta;
+using ClinicalXPDataConnections.Meta;
 using AdminX.ViewModels;
 
 namespace AdminX.Controllers

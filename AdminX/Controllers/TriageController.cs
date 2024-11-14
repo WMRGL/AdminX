@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
 using System.Data;
-using AdminX.Meta;
-using AdminX.Models;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using Azure.Core;
 
 namespace AdminX.Controllers
@@ -67,7 +67,7 @@ namespace AdminX.Controllers
                 _ivm.staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(_ivm.staffCode, "AdminX - Triage");
 
-                _ivm.triages = _triageData.GetTriageList();
+                _ivm.triages = _triageData.GetTriageListFull();
                 _ivm.icpCancerListOwn = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
                 _ivm.icpCancerListOther = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.ToBeReviewedby == User.Identity.Name.ToUpper()).ToList();
                 int bleep = _ivm.icpCancerListOwn.Count();                

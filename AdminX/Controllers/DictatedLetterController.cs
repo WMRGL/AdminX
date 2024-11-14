@@ -1,10 +1,10 @@
-﻿using AdminX.Data;
+﻿using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
-using AdminX.Meta;
-using AdminX.Models;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using System.Security.Cryptography;
 
 namespace AdminX.Controllers
