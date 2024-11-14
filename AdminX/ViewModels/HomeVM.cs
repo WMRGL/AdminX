@@ -10,5 +10,7 @@ namespace AdminX.ViewModels
         public string staffCode { get; set; }
         public bool isLive { get; set; }
         public string notificationMessage { get; set; }
+        public string dllVersion { get; set; }
+        public string appVersion { get; set; }
     }
 }
