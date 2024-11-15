@@ -7,8 +7,7 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using ClinicalXPDataConnections.Models;
 using System.Text.RegularExpressions;
-using System.Numerics;
-using System.Reflection.Metadata;
+
 
 namespace AdminX.Controllers;
 
@@ -24,8 +23,7 @@ public class LetterController : Controller
     private readonly IStaffUserData _staffUser;
     private readonly IDocumentsData _documentsData;
     private readonly IExternalClinicianData _externalClinicianData;
-    private readonly IExternalFacilityData _externalFacilityData;
-    private readonly IScreeningServiceData _screenData;    
+    private readonly IExternalFacilityData _externalFacilityData;    
     private readonly IConstantsData _constantsData;
     
     public LetterController(ClinicalContext clinContext, DocumentContext docContext)
@@ -40,9 +38,8 @@ public class LetterController : Controller
         _dictatedLetterData = new DictatedLetterData(_clinContext);
         _documentsData = new DocumentsData(_docContext);
         _externalClinicianData = new ExternalClinicianData(_clinContext);
-        _externalFacilityData = new ExternalFacilityData(_clinContext);
-        _screenData = new ScreeningServiceData(_clinContext);
-        _constantsData = new ConstantsData(_clinContext);
+        _externalFacilityData = new ExternalFacilityData(_clinContext);        
+        _constantsData = new ConstantsData(_docContext);
     }
 
     public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)

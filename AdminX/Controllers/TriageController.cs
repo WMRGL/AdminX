@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
-using Azure.Core;
+using AdminX.Meta;
 
 namespace AdminX.Controllers
 {

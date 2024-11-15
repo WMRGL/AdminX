@@ -1,5 +1,6 @@
 ﻿using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
+using AdminX.Models;
 
 namespace AdminX.ViewModels
 {

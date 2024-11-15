@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using System.Security.Cryptography;
+using AdminX.Meta;
 
 namespace AdminX.Controllers
 {
@@ -15,14 +15,14 @@ namespace AdminX.Controllers
         private readonly DocumentContext _docContext;
         private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
-        private readonly IConfiguration _config;        
+        private readonly IConfiguration _config;
+        private readonly ICRUD _crud;
         private readonly IPatientData _patientData;
         private readonly IStaffUserData _staffUser;
         private readonly IActivityData _activityData;
         private readonly IDictatedLetterData _dictatedLetterData;
         private readonly IExternalClinicianData _externalClinicianData;
-        private readonly IExternalFacilityData _externalFacilityData;
-        private readonly ICRUD _crud;
+        private readonly IExternalFacilityData _externalFacilityData;        
         private readonly IAuditService _audit;
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
@@ -30,14 +30,14 @@ namespace AdminX.Controllers
             _clinContext = clinContext;
             _docContext = docContext;
             _config = config;
+            _crud = new CRUD(_config);
             _lvm = new DictatedLetterVM();
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
             _activityData = new ActivityData(_clinContext);
             _dictatedLetterData = new DictatedLetterData(_clinContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
-            _externalFacilityData = new ExternalFacilityData(_clinContext);
-            _crud = new CRUD(_config);
+            _externalFacilityData = new ExternalFacilityData(_clinContext);            
             _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
         }

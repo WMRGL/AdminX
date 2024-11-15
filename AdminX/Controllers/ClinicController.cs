@@ -4,6 +4,7 @@ using AdminX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
+using AdminX.Meta;
 
 namespace AdminX.Controllers
 {
