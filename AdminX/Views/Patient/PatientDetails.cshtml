@@ -1,8 +1,406 @@
 ﻿@model AdminX.ViewModels.PatientVM
 @{
     ViewData["Title"] = "AdminX-X - Patient Details";
+    ViewData["Page"] = "/ Patient Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[] {
+        Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
+        Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
+        Html.ActionLink("Create New Diary Entry", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+
+
+    };
+}
+
+@*
+
+@if (Model.staffMember.BILL_ID == "Technical")
+{
+    <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
+}
+
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-3 col-xl-2">
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"> Patient Details</h5>
+            </div>
+
+            <div class="list-group list-group-flush" role="tablist">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
+                    Pathway Indicator
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
+                    Patient Details
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Privacy and safety
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Email notifications
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Web notifications
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Widgets
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Your data
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
+                    Delete account
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 col-xl-10">
+        <div class="tab-content">
+            <div class="tab-pane fade active show" id="pathway-indicator" role="tabpanel">
+                @if (Model.alerts.Count > 0)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>There are active alerts for this patient</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.patient.DCTM_Folder_ID == null)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.patientPathway != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Oldest active ICP</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless my-0">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Referral Date</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.REFERRAL_DATE.ToString("dd/MM/yyyy")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Pathway</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.PATHWAY
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Triaged</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.Triaged == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Appt Booked</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
+                                                        {
+                                                            @if (@Model.patientPathway.AppointmentBooked == 1)
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-1">
+                                                                No appt/ letter only
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            </div>
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Seen in Clinic</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
+                                                        {
+                                                            @if (@Model.patientPathway.Seen == 1)
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-1">
+                                                                No appt/ letter only
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong> Letter Dictated</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.LetterDictated == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Letter Printed</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.LetterPrinted == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong> Review Planned </strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.ReviewPlanned == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>18 week Clock Status</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.ClockStatus
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <h2>No active pathway exists</h2>
+                }
+
+            </div>
+            <div class="tab-pane fade" id="patient-details" role="tabpanel">
+                @if (Model.patient.DECEASED == -1)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>There are active alerts for this patient</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h5>
+
+                    </div>
+                    <div class="card-body">
+
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <div class="alert-icon">
+                                <i class="far fa-fw fa-bell"></i>
+                            </div>
+                            <div class="alert-message">
+                                <h3>There are active alerts for this patient</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+*@
 <div class="container card">
 
     @if (Model.message != null)
@@ -28,19 +426,19 @@
         </div>
         @*
         <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>View Diagnoses</a>
+        <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>View Diagnoses</a>
         </div>
         <div class="col-md-1">
-            <a id="btnTest" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>View All Tests</a>
+        <a id="btnTest" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>View All Tests</a>
         </div>
         <div class="col-md-1">
-            <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>View Notes</a>
+        <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>View Notes</a>
         </div>
         <div class="col-md-1">
-            <a id="btnReviewList" class="btn btn-default btn-success" asp-controller="Review" asp-action="ReviewsForPatient" asp-route-id=@Model.patient.MPI>Patient Reviews</a>
+        <a id="btnReviewList" class="btn btn-default btn-success" asp-controller="Review" asp-action="ReviewsForPatient" asp-route-id=@Model.patient.MPI>Patient Reviews</a>
         </div>
         <div class="col-md-1">
-            <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>View All Dictated Letters</a>
+        <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>View All Dictated Letters</a>
         </div>
         *@
         <div class="col-md-1">
@@ -48,7 +446,7 @@
             {
                 <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
             }
-        </div>        
+        </div>
         <div class="col-md-1">
             <a id="btnNewReferral" class="btn btn-default btn-success" asp-controller="Referral" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI>Create New Referral</a>
         </div>
@@ -69,7 +467,7 @@
         <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
     }
 
-    
+
 
     <div class="row mb-5">
         <hr />
@@ -83,76 +481,77 @@
                     <div class="col-md-2"></div>
                     <div class="col-md-1">Referral Date</div>
                     <div class="col-md-1">Pathway</div>
-                    <div class="col-md-1">Triaged</div>            
+                    <div class="col-md-1">Triaged</div>
                     <div class="col-md-1">Appt Booked</div>
-                    <div class="col-md-1">Seen in Clinic</div>                
+                    <div class="col-md-1">Seen in Clinic</div>
                     <div class="col-md-1">Letter Dictated</div>
                     <div class="col-md-1">Letter Printed</div>
-                    <div class="col-md-1">Review Planned</div>            
+                    <div class="col-md-1">Review Planned</div>
                     <div class="col-md-2">18 week Clock Status</div>
                 </div>
-                <div class="row"> @*Pathway Indicator - shows how far along patient is  *@
+                <div class="row">
+                    @*Pathway Indicator - shows how far along patient is  *@
                     <div class="col-md-2 text-end"><b>Oldest active ICP:</b></div>
                     <div class="col-md-1">@Model.patientPathway.REFERRAL_DATE.ToString("dd/MM/yyyy")</div>
                     <div class="col-md-1">@Model.patientPathway.PATHWAY</div>
-                <div class="col-md-1">
-                    @if(@Model.patientPathway.Triaged == 1)
-                    {
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                        </svg>
-                    }        
-                    else
-                    {
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                        </svg>
-                    }
+                    <div class="col-md-1">
+                        @if (@Model.patientPathway.Triaged == 1)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                            </svg>
+                        }
                     </div>
-                    @if(Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
+                    @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
                     {
                         <div class="col-md-1">
-                            @if(@Model.patientPathway.AppointmentBooked == 1)
+                            @if (@Model.patientPathway.AppointmentBooked == 1)
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                                 </svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                                 </svg>
-                            }        
+                            }
                             else
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                                 </svg>
                             }
                         </div>
-                
-            
+
+
                         <div class="col-md-1">
-                            @if(@Model.patientPathway.Seen == 1)
-                            {   
+                            @if (@Model.patientPathway.Seen == 1)
+                            {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                                 </svg>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                                 </svg>
-                            }        
+                            }
                             else
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                                 </svg>
                             }
                         </div>
@@ -164,73 +563,73 @@
                         </div>
                         <div class="col-md-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                             </svg>
                         </div>
                     }
-            
+
                     <div class="col-md-1">
-                        @if(@Model.patientPathway.LetterDictated == 1)
+                        @if (@Model.patientPathway.LetterDictated == 1)
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                             </svg>
-                        }        
+                        }
                         else
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                         }
                     </div>
 
                     <div class="col-md-1">
-                        @if(@Model.patientPathway.LetterPrinted == 1)
+                        @if (@Model.patientPathway.LetterPrinted == 1)
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                             </svg>
-                        }        
+                        }
                         else
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                         }
                     </div>
 
                     <div class="col-md-1">
-                        @if(@Model.patientPathway.ReviewPlanned == 1)
+                        @if (@Model.patientPathway.ReviewPlanned == 1)
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                             <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
                             </svg>
-                        }        
+                        }
                         else
                         {
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
+                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
                             </svg>
                         }
                     </div>
-                    <div class="col-md-2">@Model.patientPathway.ClockStatus</div>        
+                    <div class="col-md-2">@Model.patientPathway.ClockStatus</div>
                 </div>
-            </div>  
+            </div>
         </div>
     }
     else
@@ -244,7 +643,7 @@
 
     @if (Model.alerts.Count > 0)
     {
-        <h1 class="text-danger" class="text-center">There are active alerts for this patient</h1>
+        <h1 class="text-danger text-center">There are active alerts for this patient</h1>
     }
 
     <div class="d-grid">
@@ -255,7 +654,7 @@
 
     <div class="collapse show" id="collapsePatientDetails">
         <h1 class="text-center">Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
-        @if(Model.patient.DECEASED == -1)
+        @if (Model.patient.DECEASED == -1)
         {
             <h1 class="redtext text-center">PATIENT IS DECEASED</h1>
         }
@@ -276,24 +675,25 @@
             </dd>
 
             @*Row 2 - Preferred name (if any), GP*@
-            @if(Model.patient.PtAKA != null)
+            @if (Model.patient.PtAKA != null)
             {
                 <dt class="col-sm-2">
                     Preferred Name:
                 </dt>
-                <dd class="col-sm-4">            
+                <dd class="col-sm-4">
                     @Html.DisplayFor(model => model.patient.PtAKA)
                 </dd>
             }
             else
             {
-                <dt class="col-sm-2"></dt><dd class="col-sm-4"></dd>
+                <dt class="col-sm-2"></dt>
+                <dd class="col-sm-4"></dd>
             }
             <dt class="col-sm-2"></dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.GP)
             </dd>
-        
+
             @*Row 3 - DOB/DOD*@
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.patient.DOB):
@@ -308,7 +708,7 @@
                     <span>Not known</span>
                 }
             </dd>
-            @if(Model.patient.DECEASED == -1)
+            @if (Model.patient.DECEASED == -1)
             {
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.patient.DECEASED_DATE):
@@ -326,7 +726,8 @@
             }
             else
             {
-                <dt class="col-sm-2"></dt><dd class="col-sm-4"></dd>
+                <dt class="col-sm-2"></dt>
+                <dd class="col-sm-4"></dd>
             }
 
             @*Row 4 - NHS number, primary language*@
@@ -340,25 +741,25 @@
                 Primary Language:
             </dt>
             <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.PrimaryLanguage)            
+                @Html.DisplayFor(model => model.patient.PrimaryLanguage)
             </dd>
 
             @*Row 5 - Ethnicity, interpreter requirements*@
             <dt class="col-sm-2">
                 Ethnicity:
-            </dt>        
+            </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.Ethnic)
-            </dd>       
+            </dd>
             <dt class="col-sm-2">
                 Interpreter required:
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.IsInterpreterReqd)
-            </dd>    
-        
-            <dd class="col-sm-12"><hr /></dd>       
-        
+            </dd>
+
+            <dd class="col-sm-12"><hr /></dd>
+
             @*Row 6 - address, contact details*@
             <dt class="col-sm-2">
                 Address:
@@ -373,7 +774,7 @@
                 @Html.DisplayFor(model => model.patient.TEL)
             </dd>
 
-            <dt class="col-sm-2">            
+            <dt class="col-sm-2">
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.ADDRESS2)
@@ -384,33 +785,33 @@
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.PtTelMobile)
             </dd>
-            
-            <dt class="col-sm-2">            
+
+            <dt class="col-sm-2">
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.patient.ADDRESS3)
             </dd>
-        
+
             <dt class="col-sm-2">
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.patient.ADDRESS4)
             </dd>
-            
+
             <dt class="col-sm-2">
             </dt>
             <dd class="col-sm-4">
                 @Html.DisplayFor(model => model.patient.POSTCODE)
-            </dd>        
+            </dd>
             <dt class="col-sm-2">
                 Email Address:
             </dt>
             <dd class="col-sm-4">
-                @*@Html.DisplayFor(model => model.patient.EmailAddress)*@            
+                @*@Html.DisplayFor(model => model.patient.EmailAddress)*@
                 @if (Model.patient.EmailAddress != null)
                 {
                     @if (Model.patient.EmailCommsConsent == "Yes")
-                    {                    
+                    {
                         @Html.DisplayFor(model => model.patient.EmailAddress)
                     }
                 }
@@ -440,14 +841,14 @@
                         <tr class="fw-bold">
                             <td>Type</td>
                             <td>Protected Address</td>
-                            <td>Effective From</td>                        
+                            <td>Effective From</td>
                             <td>Details</td>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var a in Model.alerts)
                         {
-                            <tr>                            
+                            <tr>
                                 <td>@a.AlertType</td>
                                 @if (@a.ProtectedAddress)
                                 {
@@ -463,7 +864,7 @@
                         }
                     </tbody>
                 </table>
-            </div> 
+            </div>
         </div>
     }
 
@@ -471,7 +872,7 @@
         <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseDiaryTable" aria-expanded="false" aria-controls="collapseExample">Diary (click to expand/hide)</button>
     </div>
 
-    <div class="collapse" id="collapseDiaryTable">       
+    <div class="collapse" id="collapseDiaryTable">
         @if (Model.diary.Count > 0)
         {
             <h4>Diary</h4>
@@ -484,7 +885,7 @@
                             <td>Action</td>
                             <td>Text</td>
                             <td>Doc Code</td>
-                            <td>Related Ref ID</td>                        
+                            <td>Related Ref ID</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -500,7 +901,7 @@
                             </tr>
                         }
                     </tbody>
-                </table>    
+                </table>
             </div>
         }
         else
@@ -554,13 +955,13 @@
                             </tr>
                         }
                     </tbody>
-                </table>            
+                </table>
             </div>
         }
         else
         {
             <h4>No active referrals.</h4>
-        }    
+        }
     </div>
 
     <div class="d-grid mt-2 mb-2">
@@ -571,12 +972,12 @@
         @if (Model.hpoTermDetails.Count > 0)
         {
             <h4>HPO Terms</h4>
-            <div class="row">       
+            <div class="row">
                 @foreach (var t in Model.hpoTermDetails)
                 {
                     <dt class="col-sm-2">
                         @t.TermCode
-                    </dt>        
+                    </dt>
                     <dd class="col-sm-10">
                         @t.Term
                     </dd>
@@ -586,7 +987,7 @@
         else
         {
             <h4>No HPO codes have been added. You can add HPO codes from a clinical note.</h4>
-        }    
+        }
     </div>
 
     <div class="d-grid mt-2 mb-2">
@@ -612,7 +1013,7 @@
                 <tbody>
                     @foreach (var item in Model.relatives)
                     {
-                        <tr>                    
+                        <tr>
                             <td><a asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid>Details</a></td>
                             <td>@item.Name</td>
                             @if (@item.DOB.HasValue)
@@ -630,7 +1031,7 @@
                         </tr>
                     }
                 </tbody>
-            </table>            
+            </table>
 
         }
         else
@@ -645,31 +1046,27 @@
             </div>
         </div>
     </div>
-</p>
+    </p>
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    //document.getElementById("btnBack").addEventListener("click", GoBack);
-    window.addEventListener("load", LoadEDMSLink);
+        //document.getElementById("btnBack").addEventListener("click", GoBack);
+        window.addEventListener("load", LoadEDMSLink);
 
-    function LoadEDMSLink() 
-    {
-        //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") 
-        {            
-            document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+        function LoadEDMSLink() {
+            //only load EDMS link if there actually is one
+            if ("@(Model.patient.DCTM_Folder_ID)" != "") {
+                document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            }
+            else {
+                document.getElementById("btnEDMS").hidden = true;
+            }
         }
-        else
-        {
-            document.getElementById("btnEDMS").hidden = true;            
-        }
-    }
 
-    function GoBack() 
-    {
-        window.history.back();
-        //window.close();
-    }
-    
-</script>
+        function GoBack() {
+            window.history.back();
+            //window.close();
+        }
+
+    </script>
