@@ -17,6 +17,8 @@ namespace AdminX.Controllers
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
+        private readonly ITitleData _titleData;
+        private readonly IEthnicityData _ethnicityData;
         private readonly IRelativeData _relativeData;
         private readonly IPathwayData _pathwayData;
         private readonly IAlertData _alertData;
@@ -85,8 +87,8 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-                _pvm.titles = _patientData.GetTitlesList();
-                _pvm.ethnicities = _patientData.GetEthnicitiesList();
+                _pvm.titles = _titleData.GetTitlesList();
+                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = _gpData.GetGPList();
                 _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
 
