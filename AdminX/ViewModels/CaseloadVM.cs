@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.ViewModels
 {
@@ -15,8 +15,6 @@ namespace AdminX.ViewModels
         public int countReviews { get; set; }
         public int countLetters { get; set; }
         public string name { get; set; }
-        public string staffCode { get; set; }
-        public bool isLive { get; set; }
-        public string notificationMessage { get; set; }
+        public string staffCode { get; set; }               
     }
 }

@@ -961,8 +961,8 @@
         else
         {
             <h4>No active referrals.</h4>
-        }
-    </div>
+        }    
+    </div>    
 
     <div class="d-grid mt-2 mb-2">
         <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseHPOTable" aria-expanded="false" aria-controls="collapseExample">HPO Terms (click to expand/hide)</button>
@@ -972,12 +972,12 @@
         @if (Model.hpoTermDetails.Count > 0)
         {
             <h4>HPO Terms</h4>
-            <div class="row">
+            <div class="row">       
                 @foreach (var t in Model.hpoTermDetails)
                 {
                     <dt class="col-sm-2">
                         @t.TermCode
-                    </dt>
+                    </dt>        
                     <dd class="col-sm-10">
                         @t.Term
                     </dd>
@@ -987,7 +987,7 @@
         else
         {
             <h4>No HPO codes have been added. You can add HPO codes from a clinical note.</h4>
-        }
+        }    
     </div>
 
     <div class="d-grid mt-2 mb-2">

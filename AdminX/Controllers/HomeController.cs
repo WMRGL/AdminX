@@ -1,9 +1,9 @@
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using AdminX.Meta;
+using ClinicalXPDataConnections.Meta;
 using System.Diagnostics;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {
@@ -13,6 +13,7 @@ namespace AdminX.Controllers
         private readonly HomeVM _hvm;
         private readonly IConfiguration _config;        
         private readonly IStaffUserData _staffUser;
+        private readonly IVersionData _version;
         private readonly INotificationData _notificationData;
         private readonly IAuditService _audit;
 
@@ -23,6 +24,7 @@ namespace AdminX.Controllers
             _config = config;
             _hvm = new HomeVM();
             _staffUser = new StaffUserData(_clinContext);
+            _version = new VersionData();
             _notificationData = new NotificationData(_clinContext);
             _audit = new AuditService(_config);
         }
@@ -43,9 +45,12 @@ namespace AdminX.Controllers
 
                     _hvm.name = user.NAME;
                    
-                   _hvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
+                    _hvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
+                    _hvm.dllVersion = _version.GetDLLVersion();
+                    _hvm.appVersion = _config.GetValue("AppVersion", "");
 
-                   return View(_hvm);
+
+                    return View(_hvm);
                 }
             }
             catch (Exception ex)

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 
 namespace AdminX.Controllers
@@ -55,7 +56,7 @@ namespace AdminX.Controllers
                         filterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
                     }
 
-                    _cvm.pastClinicsList = _clinicData.GetClinicList(filterDate.GetValueOrDefault(), DateTime.Today).ToList();
+                    _cvm.pastClinicsList = _clinicData.GetClinicListByDate(filterDate.GetValueOrDefault(), DateTime.Today).ToList();
                     
 
                     _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();

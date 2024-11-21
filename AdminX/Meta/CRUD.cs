@@ -40,7 +40,7 @@ namespace AdminX.Meta
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
-            SqlCommand cmd = new SqlCommand("dbo.sp_AXCRUD", conn);
+            SqlCommand cmd = new SqlCommand("dbo.sp_CXCRUD", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType; //thing you want to create/update (Clinic, review, letter etc)
             cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation; //task you want to perform (create, update, etc)
@@ -75,7 +75,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
-            cmd.ExecuteNonQuery();
+            //cmd.ExecuteNonQuery();
             var iReturnValue = (int)returnValue.Value;
             conn.Close();      
             

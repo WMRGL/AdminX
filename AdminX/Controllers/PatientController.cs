@@ -1,35 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AdminX.Data;
+using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
-using AdminX.Meta;
+using ClinicalXPDataConnections.Meta;
 using RestSharp;
 using Newtonsoft.Json.Linq;
-using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly DocumentContext _documentContext;
         private readonly PatientVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
+        private readonly ITitleData _titleData;
+        private readonly IEthnicityData _ethnicityData;
         private readonly IRelativeData _relativeData;
         private readonly IPathwayData _pathwayData;
         private readonly IAlertData _alertData;
         private readonly IReferralData _referralData;
-        private readonly IDiaryData _diaryData;
-        private readonly IHPOCodeData _hpoData;
+        private readonly IDiaryData _diaryData;        
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
 
-        public PatientController(ClinicalContext context, IConfiguration config)
+        public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
         {
             _clinContext = context;
+            _documentContext = documentContext;
             _config = config;
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -38,12 +41,11 @@ namespace AdminX.Controllers
             _pathwayData = new PathwayData(_clinContext);
             _alertData = new AlertData(_clinContext);
             _referralData = new ReferralData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _hpoData = new HPOCodeData(_clinContext);
+            _diaryData = new DiaryData(_clinContext);            
             _gpData = new ExternalClinicianData(_clinContext);
             _gpPracticeData = new ExternalFacilityData(_clinContext);
             _audit = new AuditService(_config);
-            _constants = new ConstantsData(_clinContext);
+            _constants = new ConstantsData(_documentContext);
         }
 
 
@@ -61,8 +63,7 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
-                _pvm.hpoTermDetails = _hpoData.GetHPOTermsAddedList(id);
+                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();                
                 _pvm.referrals = _referralData.GetReferralsList(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
@@ -86,8 +87,8 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-                _pvm.titles = _patientData.GetTitlesList();
-                _pvm.ethnicities = _patientData.GetEthnicitiesList();
+                _pvm.titles = _titleData.GetTitlesList();
+                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = _gpData.GetGPList();
                 _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
 

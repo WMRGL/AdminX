@@ -1,5 +1,6 @@
 ﻿using AdminX.Data;
 using AdminX.Models;
+using ClinicalXPDataConnections.Data;
 using System.Data;
 
 namespace AdminX.Meta
@@ -12,25 +13,23 @@ namespace AdminX.Meta
     public class ActivityTypeData : IActivityTypeData
     {
         private readonly ClinicalContext _clinContext;
-        
-        public ActivityTypeData(ClinicalContext context)
+        private readonly AdminContext _adminContext;
+
+        public ActivityTypeData(ClinicalContext context, AdminContext adminContext)
         {
-            _clinContext = context;           
+            _clinContext = context;
+            _adminContext = adminContext;
         }
-        
+
         public List<ActivityType> GetReferralTypes()
         {
-            IQueryable<ActivityType> apptypes = _clinContext.ActivityTypes.Where(t => t.NON_ACTIVE == 0 && t.ISREFERRAL == true);
-
+            IQueryable<ActivityType> apptypes = _adminContext.ActivityType.Where(t => t.NON_ACTIVE == 0 && t.ISREFERRAL == true);
             return apptypes.ToList();
         }
-
         public List<ActivityType> GetApptTypes()
         {
-            IQueryable<ActivityType> apptypes = _clinContext.ActivityTypes.Where(t => t.NON_ACTIVE == 0 && t.ISAPPT == true);
-
+            IQueryable<ActivityType> apptypes = _adminContext.ActivityType.Where(t => t.NON_ACTIVE == 0 && t.ISAPPT == true);
             return apptypes.ToList();
         }
-
     }
 }
