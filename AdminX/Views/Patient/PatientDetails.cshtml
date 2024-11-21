@@ -68,23 +68,17 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
                     Patient Details
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Privacy and safety
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
+                    Alert
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Email notifications
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#diary" role="tab" aria-selected="false" tabindex="-1">
+                    Diary
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Web notifications
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
+                    Active Referral
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Widgets
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Your data
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Delete account
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#relatives" role="tab" aria-selected="false" tabindex="-1">
+                    Relatives
                 </a>
             </div>
         </div>
@@ -581,10 +575,207 @@
                     </div>
                 </div>
             </div>
+            <div class="tab-pane fade" id="alert" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Active Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.alerts.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover" id="defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Protected Address</th>
+                                            <th scope="col">Effective From</th>
+                                            <th scope="col">Details</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in Model.alerts)
+                                        {
+                                            <tr>
+                                                <td>@a.AlertType</td>
+                                                @if (@a.ProtectedAddress)
+                                                {
+
+                                                    <td class="text-danger"><strong>Yes</strong></td>
+                                                }
+                                                else
+                                                {
+                                                    <td>No</td>
+                                                }
+                                                <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
+                                                <td>@a.Comments</td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="diary" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Active Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.diary.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover" id="defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th scope="col">Diary Date</th>
+                                            <th scope="col">Diary With</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Text</th>
+                                            <th scope="col">Doc Code</th>
+                                            <th scope="col">Related Ref ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var d in Model.diary)
+                                        {
+                                            <tr>
+                                                <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@d.DiaryWith</td>
+                                                <td>@d.DiaryAction</td>
+                                                <td>@d.DiaryText</td>
+                                                <td>@d.DocCode</td>
+                                                <td>@d.RefID</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="active-referral" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title mb-0">
+                            Active Referral
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.referrals.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover" id="defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <td>Referral Date</td>
+                                            <td>Type</td>
+                                            <td>Referring Clinician</td>
+                                            <td>Referring Facility</td>
+                                            <td>Indication</td>
+                                            <td>Pathway</td>
+                                            <td>Consultant</td>
+                                            <td>GC</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var r in Model.referrals)
+                                        {
+                                            <tr>
+                                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@r.RefType</td>
+                                                @if (@r.ReferringFacilityCode != "GP")
+                                                {
+                                                    <td>@r.ReferringClinician</td>
+                                                    <td>@r.ReferringFacility</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@Model.patient.GP</td>
+                                                    <td>@Model.patient.GP_Facility</td>
+                                                }
+                                                <td>@r.INDICATION</td>
+                                                <td>@r.PATHWAY</td>
+                                                <td>@r.LeadClinician</td>
+                                                <td>@r.GC</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="relatives" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title mb-0">
+                            Relatives
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.relatives.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover" id="defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th></th>
+                                            <th>Name</th>
+                                            <th>DOB</th>
+                                            <th>Alive</th>
+                                            <th>Diagnosis</th>
+                                            <th>Status</th>
+                                            <th>Site</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.relatives)
+                                        {
+                                            <tr>
+                                                <td><a class="btn btn-outline-primary text-dark" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid> View Details</a></td>
+                                                <td>@item.Name</td>
+                                                @if (@item.DOB.HasValue)
+                                                {
+                                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>Not known</td>
+                                                }
+                                                <td>@item.RelAlive</td>
+                                                <td>@item.Diagnosis</td>
+                                                <td>@item.Status</td>
+                                                <td>@item.SiteCode</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <h4>No relatives have been added.</h4>
+                        }
+
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <a asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
+                    <a asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-primary">Add New Relative</a>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
-
+<!--
 <div class="container card">
 
     @if (Model.message != null)
@@ -1209,27 +1400,42 @@
             </div>
         </div>
     </div>
-    </p>
+</div>
+ -->
 
+<script type="text/javascript">
 
-    <script type="text/javascript">
+    //document.getElementById("btnBack").addEventListener("click", GoBack);
+    window.addEventListener("load", LoadEDMSLink);
 
-        //document.getElementById("btnBack").addEventListener("click", GoBack);
-        window.addEventListener("load", LoadEDMSLink);
-
-        function LoadEDMSLink() {
-            //only load EDMS link if there actually is one
-            if ("@(Model.patient.DCTM_Folder_ID)" != "") {
-                document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
-            }
-            else {
-                document.getElementById("btnEDMS").hidden = true;
-            }
+    function LoadEDMSLink() {
+        //only load EDMS link if there actually is one
+        if ("@(Model.patient.DCTM_Folder_ID)" != "") {
+            document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-
-        function GoBack() {
-            window.history.back();
-            //window.close();
+        else {
+            document.getElementById("btnEDMS").hidden = true;
         }
+    }
 
+    function GoBack() {
+        window.history.back();
+        //window.close();
+    }
+
+</script>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            $('#defaultTable').DataTable({
+                info: true,
+                order: false,
+                paging: true,
+                fixedHeader: true
+            });
+        });
     </script>
+}

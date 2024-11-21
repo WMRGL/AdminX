@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-success btn-lg">Submit</button>
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
             <button type="button" onclick="ClearForm()" class="btn btn-dark btn-lg float-end">Clear</button>
 
         </form>
@@ -64,7 +64,7 @@
                     @foreach (var item in Model.patientsList)
                     {
                         <tr>
-                            <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-success">@item.CGU_No</a></td>
+                            <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-outline-primary text-dark">@item.CGU_No</a></td>
                             <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
                             @if (@item.DOB.HasValue)
                             {
@@ -84,7 +84,7 @@
 }
 <div class="row mb-2 mb-xl-3">
     <div class="col-auto d-none d-sm-block">
-        <a type="button" class="btn btn-success btn-lg" asp-controller="Patient" asp-action="AddNew">Create New Patient</a>
+        <a type="button" class="btn btn-primary btn-lg" asp-controller="Patient" asp-action="AddNew">Create New Patient</a>
 
     </div>
 
