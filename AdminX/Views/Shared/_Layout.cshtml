@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin-X</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link href="https://cdn.datatables.net/v/dt/dt-2.1.8/datatables.min.css" rel="stylesheet">
 
@@ -15,13 +15,26 @@
 </head>
 <body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-layout="default">
     <div class="main">
-       
-		<nav class="navbar navbar-expand navbar-light navbar-bg">
-			<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/images/admin-x-logo-2.png" width="100" height="50" /></a>
 
-			<ul class="navbar-nav d-none d-lg-flex">
-				<li class="nav-item px-2 ">
-					 <a class="nav-link text-dark" asp-area="" asp-controller="PatientSearch" asp-action="Index">Patient Search</a>
+        <nav class="navbar navbar-expand navbar-light navbar-bg">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/images/admin-x-logo-2.png" width="100" height="50" /></a>
+
+            <ul class="navbar-nav d-none d-lg-flex">
+                @*
+                <li class="nav-item px-2 ">
+                <a class="nav-link text-dark" asp-area="" asp-controller="PatientSearch" asp-action="Index">Patient Search</a>
+                </li>
+                <li class="vr"></li>
+                *@
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Patient
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="Index">Search</a></li>
+                        <li><a class="dropdown-item" asp-area="" asp-controller="Patient" asp-action="AddNew">Add New</a></li>
+
+                    </ul>
                 </li>
                 <li class="vr"></li>
                 <li class="nav-item">
@@ -49,17 +62,17 @@
                 <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Sign Out</a>
                 </li>
-			</ul>
+            </ul>
 
-			<div class="navbar-collapse collapse">
-				<ul class="navbar-nav navbar-align">
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav navbar-align">
                     <li class="nav-item">
                         <a class="nav-link text-dark" href="http://electronic:80">Genetics IT Home Page</a>
                     </li>
-				
-				</ul>
-			</div>
-		</nav>
+
+                </ul>
+            </div>
+        </nav>
 
         <main class="content">
             <div class="container-fluid p-0">
@@ -84,16 +97,16 @@
             </div>
         </main>
 
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row text-muted">
-                        <div class="col-6 text-start">
-                            <p class="mb-0 text-muted"><strong>AdminX</strong> &copy;</p>
-                        </div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row text-muted">
+                    <div class="col-6 text-start">
+                        <p class="mb-0 text-muted"><strong>AdminX</strong> &copy;</p>
                     </div>
                 </div>
-            </footer>
-        
+            </div>
+        </footer>
+
     </div>
 
     @*<footer class="border-top footer text-muted">
@@ -102,15 +115,15 @@
     </div>
     </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  
+
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-   
-   
+
+
 </body>
 </html>

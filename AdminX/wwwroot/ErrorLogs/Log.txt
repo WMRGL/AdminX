@@ -1,8 +1,0 @@
-30/10/2024 10:00:21: Value cannot be null. (Parameter 'source') - logged in user: adzadmin - form: OtherCaseload
-30/10/2024 10:02:37: Value cannot be null. (Parameter 'source') - logged in user: adzadmin - form: OtherCaseload
-30/10/2024 11:40:25: Value cannot be null. (Parameter 'source') - logged in user: adzadmin - form: OtherCaseload
-30/10/2024 11:40:46: Value cannot be null. (Parameter 'source') - logged in user: adzadmin - form: OtherCaseload
-30/10/2024 11:52:10: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Clinic
-30/10/2024 11:52:52: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Clinic
-30/10/2024 15:02:49: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
-14/11/2024 09:50:30: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: PatientSearch
