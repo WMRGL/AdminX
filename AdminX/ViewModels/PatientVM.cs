@@ -19,6 +19,8 @@ namespace AdminX.ViewModels
         public List<ExternalFacility> GPPracticeList { get; set; }
         public StaffMember staffMember { get; set; }
         public string message { get; set; }
+        public string? diedage { get; set; }
+        public string? currentage { get; set; }
         public bool success { get; set; }
     }
 }

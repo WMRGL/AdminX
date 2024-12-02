@@ -68,8 +68,14 @@ namespace AdminX.Controllers
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
-                                
-
+                if (_pvm.patient.DECEASED == -1)
+                {
+                    _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+                }
+                if (_pvm.patient.DOB != null)
+                {
+                    _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
+                }
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -77,6 +83,41 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
+        public static string CalculateAge(DateTime dob)
+        {
+            int years = DateTime.Now.Year - dob.Year;
+            int months = DateTime.Now.Month - dob.Month;
+            return $"{years} years, {months} months";
+        }
+
+        public static string CalculateDiedAge(DateTime dob, DateTime deceasedDate)
+        {
+            if (deceasedDate < dob)
+            {
+                return "Invalid Date";
+            }
+
+            int years = deceasedDate.Year - dob.Year;
+            int months = deceasedDate.Month - dob.Month;
+            int days = deceasedDate.Day - dob.Day;
+
+            if (days < 0)
+            {
+                months--;
+                days += DateTime.DaysInMonth(deceasedDate.Year, deceasedDate.Month == 1 ? 12 : deceasedDate.Month - 1);
+            }
+
+            if (months < 0)
+            {
+                years--;
+                months += 12;
+            }
+            return $"{years} years {months} months";
+
+
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> AddNew(string? message, bool? success)
