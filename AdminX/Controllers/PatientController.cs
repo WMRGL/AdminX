@@ -6,6 +6,8 @@ using ClinicalXPDataConnections.Meta;
 using RestSharp;
 using Newtonsoft.Json.Linq;
 using ClinicalXPDataConnections.Models;
+using AdminX.Meta;
+using System;
 
 namespace AdminX.Controllers
 {
@@ -28,12 +30,14 @@ namespace AdminX.Controllers
         private readonly IExternalFacilityData _gpPracticeData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
+        private readonly ICRUD _crud;
 
         public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
         {
             _clinContext = context;
             _documentContext = documentContext;
             _config = config;
+            _crud = new CRUD(_config);
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
@@ -82,6 +86,35 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
+        }
+         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PatientDetails(bool DECEASED, string? DECEASED_DATE, int mpi)
+        {
+            string deceased = Request.Form["DECEASED"];
+            bool deseasedStatus = false;
+            if (deceased != null)
+            {
+                deseasedStatus = true;
+            }
+
+            DateTime deathDate = new DateTime();
+            if (DECEASED_DATE != null)
+            {
+                deathDate = DateTime.Parse(DECEASED_DATE);
+            }
+            else
+            {
+                deathDate = DateTime.Parse("1/1/1900");
+            }
+
+                int success = _crud.CallStoredPatientProcedure("Patient", "Update", mpi, deathDate, deseasedStatus);
+                
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+               
+                return RedirectToAction("PatientDetails", new { id = mpi });
+
         }
         public static string CalculateAge(DateTime dob)
         {
@@ -187,5 +220,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
+       
+
     }
 }
