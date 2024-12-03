@@ -418,10 +418,10 @@
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Forename 2:</strong>
-                                                @if (Model.patient.PtAKA != null)
+                                                @if (Model.patient.PtForename2 != null)
                                                 {
                                                     <div class="text-muted">
-                                                        @Html.DisplayFor(model => model.patient.PtAKA)
+                                                        @Html.DisplayFor(model => model.patient.PtForename2)
                                                     </div>
                                                 }
                                                 else
@@ -440,6 +440,18 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Previous Name:</strong>
                                                 <div class="text-muted">
+                                                    @if (Model.patient.PREVIOUS_NAME != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PREVIOUS_NAME)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -449,6 +461,18 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Maiden Name:</strong>
                                                 <div class="text-muted">
+                                                    @if (Model.patient.PtSurnameBirth != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PtSurnameBirth)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -470,6 +494,7 @@
                                                             &nbsp;
                                                         </div>
                                                     }
+                                                   
 
                                                 </div>
                                             </div>
@@ -523,7 +548,18 @@
                                                 <strong>AreaCode:</strong>
                                                 <div class="text-muted">
                                                 </div>
-
+                                                @if (Model.patient.PtAreaCode != null)
+                                                {
+                                                    <div class="text-muted">
+                                                        @Html.DisplayFor(model => model.patient.PtAreaCode)
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-muted">
+                                                        &nbsp;
+                                                    </div>
+                                                }
                                             </div>
                                         </div>
                                     </td>
@@ -555,6 +591,18 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Country:</strong>
                                                 <div class="text-muted">
+                                                    @if (Model.patient.PtAreaCode != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.COUNTRY)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -676,6 +724,14 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong> Tel(Day):</strong>
                                                 <div class="text-muted">
+                                                    @if (Model.patient.WORKTEL != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.WORKTEL)
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
