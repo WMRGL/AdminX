@@ -1,5 +1,6 @@
 ﻿using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
+using AdminX.Models;
 
 namespace AdminX.ViewModels
 {
@@ -21,6 +22,8 @@ namespace AdminX.ViewModels
         public string message { get; set; }
         public string? diedage { get; set; }
         public string? currentage { get; set; }
+        public List<Language> languages { get; set; }
+        public Alert protectedAddress { get; set; }
         public bool success { get; set; }
     }
 }

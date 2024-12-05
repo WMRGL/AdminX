@@ -2,12 +2,14 @@
 using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
+using AdminX.Models;
 using ClinicalXPDataConnections.Meta;
 using RestSharp;
 using Newtonsoft.Json.Linq;
 using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using System;
+using AdminX.Data;
 
 namespace AdminX.Controllers
 {
@@ -25,17 +27,21 @@ namespace AdminX.Controllers
         private readonly IPathwayData _pathwayData;
         private readonly IAlertData _alertData;
         private readonly IReferralData _referralData;
-        private readonly IDiaryData _diaryData;        
+        private readonly IDiaryData _diaryData;
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
         private readonly ICRUD _crud;
+        private readonly AdminContext _adminContext;
+        private readonly ILanguageData _languageData;
+        private readonly IPatientAlertData _patientAlertData;
 
-        public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
+        public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config, AdminContext adminContext)
         {
             _clinContext = context;
             _documentContext = documentContext;
+            _adminContext = adminContext;
             _config = config;
             _crud = new CRUD(_config);
             _pvm = new PatientVM();
@@ -45,12 +51,14 @@ namespace AdminX.Controllers
             _pathwayData = new PathwayData(_clinContext);
             _alertData = new AlertData(_clinContext);
             _referralData = new ReferralData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);            
+            _diaryData = new DiaryData(_clinContext);
             _gpData = new ExternalClinicianData(_clinContext);
             _gpPracticeData = new ExternalFacilityData(_clinContext);
             _audit = new AuditService(_config);
             _constants = new ConstantsData(_documentContext);
-        }
+            _languageData = new LanguageData(_adminContext);
+            _patientAlertData = new PateintAlertData(_clinContext);
+                }
 
 
         [Authorize]
@@ -67,11 +75,15 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();                
+                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.referrals = _referralData.GetReferralsList(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
+                _pvm.languages  = _languageData.GetLanguages();
+                _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
+                
+               
                 if (_pvm.patient.DECEASED == -1)
                 {
                     _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
@@ -87,33 +99,41 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
-         [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PatientDetails(bool DECEASED, string? DECEASED_DATE, int mpi)
+        public async Task<IActionResult> PatientDetails(bool? DECEASED, DateTime? DECEASED_DATE, int mpi)
         {
             string deceased = Request.Form["DECEASED"];
+            string interpreterRequired = Request.Form["IsInterpreterReqd"];
+            string language = Request.Form["LanguageName"];
             bool deseasedStatus = false;
-            if (deceased != null)
+            bool interpreter = false;
+            if (deceased == "on")
             {
                 deseasedStatus = true;
-            }
-
-            DateTime deathDate = new DateTime();
-            if (DECEASED_DATE != null)
+            } 
+            
+            if (interpreterRequired == "on")
             {
-                deathDate = DateTime.Parse(DECEASED_DATE);
+                interpreter = true;
             }
-            else
+
+            if (language == null)
             {
-                deathDate = DateTime.Parse("1/1/1900");
+                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                language = _pvm.patient.PrimaryLanguage;
             }
 
-                int success = _crud.CallStoredPatientProcedure("Patient", "Update", mpi, deathDate, deseasedStatus);
-                
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
-               
-                return RedirectToAction("PatientDetails", new { id = mpi });
+            int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", language, "", "", User.Identity.Name, DECEASED_DATE, null, deseasedStatus, interpreter);
+
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+
+            return RedirectToAction("PatientDetails", new { id = mpi });
 
         }
         public static string CalculateAge(DateTime dob)
@@ -161,7 +181,7 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-               
+
                 //_pvm.titles = _titleData.GetTitlesList();
                 //_pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 //_pvm.GPList = _gpData.GetGPList();
@@ -170,7 +190,7 @@ namespace AdminX.Controllers
                 if (success.HasValue)
                 {
                     _pvm.success = success.GetValueOrDefault();
-                    
+
                     if (message != null)
                     {
                         _pvm.message = message;
@@ -186,7 +206,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob, 
+        public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
             string language, bool isInterpreterReqd)
         {
             try
@@ -204,7 +224,7 @@ namespace AdminX.Controllers
                 {
                     _pvm.success = false;
                     _pvm.message = "Patient already exist, yo!";
-                    
+
                 }
                 else
                 {
@@ -220,7 +240,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
-       
+
 
     }
 }
