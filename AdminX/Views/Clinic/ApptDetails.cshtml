@@ -15,7 +15,9 @@
         <div class="col-md-1">
             <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>        
         </div>
-
+        <div class="col-md-1">
+            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
+        </div>
     </div>
     <hr />
 

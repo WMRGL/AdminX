@@ -49,8 +49,8 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int mpi, string refType, DateTime refDate, string refPhys, string refPathway, string indication, string consultant,
-            string gc, string admin)
+        public IActionResult AddNew(int mpi, string refType, DateTime refDate, DateTime clockStartDate, string refPhys, string refPathway, string indication, 
+            string consultant, string gc, string admin)
         {
             
 

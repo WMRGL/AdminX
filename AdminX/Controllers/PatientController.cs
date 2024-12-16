@@ -6,6 +6,7 @@ using ClinicalXPDataConnections.Meta;
 using RestSharp;
 using Newtonsoft.Json.Linq;
 using ClinicalXPDataConnections.Models;
+using AdminX.Meta;
 
 namespace AdminX.Controllers
 {
@@ -14,6 +15,7 @@ namespace AdminX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _documentContext;
         private readonly PatientVM _pvm;
+        private readonly ICRUD _crud;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
@@ -44,8 +46,11 @@ namespace AdminX.Controllers
             _diaryData = new DiaryData(_clinContext);            
             _gpData = new ExternalClinicianData(_clinContext);
             _gpPracticeData = new ExternalFacilityData(_clinContext);
+            _titleData = new TitleData(_clinContext);
+            _ethnicityData = new EthnicityData(_clinContext);
             _audit = new AuditService(_config);
             _constants = new ConstantsData(_documentContext);
+            _crud = new CRUD(_config);
         }
 
 
@@ -129,11 +134,11 @@ namespace AdminX.Controllers
                 {
                     _pvm.success = false;
                     _pvm.message = "Patient already exist, yo!";
-                    
+                             
                 }
                 else
                 {
-                    //do stuff
+                    //do stuff                    
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }

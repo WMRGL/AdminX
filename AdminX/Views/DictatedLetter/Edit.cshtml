@@ -10,18 +10,7 @@
         </div>
         <div class="col-md-2">
             <input type="button" class="btn btn-default btn-success" value="Save" id="btnSaveLetter" />
-        </div>    
-        <div class="col-md-2">
-            <form id="DictatedLetterApproval" asp-action="Approve">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input id="txtCloseReferral" name="isCloseReferral" hidden="true" />
-                <input type="button" class="btn btn-default btn-success" value="Approve" id="btnApprove" hidden="true" />
-            </form>
-            <form id="DictatedLetterUnapproval" asp-action="Unapprove">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input type="button" class="btn btn-default btn-success" value="Unapprove" id="btnUnapprove" hidden="true" />
-            </form>
-        </div>
+        </div>            
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
                 <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
@@ -39,23 +28,7 @@
         <div class="col-md-2">
             <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
         </div>
-    </div>
-    <div class="row mb-2 mt-2 g-5" id="CloseReferralBox" hidden="true">
-        <div class="col-md-2"></div>
-        <div class="col-md-3">
-            <label>Do you want to close the referral?</label>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-success" id="btnCloseReferral" onclick="ApproveLetter(1)">Yes</button>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-danger" id="btnDontCloseReferral" onclick="ApproveLetter(0)">No</button>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-default btn-primary" id="btnCancel" onclick="ApproveLetter(-1)">Cancel</button>
-        </div>
-        <div class="col-md-4"></div>
-    </div>
+    </div>    
     <hr />
     <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
         <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
@@ -347,8 +320,6 @@
 <script type="text/javascript">
     
     document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
-    document.getElementById("btnApprove").addEventListener("click", CloseReferralShow);
-    document.getElementById("btnUnapprove").addEventListener("click", UnapproveLetter);
     document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
     document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
     document.getElementById("btnNoDelete").addEventListener("click", CancelDelete);
@@ -417,52 +388,7 @@
         document.getElementById("CloseReferralBox").hidden = false;
     }
 
-    function ApproveLetter(closeReferral)
-    {
-        
-        if (closeReferral == 1) 
-        {            
-            document.getElementById("txtCloseReferral").value = "true";
-        }
-        else
-        {            
-            document.getElementById("txtCloseReferral").value = "false";
-        }
-        
-        if (closeReferral == -1)
-        {
-            document.getElementById("CloseReferralBox").hidden = true;
-        }
-        else
-        {
-            document.getElementById("DictatedLetterApproval").submit();        
-        
-            document.getElementById("btnApprove").hidden = true;
-            document.getElementById("btnUnapprove").hidden = false;
-            document.getElementById("ddlLetterStatus").disabled = false;
-            document.getElementById("optPrint").hidden = false;
-            document.getElementById("ddlLetterStatus").value = "For Printing";
-            document.getElementById("ddlLetterStatus").disabled = true;
-            document.getElementById("txtLetterTo").disabled = true;
-            document.getElementById("txtLetterFrom").disabled = true;
-            document.getElementById("txtLetterContentBold").disabled = true;    
-        }
-    }
-
-    function UnapproveLetter() 
-    {        
-        document.getElementById("DictatedLetterUnapproval").submit();
-        
-        document.getElementById("btnApprove").hidden = false;
-        document.getElementById("btnUnapprove").hidden = true;
-        document.getElementById("ddlLetterStatus").disabled = false;
-        document.getElementById("ddlLetterStatus").value = "For Approval";
-        document.getElementById("optPrint").hidden = true;
-        document.getElementById("ddlLetterStatus").disabled = true;
-        document.getElementById("txtLetterTo").disabled = false;
-        document.getElementById("txtLetterFrom").disabled = false;
-        document.getElementById("txtLetterContentBold").disabled = false;     
-    }
+    
 
     function ShowDelete()
     {
@@ -907,8 +833,7 @@
     }
 
     function DoPreview()
-    {
-        //window.alert("Boink");
+    {        
         document.getElementById("Preview").submit();
     }
 

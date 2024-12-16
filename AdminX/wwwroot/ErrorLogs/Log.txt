@@ -6,3 +6,4 @@
 30/10/2024 11:52:52: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Clinic
 30/10/2024 15:02:49: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
 14/11/2024 09:50:30: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: PatientSearch
+18/11/2024 15:03:15: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Home

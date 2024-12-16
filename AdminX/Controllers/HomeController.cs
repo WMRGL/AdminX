@@ -39,7 +39,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    _hvm.notificationMessage = _notificationData.GetMessage();
+                    _hvm.notificationMessage = _notificationData.GetMessage("AdminXOutage");
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home");
 

@@ -107,6 +107,9 @@ namespace AdminX.Controllers
                 _lvm.dictatedLettersCopies = _dictatedLetterData.GetDictatedLettersCopiesList(id);
                 _lvm.patients = _dictatedLetterData.GetDictatedLetterPatientsList(id);
                 _lvm.staffMemberList = _staffUser.GetClinicalStaffList();
+                _lvm.secteams = _staffUser.GetSecTeamsList();
+                _lvm.consultants = _staffUser.GetConsultantsList();
+                _lvm.gcs = _staffUser.GetGCList();                
                 int? mpi = _lvm.dictatedLetters.MPI;
                 int? refID = _lvm.dictatedLetters.RefID;
                 _lvm.patientDetails = _patientData.GetPatientDetails(mpi.GetValueOrDefault());
@@ -121,9 +124,8 @@ namespace AdminX.Controllers
                 _lvm.referrer = _externalClinicianData.GetClinicianDetails(sRefPhysCode);                
                 _lvm.GPFacility = _externalFacilityData.GetFacilityDetails(sGPCode);
                 _lvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();
+                _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();                
                 List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
-                
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
 
                 return View(_lvm);
@@ -196,44 +198,7 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-create" });
             }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Approve(int dID, bool? isCloseReferral=false)
-        {
-            try
-            {
-                
-                int success = _crud.CallStoredProcedure("Letter", "Approve", dID, 0, 0, "", "", "", "", User.Identity.Name, null, null, isCloseReferral);
-
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-approve(SQL)" }); }
-
-                return RedirectToAction("Edit", new { id = dID });
-
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-approve" });
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Unapprove(int dID)
-        {
-            try
-            {
-                int success = _crud.CallStoredProcedure("Letter", "Unapprove", dID, 0, 0, "", "", "", "", User.Identity.Name);
-
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-unapprove(SQL)" }); }
-
-                return RedirectToAction("Edit", new { id = dID });
-
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-unapprove" });
-            }
-        }
+        }        
 
         [HttpPost]
         public async Task<IActionResult> AddPatientToDOT(int pID, int dID)
@@ -295,7 +260,21 @@ namespace AdminX.Controllers
         {
             try
             {                
-                _lc.PreviewDOTPDF(dID, User.Identity.Name);
+                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
+                //return RedirectToAction("Edit", new { id = dID });
+                return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
+            }
+        }
+
+        public async Task<IActionResult> PrintDOT(int dID)
+        {
+            try
+            {
+                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }

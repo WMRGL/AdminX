@@ -10,7 +10,7 @@ namespace AdminX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "");
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "");        
     }
     public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                        //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
@@ -80,8 +80,8 @@ namespace AdminX.Meta
             conn.Close();      
             
             return iReturnValue;
-        }
+        }      
 
-        
+
     }
 }

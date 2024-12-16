@@ -61,7 +61,7 @@ public class LetterController : Controller
     }
 
     //Creates a preview of the DOT letter
-    public void PreviewDOTPDF(int dID,string user)
+    public void PrintDOTPDF(int dID,string user, bool isPreview)
     {
         try
         {
@@ -271,7 +271,16 @@ public class LetterController : Controller
                 }                
             }
             //document.Save($"c:\\projects\\VS Test\\AdminX\\wwwroot\\DOTLetterPreviews\\preview-{user}.pdf");
-            document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
+            if (isPreview)
+            {
+                document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
+            }
+            else
+            {
+
+
+                document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf")); //since we can't currently print
+            }
         }
 
         catch (Exception ex)
