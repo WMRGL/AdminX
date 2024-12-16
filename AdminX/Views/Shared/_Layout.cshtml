@@ -130,13 +130,15 @@
                 info: true,
                 order: false,
                 paging: true,
-
-
+                autoWidth: false,
+                width: "100%"
 
             });
 
-        const element = document.querySelector('.js-choice');
-        const choices = new Choices(element);
+            const elements = document.querySelectorAll('.js-choice');
+            elements.forEach(function(element) {
+            new Choices(element);
+          });
         });
 
        

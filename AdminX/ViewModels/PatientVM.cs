@@ -12,7 +12,7 @@ namespace AdminX.ViewModels
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
         public List<YesNo> yesno { get; set; }         
-        public List<Referral> referrals { get; set; }
+        public List<ClinicalXPDataConnections.Models.Referral> referrals { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
         public List<Diary> diary { get; set; }
