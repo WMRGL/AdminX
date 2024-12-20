@@ -1,7 +1,7 @@
 ﻿@model AdminX.ViewModels.ReferralVM
 @{
-    ViewData["Title"] = "Admin-X - New Referral";
-    ViewData["Page"] = "/ Referral ";
+    ViewData["Title"] = "Admin-X - Update Referral";
+    ViewData["Page"] = "/ Referral / Update";
 }
 
 <div class="row">
@@ -54,49 +54,47 @@
 
                     {
                         <div class="card-body">
-                            <form>
+                            <form method="post">
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputFirstName">Referral ID</label>
-                                        <input type="text" class="form-control" value="@Model.referral.refid" id="inputFirstName" name="refid" readonly>
+                                        <label class="form-label" for="refid">Referral ID</label>
+                                        <input type="text" class="form-control" value="@Model.referral.refid" id="refid" name="refid" readonly>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputLastName">Referral Date</label>
+                                        <label class="form-label" for="rdate">Referral Date</label>
                                         @if (Model.referral.RefDate != null)
                                         {
-                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="inputLastName" readonly>
+                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate" readonly>
 
                                         }
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputLastName">UBRN</label>
-                                        <input type="text" class="form-control" value="@Model.referral.UBRN" id="inputLastName" name="UBRN">
+                                        <label class="form-label" for="ubrn">UBRN</label>
+                                        <input type="text" class="form-control" value="@Model.referral.UBRN" id="ubrn" name="UBRN">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Type</label>
-                                        <select id="inputState" name="RefType" class="form-select">
-                                            <option value="@Model.referral.RefType" selected="">@Model.referral.RefType</option>
+                                        <label class="form-label" for="type">Type</label>
+                                        <select id="type" name="RefType" class="form-select">
+                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
                                             @foreach (var item in Model.activities)
                                             {
-                                                <option value=">@item.APP_TYPE">@item.APP_TYPE</option>
+                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
 
                                             }
-                                            
+
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Pathway</label>
-                                        <select id="inputState" name="PATHWAY" class="form-select">
-                                            <option selected="@Model.referral.PATHWAY">@Model.referral.PATHWAY</option>
-                                            <option value="General">General</option>
-                                        </select>
+                                        <label class="form-label" for="pathway">Pathway</label>
+                                        <input type="text" name="@Model.referral.PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
+
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputLastName">Sub Pathway</label>
-                                        <select id="inputState" name="" class="form-select">
-                                            <option selected=""></option>
+                                        <label class="form-label" for="spathway">Sub Pathway</label>
+                                        <select id="spathway" name="Pathway_subset" class="form-select">
+                                            <option selected></option>
                                             <option value=""></option>
                                         </select>
                                     </div>
@@ -104,28 +102,28 @@
 
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Consultant</label>
-                                        <select id="inputState" name="PATIENT_TYPE_CODE" class="form-select js-choice">
-                                            <option value="@Model.referral.PATIENT_TYPE_CODE" selected="">@Model.referral.PATIENT_TYPE_CODE</option>
+                                        <label class="form-label" for="consultant">Consultant</label>
+                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select js-choice">
+                                            <option value="" selected></option>
                                             @foreach (var item in Model.consultants)
                                             {
-                                                <option value="@item.NAME">@item.NAME</option>
+                                                <option value="@item.STAFF_CODE">@item.NAME</option>
                                             }
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState2">Counsellor/Nurse </label>
-                                        <select id="inputState2" name="GC_CODE" class="form-select js-choice">
-                                            <option value="@Model.referral.GC_CODE" selected="">@Model.referral.GC_CODE</option>
+                                        <label class="form-label" for="nurse">Counsellor/Nurse </label>
+                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select js-choice">
+                                            <option value="" selected></option>
                                             @foreach (var item in Model.gcs)
                                             {
-                                                <option value="@item.NAME">@item.NAME</option>
+                                                <option value="@item.STAFF_CODE">@item.NAME</option>
                                             }
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputLastName">Admin Contact</label>
-                                        <select id="inputState" name="AdminContact" class="form-select js-choice">
+                                        <label class="form-label" for="admin">Admin Contact</label>
+                                        <select id="admin" name="AdminContact" class="form-select js-choice">
                                             <option selected="">@Model.referral.AdminContact</option>
                                             @foreach (var item in Model.admin)
                                             {
@@ -138,24 +136,23 @@
 
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputCity">Referrer Code</label>
-                                        <select id="inputState" name="ReferrerCode" class="form-select js-choice">
+                                        <label class="form-label" for="referrerCode">Referrer Code</label>
+                                        <select id="referrerCode" name="ReferrerCode" class="form-select js-choice">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             @foreach (var item in Model.referrers)
                                             {
                                                 <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
                                             }
-
                                         </select>
                                     </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Referral Facility</label>
-                                        <input type="text" class="form-control" id="inputZip" name="ReferringFacilityCode" value="@Model.referral.ReferringFacilityCode">
 
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="facilityFullDetails">Facility Details</label>
+                                        <input type="text" class="form-control" id="facilityFullDetails" readonly>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputZip">Comment</label>
-                                        <textarea class="form-control" rows="2" placeholder="Textarea" spellcheck="false">@Model.referral.REASON_FOR_REFERRAL</textarea>
+                                        <label class="form-label" for="comment">Comment</label>
+                                        <textarea class="form-control" id="comment" name="REASON_FOR_REFERRAL" rows="2" placeholder="Textarea" spellcheck="true">@Model.referral.REASON_FOR_REFERRAL</textarea>
 
                                     </div>
                                 </div>
@@ -169,13 +166,13 @@
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Indication</label>
-                                        <input type="text" class="form-control" id="inputZip" name="INDICATION" value="@Model.referral.INDICATION">
+                                        <label class="form-label" for="indication">Indication</label>
+                                        <input type="text" class="form-control" id="indication" name="INDICATION" value="@Model.referral.INDICATION">
 
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputEmail4">Class</label>
-                                        <select id="inputState" name="RefClass" class="form-select js-choice">
+                                        <label class="form-label" for="rclass">Class</label>
+                                        <select id="rclass" name="RefClass" class="form-select js-choice">
                                             <option selected="">@Model.referral.RefClass</option>
                                             <option value="Urgent">Urgent</option>
                                             <option value="Fast Track">Fast Track</option>
@@ -187,93 +184,188 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockstart">Clock Start</label>
-                                        <input type="date" id="clockstart" name="ClockStartDate" value="@Model.referral.ClockStartDate" class="form-select">
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Clock Stop</label>
-                                        <input type="date" class="form-control" name="ClockStopDate" id="inputZip" value="@Model.referral.ClockStopDate">
+
+                                        @if (Model.referral.ClockStartDate.HasValue)
+                                        {
+                                            <input type="date" name="ClockStartDate" value="@Model.referral.ClockStartDate.Value.ToString("yyyy-MM-dd")" class="form-control" id="ClockStartDate">
+                                        }
+                                        else
+                                        {
+                                            <input type="date" name="ClockStartDate" class="form-control" id="ClockStartDate">
+                                        }
 
                                     </div>
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Clock Age</label>
-                                        <input type="date" class="form-control" name="ClockStopDate" id="inputZip" value="" readonly>
+                                        <label class="form-label" for="inputState">Clock Stop</label>
+                                        @if (Model.referral.ClockStopDate.HasValue)
+                                        {
+                                            <input type="date" name="ClockStopDate" value="@Model.referral.ClockStopDate.Value.ToString("yyyy-MM-dd")" class="form-control" id="ClockStopDate">
+                                        }
+                                        else
+                                        {
+                                            <input type="date" name="ClockStopDate" class="form-control" id="ClockStopDate">
+                                        }
+
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="clockage">Clock Age</label>
+                                        <input type="text" class="form-control" id="clockage" value="" readonly>
 
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
-                                        <label class="form-label" for="clockstart">Referral Status</label>
-                                        <select id="inputState" class="form-control ">
-                                            <option>Active</option>
-                                            <option>Complete</option>
+                                        <label class="form-label" for="ref_status">Referral Status</label>
+                                        <select id="ref_status" class="form-control" name="COMPLETE">
+                                            <option selected>@Model.referral.COMPLETE</option>
+                                            <option value="Active">Active </option>
+                                            <option value="Complete">Complete</option>
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-6">
-                                        <label class="form-label" for="clockstart">Admin Status</label>
-                                        <select id="inputState" class="form-control js-choice">
+                                        <label class="form-label" for="admin_status">Admin Status</label>
+                                        <select id="admin_status" name="Status_Admin" class="form-control js-choice">
+                                            <option value="" selected>@Model.referral.Status_Admin</option>
                                             @foreach (var item in Model.admin_status)
                                             {
                                                 <option value="@item.Status_Admin">@item.Status_Admin</option>
                                             }
-                                            
+
                                         </select>
                                     </div>
-                                   
+
                                 </div>
 
                                 <div class="row">
                                     <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="inputCity">Referral Reason Code</label>
-                                        <select id="inputState" class="form-control js-choice" name="RefReasonCode">
-                                            <option selected="">@Model.referral.RefReasonCode</option>
-                                            @foreach( var item in Model.diseases)
+                                        <label class="form-label" for="ref_code">Referral Reason Code</label>
+                                        <select id="ref_code" class="form-control js-choice" name="RefReasonCode">
+                                            <option selected>@Model.referral.RefReasonCode</option>
+                                            @foreach (var item in Model.diseases)
                                             {
-                                                <option>@item.EXCLUDE_CLINIC</option>
+                                                <option>@item.Reason</option>
                                             }
-                                            
+
                                         </select>
-                                        <select id="inputState" class="form-control js-choice">
-                                            <option selected="">@Model.referral.RefReasonCode</option>
-                                            <option>...</option>
+                                        <select name="OthReason1" class="form-control js-choice">
+                                            <option selected>@Model.referral.OthReason1</option>
+                                            @foreach (var item in Model.diseases)
+                                            {
+                                                <option>@item.Reason</option>
+                                            }
                                         </select>
-                                        <select id="inputState" class="form-control js-choice">
-                                            <option selected="">Needed</option>
-                                            <option>...</option>
+                                        <select name="OthReason2" class="form-control js-choice">
+                                            <option selected>@Model.referral.OthReason2</option>
+                                            @foreach (var item in Model.diseases)
+                                            {
+                                                <option>@item.Reason</option>
+                                            }
                                         </select>
-                                        <select id="inputState" class="form-control js-choice">
-                                            <option selected="">Needed</option>
-                                            <option>...</option>
+                                        <select name="OthReason3" class="form-control js-choice">
+                                            <option selected>@Model.referral.OthReason3</option>
+                                            @foreach (var item in Model.diseases)
+                                            {
+                                                <option>@item.Reason</option>
+                                            }
                                         </select>
-                                        <select id="inputState" class="form-control js-choice">
-                                            <option selected="">Needed</option>
-                                            <option>...</option>
+                                        <select name="OthReason4" class="form-control js-choice">
+                                            <option selected>@Model.referral.OthReason4</option>
+                                            @foreach (var item in Model.diseases)
+                                            {
+                                                <option>@item.Reason</option>
+                                            }
                                         </select>
                                     </div>
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="inputZip">Affected?</label><br />
-                                        <input type="checkbox" class="form-check-input mb-3" id="inputZip"> <br />
-                                        <input type="checkbox" class="form-check-input mb-3" id="inputZip"> <br />
-                                        <input type="checkbox" class="form-check-input mb-3" id="inputZip"> <br />
-                                        <input type="checkbox" class="form-check-input mb-3" id="inputZip"> <br />
-                                        <input type="checkbox" class="form-check-input mb-3" id="inputZip"> <br />
+                                        @if (Model.referral.RefReasonAff == 1)
+                                        {
+                                            <input type="checkbox" name="RefReasonAff" class="form-check-input mb-3" checked />  <br />
+
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="RefReasonAff" class="form-check-input mb-3" />  <br />
+                                        }
+                                        @if (Model.referral.OthReason1Aff == 1)
+                                        {
+                                            <input type="checkbox" name="OthReason1Aff" class="form-check-input mb-3" checked />  <br />
+
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="OthReason1Aff" class="form-check-input mb-3" />  <br />
+                                        }
+                                        @if (Model.referral.OthReason2Aff == 1)
+                                        {
+                                            <input type="checkbox" name="OthReason2Aff" class="form-check-input mb-3" checked />  <br />
+
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="OthReason2Aff" class="form-check-input mb-3" />  <br />
+                                        }
+                                        @if (Model.referral.OthReason3Aff == 1)
+                                        {
+                                            <input type="checkbox" name="OthReason3Aff" class="form-check-input mb-3" checked />  <br />
+
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="OthReason3Aff" class="form-check-input mb-3" />  <br />
+                                        }
+                                        @if (Model.referral.OthReason4Aff == 1)
+                                        {
+                                            <input type="checkbox" name="OthReason4Aff" class="form-check-input mb-3" checked />  <br />
+
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="OthReason4Aff" class="form-check-input mb-3" />  <br />
+                                        }
 
                                     </div>
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="inputZip">Referred using FHF?</label><br />
                                         <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
+                                            @if (Model.referral.RefFHF == 1)
+                                            {
+                                                <input class="form-check-input" type="radio" value="1" name="RefFHF" checked>
+
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="radio" value="1" name="RefFHF">
+                                            }
                                             <span class="form-check-label">
                                                 Yes
                                             </span>
                                         </label>
                                         <label class="form-check">
                                             <input class="form-check-input" type="checkbox" value="">
+                                            @if (Model.referral.RefFHF == 0)
+                                            {
+                                                <input class="form-check-input" type="radio" value="0" name="RefFHF" checked>
+
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="radio" value="0" name="RefFHF">
+                                            }
                                             <span class="form-check-label">
                                                 No
                                             </span>
                                         </label>
                                         <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
+                                            @if (Model.referral.RefFHF == 2)
+                                            {
+                                                <input class="form-check-input" type="radio" value="2" name="RefFHF" checked>
+
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="radio" value="2" name="RefFHF">
+                                            }
                                             <span class="form-check-label">
                                                 Don't know/not recorded'
                                             </span>
@@ -284,19 +376,19 @@
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="inputZip">Symptomatic at referral?</label><br />
                                         <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
+                                            <input class="form-check-input" type="radio" value="@Model.referral.RefSympt">
                                             <span class="form-check-label">
                                                 Definitely Yes
                                             </span>
                                         </label>
                                         <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
+                                            <input class="form-check-input" type="radio" value="">
                                             <span class="form-check-label">
                                                 Definitely No
                                             </span>
                                         </label>
                                         <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
+                                            <input class="form-check-input" type="radio" value="">
                                             <span class="form-check-label">
                                                 Don't know/unclear
                                             </span>
@@ -305,8 +397,9 @@
 
                                     </div>
                                     <div class="mb-3 col-md-2">
-                                        <label class="form-label" for="inputZip">Information Gathering</label>
-                                        <select id="inputState" class="form-select">
+                                        <label class="form-label" for="information">Information Gathering</label>
+                                        <select id="information" class="form-select" name="Clics" value="@Model.referral.Clics">
+                                            <option selected></option>
                                             <option value="Clics">Clics</option>
                                         </select>
                                         <label class="form-label" for="inputZip">Breach Reason</label>
@@ -357,3 +450,60 @@
         </div>
     </div>
 </div>
+
+<script>
+    let refCode = document.getElementById("referrerCode");
+    let facilityDetails = document.getElementById("facilityFullDetails");
+
+    let facilityCodeArray = [];
+    let facilityNameArray = [];
+    let facilityAddressArray = [];
+    let facilityCityArray = [];
+    let facilityStateArray = [];
+    let facilityPostcodeArray = [];
+    let referrerCodes = [];
+
+    @foreach (var item in Model.facilities)
+    {
+        @:facilityCodeArray.push("@item.MasterFacilityCode");
+        @:facilityNameArray.push("@item.NAME");
+        @:facilityAddressArray.push("@item.ADDRESS");
+        @:facilityCityArray.push("@item.CITY");
+        @:facilityStateArray.push("@item.STATE");
+        @:facilityPostcodeArray.push("@item.ZIP");
+    }
+
+    @foreach (var item in Model.referrers)
+    {
+        @:referrerCodes.push("@item.MasterClinicianCode");
+    }
+
+        function updateFacility() {
+            let selectedReferrerCode = refCode.value;
+
+
+            let associatedFacilityIndex = -1;
+            for (let i = 0; i < referrerCodes.length; i++) {
+                if (referrerCodes[i] === selectedReferrerCode) {
+                    associatedFacilityIndex = i;
+                    break;
+                }
+            }
+
+            if (associatedFacilityIndex !== -1) {
+                let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
+                    facilityAddressArray[associatedFacilityIndex] + ", " +
+                    facilityCityArray[associatedFacilityIndex] + ", " +
+                    facilityStateArray[associatedFacilityIndex] + " " +
+                    facilityPostcodeArray[associatedFacilityIndex];
+
+                facilityDetails.value = fullDetails;
+            } else {
+                facilityDetails.value = "";
+            }
+        }
+
+    refCode.addEventListener("change", updateFacility);
+
+    updateFacility();
+</script>

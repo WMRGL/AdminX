@@ -18,8 +18,9 @@ namespace AdminX.ViewModels
         public List<ActivityItem> referrals { get; set; }
         public List<string> pathways { get; set; }
         public List<ListStatusAdmin> admin_status { get; set; }
-        public List<Disease> diseases { get; set; }
+        public List<ListDisease> diseases { get; set; }
         public Appointment Clinic { get; set; }
+        public List<ExternalFacility> facilities { get; set; }
 
     }
 }

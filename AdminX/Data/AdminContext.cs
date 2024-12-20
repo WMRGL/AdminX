@@ -11,6 +11,7 @@ namespace AdminX.Data
         public DbSet<ActivityType> ActivityType { get; set; }
         public DbSet<Language> Language { get; set; }
         public DbSet<ListStatusAdmin> ListStatusAdmin { get; set; }
+        public DbSet<ListDisease> ListDiseases { get; set; }
 
     }
 }
