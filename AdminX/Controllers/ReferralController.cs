@@ -62,6 +62,13 @@ namespace AdminX.Controllers
             //_rvm.referrals = _activityData.GetActiveReferralList(_rvm.referral.MPI);
             //_rvm.referrers = _externalClinicianData.GetClinicianList();
 
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                
+                new BreadcrumbItem { Text = "Referral" }
+            };
+
             return View(_rvm);
         }
 
@@ -81,26 +88,69 @@ namespace AdminX.Controllers
             _rvm.diseases =_diseaseData.GetDiseases();
             _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
 
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Referrals",
+                    Controller = "Referral",
+                    Action = "ReferralDetails", 
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        { "refID", refID.ToString() } 
+                    }
+                },
+                new BreadcrumbItem { Text = "Update" }
+            };
+
             return View(_rvm);
         }
 
         [HttpPost]
-        public IActionResult UpdateReferralDetails(int refID, string? UBRN, string RefType, string PATHWAY, string? Pathway_subset, string PATIENT_TYPE_CODE, string GC_CODE, string AdminContact,
-            string ReferrerCode, string REASON_FOR_REFERRAL, string PREGNANCY, string INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string COMPLETE, 
-            string Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? RefReason1Aff,
-            int? RefReason2Aff, int? RefReason3Aff, int? RefReason4Aff, int? RefFHF,
-            string refPathway, string indication,
-            string consultant
-                )
+        public IActionResult UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
+             string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
+             string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, bool? RefReasonAff, bool? OthReason1Aff,
+             bool? OthReason2Aff, bool? OthReason3Aff, bool? OthReason4Aff, int? RefFHF,  string? consultant)
         {
+            string login = User.Identity?.Name ?? "Unknown";
 
-            int success = _CRUD.ReferralDetail("Referral", "Update", User.Identity.Name, refID, RefType, indication, refPathway, COMPLETE,
-                null);
+            int success = _CRUD.ReferralDetail(
+                sType: "Referral",
+                sOperation: "Update",
+                sLogin: login,
+                int1: refid,
+                string1: RefType,
+                string2: INDICATION,
+                text: REASON_FOR_REFERRAL,
+                string3: PATHWAY,
+                string4: UBRN,
+                string5: Pathway_Subset,
+                string6: PATIENT_TYPE_CODE,
+                string7: GC_CODE,
+                string8: AdminContact,
+                string9: ReferrerCode,
+                string10: PREGNANCY,
+                string11: RefClass,
+                string12: COMPLETE,
+                dDate1: ClockStartDate,
+                dDate2: ClockStopDate,
+                string13: Status_Admin,
+                int2: RefFHF,
+                string44: RefReasonCode,
+                int3: RefReasonAff.HasValue && RefReasonAff.Value ? 1 : 0,
+                int4: OthReason1Aff.HasValue && OthReason1Aff.Value ? 1 : 0,
+                int5: OthReason2Aff.HasValue && OthReason2Aff.Value ? 1 : 0,
+                int6: OthReason3Aff.HasValue && OthReason3Aff.Value ? 1 : 0,
+                int7: OthReason4Aff.HasValue && OthReason4Aff.Value ? 1 : 0
+            );
 
+            if (success != 1)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+            }
 
-            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
-
-            return RedirectToAction("ReferralDetails", new { refID = refID });
+            return RedirectToAction("ReferralDetails", new { refID = refid });
         }
 
 

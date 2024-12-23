@@ -1,7 +1,6 @@
 ﻿@model AdminX.ViewModels.ReferralVM
 @{
     ViewData["Title"] = "Admin-X - Update Referral";
-    ViewData["Page"] = "/ Referral / Update";
 }
 
 <div class="row">
@@ -54,7 +53,7 @@
 
                     {
                         <div class="card-body">
-                            <form method="post">
+                            <form method="post" >
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="refid">Referral ID</label>
@@ -88,12 +87,12 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="pathway">Pathway</label>
-                                        <input type="text" name="@Model.referral.PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
+                                        <input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
 
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="spathway">Sub Pathway</label>
-                                        <select id="spathway" name="Pathway_subset" class="form-select">
+                                        <select id="spathway" name="Pathway_Subset" class="form-select">
                                             <option selected></option>
                                             <option value=""></option>
                                         </select>
@@ -184,22 +183,20 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockstart">Clock Start</label>
-
-                                        @if (Model.referral.ClockStartDate.HasValue)
+                                        @if (Model.referral.ClockStartDate != null)
                                         {
-                                            <input type="date" name="ClockStartDate" value="@Model.referral.ClockStartDate.Value.ToString("yyyy-MM-dd")" class="form-control" id="ClockStartDate">
+                                            <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate">
                                         }
                                         else
                                         {
                                             <input type="date" name="ClockStartDate" class="form-control" id="ClockStartDate">
                                         }
-
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputState">Clock Stop</label>
                                         @if (Model.referral.ClockStopDate.HasValue)
                                         {
-                                            <input type="date" name="ClockStopDate" value="@Model.referral.ClockStopDate.Value.ToString("yyyy-MM-dd")" class="form-control" id="ClockStopDate">
+                                            <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate">
                                         }
                                         else
                                         {
@@ -507,3 +504,18 @@
 
     updateFacility();
 </script>
+
+@section Scripts {
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const dateInput = document.getElementById('ClockStartDate');
+            if (dateInput && dateInput.value) {
+                const date = new Date(dateInput.value);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); 
+                const year = date.getFullYear();
+                dateInput.value = `${day}/${month}/${year}`;
+            }
+        });
+    </script>
+}
