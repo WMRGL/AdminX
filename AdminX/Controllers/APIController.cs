@@ -60,7 +60,7 @@ namespace ClinicX.Controllers
             request.AddHeader("accept", "application/json");
             request.AddHeader("authorization", "Basic " + authKey);
             request.AddHeader("X-Gene42-Secret", apiKey);
-            var response = await client.GetAsync(request); //secret key is broken so we can't currently get past this line
+            var response = await client.GetAsync(request);
 
             if (CheckResponseValid(response.Content)) 
             {
@@ -105,7 +105,8 @@ namespace ClinicX.Controllers
                     sMessage = "Push to Phenotips successful";
 
                     string ptID = await GetPhenotipsPatientID(patient.MPI);
-                    //_crud.AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault());
+                    _crud.AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                        patient.POSTCODE, patient.SOCIAL_SECURITY);
                 }
                 else
                 {
