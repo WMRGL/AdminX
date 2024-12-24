@@ -18,6 +18,9 @@ namespace AdminX.Meta
        int? int5 = 0, int? int6 = 0, int? int7 = 0,
              bool? bool1 = false, bool? bool2 = false, string? string44 = "");
 
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname,
+        DateTime DOB, string postCode, string nhsNo);
+
 
     }
     public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
@@ -151,6 +154,17 @@ namespace AdminX.Meta
 
         }
 
+
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM_dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
 
     }
 }
