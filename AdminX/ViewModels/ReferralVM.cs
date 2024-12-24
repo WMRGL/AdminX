@@ -20,6 +20,7 @@ namespace AdminX.ViewModels
         public List<ListStatusAdmin> admin_status { get; set; }
         public List<ListDisease> diseases { get; set; }
         public Appointment Clinic { get; set; }
+        public List<Appointment> ClinicList { get; set; }
         public List<ExternalFacility> facilities { get; set; }
         public int clockAgeDays { get; set; }
         public int clockAgeWeeks { get; set; }

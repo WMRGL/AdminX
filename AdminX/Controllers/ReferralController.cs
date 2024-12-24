@@ -55,7 +55,8 @@ namespace AdminX.Controllers
         {
             _rvm.referral = _referralData.GetReferralDetails(refID);
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-            _rvm.Clinic = _clinicData.GetClinicDetails(refID);
+            //_rvm.Clinic = _clinicData.GetClinicDetails(refID);
+            _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
 
             if (_rvm.referral.ClockStartDate != null)
             {
@@ -69,10 +70,7 @@ namespace AdminX.Controllers
                 }
                 _rvm.clockAgeWeeks = (int)Math.Ceiling((double) _rvm.clockAgeDays / 7);
             }
-            //_rvm.consultants = _staffUserData.GetConsultantsList();
-            //_rvm.admin = _staffUserData.GetAdminList(); 
-            //_rvm.referrals = _activityData.GetActiveReferralList(_rvm.referral.MPI);
-            //_rvm.referrers = _externalClinicianData.GetClinicianList();
+            
 
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {

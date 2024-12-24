@@ -9,52 +9,31 @@
 
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Profile Settings</h5>
+                <h5 class="card-title mb-0">Referral</h5>
             </div>
 
             <div class="list-group list-group-flush" role="tablist">
-                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#account" role="tab" aria-selected="true">
-                    Referral
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#referral" role="tab" aria-selected="true">
+                    Referral Details
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#password" role="tab" aria-selected="false" tabindex="-1">
-                    Appoinment
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Privacy and safety
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Email notifications
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Web notifications
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Widgets
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Your data
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false" tabindex="-1">
-                    Delete account
-                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
+                    Appointments
+                </a>                
             </div>
         </div>
     </div>
 
     <div class="col-md-9 col-xl-10">
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="account" role="tabpanel">
-
+            <div class="tab-pane fade show active" id="referral" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
 
-                        <h5 class="card-title mb-0">@Model.patient.FIRSTNAME Referral Details</h5>
+                        <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - Referral Details</h5>
                     </div>
                     <div class="card-body">
                         @if (Model.referral.PATHWAY?.Trim() == "Cancer")
-
                         {
-
                             <table class="table table-borderless my-0">
                                 <tbody>
                                     <tr>
@@ -133,7 +112,7 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        
+
                                     </tr>
                                     <tr>
                                         <td>
@@ -171,12 +150,12 @@
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                
+
                                             </div>
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                
+
                                             </div>
                                         </td>
                                     </tr>
@@ -545,7 +524,7 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Clock Age</strong>
                                                 <div class="text-muted">
-                                                    Calculate from Controller
+                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks weeks)</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -574,7 +553,7 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Breach Reason</strong>
                                                 <div class="text-muted">
-                                                    Needed
+                                                    @Model.referral.REASON_FOR_BREACH
                                                 </div>
                                             </div>
                                         </td>
@@ -592,27 +571,45 @@
                 </div>
 
             </div>
-            <div class="tab-pane fade" id="password" role="tabpanel">
+            <div class="tab-pane fade" id="appointment" role="tabpanel">
                 <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Related Appointments</h5>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Password</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Booked Date</th>
+                                    <th>Booked Time</th>
+                                    <th>Venue</th>
+                                    <th>To see/seen by</th>
+                                    <th>Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var item in @Model.ClinicList)
+                                {
+                                    <tr>
+                                        <td>@item.AppType</td>
+                                        <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                        <td>@item.Clinic</td>
+                                        @if(@item.SeenBy != null)
+                                        {
+                                        <td>@item.SeenBy</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.Clinician</td>
+                                        }
+                                        <td>@item.Attendance</td>
+                                    </tr>
+                                }
+                            </tbody>
 
-                        <form>
-                            <div class="mb-3">
-                                <label class="form-label" for="inputPasswordCurrent">Current password</label>
-                                <input type="password" class="form-control" id="inputPasswordCurrent">
-                                <small><a href="#">Forgot your password?</a></small>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="inputPasswordNew">New password</label>
-                                <input type="password" class="form-control" id="inputPasswordNew">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="inputPasswordNew2">Verify password</label>
-                                <input type="password" class="form-control" id="inputPasswordNew2">
-                            </div>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </form>
+                        </table>
 
                     </div>
                 </div>
