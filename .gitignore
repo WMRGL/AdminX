@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /AdminX/secrets.json
+ClinicalXPDataConnections.dll
+/AdminX/wwwroot/ErrorLogs/Log.txt

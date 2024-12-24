@@ -1,649 +1,1152 @@
 ﻿@model AdminX.ViewModels.PatientVM
 @{
     ViewData["Title"] = "AdminX-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container card">
+@{
+    ViewBag.HomeButton = new[] {
+        Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
+        Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
+        Html.ActionLink("Create New Diary Entry", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
 
-    @if (Model.message != null)
-    {
-        @if (Model.success)
-        {
-            <div class="alert alert-success d-block text-center">
-                <h3>@Model.message</h3>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-danger d-block text-center">
-                <h3>@Model.message</h3>
-            </div>
-        }
-    }
 
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
-        </div>
-        @*
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="Diagnosis" asp-action="Index" asp-route-id=@Model.patient.MPI>View Diagnoses</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnTest" class="btn btn-default btn-success" asp-controller="Test" asp-action="Index" asp-route-id=@Model.patient.MPI>View All Tests</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnClinicalNote" class="btn btn-default btn-success" asp-controller="ClinicalNote" asp-action="Index" asp-route-id=@Model.patient.MPI>View Notes</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnReviewList" class="btn btn-default btn-success" asp-controller="Review" asp-action="ReviewsForPatient" asp-route-id=@Model.patient.MPI>Patient Reviews</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnLetterList" class="btn btn-default btn-success" asp-controller="DictatedLetter" asp-action="DictatedLettersForPatient" asp-route-id=@Model.patient.MPI>View All Dictated Letters</a>
-        </div>
-        *@
-        <div class="col-md-1">
-            @if (Model.staffMember.BILL_ID == "Technical")
+    };
+}
+
+
+
+@if (Model.staffMember.BILL_ID == "Technical")
+{
+    <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
+}
+
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
             {
-                <a id="btnPhenotips" class="btn btn-default btn-success" asp-controller="API" asp-action="PushPtToPhenotips" asp-route-id=@Model.patient.MPI>Push patient to Phenotips</a>
-            }
-        </div>        
-        <div class="col-md-1">
-            <a id="btnNewReferral" class="btn btn-default btn-success" asp-controller="Referral" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI>Create New Referral</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnNewContact" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Create New Contact</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnNewDiary" class="btn btn-default btn-success" asp-controller="WIP" asp-action="Index">Create New Diary Entry</a>
-        </div>
-        <div class="col-md-5"></div>
-        <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
-    </div>
-
-    @if (Model.patient.DCTM_Folder_ID == null)
-    {
-        <h3 class="text-center">Patient not yet made electronic - no EDMS record exists</h3>
-    }
-
-    
-
-    <div class="row mb-5">
-        <hr />
-    </div>
-
-    @if (Model.patientPathway != null)
-    {
-        <div class="d-grid">
-            <div class="row mb-5 g-5">
-                <div class="row fw-bold">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-1">Referral Date</div>
-                    <div class="col-md-1">Pathway</div>
-                    <div class="col-md-1">Triaged</div>            
-                    <div class="col-md-1">Appt Booked</div>
-                    <div class="col-md-1">Seen in Clinic</div>                
-                    <div class="col-md-1">Letter Dictated</div>
-                    <div class="col-md-1">Letter Printed</div>
-                    <div class="col-md-1">Review Planned</div>            
-                    <div class="col-md-2">18 week Clock Status</div>
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
                 </div>
-                <div class="row"> @*Pathway Indicator - shows how far along patient is  *@
-                    <div class="col-md-2 text-end"><b>Oldest active ICP:</b></div>
-                    <div class="col-md-1">@Model.patientPathway.REFERRAL_DATE.ToString("dd/MM/yyyy")</div>
-                    <div class="col-md-1">@Model.patientPathway.PATHWAY</div>
-                <div class="col-md-1">
-                    @if(@Model.patientPathway.Triaged == 1)
-                    {
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                        </svg>
-                    }        
-                    else
-                    {
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                        <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                        </svg>
-                    }
-                    </div>
-                    @if(Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
-                    {
-                        <div class="col-md-1">
-                            @if(@Model.patientPathway.AppointmentBooked == 1)
-                            {
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                                </svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                                </svg>
-                            }        
-                            else
-                            {
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                                </svg>
-                            }
-                        </div>
-                
-            
-                        <div class="col-md-1">
-                            @if(@Model.patientPathway.Seen == 1)
-                            {   
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                                </svg>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                                </svg>
-                            }        
-                            else
-                            {
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                                </svg>
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="col-md-1">
-                            No appt/ letter only
-                        </div>
-                        <div class="col-md-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                            </svg>
-                        </div>
-                    }
-            
-                    <div class="col-md-1">
-                        @if(@Model.patientPathway.LetterDictated == 1)
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                            </svg>
-                        }        
-                        else
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                        }
-                    </div>
-
-                    <div class="col-md-1">
-                        @if(@Model.patientPathway.LetterPrinted == 1)
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                            </svg>
-                        }        
-                        else
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                        }
-                    </div>
-
-                    <div class="col-md-1">
-                        @if(@Model.patientPathway.ReviewPlanned == 1)
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                            </svg>
-                        }        
-                        else
-                        {
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
-                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z"/>
-                            </svg>
-                        }
-                    </div>
-                    <div class="col-md-2">@Model.patientPathway.ClockStatus</div>        
-                </div>
-            </div>  
-        </div>
-    }
-    else
-    {
-        <h2 class="text-center">No active pathway exists</h2>
-    }
-
-    <div class="row mb-2">
-        <hr />
-    </div>
-
-    @if (Model.alerts.Count > 0)
-    {
-        <h1 class="text-danger" class="text-center">There are active alerts for this patient</h1>
-    }
-
-    <div class="d-grid">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapsePatientDetails" aria-expanded="true" aria-controls="collapseExample">Patient Details (click to expand/hide)</button>
-    </div>
-
-
-
-    <div class="collapse show" id="collapsePatientDetails">
-        <h1 class="text-center">Patient Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
-        @if(Model.patient.DECEASED == -1)
-        {
-            <h1 class="redtext text-center">PATIENT IS DECEASED</h1>
-        }
-
-        <dl class="row">
-            @*Row 1 - CGU number, GP facility*@
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.patient.CGU_No):
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.CGU_No)
-            </dd>
-            <dt class="col-sm-2">
-                GP Details:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.GP_Facility)
-            </dd>
-
-            @*Row 2 - Preferred name (if any), GP*@
-            @if(Model.patient.PtAKA != null)
-            {
-                <dt class="col-sm-2">
-                    Preferred Name:
-                </dt>
-                <dd class="col-sm-4">            
-                    @Html.DisplayFor(model => model.patient.PtAKA)
-                </dd>
             }
             else
             {
-                <dt class="col-sm-2"></dt><dd class="col-sm-4"></dd>
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
             }
-            <dt class="col-sm-2"></dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.GP)
-            </dd>
-        
-            @*Row 3 - DOB/DOD*@
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.patient.DOB):
-            </dt>
-            <dd class="col-sm-4">
-                @if (Model.patient.DOB != null)
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-3 col-xl-2">
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"> Patient Details</h5>
+            </div>
+
+            <div class="list-group list-group-flush" role="tablist">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
+                    Pathway Indicator
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
+                    Patient Details
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
+                    Alert
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#diary" role="tab" aria-selected="false" tabindex="-1">
+                    Diary
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
+                    Active Referral
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#relatives" role="tab" aria-selected="false" tabindex="-1">
+                    Relatives
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 col-xl-10">
+        <div class="tab-content">
+            <div class="tab-pane fade active show" id="pathway-indicator" role="tabpanel">
+                @if (Model.alerts.Count > 0)
                 {
-                    @Html.DisplayFor(model => model.patient.DOB)
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>There are active alerts for this patient</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.patient.DCTM_Folder_ID == null)
+                {
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (Model.patientPathway != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Oldest active ICP</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-borderless my-0">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Referral Date</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.REFERRAL_DATE.ToString("dd/MM/yyyy")
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Pathway</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.PATHWAY
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Triaged</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.Triaged == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Appt Booked</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
+                                                        {
+                                                            @if (@Model.patientPathway.AppointmentBooked == 1)
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-1">
+                                                                No appt/ letter only
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            </div>
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Seen in Clinic</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
+                                                        {
+                                                            @if (@Model.patientPathway.Seen == 1)
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            }
+                                                            else
+                                                            {
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                    <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                                </svg>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="col-md-1">
+                                                                No appt/ letter only
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                </svg>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong> Letter Dictated</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.LetterDictated == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>Letter Printed</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.LetterPrinted == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong> Review Planned </strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.patientPathway.ReviewPlanned == 1)
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="green" class="bi bi-person-fill-check" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514ZM11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                            </svg>
+                                                        }
+                                                        else
+                                                        {
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill-dash" viewBox="0 0 16 16">
+                                                                <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1Zm0-7a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                                <path d="M2 13c0 1 1 1 1 1h5.256A4.493 4.493 0 0 1 8 12.5a4.49 4.49 0 0 1 1.544-3.393C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4Z" />
+                                                            </svg>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ">
+                                                    <strong>18 week Clock Status</strong>
+                                                    <div class="text-muted">
+                                                        @Model.patientPathway.ClockStatus
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 }
                 else
                 {
-                    <span>Not known</span>
+                    <h2>No active pathway exists</h2>
                 }
-            </dd>
-            @if(Model.patient.DECEASED == -1)
-            {
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.patient.DECEASED_DATE):
-                </dt>
-                <dd class="col-sm-4">
-                    @if (Model.patient.DOB != null)
-                    {
-                        @Html.DisplayFor(model => model.patient.DECEASED_DATE)
-                    }
-                    else
-                    {
-                        <span>Not known</span>
-                    }
-                </dd>
-            }
-            else
-            {
-                <dt class="col-sm-2"></dt><dd class="col-sm-4"></dd>
-            }
 
-            @*Row 4 - NHS number, primary language*@
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.patient.SOCIAL_SECURITY):
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.SOCIAL_SECURITY)
-            </dd>
-            <dt class="col-sm-2">
-                Primary Language:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.PrimaryLanguage)            
-            </dd>
-
-            @*Row 5 - Ethnicity, interpreter requirements*@
-            <dt class="col-sm-2">
-                Ethnicity:
-            </dt>        
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.Ethnic)
-            </dd>       
-            <dt class="col-sm-2">
-                Interpreter required:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.IsInterpreterReqd)
-            </dd>    
-        
-            <dd class="col-sm-12"><hr /></dd>       
-        
-            @*Row 6 - address, contact details*@
-            <dt class="col-sm-2">
-                Address:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.ADDRESS1)
-            </dd>
-            <dt class="col-sm-2">
-                Contact number:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.TEL)
-            </dd>
-
-            <dt class="col-sm-2">            
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.ADDRESS2)
-            </dd>
-            <dt class="col-sm-2">
-                Mobile:
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.PtTelMobile)
-            </dd>
-            
-            <dt class="col-sm-2">            
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.patient.ADDRESS3)
-            </dd>
-        
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.patient.ADDRESS4)
-            </dd>
-            
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-4">
-                @Html.DisplayFor(model => model.patient.POSTCODE)
-            </dd>        
-            <dt class="col-sm-2">
-                Email Address:
-            </dt>
-            <dd class="col-sm-4">
-                @*@Html.DisplayFor(model => model.patient.EmailAddress)*@            
-                @if (Model.patient.EmailAddress != null)
+            </div>
+            <div class="tab-pane fade" id="patient-details" role="tabpanel">
+                @if (Model.patient.DECEASED == -1)
                 {
-                    @if (Model.patient.EmailCommsConsent == "Yes")
-                    {                    
-                        @Html.DisplayFor(model => model.patient.EmailAddress)
-                    }
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                <div class="alert-icon">
+                                    <i class="far fa-fw fa-bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <h3>PATIENT IS DECEASED</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 }
-                else
-                {
-                    <p>Patient hasn't consented to contact by email</p>
-                }
-            </dd>
-        </dl>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
 
-    </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless my-0">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>@Html.DisplayNameFor(model => model.patient.Title):</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.Title)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Surname:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.LASTNAME)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Forename 1:</strong>
+                                                <div class="text-muted">
 
-    <div class="d-grid">
-        <hr />
-    </div>
+                                                    @Html.DisplayFor(model => model.patient.FIRSTNAME)
 
-    @if (Model.alerts.Count > 0)
-    {
-        <div class="d-grid mt-2 mb-2">
-            <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseAlertTable" aria-expanded="false" aria-controls="collapseExample">Alerts (click to expand/hide)</button>
-        </div>
-        <div class="collapse" id="collapseAlertTable">
-            <h4>Active Alerts</h4>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                        <tr class="fw-bold">
-                            <td>Type</td>
-                            <td>Protected Address</td>
-                            <td>Effective From</td>                        
-                            <td>Details</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var a in Model.alerts)
-                        {
-                            <tr>                            
-                                <td>@a.AlertType</td>
-                                @if (@a.ProtectedAddress)
-                                {
-                                    <td class="redtext"><strong>Yes</strong></td>
-                                }
-                                else
-                                {
-                                    <td>No</td>
-                                }
-                                <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
-                                <td>@a.Comments</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div> 
-        </div>
-    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Forename 2:</strong>
+                                                @if (Model.patient.PtForename2 != null)
+                                                {
+                                                    <div class="text-muted">
+                                                        @Html.DisplayFor(model => model.patient.PtForename2)
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-muted">
+                                                        &nbsp;
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Previous Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PREVIOUS_NAME != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PREVIOUS_NAME)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Maiden Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtSurnameBirth != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PtSurnameBirth)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Preferred Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtAKA != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PtAKA)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
 
-    <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseDiaryTable" aria-expanded="false" aria-controls="collapseExample">Diary (click to expand/hide)</button>
-    </div>
 
-    <div class="collapse" id="collapseDiaryTable">       
-        @if (Model.diary.Count > 0)
-        {
-            <h4>Diary</h4>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                        <tr class="fw-bold">
-                            <td>Diary Date</td>
-                            <td>Diary With</td>
-                            <td>Action</td>
-                            <td>Text</td>
-                            <td>Doc Code</td>
-                            <td>Related Ref ID</td>                        
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var d in Model.diary)
-                        {
-                            <tr>
-                                <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
-                                <td>@d.DiaryWith</td>
-                                <td>@d.DiaryAction</td>
-                                <td>@d.DiaryText</td>
-                                <td>@d.DocCode</td>
-                                <td>@d.RefID</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Sex:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.SEX)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>@Html.DisplayNameFor(model => model.patient.CGU_No):</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.CGU_No)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>MPI:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.MPI)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> NHS Number:</strong>
+                                                <div class="text-muted">
+                                                    @Model.patient.SOCIAL_SECURITY
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>AreaCode:</strong>
+                                                <div class="text-muted">
+                                                </div>
+                                                @if (Model.patient.PtAreaCode != null)
+                                                {
+                                                    <div class="text-muted">
+                                                        @Html.DisplayFor(model => model.patient.PtAreaCode)
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="text-muted">
+                                                        &nbsp;
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Address:</strong>
+
+                                                <div class="text-muted">
+                                                    @if (Model.protectedAddress.ProtectedAddress == false)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.ADDRESS1) @Html.DisplayFor(model => model.patient.ADDRESS2)
+                                                        <br />
+                                                        @Html.DisplayFor(model => model.patient.ADDRESS3) @Html.DisplayFor(model => model.patient.ADDRESS4)
+                                                        <br />
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="text-danger">Address is protected</p>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Postcode:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.POSTCODE)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Country:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtAreaCode != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.COUNTRY)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Letter Addressee:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PtLetterAddressee)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Letter Salutation:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.SALUTATION)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>@Html.DisplayNameFor(model => model.patient.DOB):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.DOB != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.DOB)
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Not known</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                @if (Model.patient.DECEASED == -1)
+                                                {
+                                                    <strong>Date of Death:</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patient.DECEASED_DATE != null)
+                                                        {
+                                                            @Model.patient.DECEASED_DATE
+                                                        }<br />
+                                                        <strong>Died Age:</strong> @Model.diedage
+
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <strong>Current Age:</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.currentage != null)
+                                                        {
+                                                            @Model.currentage
+                                                        }
+
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Ethnicity:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.Ethnic)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Primary Language:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PrimaryLanguage)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Interpreter required:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.IsInterpreterReqd)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Home):</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.TEL)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Day):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.WORKTEL != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.WORKTEL)
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Mobile:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PtTelMobile)
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Email:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.EmailAddress != null)
+                                                    {
+                                                        @if (Model.patient.EmailCommsConsent == "Yes")
+                                                        {
+                                                            @Html.DisplayFor(model => model.patient.EmailAddress)
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>Patient hasn't consented to contact by email</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Consent to electronic contact:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.EmailCommsConsent)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Practice Code:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP_Facility_Code)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Practice Address:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP_Facility)
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>GP Code:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP_Code)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> GP Address:</strong>
+                                                <div class="text-muted">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>GP:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Patient Decease Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="PatientDetails" asp-controller="Patient" method="post">
+                            <div class="mb-3 row">
+                                <label class="col-form-label col-sm-2 ">Deceased</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" name="DECEASED" class="form-check-input" id="deceased">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label class="col-form-label col-sm-2  pt-sm-0">Date of Dead</label>
+                                <div class="col-sm-8">
+                                    <input type="date" name="DECEASED_DATE" class="form-control mb-2 " id="dod">
+                                </div>
+                            </div>
+                            <input type="hidden" name="mpi" value="@Model.patient.MPI">
+                            <div class="mb-3 row">
+                                <div class="col-sm-10 ms-sm-auto">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Language</h5>
+
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="PatientDetails" method="post">
+                            <div class="mb-3 row">
+                                <label class="col-form-label col-sm-2 ">Language</label>
+                                <div class="col-sm-8">
+                                    <select class="form-select js-choice" name="LanguageName">
+                                        <option value="" selected></option>
+                                        @foreach (var item in Model.languages)
+                                        {
+                                            <option value=@item.LanguageName>@item.LanguageName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label class="col-form-label col-sm-2  pt-sm-0">Interpreter Required</label>
+                                <div class="col-sm-10">
+                                    <label class="form-check m-0">
+                                        <input type="checkbox" name="IsInterpreterReqd" class="form-check-input">
+                                    </label>
+                                </div>
+                            </div>
+                            <input type="hidden" name="mpi" value="@Model.patient.MPI">
+                            <div class="mb-3 row">
+                                <div class="col-sm-10 ms-sm-auto">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-        }
-        else
-        {
-            <h4>No diary entries.</h4>
-        }
-    </div>
-
-    <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRefTable" aria-expanded="false" aria-controls="collapseExample">Active Referrals (click to expand/hide)</button>
-    </div>
-
-    <div class="collapse" id="collapseRefTable">
-        @if (Model.referrals.Count > 0)
-        {
-            <h4>Active Referrals</h4>
-            <div class="row">
-                <table class="table">
-                    <thead>
-                        <tr class="fw-bold">
-                            <td>Referral Date</td>
-                            <td>Type</td>
-                            <td>Referring Clinician</td>
-                            <td>Referring Facility</td>
-                            <td>Indication</td>
-                            <td>Pathway</td>
-                            <td>Consultant</td>
-                            <td>GC</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var r in Model.referrals)
+            <div class="tab-pane fade" id="alert" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Active Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.alerts.Count > 0)
                         {
-                            <tr>
-                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
-                                <td>@r.RefType</td>
-                                @if (@r.ReferringFacilityCode != "GP")
-                                {
-                                    <td>@r.ReferringClinician</td>
-                                    <td>@r.ReferringFacility</td>
-                                }
-                                else
-                                {
-                                    <td>@Model.patient.GP</td>
-                                    <td>@Model.patient.GP_Facility</td>
-                                }
-                                <td>@r.INDICATION</td>
-                                <td>@r.PATHWAY</td>
-                                <td>@r.LeadClinician</td>
-                                <td>@r.GC</td>
-                            </tr>
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Protected Address</th>
+                                            <th scope="col">Effective From</th>
+                                            <th scope="col">Details</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in Model.alerts)
+                                        {
+                                            <tr>
+                                                <td>@a.AlertType</td>
+                                                @if (@a.ProtectedAddress)
+                                                {
+
+                                                    <td class="text-danger"><strong>Yes</strong></td>
+                                                }
+                                                else
+                                                {
+                                                    <td>No</td>
+                                                }
+                                                <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
+                                                <td>@a.Comments</td>
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         }
-                    </tbody>
-                </table>            
+                    </div>
+                </div>
             </div>
-        }
-        else
-        {
-            <h4>No active referrals.</h4>
-        }    
-    </div>    
+            <div class="tab-pane fade" id="diary" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Active Alerts</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.diary.Count > 0)
+                        {
+                            <div class="">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th scope="col">Diary Date</th>
+                                            <th scope="col">Diary With</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Text</th>
+                                            <th scope="col">Doc Code</th>
+                                            <th scope="col">Related Ref ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var d in Model.diary)
+                                        {
+                                            <tr>
+                                                <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@d.DiaryWith</td>
+                                                <td>@d.DiaryAction</td>
+                                                <td>@d.DiaryText</td>
+                                                <td>@d.DocCode</td>
+                                                <td>@d.RefID</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="active-referral" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row mb-2 mb-xl-3">
+                            <div class="col-auto d-none d-sm-block">
+                                <h3><strong>Active</strong> Referral</h3>
+                            </div>
 
-    <div class="d-grid mt-2 mb-2">
-        <button class="btn btn-default btn-success" data-bs-toggle="collapse" data-bs-target="#collapseRelativesTable" aria-expanded="false" aria-controls="collapseExample">Relatives (click to expand/hide)</button>
-    </div>
+                            <div class="col-auto ms-auto text-end mt-n1">
+                                <a href="#" class="btn btn-primary me-2">Add Contact</a>
+                                <a href="#" class="btn btn-primary">Add Referral</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.referrals.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <td>Detail</td>
+                                            <td>Referral Date</td>
+                                            <td>Type</td>
+                                            <td>Referring Clinician</td>
+                                            <td>Referring Facility</td>
+                                            <td>Indication</td>
+                                            <td>Pathway</td>
+                                            <td>Consultant</td>
+                                            <td>GC</td>
+                                            <td>Refferal Status</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var r in Model.referrals)
+                                        {
+                                            <tr>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Detail</a></td>
+                                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@r.RefType</td>
+                                                @if (@r.ReferringFacilityCode != "GP")
+                                                {
+                                                    <td>@r.ReferringClinician</td>
+                                                    <td>@r.ReferringFacility</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@Model.patient.GP</td>
+                                                    <td>@Model.patient.GP_Facility</td>
+                                                }
+                                                <td>@r.INDICATION</td>
+                                                <td>@r.PATHWAY</td>
+                                                <td>@r.LeadClinician</td>
+                                                <td>@r.GC</td>
+                                                <td>@r.COMPLETE</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="relatives" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title mb-0">
+                            Relatives
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.relatives.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th></th>
+                                            <th>Name</th>
+                                            <th>DOB</th>
+                                            <th>Alive</th>
+                                            <th>Diagnosis</th>
+                                            <th>Status</th>
+                                            <th>Site</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.relatives)
+                                        {
+                                            <tr>
+                                                <td><a class="btn btn-outline-primary text-dark" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid> View Details</a></td>
+                                                <td>@item.Name</td>
+                                                @if (@item.DOB.HasValue)
+                                                {
+                                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>Not known</td>
+                                                }
+                                                <td>@item.RelAlive</td>
+                                                <td>@item.Diagnosis</td>
+                                                <td>@item.Status</td>
+                                                <td>@item.SiteCode</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <h4>No relatives have been added.</h4>
+                        }
 
-    <div class="collapse" id="collapseRelativesTable">
-        @if (Model.relatives.Count > 0)
-        {
-            <h4>Relatives</h4>
-            <table class="table">
-                <thead>
-                    <tr class="fw-bold">
-                        <th></th>
-                        <th>Name</th>
-                        <th>DOB</th>
-                        <th>Alive</th>
-                        <th>Diagnosis</th>
-                        <th>Status</th>
-                        <th>Site</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.relatives)
-                    {
-                        <tr>                    
-                            <td><a asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid>Details</a></td>
-                            <td>@item.Name</td>
-                            @if (@item.DOB.HasValue)
-                            {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td>Not known</td>
-                            }
-                            <td>@item.RelAlive</td>
-                            <td>@item.Diagnosis</td>
-                            <td>@item.Status</td>
-                            <td>@item.SiteCode</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>            
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <a asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
+                    <a asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-primary">Add New Relative</a>
+                </div>
 
-        }
-        else
-        {
-            <h4>No relatives have been added.</h4>
-        }
-        <a type="button" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-default btn-success">Import Relatives from Phenotips</a>
-
-        <div class="d-grid mt-2 mb-2">
-            <div class="col-md-2">
-                <a type="button" asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-default btn-success">Add New Relative</a>
             </div>
         </div>
     </div>
-</p>
-
+</div>
 
 <script type="text/javascript">
 
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadEDMSLink);
 
-    function LoadEDMSLink() 
-    {
+    function LoadEDMSLink() {
         //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") 
-        {            
+        if ("@(Model.patient.DCTM_Folder_ID)" != "") {
             document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else
-        {
-            document.getElementById("btnEDMS").hidden = true;            
+        else {
+            document.getElementById("btnEDMS").hidden = true;
         }
     }
 
-    function GoBack() 
-    {
+    function GoBack() {
         window.history.back();
         //window.close();
     }
-    
+
 </script>

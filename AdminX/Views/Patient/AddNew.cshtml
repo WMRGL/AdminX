@@ -3,10 +3,42 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
+    ViewData["Title"] = "Admin-X - Add New Patient";
+    ViewData["Page"] = "/ Add New Patient ";
 }
 
-<div class="container">
+<div class="">
+    @if (Model.message != null)
+    {
+        <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+                @if (Model.success)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
 
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
     @if (Model.message != null)
     {
         @if (Model.success)
@@ -22,38 +54,161 @@
             </div>
         }
     }
-<br />
-<br />
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="AddNew">
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="inputEmail4">Title</label>
+                        <select class="form-select" name="title">
+                            <option value="" selected></option>
+                            @*
+                            @foreach(var item in Model.titles)
+                            {
+                            <option value=@item.Title>@item.Title</option>
+                            }
+                            *@
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="firstName">Firstname</label>
+                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Firstname">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="secondName">Secondname</label>
+                        <input type="text" name="secondName" class="form-control" id="secondName" placeholder="Secondname">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="lastName">LastName</label>
+                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="LastName">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="preferredName">Preferred Name</label>
+                        <input type="text" name="" class="form-control" id="preferredName" placeholder="Preferred Name">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of death (if applicable)Date of death (if applicable)</label>
+                        <input type="date" name="dod" class="form-control" id="dob" placeholder="Date of death (if applicable)">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="nhsno">NHS Number</label>
+                        <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="language">Primary Language</label>
+                        <input type="text" name="language" class="form-control" id="language" placeholder="Primary Language">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ethnic">Ethnicity</label>
+                        <select class="form-select" name="ethnic">
+                            <option value="" selected>Select...</option>
+                            @*
+                            @foreach(var item in Model.ethnicities)
+                            {
+                            <option value=@item.EthnicCode>@item.Ethnic</option>
+                            }
+                            *@
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Interpreter required</label>
+                        <select class="form-select" name="isInterpreterReqd">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ddlGPPractice">GP Details</label>
+                        <select class="form-select" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
+                            <option value="" selected>Select...</option>
+                            @*
+                            @foreach (var item in Model.GPPracticeList)
+                            {
+                            <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                            }
+                            *@
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ADDRESS1">Address1</label>
+                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ADDRESS2">Address2</label>
+                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ADDRESS3">Address3</label>
+                        <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" placeholder="ADDRESS3">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ADDRESS4">Address4</label>
+                        <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4" placeholder="ADDRESS4">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="POSTCODE">Postcode</label>
+                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="TEL">Contact Number</label>
+                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="Mobile">Mobile</label>
+                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="ADDRESS3">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="EmailAddress">Email Address</label>
+                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Save Patient</button>
+            </form>
+        </div>
+    </div>
+
     <form asp-action="AddNew">
-        <dl class="row">            
+        <dl class="row">
             <dt class="col-sm-2">
                 <label>Name:</label>
             </dt>
             <dd class="col-sm-10">
                 <select name="title">
                     <option value="" selected></option>
+                    @*
                     @foreach(var item in Model.titles)
                     {
-                        <option value=@item.Title>@item.Title</option>
+                    <option value=@item.Title>@item.Title</option>
                     }
+                    *@
                 </select>
                 <input type="text" name="firstName" />
                 <input type="text" name="lastName" />
             </dd>
-            
-
             @*Row 2 - Preferred name (if any), GP*@
-        
             <dt class="col-sm-2">
                 Preferred Name:
             </dt>
             <dd class="col-sm-4">
                 <input type="text" />
             </dd>
-    
+
             <dt class="col-sm-2"></dt>
             <dd class="col-sm-4">
-        
+
             </dd>
 
             @*Row 3 - DOB/DOD*@
@@ -63,7 +218,7 @@
             <dd class="col-sm-4">
                 <input type="date" name="dob" />
             </dd>
-    
+
             <dt class="col-sm-2">
                 Date of death (if applicable):
             </dt>
@@ -92,10 +247,12 @@
             <dd class="col-sm-4">
                 <select name="ethnic">
                     <option value="" selected>Select...</option>
+                    @*
                     @foreach(var item in Model.ethnicities)
                     {
-                        <option value=@item.EthnicCode>@item.Ethnic</option>
+                    <option value=@item.EthnicCode>@item.Ethnic</option>
                     }
+                    *@
                 </select>
             </dd>
             <dt class="col-sm-2">
@@ -114,10 +271,12 @@
             <dd class="col-sm-4">
                 <select id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
                     <option value="" selected>Select...</option>
+                    @*
                     @foreach (var item in Model.GPPracticeList)
                     {
-                        <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                    <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
                     }
+                    *@
                 </select>
             </dd>
             <dt class="col-sm-2"></dt>
@@ -128,7 +287,7 @@
 
             <dd class="col-sm-12"><hr /></dd>
 
-          @*Row 6 - address, contact details*@
+            @*Row 6 - address, contact details*@
             <dt class="col-sm-2">
                 Address:
             </dt>
@@ -190,51 +349,52 @@
 
 <script>
 
-    function ShowGPList()
-    {        
-        var _practice = document.getElementById("ddlGPPractice");
-        var _gp = document.getElementById("ddlGP");
-        var options = _gp.options.length - 1;
+    function ShowGPList() {
+    @*
+            var _practice = document.getElementById("ddlGPPractice");
+            var _gp = document.getElementById("ddlGP");
+            var options = _gp.options.length - 1;
 
-        for (i = options; i >= 0; i--)
-        {
+            for (i = options; i >= 0; i--)
+            {
             _gp.remove(i);
-        }
+            }
 
 
-        var clinCodeArray = [];
-        var clinArray = [];
-        var facilityCodeArray = [];
-        var gpCodeArray = [];
-        var gpArray = [];
+            var clinCodeArray = [];
+            var clinArray = [];
+            var facilityCodeArray = [];
+            var gpCodeArray = [];
+            var gpArray = [];
 
-        
 
-        @foreach (var item in Model.GPList)
-        {
+
+            @foreach (var item in Model.GPList)
+            {
             @:clinCodeArray.push("@item.MasterClinicianCode");
             @:clinArray.push("@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)");
             @:facilityCodeArray.push("@item.FACILITY");
-        }
+            }
 
-        for (var i = 0; i < facilityCodeArray.length; i++)
-        {
+            for (var i = 0; i < facilityCodeArray.length; i++)
+            {
             if(facilityCodeArray[i] != _practice.value)
             {
-                delete clinCodeArray[i];
-                delete clinArray[i];                
+            delete clinCodeArray[i];
+            delete clinArray[i];
             }
-        }
+            }
 
-        for (var i in clinCodeArray)
-        {
+            for (var i in clinCodeArray)
+            {
             var opt = document.createElement('option');
             opt.value = clinCodeArray[i];
             opt.innerHTML = clinArray[i]
             _gp.appendChild(opt);
-        }
+            }
 
-        _gp.hidden = false;
-    }
+            _gp.hidden = false;
+            *@
+                                        }
 
 </script>
