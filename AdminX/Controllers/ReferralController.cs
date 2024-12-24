@@ -61,12 +61,13 @@ namespace AdminX.Controllers
             {
                 if (_rvm.referral.ClockStopDate != null)
                 {
-                    _rvm.clockAge = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
                 else
                 {
-                    _rvm.clockAge = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
+                _rvm.clockAgeWeeks = (int)Math.Ceiling((double) _rvm.clockAgeDays / 7);
             }
             //_rvm.consultants = _staffUserData.GetConsultantsList();
             //_rvm.admin = _staffUserData.GetAdminList(); 
@@ -102,12 +103,13 @@ namespace AdminX.Controllers
             {
                 if(_rvm.referral.ClockStopDate != null)
                 {
-                    _rvm.clockAge = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
                 else
                 {
-                    _rvm.clockAge = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
+                _rvm.clockAgeWeeks = (int)Math.Ceiling((double)_rvm.clockAgeDays / 7);
             }
 
 

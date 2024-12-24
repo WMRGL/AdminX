@@ -60,15 +60,13 @@
             <form asp-action="AddNew">
                 <div class="row">
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="inputEmail4">Title</label>
+                        <label class="form-label" for="inputEmail">Title</label>
                         <select class="form-select" name="title">
-                            <option value="" selected></option>
-                            @*
+                            <option value="" selected></option>                            
                             @foreach(var item in Model.titles)
                             {
-                            <option value=@item.Title>@item.Title</option>
-                            }
-                            *@
+                                <option value=@item.Title>@item.Title</option>
+                            }                            
                         </select>
                     </div>
                     <div class="mb-3 col-md-3">
@@ -108,37 +106,48 @@
                         <input type="text" name="language" class="form-control" id="language" placeholder="Primary Language">
                     </div>
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="ethnic">Ethnicity</label>
-                        <select class="form-select" name="ethnic">
-                            <option value="" selected>Select...</option>
-                            @*
-                            @foreach(var item in Model.ethnicities)
-                            {
-                            <option value=@item.EthnicCode>@item.Ethnic</option>
-                            }
-                            *@
-                        </select>
-                    </div>
-                    <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Interpreter required</label>
                         <select class="form-select" name="isInterpreterReqd">
                             <option value="false">No</option>
                             <option value="true">Yes</option>
                         </select>
+                        
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ethnic">Ethnicity</label>
+                        <select class="form-select" name="ethnic">
+                            <option value="" selected>Select...</option>
+
+                            @foreach (var item in Model.ethnicities)
+                            {
+                                <option value=@item.EthnicCode>@item.Ethnic</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ddlGPPractice">GP Details</label>
                         <select class="form-select" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
-                            <option value="" selected>Select...</option>
-                            @*
+                            <option value="" selected>Select...</option>                            
                             @foreach (var item in Model.GPPracticeList)
                             {
-                            <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
-                            }
-                            *@
+                                <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                            }                            
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="mb-3 col-md-9"></div>
+                    <div class="mb-3 col-md-3">                        
+                        <select class="form-select" id="ddlGP" name="gpCode" hidden="true">
+                            @*option value="" selected>Select...</option>
+                            @foreach (var item in Model.GPList)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.NAME</option>
+                            }*@
+                        </select>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ADDRESS1">Address1</label>
@@ -179,7 +188,7 @@
             </form>
         </div>
     </div>
-
+    @*
     <form asp-action="AddNew">
         <dl class="row">
             <dt class="col-sm-2">
@@ -188,17 +197,17 @@
             <dd class="col-sm-10">
                 <select name="title">
                     <option value="" selected></option>
-                    @*
+                    
                     @foreach(var item in Model.titles)
                     {
-                    <option value=@item.Title>@item.Title</option>
+                        <option value=@item.Title>@item.Title</option>
                     }
-                    *@
+                    
                 </select>
                 <input type="text" name="firstName" />
                 <input type="text" name="lastName" />
             </dd>
-            @*Row 2 - Preferred name (if any), GP*@
+           
             <dt class="col-sm-2">
                 Preferred Name:
             </dt>
@@ -211,7 +220,7 @@
 
             </dd>
 
-            @*Row 3 - DOB/DOD*@
+            
             <dt class="col-sm-2">
                 Date of Birth:
             </dt>
@@ -226,7 +235,7 @@
                 <input type="date" name="dod" />
             </dd>
 
-            @*Row 4 - NHS number, primary language*@
+            
             <dt class="col-sm-2">
                 NHS Number:
             </dt>
@@ -240,19 +249,18 @@
                 <input type="text" name="language" />
             </dd>
 
-            @*Row 5 - Ethnicity, interpreter requirements*@
+            
             <dt class="col-sm-2">
                 Ethnicity:
             </dt>
             <dd class="col-sm-4">
                 <select name="ethnic">
                     <option value="" selected>Select...</option>
-                    @*
+                    
                     @foreach(var item in Model.ethnicities)
                     {
-                    <option value=@item.EthnicCode>@item.Ethnic</option>
-                    }
-                    *@
+                        <option value=@item.EthnicCode>@item.Ethnic</option>
+                    }                    
                 </select>
             </dd>
             <dt class="col-sm-2">
@@ -271,12 +279,12 @@
             <dd class="col-sm-4">
                 <select id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
                     <option value="" selected>Select...</option>
-                    @*
+                    
                     @foreach (var item in Model.GPPracticeList)
                     {
-                    <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                        <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
                     }
-                    *@
+                    
                 </select>
             </dd>
             <dt class="col-sm-2"></dt>
@@ -287,7 +295,7 @@
 
             <dd class="col-sm-12"><hr /></dd>
 
-            @*Row 6 - address, contact details*@
+            
             <dt class="col-sm-2">
                 Address:
             </dt>
@@ -343,14 +351,14 @@
                 <button class="btn btn-success" type="submit">Save Patient</button>
             </div>
         </div>
-    </form>
+    </form>*@
 </div>
 
 
 <script>
 
-    function ShowGPList() {
-    @*
+    function ShowGPList() 
+    {    
             var _practice = document.getElementById("ddlGPPractice");
             var _gp = document.getElementById("ddlGP");
             var options = _gp.options.length - 1;
@@ -364,8 +372,7 @@
             var clinCodeArray = [];
             var clinArray = [];
             var facilityCodeArray = [];
-            var gpCodeArray = [];
-            var gpArray = [];
+            
 
 
 
@@ -394,7 +401,7 @@
             }
 
             _gp.hidden = false;
-            *@
-                                        }
+    }
+
 
 </script>

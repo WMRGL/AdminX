@@ -184,10 +184,10 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
 
-                //_pvm.titles = _titleData.GetTitlesList();
-                //_pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
-                //_pvm.GPList = _gpData.GetGPList();
-                //_pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
+                _pvm.titles = _titleData.GetTitlesList();
+                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
+                _pvm.GPList = _gpData.GetGPList();
+                _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
 
                 if (success.HasValue)
                 {

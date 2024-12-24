@@ -183,26 +183,11 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockstart">Clock Start</label>
-                                        @if (Model.referral.ClockStartDate != null)
-                                        {
-                                            <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate">
-                                        }
-                                        else
-                                        {
-                                            <input type="date" name="ClockStartDate" class="form-control" id="ClockStartDate">
-                                        }
+                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate" onchange="CalculateClockAge()">
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputState">Clock Stop</label>
-                                        @if (Model.referral.ClockStopDate.HasValue)
-                                        {
-                                            <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate">
-                                        }
-                                        else
-                                        {
-                                            <input type="date" name="ClockStopDate" class="form-control" id="ClockStopDate">
-                                        }
-
+                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate" onchange="CalculateClockAge()">
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockage">Clock Age</label>
@@ -459,6 +444,8 @@
     let facilityStateArray = [];
     let facilityPostcodeArray = [];
     let referrerCodes = [];
+    let facCodeArray = [];
+    var facCode;
 
     @foreach (var item in Model.facilities)
     {
@@ -470,24 +457,58 @@
         @:facilityPostcodeArray.push("@item.ZIP");
     }
 
+    
+        
     @foreach (var item in Model.referrers)
     {
         @:referrerCodes.push("@item.MasterClinicianCode");
+        @:facCodeArray.push("@item.MasterFacilityCode");
     }
 
-        function updateFacility() {
-            let selectedReferrerCode = refCode.value;
+        function updateFacility() 
+        {            
 
+            for(var i in referrerCodes)
+            {
+                if(referrerCodes[i] == refCode.value)
+                {                    
+                     facCode = facCodeArray[i];                     
+                }
+            }
+
+            facilityDetails.value = "";
+            
+            for(var i in facilityCodeArray)
+            {
+                if(facilityCodeArray[i] == facCode)
+                {
+                    let fullDetails = facilityNameArray[i] + ", " +
+                    facilityAddressArray[i] + ", " +
+                    facilityCityArray[i] + ", " +
+                    facilityStateArray[i] + " " +
+                    facilityPostcodeArray[i];
+
+                    facilityDetails.value = fullDetails;
+                }
+            }
+            
+            
+            /*
+            let selectedReferrerCode = refCode.value;
+            
 
             let associatedFacilityIndex = -1;
-            for (let i = 0; i < referrerCodes.length; i++) {
-                if (referrerCodes[i] === selectedReferrerCode) {
+            for (let i = 0; i < referrerCodes.length; i++) 
+            {
+                if (referrerCodes[i] === selectedReferrerCode) 
+                {                    
                     associatedFacilityIndex = i;
                     break;
                 }
             }
 
-            if (associatedFacilityIndex !== -1) {
+            if (associatedFacilityIndex !== -1) 
+            {                
                 let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
                     facilityAddressArray[associatedFacilityIndex] + ", " +
                     facilityCityArray[associatedFacilityIndex] + ", " +
@@ -495,19 +516,44 @@
                     facilityPostcodeArray[associatedFacilityIndex];
 
                 facilityDetails.value = fullDetails;
-            } else {
+            } 
+            else 
+            {
                 facilityDetails.value = "";
             }
+            */
+        }
+
+        function CalculateClockAge()
+        {
+            var clockStart = Date.parse(document.getElementById("ClockStartDate").value);
+            var clockStop = Date.parse(document.getElementById("ClockStopDate").value);            
+            var clockAge;
+            var today = new Date();            
+                       
+
+            if(clockStop != null)
+            {               
+                clockAge = clockStop - clockStart;
+            }
+            else
+            {               
+                clockAge = today - clockStart;
+            }
+            
+            var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
+            document.getElementById("clockage").value = clockAgeDays + " days (" + Math.ceil(clockAgeDays/7) + " weeks)";
         }
 
     refCode.addEventListener("change", updateFacility);
 
     updateFacility();
+    CalculateClockAge();
 </script>
 
 @section Scripts {
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function () {
+        /*document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.getElementById('ClockStartDate');
             if (dateInput && dateInput.value) {
                 const date = new Date(dateInput.value);
@@ -516,6 +562,6 @@
                 const year = date.getFullYear();
                 dateInput.value = `${day}/${month}/${year}`;
             }
-        });
+        });*/
     </script>
 }
