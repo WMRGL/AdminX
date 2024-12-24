@@ -33,7 +33,6 @@ namespace AdminX.Controllers
         private readonly IExternalFacilityData _gpPracticeData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
-        private readonly ICRUD _crud;
         private readonly AdminContext _adminContext;
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
@@ -244,6 +243,60 @@ namespace AdminX.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditPatientDetails(int mpi, string? message, bool? success)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                _pvm.patient = _patientData.GetPatientDetails(mpi);                
+
+                if (success.HasValue)
+                {
+                    _pvm.success = success.GetValueOrDefault();
+
+                    if (message != null)
+                    {
+                        _pvm.message = message;
+                    }
+                }
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
+            string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                _pvm.patient = _patientData.GetPatientDetails(mpi);
+
+                int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", "", "", "", User.Identity.Name, null, null, false, false);
+
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+
+
+                return RedirectToAction("PatientDetails", new { id = mpi });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
 
     }
 }

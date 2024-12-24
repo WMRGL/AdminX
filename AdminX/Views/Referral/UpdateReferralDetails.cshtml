@@ -122,7 +122,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="admin">Admin Contact</label>
-                                        <select id="admin" name="AdminContact" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select js-choice">
                                             <option selected="">@Model.referral.AdminContact</option>
                                             @foreach (var item in Model.admin)
                                             {

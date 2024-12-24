@@ -75,7 +75,7 @@
                     Diary
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
-                    Active Referral
+                    Active Referrals
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#relatives" role="tab" aria-selected="false" tabindex="-1">
                     Relatives
@@ -201,13 +201,15 @@
                                                         }
                                                         else
                                                         {
-                                                            <div class="col-md-1">
-                                                                No appt/ letter only
-                                                            </div>
-                                                            <div class="col-md-1">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                                </svg>
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    No appt/ letter only
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                    </svg>
+                                                                </div>
                                                             </div>
                                                         }
 
@@ -217,7 +219,7 @@
                                         </td>
                                         <td>
                                             <div class="d-flex">
-                                                <div class="flex-grow-1 ">
+                                                <div class="flex-grow-1">
                                                     <strong>Seen in Clinic</strong>
                                                     <div class="text-muted">
                                                         @if (Model.patientPathway.ToBeSeenByCons == 1 || Model.patientPathway.ToBeSeenByGC == 1 || Model.patientPathway.AppointmentBooked == 1)
@@ -242,13 +244,15 @@
                                                         }
                                                         else
                                                         {
-                                                            <div class="col-md-1">
-                                                                No appt/ letter only
-                                                            </div>
-                                                            <div class="col-md-1">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
-                                                                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
-                                                                </svg>
+                                                            <div class="row">
+                                                                <div class="col-md-5">
+                                                                    No appt/ letter only
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="52" height="20" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                                                                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                                                    </svg>
+                                                                </div>
                                                             </div>
                                                         }
                                                     </div>
@@ -571,16 +575,26 @@
                                                 <strong>Address:</strong>
 
                                                 <div class="text-muted">
-                                                    @if (Model.protectedAddress.ProtectedAddress == false)
+                                                    @if(Model.protectedAddress != null)
+                                                    {
+                                                        @if (Model.protectedAddress.ProtectedAddress == false)
+                                                        {
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS1) @Html.DisplayFor(model => model.patient.ADDRESS2)
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS3) @Html.DisplayFor(model => model.patient.ADDRESS4)
+                                                            <br />
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="text-danger">Address is protected</p>
+                                                        }
+                                                    }
+                                                    else
                                                     {
                                                         @Html.DisplayFor(model => model.patient.ADDRESS1) @Html.DisplayFor(model => model.patient.ADDRESS2)
                                                         <br />
                                                         @Html.DisplayFor(model => model.patient.ADDRESS3) @Html.DisplayFor(model => model.patient.ADDRESS4)
                                                         <br />
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="text-danger">Address is protected</p>
                                                     }
 
                                                 </div>

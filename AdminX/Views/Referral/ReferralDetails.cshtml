@@ -115,13 +115,13 @@
                                         <td class="flex-grow-1 ms-3">
                                             <strong>Consultant</strong>
                                             <div class="text-muted">
-                                                @Model.referral.PATIENT_TYPE_CODE
+                                                @Model.referral.LeadClinician
                                             </div>
                                         </td>
                                         <td class="flex-grow-1 ms-3">
                                             <strong>Counsellor/Nurse</strong>
                                             <div class="text-muted">
-                                                @Model.referral.GC_CODE
+                                                @Model.referral.GC
                                             </div>
 
                                         </td>
@@ -133,22 +133,25 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Referrer Code</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.ReferrerCode
-                                                </div>
-                                            </div>
-                                        </td>
+                                        
                                     </tr>
                                     <tr>
                                         <td>
                                             <div class="d-flex">
                                                 <div class="flex-grow-1 ms-3">
+                                                    <strong>Referrer</strong>
+                                                    <div class="text-muted">
+                                                        @Model.referral.ReferringClinician
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ms-3">
                                                     <strong>Referral Facility</strong>
                                                     <div class="text-muted">
-                                                        @Model.referral.ReferringFacilityCode
+                                                        @Model.referral.ReferringFacility
                                                     </div>
                                                 </div>
                                             </div>
@@ -168,18 +171,12 @@
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                <strong>Admin Contact</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.AdminContact
-                                                </div>
+                                                
                                             </div>
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                <strong>Referrer Code</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.ReferrerCode
-                                                </div>
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -203,7 +200,10 @@
                                         <td class="flex-grow-1 ms-3">
                                             <strong>Clock Start</strong>
                                             <div class="text-muted">
-                                                @Model.referral.ClockStartDate
+                                                @if (Model.referral.ClockStartDate != null)
+                                                {
+                                                    @Model.referral.ClockStartDate.Value.ToString("dd/MM/yyyy")
+                                                }
                                             </div>
 
                                         </td>
@@ -211,7 +211,10 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Clock Stop</strong>
                                                 <div class="text-muted">
-                                                    @Model.referral.ClockStopDate
+                                                    @if (Model.referral.ClockStartDate != null)
+                                                    {
+                                                        @Model.referral.ClockStopDate.Value.ToString("dd/MM/yyyy")
+                                                    }
                                                 </div>
                                             </div>
                                         </td>
@@ -219,7 +222,7 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Clock Age</strong>
                                                 <div class="text-muted">
-                                                    Calculate from Controller
+                                                    <p>@Model.clockAge days</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -300,46 +303,46 @@
                                         <td>
                                             <div class="d-flex">
                                                 <div class="flex-grow-1 ms-3">
-                                                    <strong>Afected</strong>
+                                                    <strong>Affected</strong>
                                                     <div class="text-muted">
                                                         <p>
-                                                            
-                                                                @if (@Model.referral.OthReason1Aff == 0)
-                                                                {
-                                                                    <span>No | </span>
-                                                                }
-                                                                else if (@Model.referral.OthReason1Aff == 1)
-                                                                {
-                                                                <span>Yes | </span>
-                                                                }
-                                                            
-                                                           
-                                                                @if (@Model.referral.OthReason2Aff == 0)
-                                                                {
+
+                                                            @if (@Model.referral.OthReason1Aff == 0)
+                                                            {
                                                                 <span>No | </span>
-                                                                }
-                                                                else if (@Model.referral.OthReason2Aff == 1)
-                                                                {
+                                                            }
+                                                            else if (@Model.referral.OthReason1Aff == 1)
+                                                            {
                                                                 <span>Yes | </span>
-                                                                }
-                                                                @if (@Model.referral.OthReason3Aff == 0)
-                                                                {
+                                                            }
+
+
+                                                            @if (@Model.referral.OthReason2Aff == 0)
+                                                            {
                                                                 <span>No | </span>
-                                                                }
-                                                                else if (@Model.referral.OthReason3Aff == 1)
-                                                                {
+                                                            }
+                                                            else if (@Model.referral.OthReason2Aff == 1)
+                                                            {
                                                                 <span>Yes | </span>
-                                                                }
-                                                           
-                                                                @if (@Model.referral.OthReason4Aff == 0)
-                                                                {
+                                                            }
+                                                            @if (@Model.referral.OthReason3Aff == 0)
+                                                            {
+                                                                <span>No | </span>
+                                                            }
+                                                            else if (@Model.referral.OthReason3Aff == 1)
+                                                            {
+                                                                <span>Yes | </span>
+                                                            }
+
+                                                            @if (@Model.referral.OthReason4Aff == 0)
+                                                            {
                                                                 <span>No </span>
-                                                                }
-                                                                else if (@Model.referral.OthReason4Aff == 1)
-                                                                {
+                                                            }
+                                                            else if (@Model.referral.OthReason4Aff == 1)
+                                                            {
                                                                 <span>Yes  </span>
-                                                                }
-                                                          
+                                                            }
+
                                                         </p>
                                                     </div>
                                                 </div>
@@ -452,9 +455,9 @@
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                <strong>Referrer Code</strong>
+                                                <strong>Referrer</strong>
                                                 <div class="text-muted">
-                                                    @Model.referral.ReferrerCode
+                                                    @Model.referral.ReferringClinician
                                                 </div>
                                             </div>
                                         </td>
@@ -465,7 +468,7 @@
                                                 <div class="flex-grow-1 ms-3">
                                                     <strong>Referral Facility</strong>
                                                     <div class="text-muted">
-                                                        @Model.referral.ReferringFacilityCode
+                                                        @Model.referral.ReferringFacility
                                                     </div>
                                                 </div>
                                             </div>
@@ -493,10 +496,10 @@
                                         </td>
                                         <td>
                                             <div class="flex-grow-1 ms-3">
-                                                <strong>Referrer Code</strong>
+                                                @*<strong>Referrer Code</strong>
                                                 <div class="text-muted">
                                                     @Model.referral.ReferrerCode
-                                                </div>
+                                                </div>*@
                                             </div>
                                         </td>
                                     </tr>
@@ -520,7 +523,10 @@
                                         <td class="flex-grow-1 ms-3">
                                             <strong>Clock Start</strong>
                                             <div class="text-muted">
-                                                @Model.referral.ClockStartDate
+                                                @if (Model.referral.ClockStartDate != null)
+                                                {
+                                                    @Model.referral.ClockStartDate.Value.ToString("dd/MM/yyyy")
+                                                }
                                             </div>
 
                                         </td>
@@ -528,7 +534,10 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Clock Stop</strong>
                                                 <div class="text-muted">
-                                                    @Model.referral.ClockStopDate
+                                                    @if(Model.referral.ClockStopDate != null)
+                                                    {
+                                                        @Model.referral.ClockStopDate.Value.ToString("dd/MM/yyyy")
+                                                    }
                                                 </div>
                                             </div>
                                         </td>

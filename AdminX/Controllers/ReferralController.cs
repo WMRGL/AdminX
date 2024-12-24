@@ -57,6 +57,17 @@ namespace AdminX.Controllers
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
             _rvm.Clinic = _clinicData.GetClinicDetails(refID);
 
+            if (_rvm.referral.ClockStartDate != null)
+            {
+                if (_rvm.referral.ClockStopDate != null)
+                {
+                    _rvm.clockAge = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                }
+                else
+                {
+                    _rvm.clockAge = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                }
+            }
             //_rvm.consultants = _staffUserData.GetConsultantsList();
             //_rvm.admin = _staffUserData.GetAdminList(); 
             //_rvm.referrals = _activityData.GetActiveReferralList(_rvm.referral.MPI);
@@ -87,6 +98,18 @@ namespace AdminX.Controllers
             _rvm.pathways = new List<string> { "Cancer", "General" };
             _rvm.diseases =_diseaseData.GetDiseases();
             _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+            if(_rvm.referral.ClockStartDate != null)
+            {
+                if(_rvm.referral.ClockStopDate != null)
+                {
+                    _rvm.clockAge = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                }
+                else
+                {
+                    _rvm.clockAge = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                }
+            }
+
 
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {

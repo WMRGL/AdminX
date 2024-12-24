@@ -21,6 +21,7 @@ namespace AdminX.ViewModels
         public List<ListDisease> diseases { get; set; }
         public Appointment Clinic { get; set; }
         public List<ExternalFacility> facilities { get; set; }
+        public int clockAge { get; set; }
 
     }
 }
