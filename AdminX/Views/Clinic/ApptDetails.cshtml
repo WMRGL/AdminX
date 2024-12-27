@@ -1,22 +1,25 @@
 ﻿@model AdminX.ViewModels.ClinicVM
 @{
-    ViewData["Title"] = "Clinic-X - Appointment Details";
+    ViewData["Title"] = "Admin-X - Appointment Details";
 }
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-outline-primary" />*@
         <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Index">Back to Clinics Index</a>
+            <a class="btn btn-default btn-outline-primary" asp-controller="Clinic" asp-action="Index">Back to Outstanding Contacts</a>
         </div>
         <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>Patient Details</a>
+            <a class="btn btn-default btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.Clinic.MPI>Patient Details</a>
         </div>    
         <div class="col-md-1">
-            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>        
+            @if (Model.Clinic.BOOKED_DATE <= DateTime.Today)
+            {
+                <a id="btnRecordOutcome" class="btn btn-default btn-outline-primary" asp-controller="Clinic" asp-action="Edit" asp-route-id=@Model.Clinic.RefID>Record Outcome</a>
+            }
         </div>
         <div class="col-md-1">
-            <a id="btnRecordOutcome" class="btn btn-default btn-success" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
+            <a id="btnRecordOutcome" class="btn btn-default btn-outline-primary" asp-controller="Review" asp-action="Create" asp-route-id=@Model.Clinic.RefID>Schedule Review</a>
         </div>
     </div>
     <hr />

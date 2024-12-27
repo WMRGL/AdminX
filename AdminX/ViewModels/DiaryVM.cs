@@ -10,7 +10,9 @@ namespace AdminX.ViewModels
         public Diary diary { get; set; }
         public List<Diary> diaryList { get; set; }
         public Patient patient { get; set; }
-        public List<ActivityItem> referralsList { get; set; }
+        public List<Referral> referralsList { get; set; }
         public List<Document> documents { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
     }
 }

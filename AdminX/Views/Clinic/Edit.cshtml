@@ -6,9 +6,9 @@
 <div class="container card">
     <div class="row mb-5 mt-2">
 
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-outline-primary" />*@
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>
+            <a type="button" class="btn btn-default btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.activityItem.RefID>Back to Appt Details</a>
         </div>
     </div>
 
@@ -45,14 +45,15 @@
 
     <div class="mb-5">
         <form id="ContactOutcome" asp-action="Edit">
-            <div class="row mb-5">
+            @*<div class="row mb-5">
                 <div class="col-md-2">
                     Ethnicity:
                 </div>
-                <div class="col-md-4">                   
+                <div class="col-md-4">
+                    
                 </div>
                 <div class="col-md-6"></div>
-            </div>
+            </div>*@
         
             <div class="row mb-5">
                 <div class="col-md-2">
@@ -137,7 +138,7 @@
                 <div class="row mb-5">
                     <div class="col-md-2"></div>
                     <div class="col-md-8">
-                        <input type="button" class="btn btn-default btn-success" value="Complete" id="btnCompleteCOF" />
+                        <input type="button" class="btn btn-default btn-outline-primary" value="Complete" id="btnCompleteCOF" />
                     </div>
                     <div class="col-md-2"></div>
                 </div>

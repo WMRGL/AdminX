@@ -17,7 +17,7 @@
                     Referral Details
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
-                    Appointments
+                    Related Appointments/Contacts
                 </a>                
             </div>
         </div>
@@ -580,6 +580,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Type</th>
                                     <th>Booked Date</th>
                                     <th>Booked Time</th>
@@ -592,6 +593,7 @@
                                 @foreach(var item in @Model.ClinicList)
                                 {
                                     <tr>
+                                        <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
                                         <td>@item.AppType</td>
                                         <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                                         <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>

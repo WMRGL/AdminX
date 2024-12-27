@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.PatientVM
 @{
-    ViewData["Title"] = "AdminX-X - Patient Details";
+    ViewData["Title"] = "Admin-X - Patient Details";
     ViewData["Page"] = "/ Patient / Details";
     ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
@@ -76,6 +76,9 @@
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
                     Active Referrals
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
+                    Appointments/Contacts
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#relatives" role="tab" aria-selected="false" tabindex="-1">
                     Relatives
@@ -979,7 +982,10 @@
             <div class="tab-pane fade" id="diary" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Active Alerts</h5>
+                        <h5 class="card-title mb-0">Diary</h5>
+                        <div class="col-auto ms-auto text-end mt-n1">
+                            <a href="#" class="btn btn-primary">Add Diary Entry</a>
+                        </div>
                     </div>
                     <div class="card-body">
                         @if (Model.diary.Count > 0)
@@ -988,6 +994,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
+                                            <th></th>
                                             <th scope="col">Diary Date</th>
                                             <th scope="col">Diary With</th>
                                             <th scope="col">Action</th>
@@ -1000,8 +1007,9 @@
                                         @foreach (var d in Model.diary)
                                         {
                                             <tr>
+                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
                                                 <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
-                                                <td>@d.DiaryWith</td>
+                                                <td>@d.DiaryWithName</td>
                                                 <td>@d.DiaryAction</td>
                                                 <td>@d.DiaryText</td>
                                                 <td>@d.DocCode</td>
@@ -1015,16 +1023,16 @@
                     </div>
                 </div>
             </div>
+            
             <div class="tab-pane fade" id="active-referral" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
                         <div class="row mb-2 mb-xl-3">
                             <div class="col-auto d-none d-sm-block">
-                                <h3><strong>Active</strong> Referral</h3>
+                                <h5 class="card-title mb-0">Active Referral</h5>
                             </div>
 
-                            <div class="col-auto ms-auto text-end mt-n1">
-                                <a href="#" class="btn btn-primary me-2">Add Contact</a>
+                            <div class="col-auto ms-auto text-end mt-n1">                                
                                 <a href="#" class="btn btn-primary">Add Referral</a>
                             </div>
                         </div>
@@ -1036,7 +1044,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <td>Detail</td>
+                                            <td></td>
                                             <td>Referral Date</td>
                                             <td>Type</td>
                                             <td>Referring Clinician</td>
@@ -1052,7 +1060,7 @@
                                         @foreach (var r in Model.referrals)
                                         {
                                             <tr>
-                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Detail</a></td>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
                                                 <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
                                                 <td>@r.RefType</td>
                                                 @if (@r.ReferringFacilityCode != "GP")
@@ -1079,11 +1087,76 @@
                     </div>
                 </div>
             </div>
+            <div class="tab-pane fade" id="appointment" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row mb-2 mb-xl-3">
+                            <div class="col-auto d-none d-sm-block">
+                                <h5 class="card-title mb-0">Appointments</h5>
+                            </div>
+
+                            <div class="col-auto ms-auto text-end mt-n1">
+                                <a href="#" class="btn btn-primary me-2">Add Contact</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.referrals.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <td></td>
+                                            <td>Booked Date</td>
+                                            <td>Time</td>
+                                            <td>Location</td>
+                                            <td>Clinician</td>
+                                            <td>Type</td>
+                                            <td>Outcome</td>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var a in Model.appointments)
+                                        {
+                                            <tr>
+                                                <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
+                                                @if(a.BOOKED_DATE != null)
+                                                {
+                                                    <td>@a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+                                                @if (a.BOOKED_TIME != null)
+                                                {
+                                                    <td>@a.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }                                                
+                                                <td>@a.Clinic</td>                                                
+                                                <td>@a.Clinician</td>                                                
+                                                <td>@a.AppType</td>
+                                                <td>@a.Attendance</td>                                                
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
             <div class="tab-pane fade" id="relatives" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title mb-0">
-                            Relatives
+                        <div class="col-auto d-none d-sm-block">
+                            <h5 class="card-title mb-0">Relatives</h5>
                         </div>
                     </div>
                     <div class="card-body">

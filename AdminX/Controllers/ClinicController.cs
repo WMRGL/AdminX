@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {
@@ -38,7 +39,7 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index(DateTime? filterDate)
+        public async Task <IActionResult> Index(string? filterClinician)
         {
             try
             {
@@ -50,23 +51,27 @@ namespace AdminX.Controllers
                 {
                     string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                     _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics");
-
-                    if (filterDate == null) //set default date to 30 days before today
+                                        
+                    _cvm.staffMembers = _staffUser.GetClinicalStaffList();
+                    
+                    if(filterClinician != "" && filterClinician != null)
+                    {                        
+                        _cvm.outstandingClinicsList = _clinicData.GetClinicList(filterClinician);
+                    }
+                    else
                     {
-                        filterDate = DateTime.Parse(DateTime.Now.AddDays(-90).ToString());
+                        _cvm.outstandingClinicsList = _clinicData.GetAllOutstandingClinics();
                     }
 
-                    _cvm.pastClinicsList = _clinicData.GetClinicListByDate(filterDate.GetValueOrDefault(), DateTime.Today).ToList();
-                    
-
-                    _cvm.pastClinicsList = _cvm.pastClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
-                    _cvm.clinicFilterDate = filterDate.GetValueOrDefault(); //to allow the HTML to keep selected parameters
+                    _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                    _cvm.filterClinician = filterClinician; //to allow the HTML to keep selected parameters
                     
                     return View(_cvm);
                 }
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic" });
             }
         }
@@ -132,7 +137,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, string? ethnicity, bool? isComplete = false)
+        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, bool? isComplete = false)
         {
             try
             {
@@ -154,13 +159,13 @@ namespace AdminX.Controllers
                     letterRequired = "No";
                 }
 
-                if (ethnicity == null)
-                {
-                    ethnicity = "";
-                }
+                //if (ethnicity == null)
+                //{
+                //    ethnicity = "";
+               // }
                 
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
-                    letterRequired, ethnicity, User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
+                    letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
 

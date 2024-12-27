@@ -35,32 +35,7 @@ namespace AdminX.Controllers
             _docsData = new DocumentsData(_docContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
-        }
-
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Index(int refID)
-        {
-            try
-            {
-                if (User.Identity.Name is null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
-                else
-                {
-                    _dvm.diaryList = _diaryData.GetDiaryListByRefID(refID);
-                    _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-
-                    return View(_dvm);
-                }
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Diary" });
-            }
-        }
+        }        
 
         [HttpGet]
         [Authorize]
@@ -76,7 +51,7 @@ namespace AdminX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString());
 
-                _dvm.diaryList = _diaryData.GetDiaryListByRefID(id);
+                _dvm.diary = _diaryData.GetDiaryEntry(id);
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
 
 
@@ -90,20 +65,20 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddNew(int id)
+        public async Task<IActionResult> AddNew(int mpi)
         {
             try
             {
-                if (id == null)
+                if (mpi == null)
                 {
                     return NotFound();
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString());
 
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 _dvm.documents = _docsData.GetDocumentsList();
 
 
@@ -130,7 +105,7 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + refID.ToString());
 
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 _dvm.documents = _docsData.GetDocumentsList();
 
                 return View(_dvm);
@@ -153,7 +128,7 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                //_dvm.diary = _diaryData.
+                _dvm.diary = _diaryData.GetDiaryEntry(id);
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 _dvm.documents = _docsData.GetDocumentsList();

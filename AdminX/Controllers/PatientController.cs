@@ -28,6 +28,7 @@ namespace AdminX.Controllers
         private readonly IPathwayData _pathwayData;
         private readonly IAlertData _alertData;
         private readonly IReferralData _referralData;
+        private readonly IAppointmentData _appointmentData;
         private readonly IDiaryData _diaryData;
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
@@ -51,6 +52,7 @@ namespace AdminX.Controllers
             _pathwayData = new PathwayData(_clinContext);
             _alertData = new AlertData(_clinContext);
             _referralData = new ReferralData(_clinContext);
+            _appointmentData = new AppointmentData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
             _gpData = new ExternalClinicianData(_clinContext);
             _gpPracticeData = new ExternalFacilityData(_clinContext);
@@ -60,7 +62,7 @@ namespace AdminX.Controllers
             _constants = new ConstantsData(_documentContext);
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
-                }
+        }
 
 
         [Authorize]
@@ -79,6 +81,7 @@ namespace AdminX.Controllers
                 }
                 _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 _pvm.referrals = _referralData.GetReferralsList(id);
+                _pvm.appointments = _appointmentData.GetAppointmentListByPatient(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);

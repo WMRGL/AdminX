@@ -9,42 +9,64 @@
     <div class="d-grid">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
-                <h2>Past clinics</h2>
+                <h2>Outstanding Contact Outcomes</h2>
             </div>
             <div class="row g-5 mb-3">
                 <div class="col-md-2" class="text-right">
-                    <label>From date:</label>
+                    <label>Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <input type="date" name="filterDate" asp-for=@Model.clinicFilterDate /> 
-                </div>
-                @*
+                    <select name=filterClinician asp-for=@Model.filterClinician>
+                        <option value="" selected>Select...</option>
+                        @foreach(var item in Model.staffMembers)
+                        {
+                            <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
+                        }
+                    </select>
+                </div>                
                 <div class="col-md-2">
-                    <label>Only Show Outstanding:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding onchange="SetShowOutstandingChecked()" />
-                </div>
-                <div class="col-md-1">
-                    <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />
-                </div>*@
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="submit" class="btn btn-outline-primary">Update</button>
                 </div>
             </div>
             <div class="row g-5 mb-3">                
                 <div class="col-2">
                 </div>
                 <div class="col-8">
-                    <select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
-                        @foreach (var item in Model.pastClinicsList)
+                    
+                    @*<select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
+                        @foreach (var item in Model.outstandingClinicsList)
                         {
-                            <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm") - @item.Attendance</option>
+                            @*<option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>
+                            
+                            
                         }
-                    </select>
+                    </select>*@
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Patient</th>
+                                <th>Clinician</th>
+                                <th>Clinic Details</th>
+                                <th>Date/time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in @Model.outstandingClinicsList)
+                            {
+                                <tr>
+                                    <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
+                                    <td>@item.CGU_No - @item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.Clinician</td>
+                                    <td>@item.Clinic (@item.FACILITY)</td>
+                                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") at @item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>            
                 <div class="col-2">
-                    <input type="button" value="Select" id="btnSelectPastClinic" class="btn btn-default btn-success"  />
+                    <input type="button" value="Select" id="btnSelectPastClinic" class="btn btn-default btn-outline-primary"  />
                 </div>
                 <div class="col-8"></div>
             </div>
