@@ -71,7 +71,7 @@
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="firstName">Firstname</label>
-                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Firstname">
+                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Firstname" asp-for=@Model.firstName>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="secondName">Secondname</label>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="lastName">LastName</label>
-                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="LastName">
+                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="LastName" asp-for=@Model.lastName>
                     </div>
                 </div>
                 <div class="row">
@@ -89,7 +89,7 @@
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Date of Birth</label>
-                        <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth">
+                        <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.dob>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Date of death (if applicable)Date of death (if applicable)</label>
@@ -97,7 +97,7 @@
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="nhsno">NHS Number</label>
-                        <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number">
+                        <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number" asp-for=@Model.nhs>
                     </div>
                 </div>
                 <div class="row">
@@ -169,7 +169,7 @@
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="POSTCODE">Postcode</label>
-                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE">
+                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE" asp-for=@Model.postCode>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="TEL">Contact Number</label>

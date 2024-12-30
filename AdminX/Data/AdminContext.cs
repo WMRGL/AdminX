@@ -12,6 +12,8 @@ namespace AdminX.Data
         public DbSet<Language> Language { get; set; }
         public DbSet<ListStatusAdmin> ListStatusAdmin { get; set; }
         public DbSet<ListDisease> ListDiseases { get; set; }
+        public DbSet<PatientSearches> PatientSearches { get; set; }
+        public DbSet<PatientSearchResults> PatientSearchResults { get; set; }
 
     }
 }

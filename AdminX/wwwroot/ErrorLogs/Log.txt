@@ -1,1 +1,7 @@
-﻿
+﻿30/12/2024 08:38:24: Conversion failed when converting date and/or time from character string. - logged in user: mnln - form: NewPatientSearch
+30/12/2024 08:39:21: Conversion failed when converting date and/or time from character string. - logged in user: mnln - form: NewPatientSearch
+30/12/2024 08:40:02: Conversion failed when converting date and/or time from character string. - logged in user: mnln - form: NewPatientSearch
+30/12/2024 08:40:03: Conversion failed when converting date and/or time from character string. - logged in user: mnln - form: NewPatientSearch
+30/12/2024 08:40:14: The conversion of a varchar data type to a datetime data type resulted in an out-of-range value.
+The statement has been terminated. - logged in user: mnln - form: NewPatientSearch
+30/12/2024 08:43:07: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: NewPatientSearch

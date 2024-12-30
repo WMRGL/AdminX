@@ -175,10 +175,8 @@ namespace AdminX.Controllers
 
         }
 
-
-
         [HttpGet]
-        public async Task<IActionResult> AddNew(string? message, bool? success)
+        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? message, bool? success)
         {
             try
             {
@@ -186,7 +184,11 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-
+                _pvm.firstName = firstname;
+                _pvm.lastName = lastname;
+                _pvm.dob = DOB;
+                _pvm.postCode = postcode;
+                _pvm.nhs = nhs;
                 _pvm.titles = _titleData.GetTitlesList();
                 _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = _gpData.GetGPList();
@@ -228,7 +230,7 @@ namespace AdminX.Controllers
                 if (patient != null)
                 {
                     _pvm.success = false;
-                    _pvm.message = "Patient already exist, yo!";
+                    _pvm.message = "Patient already exists";
 
                 }
                 else

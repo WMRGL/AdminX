@@ -1,7 +1,6 @@
-﻿@*@model IEnumerable<ClinicalXPDataConnections.Models.Clinics>*@
-@model AdminX.ViewModels.ClinicVM
+﻿@model AdminX.ViewModels.ClinicVM
 @{
-    ViewData["Title"] = "Clinic-X - Clinics";
+    ViewData["Title"] = "Admin-X - Clinics";
 }
 
 <div class="container card">
@@ -31,14 +30,11 @@
             <div class="row g-5 mb-3">                
                 <div class="col-2">
                 </div>
-                <div class="col-8">
-                    
+                <div class="col-8">                    
                     @*<select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
                         @foreach (var item in Model.outstandingClinicsList)
                         {
-                            @*<option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>
-                            
-                            
+                            @*<option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>                                                       
                         }
                     </select>*@
                     <table class="table">

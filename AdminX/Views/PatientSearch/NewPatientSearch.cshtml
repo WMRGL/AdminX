@@ -1,0 +1,214 @@
+﻿@model AdminX.ViewModels.PatientSearchVM
+@{
+    ViewData["Title"] = "Admin-X - New Patient Search";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1 class="text-center">New patient creation</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <h3 class="text-center">To begin the process, enter the new patient's demographics to search the database</h3>
+    </div>
+
+    <form asp-action="NewPatientSearch">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Firstname</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="firstname" id="firstName" asp-for=@Model.forenameSearch />
+            </div>
+            <div class="col-md-2">
+                <label>Surname</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="lastname" id="lastName" asp-for=@Model.surnameSearch />
+            </div>
+            <div class="col-md-2">
+                <label>DOB</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="DOB" id="DOB" asp-for=@Model.dobSearch />
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-2">
+                <label>PostCode</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="postcode" id="postCode" asp-for=@Model.postcodeSearch/>
+            </div>
+            <div class="col-md-2">
+                <label>NHS Number</label>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="nhs" id="nhsNo" asp-for=@Model.nhsNoSearch />
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary" id="doSearch">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row mb-5 g-5">
+        @if (Model.patientSearchResultsList.Count > 0)
+        {
+            <h3>Matching Patients:</h3>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date of Birth</th>
+                        <th>PostCode</th>
+                        <th>NHS Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.patientSearchResultsList)
+                    {
+                        <tr>
+                            <td>@item.CGUNo</td>
+                            <td>@item.Firstname</td>
+                            <td>@item.Lastname</td>
+                            @if(item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.PostCode</td>
+                            <td>@item.NHSNo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="row mb-5 g-5">
+        @if (Model.relativeSearchResultsList.Count() > 0)
+        {
+            <h3>Matching Relatives:</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date of Birth</th>                        
+                        <th>PostCode</th>
+                        <th>NHS Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.relativeSearchResultsList)
+                    {
+                        <tr>
+                            <td>@item.CGUNo</td>
+                            <td>@item.Firstname</td>
+                            <td>@item.Lastname</td>
+                            @if (item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.PostCode</td>
+                            <td>@item.NHSNo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+    <div class="row mb-5 g-5">
+        @if (Model.pedigreeSearchResultsList.Count() > 0)
+        {
+            <h3>Matching Pedigrees:</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Date of Birth</th>
+                        <th>PostCode</th>
+                        <th>NHS Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.pedigreeSearchResultsList)
+                    {
+                        <tr>
+                            <td>@item.CGUNo</td>
+                            <td>@item.Firstname</td>
+                            <td>@item.Lastname</td>
+                            @if (item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.PostCode</td>
+                            <td>@item.NHSNo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-4">
+            <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew"
+               asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch
+            hidden="true" id="newPtNew">Add Patient (New File)</a>
+        </div>
+        <div class="col-md-4"></div>
+
+        <div class="col-md-4">
+            <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew"
+               asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch
+            hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    document.getElementById("doSearch").addEventListener("click", DoPatientSearch); //todo: change to use SQL search results tables
+    window.addEventListener("load", DoPatientSearch);
+
+    function DoPatientSearch()
+    {
+        var fName = document.getElementById("firstName");
+        var lName = document.getElementById("lastName");
+        var dBirth = document.getElementById("DOB");
+        var pCode = document.getElementById("postCode");
+        var nHS = document.getElementById("nhsNo");       
+         
+
+        if(fName.value != "" && lName.value != "" && dBirth.value != "0001-01-01" && pCode.value != "" && nHS != "")
+        {
+            document.getElementById("newPtNew").hidden=false;
+            document.getElementById("newPtExisting").hidden=false;
+        }
+    }
+
+
+</script>

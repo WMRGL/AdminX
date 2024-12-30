@@ -26,5 +26,11 @@ namespace AdminX.ViewModels
         public List<Language> languages { get; set; }
         public Alert protectedAddress { get; set; }
         public bool success { get; set; }
+        public string? firstName { get; set; }
+        public string? lastName { get; set; }
+        public DateTime? dob { get; set; }
+        public string? postCode { get; set; }
+        public string? nhs { get; set; }
+
     }
 }

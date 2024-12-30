@@ -21,7 +21,7 @@ namespace AdminX.Meta
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname,
         DateTime DOB, string postCode, string nhsNo);
 
-
+        public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
     }
     public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                               //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
@@ -160,8 +160,19 @@ namespace AdminX.Meta
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
-                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM_dd") + "', '" + postCode +
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
                 "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
+
+        public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PatientSearches (Firstname, Lastname, DOB, PostCode, NHSNo, SearchBy, SearchDate, SearchType) values('"
+                + firstName + "', '" + lastName + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" + 
+                DateTime.Today.ToString("yyyy-MM-dd") + "', 'NewPatientSearch')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();
         }
