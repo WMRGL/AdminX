@@ -1,15 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using AdminX.ViewModels;
-using AdminX.Models;
 using ClinicalXPDataConnections.Meta;
-using RestSharp;
-using Newtonsoft.Json.Linq;
-using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
-using System;
 using AdminX.Data;
+using System.Reflection;
+using PdfSharpCore.Pdf.Content.Objects;
 
 namespace AdminX.Controllers
 {
@@ -22,6 +20,8 @@ namespace AdminX.Controllers
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly IPatientData _patientData;
+        private readonly IPatientSearchData _patientSearchData;
+        private readonly IPedigreeData _pedigreeData;
         private readonly ITitleData _titleData;
         private readonly IEthnicityData _ethnicityData;
         private readonly IRelativeData _relativeData;
@@ -33,7 +33,6 @@ namespace AdminX.Controllers
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
         private readonly IAuditService _audit;
-        private readonly IConstantsData _constants;
         private readonly AdminContext _adminContext;
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
@@ -48,6 +47,8 @@ namespace AdminX.Controllers
             _pvm = new PatientVM();
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
+            _patientSearchData = new PatientSearchData(_clinContext);
+            _pedigreeData = new PedigreeData(_clinContext);
             _relativeData = new RelativeData(_clinContext);
             _pathwayData = new PathwayData(_clinContext);
             _alertData = new AlertData(_clinContext);
@@ -59,20 +60,25 @@ namespace AdminX.Controllers
             _titleData = new TitleData(_clinContext);
             _ethnicityData = new EthnicityData(_clinContext);
             _audit = new AuditService(_config);
-            _constants = new ConstantsData(_documentContext);
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
         }
 
 
         [Authorize]
-        public async Task<IActionResult> PatientDetails(int id)
+        public async Task<IActionResult> PatientDetails(int id, string? message, bool? success)
         {
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString());
+
+                if (message != null && message != "")
+                {
+                    _pvm.message = message;
+                    _pvm.success = success.GetValueOrDefault();
+                }
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
                 if (_pvm.patient == null)
@@ -87,8 +93,9 @@ namespace AdminX.Controllers
                 _pvm.diary = _diaryData.GetDiaryList(id);
                 _pvm.languages  = _languageData.GetLanguages();
                 _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
-                
-               
+                _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
+                _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
+
                 if (_pvm.patient.DECEASED == -1)
                 {
                     _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
@@ -136,7 +143,7 @@ namespace AdminX.Controllers
             int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", language, "", "", User.Identity.Name, DECEASED_DATE, null, deseasedStatus, interpreter);
 
 
-            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
 
             return RedirectToAction("PatientDetails", new { id = mpi });
 
@@ -176,14 +183,32 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? message, bool? success)
+        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber, string? message, bool? success)
         {
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+                string cguNumber = "";
 
+                if (fileNumber == null || fileNumber == "")
+                {                    
+                    cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
+                }
+                else
+                {
+                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
+                    int patientNumber = patList.Count();
+                    
+                    if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    {
+                        cguNumber = fileNumber + "." + patientNumber.ToString();
+                    }                    
+
+                }
+
+                _pvm.cguNumber = cguNumber;
                 _pvm.firstName = firstname;
                 _pvm.lastName = lastname;
                 _pvm.dob = DOB;
@@ -214,7 +239,9 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
-            string language, bool isInterpreterReqd)
+            string language, bool isInterpreterReqd, string postcode,string address1, string address2, string address3, string address4, string areaCode, 
+            string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex, 
+            string middleName, string tel, string workTel, string mobile, string cguNumber)
         {
             try
             {
@@ -235,7 +262,8 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    //do stuff                    
+                    int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
+                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, false, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, cguNumber);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }
@@ -279,7 +307,8 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
-            string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email)
+            string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile)
         {
             try
             {
@@ -289,10 +318,11 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
-                int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", "", "", "", User.Identity.Name, null, null, false, false);
+                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title,firstname,"",lastname,nhsno,postcode,gpCode,address1,address2,address3,
+                    address4,email,prevName,dob,null,maidenName,false,false,preferredName,ethnicCode,sex,middleName,tel,workTel,mobile);
 
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
 
                 return RedirectToAction("PatientDetails", new { id = mpi });
@@ -301,6 +331,82 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangeCGUNumber(int mpi)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+                
+                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.patientsList = new List<Patient>();
+
+                return View(_pvm);
+                
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeCGUNumber(int mpi, string newFileNo)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
+                _pvm.cguNumber = newFileNo;
+                
+                return View(_pvm);                
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCGUNumber(int mpi, string newFileNumber)
+        {
+            
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+
+            List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
+            
+            int patientNumber = patList.Count();
+            
+            string cguNumber = "";
+            string sMessage = "";
+            bool isSuccess = false;
+
+            if (_patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) == null)
+            {
+                int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, 0, newFileNumber, "", "", "", User.Identity.Name);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+
+                sMessage = "CGU number updated, please check the new file for integrity.";
+                isSuccess = true;
+            }
+            else
+            {
+                sMessage = "Destination file number unavailable, please check the integrity of the file you are merging into.";
+            }
+
+            return RedirectToAction("PatientDetails", new { id = mpi, message=sMessage, success=isSuccess });
         }
 
     }

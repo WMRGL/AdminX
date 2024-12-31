@@ -160,7 +160,7 @@ namespace AdminX.Controllers
                 dDate2: ClockStopDate,
                 string13: Status_Admin,
                 int2: RefFHF,
-                string44: RefReasonCode,
+                string14: RefReasonCode,
                 int3: RefReasonAff.HasValue && RefReasonAff.Value ? 1 : 0,
                 int4: OthReason1Aff.HasValue && OthReason1Aff.Value ? 1 : 0,
                 int5: OthReason2Aff.HasValue && OthReason2Aff.Value ? 1 : 0,

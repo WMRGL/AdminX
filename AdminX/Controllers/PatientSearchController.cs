@@ -19,9 +19,10 @@ namespace AdminX.Controllers
         private readonly IStaffUserData _staffUser;
         private readonly IPatientSearchData _patientSearchData;
         private readonly INewPatientSearchData _newPatientSearchData;
+        private readonly IPedigreeData _pedigreeData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        
+
 
         public PatientSearchController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
         {
@@ -32,6 +33,7 @@ namespace AdminX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _patientSearchData = new PatientSearchData(_clinContext);
             _newPatientSearchData = new NewPatientSearchData(_adminContext);
+            _pedigreeData = new PedigreeData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }
@@ -130,6 +132,12 @@ namespace AdminX.Controllers
                 _pvm.relativeSearchResultsList = new List<PatientSearchResults>();
                 _pvm.pedigreeSearchResultsList = new List<PatientSearchResults>();
 
+                if (message != null)
+                {
+                    _pvm.success = success.GetValueOrDefault();
+                    _pvm.message = message;
+                }
+
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -139,31 +147,44 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NewPatientSearch(string firstname, string lastname, DateTime DOB, string postcode, string nhs)
+        public async Task<IActionResult> NewPatientSearch(string firstname, string lastname, string dobToSearch, string postcode, string nhs)
         {
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "NewPatientSearch");
-                _crud.NewPatientSearch(firstname, lastname, DOB, postcode, nhs, staffCode);
 
-                int searchID = _newPatientSearchData.GetPatientSearchID(staffCode);
+                if (firstname == "" || lastname == "" || postcode == "" || nhs == "" || dobToSearch == "0001-01-01")
+                {
+                    return RedirectToAction("NewPatientSearch", new { message = "Missing data, please rectify", success = false });
+                }
+                else
+                {
+                    DateTime DOB = DateTime.Parse(dobToSearch);
+                    _crud.NewPatientSearch(firstname, lastname, DOB, postcode, nhs, staffCode);
 
-                List<PatientSearchResults> searchResults = _newPatientSearchData.GetPatientSearchResults(searchID);
+                    int searchID = _newPatientSearchData.GetPatientSearchID(staffCode);
 
-                _pvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").ToList();
-                _pvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
-                _pvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
+                    List<PatientSearchResults> searchResults = _newPatientSearchData.GetPatientSearchResults(searchID);
 
-                _pvm.forenameSearch = firstname;
-                _pvm.surnameSearch = lastname;
-                _pvm.dobSearch = DOB;
-                _pvm.postcodeSearch = postcode;
-                _pvm.nhsNoSearch = nhs;
-                
+                    _pvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").ToList();
+                    _pvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
+                    _pvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
 
-                return View(_pvm);
+                    _pvm.forenameSearch = firstname;
+                    _pvm.surnameSearch = lastname;
+                    _pvm.dobSearch = DOB;
+                    _pvm.postcodeSearch = postcode;
+                    _pvm.nhsNoSearch = nhs;
+
+                    _pvm.success = true;
+                    _pvm.message = "Search complete. Please check possible matches before creating a new patient record.";
+
+                    return View(_pvm);
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -171,5 +192,57 @@ namespace AdminX.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SelectFile(string firstname, string lastname, DateTime dob, string postcode, string nhs)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "ExistingFileSelect");
+
+                _pvm.patientsList = new List<Patient>();
+                _pvm.forenameSearch = firstname;
+                _pvm.surnameSearch = lastname;
+                _pvm.dobSearch = dob;
+                _pvm.postcodeSearch = postcode;
+                _pvm.nhsNoSearch = nhs;
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ExistingFileSelect" });
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SelectFile(string fileNumber, string firstname, string lastname, DateTime dob, string postcode, string nhs)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "NewPatientSearch");
+
+                _pvm.pedigree = _pedigreeData.GetPedigree(fileNumber);
+
+                _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(_pvm.pedigree.PEDNO);
+
+                _pvm.forenameSearch = firstname;
+                _pvm.surnameSearch = lastname;
+                _pvm.dobSearch = dob;
+                _pvm.postcodeSearch = postcode;
+                _pvm.nhsNoSearch = nhs;
+                _pvm.cguNumberSearch = fileNumber;
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ExistingFileSelect" });
+            }
+        }        
     }
 }

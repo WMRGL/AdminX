@@ -1,0 +1,78 @@
+﻿@model AdminX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>Select Family File</h1>
+    </div>
+
+
+
+    <div class="row mb-5 g-5">
+        <form asp-action="ChangeCGUNumber">
+            <div id="metadata" hidden="true">
+                <input name="mpi" asp-for=@Model.patient.MPI />                
+            </div>
+            
+            <div class="col-md-2">
+                <label>Enter File Number:</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="NewFileNo" asp-for=@Model.cguNumber />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table">
+        @if (Model.patientsList.Count() > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>Name</th>
+                        <th>DOB</th>
+                        <th>Postcode</th>
+                        <th>NHS Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.patientsList)
+                    {
+                        <tr>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            <td>@item.POSTCODE</td>
+                            <td>@item.SOCIAL_SECURITY</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+
+            <form asp-controller="Patient" asp-action="AddNew">
+                <div class="row mb-5 g-5">
+                    <div id="metadata2" hidden="true">
+                        <input name="mpi" asp-for=@Model.patient.MPI />
+                        <input name="newFileNumber" asp-for=@Model.cguNumber />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary" asp-action="UpdateCGUNumber">Add Patient To New File</button>
+                    </div>
+                </div>
+            </form>
+        }
+
+
+    </div>
+
+</div>

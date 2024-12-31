@@ -6,10 +6,13 @@
 }
 
 @{
-    ViewBag.HomeButton = new[] {
+    ViewBag.HomeButton = new[] 
+    {
+        Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
         Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
         Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
         Html.ActionLink("Create New Diary Entry", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
 
 
@@ -389,6 +392,7 @@
                         <table class="table table-borderless my-0">
                             <tbody>
                                 <tr>
+                                    @*
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -440,8 +444,82 @@
                                             </div>
                                         </div>
                                     </td>
+                                    *@
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Patient Name:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.Title) @Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.PtForename2) @Html.DisplayFor(model => model.patient.LASTNAME)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Previous Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PREVIOUS_NAME != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PREVIOUS_NAME)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Maiden Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtSurnameBirth != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PtSurnameBirth)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Preferred Name:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtAKA != null)
+                                                    {
+                                                        <div class="text-muted">
+                                                            @Html.DisplayFor(model => model.patient.PtAKA)
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-muted">
+                                                            &nbsp;
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
-                                <tr>
+                                @*<tr>
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -517,7 +595,113 @@
                                             </div>
                                         </div>
                                     </td>
+                                </tr>*@
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>@Html.DisplayNameFor(model => model.patient.DOB):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.DOB != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.DOB)
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Not known</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                @if (Model.patient.DECEASED == -1)
+                                                {
+                                                    <strong>Date of Death:</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.patient.DECEASED_DATE != null)
+                                                        {
+                                                            @Model.patient.DECEASED_DATE
+                                                        }<br />
+                                                        <strong>Died Age:</strong> @Model.diedage
+
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <strong>Current Age:</strong>
+                                                    <div class="text-muted">
+                                                        @if (Model.currentage != null)
+                                                        {
+                                                            @Model.currentage
+                                                        }
+
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> NHS Number:</strong>
+                                                <div class="text-muted">
+                                                    @Model.patient.SOCIAL_SECURITY
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Sex:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.SEX)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Ethnicity:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.Ethnic)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Primary Language:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PrimaryLanguage)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Interpreter required:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.IsInterpreterReqd)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+
+                                @*
                                 <tr>
                                     <td>
                                         <div class="d-flex">
@@ -570,8 +754,99 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr>*@
                                 <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Address:</strong>
+
+                                                <div class="text-muted">
+                                                    @if (Model.protectedAddress != null)
+                                                    {
+                                                        @if (Model.protectedAddress.ProtectedAddress == false)
+                                                        {
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS1) 
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS2)
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS3) 
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS4)
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.POSTCODE)
+                                                            <br />
+                                                            @if (Model.patient.PtAreaCode != null)
+                                                            {
+                                                                <div class="text-muted">
+                                                                    @Html.DisplayFor(model => model.patient.COUNTRY)
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="text-muted">
+                                                                    &nbsp;
+                                                                </div>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="text-danger">Address is protected</p>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.ADDRESS1) 
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS2)
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS3) 
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.ADDRESS4)
+                                                            <br />
+                                                            @Html.DisplayFor(model => model.patient.POSTCODE)
+                                                        <br />
+                                                        @if (Model.patient.PtAreaCode != null)
+                                                        {
+                                                            <div class="text-muted">
+                                                                @Html.DisplayFor(model => model.patient.COUNTRY)
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="text-muted">
+                                                                &nbsp;
+                                                            </div>
+                                                        }
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Letter Salutation:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.SALUTATION)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Letter Addressee:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PtLetterAddressee)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                @*<tr>
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -645,8 +920,58 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr>*@
                                 <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Home):</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.TEL)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Day):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.WORKTEL != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.WORKTEL)
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Email:</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.EmailAddress != null)
+                                                    {
+                                                        @if (Model.patient.EmailCommsConsent == "Yes")
+                                                        {
+                                                            @Html.DisplayFor(model => model.patient.EmailAddress)
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <p>Patient hasn't consented to contact by email</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>                                    
+                                </tr>
+                                
+                                @*<tr>
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -714,8 +1039,9 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr>*@
+
+                                @*<tr>
 
                                     <td>
                                         <div class="d-flex">
@@ -764,8 +1090,41 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr>*@
                                 <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>GP Practice:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP_Facility_Code)
+                                                    <br />
+                                                    @Html.DisplayFor(model => model.GPPractice.NAME)
+                                                    <br />
+                                                    @Html.DisplayFor(model => model.GPPractice.ADDRESS)
+                                                    <br />
+                                                    @Html.DisplayFor(model => model.GPPractice.STATE)
+                                                    <br />
+                                                    @Html.DisplayFor(model => model.GPPractice.ZIP)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>                                                                        
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>GP:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.GP_Code)
+                                                    <br />
+                                                    @Html.DisplayFor(model => model.GP.TITLE) @Html.DisplayFor(model => model.GP.FIRST_NAME) @Html.DisplayFor(model => model.GP.NAME)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>                                    
+                                </tr>
+
+                                @*<tr>
 
                                     <td>
                                         <div class="d-flex">
@@ -818,8 +1177,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr>*@
+                                @*<tr>
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -860,7 +1219,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr>*@
 
                             </tbody>
                         </table>

@@ -8,6 +8,7 @@ namespace AdminX.ViewModels
     public class PatientSearchVM
     { 
         public List<Patient> patientsList { get; set; }
+        public Pedigree pedigree { get; set; }
         public List<PatientSearchResults> patientSearchResultsList { get; set; }
         public List<PatientSearchResults> relativeSearchResultsList { get; set; }
         public List<PatientSearchResults> pedigreeSearchResultsList { get; set; }
@@ -18,6 +19,8 @@ namespace AdminX.ViewModels
         public DateTime dobSearch { get; set; }
         public string nhsNoSearch { get; set; }
         public string postcodeSearch { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
 
     }
 }

@@ -60,6 +60,13 @@
             <form asp-action="AddNew">
                 <div class="row">
                     <div class="mb-3 col-md-3">
+                        <label class="form-label" for="inputEmail">CGU Number</label>
+                        <input name="cguNumber" asp-for="@Model.cguNumber" disabled="true" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-3">
                         <label class="form-label" for="inputEmail">Title</label>
                         <select class="form-select" name="title">
                             <option value="" selected></option>                            
@@ -102,7 +109,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="language">Primary Language</label>
+                        <label class="form-label" for="language">Primary Language (if not English)</label>
                         <input type="text" name="language" class="form-control" id="language" placeholder="Primary Language">
                     </div>
                     <div class="mb-3 col-md-3">

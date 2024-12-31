@@ -4,6 +4,24 @@
 }
 
 <div class="container">
+
+    @if (Model.message != null)
+    {
+        @if (Model.success)
+        {
+            <div class="alert alert-success d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger d-block text-center">
+                <h3>@Model.message</h3>
+            </div>
+        }
+    }
+
+
     <div class="row mb-5 g-5">
         <h1 class="text-center">New patient creation</h1>
     </div>
@@ -12,7 +30,7 @@
         <h3 class="text-center">To begin the process, enter the new patient's demographics to search the database</h3>
     </div>
 
-    <form asp-action="NewPatientSearch">
+    <form asp-action="NewPatientSearch" id="ptSearchForm">
         <div class="row mb-5 g-5">
             <div class="col-md-2">
                 <label>Firstname</label>
@@ -30,7 +48,7 @@
                 <label>DOB</label>
             </div>
             <div class="col-md-2">
-                <input type="date" name="DOB" id="DOB" asp-for=@Model.dobSearch />
+                <input type="date" name="dobToSearch" id="DOB" asp-for=@Model.dobSearch />
             </div>
         </div>
         <div class="row mb-5">
@@ -51,6 +69,12 @@
         <div class="row mb-5">
             <div class="col-md-2">
                 <button type="submit" class="btn btn-outline-primary" id="doSearch">Search</button>
+            </div>
+            <div class="col-md-8">
+            </div>
+
+            <div class="col-md-2">
+                <a type="button" class="btn btn-outline-primary" asp-controller="PatientSearch" asp-action="NewPatientSearch">New Search</a>
             </div>
         </div>
     </form>
@@ -181,9 +205,9 @@
         <div class="col-md-4"></div>
 
         <div class="col-md-4">
-            <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew"
-               asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch
-            hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
+            <a type="button" class="btn btn-outline-primary" asp-controller="PatientSearch" asp-action="SelectFile" 
+            asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") 
+            asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
         </div>
     </div>
 
@@ -191,10 +215,11 @@
 
 <script>
 
-    document.getElementById("doSearch").addEventListener("click", DoPatientSearch); //todo: change to use SQL search results tables
-    window.addEventListener("load", DoPatientSearch);
+    //document.getElementById("clear").addEventListener("click", ClearForm);
+    window.addEventListener("load", ShowButtons);
+       
 
-    function DoPatientSearch()
+    function ShowButtons()
     {
         var fName = document.getElementById("firstName");
         var lName = document.getElementById("lastName");
@@ -208,7 +233,12 @@
             document.getElementById("newPtNew").hidden=false;
             document.getElementById("newPtExisting").hidden=false;
         }
-    }
+        else
+        {
+            document.getElementById("newPtNew").hidden=true;
+            document.getElementById("newPtExisting").hidden=true;
+        }
+    }   
 
 
 </script>

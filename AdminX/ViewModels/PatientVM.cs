@@ -8,6 +8,7 @@ namespace AdminX.ViewModels
     public class PatientVM
     {
         public Patient patient { get; set; }
+        public List<Patient> patientsList { get; set; }
         public List<Relative> relatives { get; set; }
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
@@ -18,7 +19,9 @@ namespace AdminX.ViewModels
         public List<Alert> alerts { get; set; }
         public List<Diary> diary { get; set; }
         public List<ExternalClinician> GPList { get; set; }
+        public ExternalClinician GP { get; set; }
         public List<ExternalFacility> GPPracticeList { get; set; }
+        public ExternalFacility GPPractice { get; set; }
         public StaffMember staffMember { get; set; }
         public string message { get; set; }
         public string? diedage { get; set; }
@@ -31,6 +34,6 @@ namespace AdminX.ViewModels
         public DateTime? dob { get; set; }
         public string? postCode { get; set; }
         public string? nhs { get; set; }
-
+        public string? cguNumber { get; set; }
     }
 }
