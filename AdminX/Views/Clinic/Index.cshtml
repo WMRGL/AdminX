@@ -24,19 +24,13 @@
                     </select>
                 </div>                
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary">Update</button>
+                    <button type="submit" class="btn btn-outline-primary">Update List</button>
                 </div>
             </div>
             <div class="row g-5 mb-3">                
                 <div class="col-2">
                 </div>
                 <div class="col-8">                    
-                    @*<select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
-                        @foreach (var item in Model.outstandingClinicsList)
-                        {
-                            @*<option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm")</option>                                                       
-                        }
-                    </select>*@
                     <table class="table">
                         <thead>
                             <tr>
@@ -60,14 +54,10 @@
                             }
                         </tbody>
                     </table>
-                </div>            
-                <div class="col-2">
-                    <input type="button" value="Select" id="btnSelectPastClinic" class="btn btn-default btn-outline-primary"  />
-                </div>
-                <div class="col-8"></div>
+                </div>                            
             </div>
-        </form>    
-    </div>
+        </form>     @*well this doesn't make any sense... if I don't make the whole table part of the form, it blocks all the imputs!!!*@ 
+    </div>          @*you'd think I'd know better than to expect anything to actually make sense by now, wouldn't you??*@
 </div>
 
 <script type="text/javascript">

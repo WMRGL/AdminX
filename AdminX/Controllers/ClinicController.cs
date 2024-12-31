@@ -63,7 +63,7 @@ namespace AdminX.Controllers
                         _cvm.outstandingClinicsList = _clinicData.GetAllOutstandingClinics();
                     }
 
-                    _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
+                    _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.Where(c => c.BOOKED_DATE <= DateTime.Today).OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                     _cvm.filterClinician = filterClinician; //to allow the HTML to keep selected parameters
                     
                     return View(_cvm);

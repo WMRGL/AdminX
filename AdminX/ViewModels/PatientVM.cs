@@ -36,5 +36,6 @@ namespace AdminX.ViewModels
         public string? postCode { get; set; }
         public string? nhs { get; set; }
         public string? cguNumber { get; set; }
+        public string? ethnicCode { get; set; }
     }
 }

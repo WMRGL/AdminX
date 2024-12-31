@@ -183,7 +183,8 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber, string? message, bool? success)
+        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber, 
+            string? message, bool? success)
         {
             try
             {
@@ -204,8 +205,7 @@ namespace AdminX.Controllers
                     if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
                     {
                         cguNumber = fileNumber + "." + patientNumber.ToString();
-                    }                    
-
+                    }
                 }
 
                 _pvm.cguNumber = cguNumber;
@@ -214,6 +214,7 @@ namespace AdminX.Controllers
                 _pvm.dob = DOB;
                 _pvm.postCode = postcode;
                 _pvm.nhs = nhs;
+                _pvm.ethnicCode = "NA";
                 _pvm.titles = _titleData.GetTitlesList();
                 _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = _gpData.GetGPList();
