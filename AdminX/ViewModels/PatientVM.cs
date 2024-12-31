@@ -13,7 +13,8 @@ namespace AdminX.ViewModels
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
         public List<YesNo> yesno { get; set; }         
-        public List<Referral> referrals { get; set; }
+        public List<Referral> activeReferrals { get; set; }
+        public List<Referral> inactiveReferrals { get; set; }
         public List<Appointment> appointments { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }

@@ -11,10 +11,9 @@
         Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
         Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
         Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
-        Html.ActionLink("Create New Diary Entry", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
-        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),                
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
-
 
     };
 }
@@ -80,6 +79,9 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
                     Active Referrals
                 </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#inactive-referral" role="tab" aria-selected="false" tabindex="-1">
+                    Completed Referrals
+                </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
                     Appointments/Contacts
                 </a>
@@ -119,6 +121,7 @@
                                 </div>
                                 <div class="alert-message">
                                     <h3>Patient not yet made electronic - no EDMS record exists</h3>
+                                    <a id="btnMakeElectronic" class="btn btn-primary mb-1" asp-controller="Patient" asp-action="MakePatientElectronic" asp-route-mpi=@Model.patient.MPI>Click to Make File Electronic</a>
                                 </div>
                             </div>
                         </div>
@@ -1383,12 +1386,12 @@
                 </div>
             </div>
             
-            <div class="tab-pane fade" id="active-referral" role="tabpanel">
+            <div class="tab-pane fade" id="inactive-referral" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
                         <div class="row mb-2 mb-xl-3">
                             <div class="col-auto d-none d-sm-block">
-                                <h5 class="card-title mb-0">Active Referral</h5>
+                                <h5 class="card-title mb-0">Non-Active/Complete Referral</h5>
                             </div>
 
                             <div class="col-auto ms-auto text-end mt-n1">                                
@@ -1397,7 +1400,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        @if (Model.referrals.Count > 0)
+                        @if (Model.inactiveReferrals.Count > 0)
                         {
                             <div class="table-responsive">
                                 <table class="table mb-0 table-hover defaultTable">
@@ -1416,7 +1419,70 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var r in Model.referrals)
+                                        @foreach (var r in Model.inactiveReferrals)
+                                        {
+                                            <tr>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
+                                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@r.RefType</td>
+                                                @if (@r.ReferringFacilityCode != "GP")
+                                                {
+                                                    <td>@r.ReferringClinician</td>
+                                                    <td>@r.ReferringFacility</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@Model.patient.GP</td>
+                                                    <td>@Model.patient.GP_Facility</td>
+                                                }
+                                                <td>@r.INDICATION</td>
+                                                <td>@r.PATHWAY</td>
+                                                <td>@r.LeadClinician</td>
+                                                <td>@r.GC</td>
+                                                <td>@r.COMPLETE</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="active-referral" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row mb-2 mb-xl-3">
+                            <div class="col-auto d-none d-sm-block">
+                                <h5 class="card-title mb-0">Active Referral</h5>
+                            </div>
+
+                            <div class="col-auto ms-auto text-end mt-n1">
+                                <a href="#" class="btn btn-primary">Add Referral</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.activeReferrals.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <td></td>
+                                            <td>Referral Date</td>
+                                            <td>Type</td>
+                                            <td>Referring Clinician</td>
+                                            <td>Referring Facility</td>
+                                            <td>Indication</td>
+                                            <td>Pathway</td>
+                                            <td>Consultant</td>
+                                            <td>GC</td>
+                                            <td>Refferal Status</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var r in Model.activeReferrals)
                                         {
                                             <tr>
                                                 <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
@@ -1460,7 +1526,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        @if (Model.referrals.Count > 0)
+                        @if (Model.appointments.Count > 0)
                         {
                             <div class="table-responsive">
                                 <table class="table mb-0 table-hover defaultTable">
@@ -1580,17 +1646,21 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadEDMSLink);
 
-    function LoadEDMSLink() {
+    function LoadEDMSLink() 
+    {
         //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") {
+        if ("@(Model.patient.DCTM_Folder_ID)" != "") 
+        {
             document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else {
+        else 
+        {
             document.getElementById("btnEDMS").hidden = true;
         }
     }
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }

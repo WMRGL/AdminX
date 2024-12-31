@@ -77,7 +77,8 @@ namespace AdminX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString());
 
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
+                //_dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
+                _dvm.patient = _patientData.GetPatientDetails(mpi);
                 _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 _dvm.documents = _docsData.GetDocumentsList();
 

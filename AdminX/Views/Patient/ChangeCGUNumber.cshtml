@@ -59,14 +59,14 @@
             </table>
 
 
-            <form asp-controller="Patient" asp-action="AddNew">
+            <form asp-controller="Patient" asp-action="UpdateCGUNumber">
                 <div class="row mb-5 g-5">
                     <div id="metadata2" hidden="true">
                         <input name="mpi" asp-for=@Model.patient.MPI />
                         <input name="newFileNumber" asp-for=@Model.cguNumber />
                     </div>
                     <div class="col-md-4">
-                        <button type="submit" class="btn btn-outline-primary" asp-action="UpdateCGUNumber">Add Patient To New File</button>
+                        <button type="submit" class="btn btn-outline-primary">Add Patient To New File</button>
                     </div>
                 </div>
             </form>

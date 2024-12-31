@@ -6,8 +6,6 @@ using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using AdminX.Data;
-using System.Reflection;
-using PdfSharpCore.Pdf.Content.Objects;
 
 namespace AdminX.Controllers
 {
@@ -86,7 +84,9 @@ namespace AdminX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
                 _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
-                _pvm.referrals = _referralData.GetReferralsList(id);
+                List<Referral> referrals = _referralData.GetReferralsList(id);
+                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
+                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
                 _pvm.appointments = _appointmentData.GetAppointmentListByPatient(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
@@ -364,7 +364,8 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
-                _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
+                //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
+                _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
                 
                 return View(_pvm);                
@@ -391,15 +392,33 @@ namespace AdminX.Controllers
             string cguNumber = "";
             string sMessage = "";
             bool isSuccess = false;
+            int sourceDCTM = 0;
+            int destDCTM = 0;
 
             if (_patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) == null)
             {
-                int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, 0, newFileNumber, "", "", "", User.Identity.Name);
+                sourceDCTM = _patientData.GetPatientDetails(mpi).Patient_Dctm_Sts;
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+                if (_pedigreeData.GetPedigree(newFileNumber) != null)
+                {
+                    destDCTM = _pedigreeData.GetPedigree(newFileNumber).File_Dctm_Sts;
+                }
 
-                sMessage = "CGU number updated, please check the new file for integrity.";
-                isSuccess = true;
+                if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
+                {
+
+                    int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
+
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+
+                    sMessage = "CGU number updated, please check the new file for integrity.";
+                    isSuccess = true;
+                }
+                else
+                {
+                    sMessage = "Destination file is not electronic.";
+                    isSuccess = false;
+                }
             }
             else
             {
@@ -407,6 +426,24 @@ namespace AdminX.Controllers
             }
 
             return RedirectToAction("PatientDetails", new { id = mpi, message=sMessage, success=isSuccess });
+        }
+                
+        public async Task<IActionResult> MakePatientElectronic(int mpi)
+        {
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+
+
+
+            int success = _crud.CallStoredProcedure("Patient", "MakeElectronic", mpi, 0, 0, "", "", "", "", User.Identity.Name);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+
+            string sMessage = "File made electronic. Please wait a few minutes to allow the EDMS structure to complete.";
+            bool isSuccess = true;
+            
+            return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
 
     }
