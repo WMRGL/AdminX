@@ -52,14 +52,13 @@
                                             {
                                                 @Model.referral.RefDate.Value.ToString("dd/MM/yyyy")
                                             }
-                                            </div>
+                                       </div>
                                     </td>
                                     <td class="flex-grow-1 ms-3">
                                         <strong>UBRN</strong>
                                         <div class="text-muted">
                                             @Model.referral.UBRN
                                         </div>
-
                                     </td>
                                     <td>
                                         <div class="flex-grow-1 ms-3">
@@ -586,7 +585,7 @@
 
                                 </tbody>
                             </table>
-                        }
+                        }*@
                         <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@Model.referral.refid" class="btn btn-primary">Edit</a>
 
                     </div>
@@ -630,7 +629,7 @@
                                         }
                                         <td>@item.Attendance</td>
                                     </tr>
-                                }*@
+                                }
                             </tbody>
 
                         </table>              
