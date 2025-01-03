@@ -25,3 +25,20 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 31/12/2024 11:12:51: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 31/12/2024 11:12:56: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 31/12/2024 11:13:00: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
+02/01/2025 10:56:57: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: StaffMembers
+02/01/2025 11:45:38: Object reference not set to an instance of an object. - logged in user: mnln - form: StaffMembers
+02/01/2025 14:45:17: Object reference not set to an instance of an object. - logged in user: mnln - form: Clinicians
+02/01/2025 14:45:28: Object reference not set to an instance of an object. - logged in user: mnln - form: Clinicians
+02/01/2025 14:46:21: Object reference not set to an instance of an object. - logged in user: mnln - form: Clinicians
+02/01/2025 14:59:06: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:00:25: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:01:20: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:02:53: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:04:46: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:06:12: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:08:26: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:08:36: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:10:03: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Clinicians
+02/01/2025 15:44:59: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Facilities
+03/01/2025 11:42:31: Something went wrong with the database update. - logged in user: mnln - form: Clinic-edit(SQL)
+03/01/2025 11:43:24: Something went wrong with the database update. - logged in user: mnln - form: Clinic-edit(SQL)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
 using System.Diagnostics;
 using ClinicalXPDataConnections.Models;
+using Microsoft.AspNetCore.Authentication;
 
 namespace AdminX.Controllers
 {
@@ -64,6 +65,13 @@ namespace AdminX.Controllers
             return View();
         }
 
-        
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("UserLogin", "Login");
+        }
+
+
     }
 }

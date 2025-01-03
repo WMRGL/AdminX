@@ -1,0 +1,24 @@
+﻿using Microsoft.EntityFrameworkCore;
+using ClinicalXPDataConnections.Models;
+
+namespace AdminX.ViewModels
+{
+    [Keyless]
+    public class SysAdminVM
+    {        
+        public List<StaffMember> staffMembers { get; set; }
+        public List<ExternalClinician> clinicians { get; set; }
+        public List<ExternalFacility> facilities { get; set; }
+        public List<ClinicVenue> venues { get; set; }   
+        public List<string> teams { get; set; }
+        public List<string> types { get; set; }
+        public StaffMember staffMember { get; set; }
+        public ExternalClinician clinician { get; set; }
+        public ExternalFacility facility { get; set; }
+        public ClinicVenue venue { get; set; }
+        public List<PatientTitle> titles { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public bool isEditStaff { get; set; }
+    }
+}
