@@ -32,7 +32,7 @@
 
                     {
                         <div class="card-body">
-                            <form method="post" >
+                            <form method="post">
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="refid">Referral ID</label>
@@ -360,11 +360,12 @@
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="information">Information Gathering</label>
                                         <select id="information" class="form-select" name="Clics" value="@Model.referral.Clics">
-                                            <option selected></option>
+                                            <option value="@Model.referral.Clics" selected>@Model.referral.Clics</option>
                                             <option value="Clics">Clics</option>
                                         </select>
                                         <label class="form-label" for="inputZip">Breach Reason</label>
-                                        <select id="inputState" class="form-select">
+                                        <select id="inputState" name="REASON_FOR_BREACH" class="form-select">
+                                            <option value="@Model.referral.REASON_FOR_BREACH" selected>@Model.referral.REASON_FOR_BREACH</option>
                                             <option value="Patient choice">Patient choice</option>
                                             <option value="Clinical Decision">Clinical Decision</option>
                                             <option value="Operational Issue">Operational Issue</option>
@@ -372,17 +373,205 @@
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save changes</button>
+                                <a asp-controller=Referral asp-action=Review asp-route-mpi=@Model.referral.MPI asp-route-refID=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
                             </form>
 
                         </div>
                     }
                     else
                     {
-                        <p>@Model.referral.PATHWAY</p>
+                        <div class="card-body">
+                            <form method="post">
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="refid">Referral ID</label>
+                                        <input type="text" class="form-control" value="@Model.referral.refid" id="refid" name="refid" readonly>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="rdate">Referral Date</label>
+                                        @if (Model.referral.RefDate != null)
+                                        {
+                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate" readonly>
+
+                                        }
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="ubrn">UBRN</label>
+                                        <input type="text" class="form-control" value="@Model.referral.UBRN" id="ubrn" name="UBRN">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="type">Type</label>
+                                        <select id="type" name="RefType" class="form-select">
+                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
+                                            @foreach (var item in Model.activities)
+                                            {
+                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
+
+                                            }
+
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="pathway">Pathway</label>
+                                        <input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
+
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="spathway">Sub Pathway</label>
+                                        <select id="spathway" name="Pathway_Subset" class="form-select">
+                                            <option selected></option>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="consultant">Consultant</label>
+                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select js-choice">
+                                            <option value="" selected></option>
+                                            @foreach (var item in Model.consultants)
+                                            {
+                                                <option value="@item.STAFF_CODE">@item.NAME</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="nurse">Counsellor/Nurse </label>
+                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select js-choice">
+                                            <option value="" selected></option>
+                                            @foreach (var item in Model.gcs)
+                                            {
+                                                <option value="@item.STAFF_CODE">@item.NAME</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="admin">Admin Contact</label>
+                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select js-choice">
+                                            <option selected="">@Model.referral.AdminContact</option>
+                                            @foreach (var item in Model.admin)
+                                            {
+                                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="referrerCode">Referrer Code</label>
+                                        <select id="referrerCode" name="ReferrerCode" class="form-select js-choice">
+                                            <option selected="">@Model.referral.ReferrerCode</option>
+                                            @foreach (var item in Model.referrers)
+                                            {
+                                                <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="facilityFullDetails">Facility Details</label>
+                                        <input type="text" class="form-control" id="facilityFullDetails" readonly>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="comment">Comment</label>
+                                        <textarea class="form-control" id="comment" name="REASON_FOR_REFERRAL" rows="2" placeholder="Textarea" spellcheck="true">@Model.referral.REASON_FOR_REFERRAL</textarea>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="inputEmail4">Pregnancy</label>
+                                        <select id="inputState" name="PREGNANCY" class="form-select js-choice">
+                                            <option selected="">@Model.referral.PREGNANCY</option>
+                                            <option value="No Pregnancy">No Pregnancy</option>
+                                            <option value="Pregnant">Pregnant</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="indication">Indication</label>
+                                        <input type="text" class="form-control" id="indication" name="INDICATION" value="@Model.referral.INDICATION">
+
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="rclass">Class</label>
+                                        <select id="rclass" name="RefClass" class="form-select js-choice">
+                                            <option selected="">@Model.referral.RefClass</option>
+                                            <option value="Urgent">Urgent</option>
+                                            <option value="Fast Track">Fast Track</option>
+                                            <option value="Routine">Routine</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="clockstart">Clock Start</label>
+                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate" onchange="CalculateClockAge()">
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="inputState">Clock Stop</label>
+                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate" onchange="CalculateClockAge()">
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="clockage">Clock Age</label>
+                                        <input type="text" class="form-control" id="clockage" value="" readonly>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="ref_status">Referral Status</label>
+                                        <select id="ref_status" class="form-control" name="COMPLETE">
+                                            <option selected>@Model.referral.COMPLETE</option>
+                                            <option value="Active">Active </option>
+                                            <option value="Complete">Complete</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="admin_status">Admin Status</label>
+                                        <select id="admin_status" name="Status_Admin" class="form-control js-choice">
+                                            <option value="" selected>@Model.referral.Status_Admin</option>
+                                            @foreach (var item in Model.admin_status)
+                                            {
+                                                <option value="@item.Status_Admin">@item.Status_Admin</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="information">Information Gathering</label>
+                                        <select id="information" class="form-select" name="Clics" asp-for=@Model.referral.Clics>
+                                            <option selected></option>
+                                            <option value="Clics">Clics</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="inputZip">Breach Reason</label>
+                                        <select asp-for=@Model.referral.REASON_FOR_BREACH id="inputState" name="REASON_FOR_BREACH" class="form-select">
+                                            <option selected>@Model.referral.REASON_FOR_BREACH</option>
+                                            <option value="Patient choice">Patient choice</option>
+                                            <option value="Clinical Decision">Clinical Decision</option>
+                                            <option value="Operational Issue">Operational Issue</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <a asp-controller=Referral asp-action=Review asp-route-mpi=@Model.referral.MPI asp-route-refID=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
+
+                            </form>
+
+                        </div>
                     }
                 </div>
 
-            </div>            
+            </div>
         </div>
     </div>
 </div>
@@ -411,58 +600,53 @@
         @:facilityPostcodeArray.push("@item.ZIP");
     }
 
-    
-        
+
+
     @foreach (var item in Model.referrers)
     {
         @:referrerCodes.push("@item.MasterClinicianCode");
         @:facCodeArray.push("@item.MasterFacilityCode");
     }
 
-        function updateFacility() 
-        {            
+        function updateFacility() {
 
-            for(var i in referrerCodes)
-            {
-                if(referrerCodes[i] == refCode.value)
-                {                    
-                     facCode = facCodeArray[i];                     
+            for (var i in referrerCodes) {
+                if (referrerCodes[i] == refCode.value) {
+                    facCode = facCodeArray[i];
                 }
             }
 
             facilityDetails.value = "";
-            
-            for(var i in facilityCodeArray)
-            {
-                if(facilityCodeArray[i] == facCode)
-                {
+
+            for (var i in facilityCodeArray) {
+                if (facilityCodeArray[i] == facCode) {
                     let fullDetails = facilityNameArray[i] + ", " +
-                    facilityAddressArray[i] + ", " +
-                    facilityCityArray[i] + ", " +
-                    facilityStateArray[i] + " " +
-                    facilityPostcodeArray[i];
+                        facilityAddressArray[i] + ", " +
+                        facilityCityArray[i] + ", " +
+                        facilityStateArray[i] + " " +
+                        facilityPostcodeArray[i];
 
                     facilityDetails.value = fullDetails;
                 }
             }
-            
-            
+
+
             /*
             let selectedReferrerCode = refCode.value;
-            
+
 
             let associatedFacilityIndex = -1;
-            for (let i = 0; i < referrerCodes.length; i++) 
+            for (let i = 0; i < referrerCodes.length; i++)
             {
-                if (referrerCodes[i] === selectedReferrerCode) 
-                {                    
+                if (referrerCodes[i] === selectedReferrerCode)
+                {
                     associatedFacilityIndex = i;
                     break;
                 }
             }
 
-            if (associatedFacilityIndex !== -1) 
-            {                
+            if (associatedFacilityIndex !== -1)
+            {
                 let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
                     facilityAddressArray[associatedFacilityIndex] + ", " +
                     facilityCityArray[associatedFacilityIndex] + ", " +
@@ -470,34 +654,31 @@
                     facilityPostcodeArray[associatedFacilityIndex];
 
                 facilityDetails.value = fullDetails;
-            } 
-            else 
+            }
+            else
             {
                 facilityDetails.value = "";
             }
             */
         }
 
-        function CalculateClockAge()
-        {
-            var clockStart = Date.parse(document.getElementById("ClockStartDate").value);
-            var clockStop = Date.parse(document.getElementById("ClockStopDate").value);            
-            var clockAge;
-            var today = new Date();            
-                       
+    function CalculateClockAge() {
+        var clockStart = Date.parse(document.getElementById("ClockStartDate").value);
+        var clockStop = Date.parse(document.getElementById("ClockStopDate").value);
+        var clockAge;
+        var today = new Date();
 
-            if(clockStop != null)
-            {               
-                clockAge = clockStop - clockStart;
-            }
-            else
-            {               
-                clockAge = today - clockStart;
-            }
-            
-            var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
-            document.getElementById("clockage").value = clockAgeDays + " days (" + Math.ceil(clockAgeDays/7) + " weeks)";
+
+        if (clockStop != null) {
+            clockAge = clockStop - clockStart;
         }
+        else {
+            clockAge = today - clockStart;
+        }
+
+        var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
+        document.getElementById("clockage").value = clockAgeDays + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
+    }
 
     refCode.addEventListener("change", updateFacility);
 
@@ -512,7 +693,7 @@
             if (dateInput && dateInput.value) {
                 const date = new Date(dateInput.value);
                 const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0'); 
+                const month = String(date.getMonth() + 1).padStart(2, '0');
                 const year = date.getFullYear();
                 dateInput.value = `${day}/${month}/${year}`;
             }

@@ -1,0 +1,121 @@
+﻿@model AdminX.ViewModels.ReferralVM
+
+@{
+    ViewData["Title"] = "Admin-X - Review";
+    ViewData["HomeBtn"] = Html.Raw("<button type=\"button\" class=\"btn btn-primary m-1\" id=\"createReviewBtn\">Create New Review</button>");
+
+ }
+
+@if (Model.reviews.Count() > 0)
+{
+    <div class="card" >
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h4> This patient already has a review, please check before adding a new one.</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Patient Details</h5>
+
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered p-2 table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">MPI </th>
+                        <th scope="col">CGU Number</th>
+                        <th scope="col">Patient Name</th>
+                        <th scope="col">Review requested by</th>
+                        <th scope="col">Review to be done by</th>
+                        <th scope="col">Review Date</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Comments</th>
+                        <th scope="col">Completed On</th>
+                        <th scope="col">Review Status</th>
+
+                        <th scope="col">Review ID </th>
+                        <th scope="col">Linked Activity </th>
+                        <th scope="col">Generated Referral </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.reviews)
+                    {
+                        <tr>
+                            <td>@item.MPI</td>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.Owner</td>
+                            <td>@item.Review_Recipient</td>
+                            @if (item.Planned_Date != null)
+                            {
+                                <td>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+
+                            <td>@item.Category</td>
+                            <td>@item.Comments</td>
+                            @if (item.Completed_Date != null)
+                            {
+                                <td>@item.Completed_Date.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.Review_Status</td>
+                            <td>@item.ReviewID</td>
+                            <td>@item.Parent_RefID</td>
+                            <td>@item.Child_RefID</td>
+
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#createReviewBtn").click(function () {
+        @if (Model.reviews.Count() > 0)
+        {
+            <text>
+              if (confirm("This patient already has a review. Do you want to add a new one?")) {
+                      window.location.href = '@Html.Raw(Url.Action("AddReview", "Referral", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
+                         } else {
+                        $("#reviewAlertCard").hide();
+                                    }
+            </text>
+        }
+        else
+        {
+            <text>
+               window.location.href = '@Html.Raw(Url.Action("AddReview", "Referral", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
+            </text>
+        }
+                    });
+        });
+    </script>
+}

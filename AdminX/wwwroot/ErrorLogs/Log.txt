@@ -25,3 +25,4 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 31/12/2024 11:12:51: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 31/12/2024 11:12:56: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 31/12/2024 11:13:00: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
+1/6/2025 10:35:31 AM: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Triage
