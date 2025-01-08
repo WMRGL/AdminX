@@ -255,7 +255,6 @@ namespace AdminX.Controllers
             _rvm.reviews = _reviewData.GetReviewsListForPatient(mpi);
             _rvm.referral = _referralData.GetReferralDetails(refID);
 
-
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
@@ -283,7 +282,23 @@ namespace AdminX.Controllers
 			string login = User.Identity?.Name ?? "Unknown";
 			_rvm.staffMember = _staffMemberData.GetStaffDetails(login);
             _rvm.activity = _activityData.GetActivityDetails(refID);
-            _rvm.referrals = _activityData.GetActivityList(mpi);
+            _rvm.referrals = _activityData.GetActivityList(mpi).Where(c => c.REFERRAL_DATE != null).ToList();
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+
+            if (_rvm.patient != null && _rvm.patient.DOB != null)
+            {
+                DateTime today = DateTime.Today;
+                int age = today.Year - _rvm.patient.DOB.Value.Year;
+                if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
+                {
+                    age--;
+                }
+                ViewBag.IsUnder15 = (age < 45);
+            }
+            else
+            {
+                ViewBag.IsUnder15 = false;
+            }
 
 
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>

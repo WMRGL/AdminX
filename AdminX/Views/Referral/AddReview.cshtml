@@ -13,7 +13,7 @@
                     <select class="form-select js-choice" name="refID">
                         @foreach (var item in Model.referrals)
                         {
-                                <option value="@item.RefID">@item.TYPE - @item.REFERRAL_DATE - @item.RefID</option>
+                            <option value="@item.RefID">@item.TYPE - @item.REFERRAL_DATE - @item.RefID</option>
                         }
                     </select>
                 </div>
@@ -24,6 +24,7 @@
 
     </div>
 </div>
+
 
 
 <div class="card">
@@ -40,7 +41,7 @@
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Referral</label>
-                    <input type="text" class="form-control" id="reftype"  value="@Model.referral.RefType" readonly>
+                    <input type="text" class="form-control" id="reftype" value="@Model.referral.RefType" readonly>
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="pathway">Pathway</label>
@@ -65,13 +66,13 @@
                 </div>
                 <div class="mb-3 col-md-3">
                     <label class="form-label" for="pathway">Booked Date</label>
-                    <input type="date" class="form-control" id="pathway" name="Planned_Date" />
+                    <input type="date" class="form-control" id="pathway" name="Planned_Date" required/>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="inputEmail4">Completed By</label>
-                    <input type="text" class="form-control" name="Completed_By" id="inputEmail4" value="@Model.staffMember.NAME" readonly>
+                    <input type="text" class="form-control" name="Completed_By" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Completed On</label>
@@ -90,8 +91,13 @@
                 <label class="form-label" for="inputAddress2">Comment</label>
                 <textarea class="form-control" name="Comments" id="" cols="30" rows="5"></textarea>
             </div>
-           
+
             <button type="submit" class="btn btn-primary">Submit</button>
+
+            @if (ViewBag.IsUnder15 != null && ViewBag.IsUnder15)
+            {
+                <button type="button" class="btn btn-outline-dark float-end" id="scheduleReviewBtn">Schedule Review when patient is 15</button>
+            }
         </form>
     </div>
 </div>
