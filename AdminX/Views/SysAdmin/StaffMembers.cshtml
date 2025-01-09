@@ -1,0 +1,186 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Staff Members";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="container">
+
+    @if (Model.message != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                @if (Model.success)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+
+    <div class="row mb-5 g-5">
+        <h1>Staff Member Administration</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-outline-primary" asp-action="AddNewStaffMember">Add New Staff Member</a>
+        </div>
+    </div>
+
+    <form asp-action="StaffMembers">
+        <div class="row mb-5">
+            <div class="col-md-2">
+                <label>Staff Code</label>
+            </div>
+            <div class="col-md-2">
+                <input name="staffCodeSearch" />
+            </div>
+            <div class="col-md-2">
+                <label>Name</label>
+            </div>
+            <div class="col-md-2">
+                <input name="nameSearch" />
+            </div>
+            <div class="col-md-2">
+                <label>Team</label>
+            </div>
+            <div class="col-md-2">
+                <select name="teamSearch">
+                    <option value="" selected>Select...</option>
+                    @foreach(var item in Model.teams)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-1">
+                <label>Show Only Current</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyCurrent" />
+                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Exclude External</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkNotExternal" />
+                <input name="isNotExternal" id="txtNotExternal" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Show Only Admin</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyAdmin" />
+                <input name="isOnlyAdmin" id="txtOnlyAdmin" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Show Only Clinical</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyClinical" />
+                <input name="isOnlyClinical" id="txtOnlyClinical" hidden="true" />
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-2">            
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+    <div class="row  mb-5 g-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Staff Code</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Type</th>
+                    <th>Team</th>
+                    <th>In Post</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.staffMembers)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="StaffMemberDetails" asp-route-staffCode=@item.STAFF_CODE>Details</a></td>
+                        <td>@item.STAFF_CODE</td>
+                        <td>@item.NAME</td>
+                        <td>@item.POSITION</td>
+                        <td>@item.CLINIC_SCHEDULER_GROUPS</td>
+                        <td>@item.BILL_ID</td>
+                        @if(item.InPost)
+                        {
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<script>
+
+    document.getElementById("chkOnlyCurrent").addEventListener("change", SetCheckBoxValues)
+    document.getElementById("chkNotExternal").addEventListener("change", SetCheckBoxValues)
+    document.getElementById("chkOnlyAdmin").addEventListener("change", SetCheckBoxValues)
+    document.getElementById("chkOnlyClinical").addEventListener("change", SetCheckBoxValues)
+
+    function SetCheckBoxValues()
+    {        
+        document.getElementById("txtOnlyCurrent").value = document.getElementById("chkOnlyCurrent").checked;
+        document.getElementById("txtNotExternal").value = document.getElementById("chkNotExternal").checked;
+        document.getElementById("txtOnlyAdmin").value = document.getElementById("chkOnlyAdmin").checked;
+        document.getElementById("txtOnlyClinical").value = document.getElementById("chkOnlyClinical").checked;
+
+        
+    }
+
+</script>
