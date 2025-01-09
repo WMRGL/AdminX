@@ -1,0 +1,174 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Staff Members";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="container">
+
+    @if (Model.message != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                @if (Model.success)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+
+    <div class="row mb-5 g-5">
+        <h1>External Clinician Administration</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-10"></div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-outline-primary" asp-controller="WIP" asp-action="Index">Add New External Clinician</a>
+        </div>
+    </div>
+
+    <form asp-action="Clinicians">
+        <div class="row mb-5">
+            <div class="col-md-2">
+                <label>FirstName</label>
+            </div>
+            <div class="col-md-2">
+                <input name="firstNameSearch" />
+            </div>
+            <div class="col-md-2">
+                <label>Surname</label>
+            </div>
+            <div class="col-md-2">
+                <input name="lastNameSearch" />
+            </div>            
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-1">
+                <label>Show Only Current</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyCurrent" />
+                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden="true" />
+            </div>            
+            <div class="col-md-1">
+                <label>Show Only GPs</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyGP" />
+                <input name="isOnlyGP" id="txtOnlyGP" hidden="true" />
+            </div>
+            <div class="col-md-1">
+                <label>Show Only Non-GPs</label>
+            </div>
+            <div class="col-md-1">
+                <input type="checkbox" id="chkOnlyNonGP" />
+                <input name="isOnlyNonGP" id="txtOnlyNonGP" hidden="true" />
+            </div>
+            <div class="col-md-4"></div>
+            <div class="col-md-2">            
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+
+
+
+    <div class="row  mb-5 g-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Clinician Code</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Speciality</th>
+                    <th>Facility Code</th>
+                    <th>GP?</th>
+                    <th>Active?</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model.clinicians)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinicianCode=@item.MasterClinicianCode>Details</a></td>
+                        <td>@item.MasterClinicianCode</td>
+                        <td>@item.TITLE @item.FIRST_NAME @item.NAME</td>
+                        <td>@item.POSITION</td>
+                        <td>@item.SPECIALITY</td>
+                        <td>@item.FACILITY</td>
+                        @if (item.Is_Gp == 0)
+                        {
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                        @if(item.NON_ACTIVE == 0)
+                        {
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<script>
+
+    document.getElementById("chkOnlyCurrent").addEventListener("change", SetCheckBoxValues)
+    document.getElementById("chkOnlyGP").addEventListener("change", SetCheckBoxValues)
+    document.getElementById("chkOnlyNonGP").addEventListener("change", SetCheckBoxValues)
+
+    function SetCheckBoxValues()
+    {        
+        document.getElementById("txtOnlyCurrent").value = document.getElementById("chkOnlyCurrent").checked;
+        document.getElementById("txtOnlyGP").value = document.getElementById("chkOnlyGP").checked;
+        document.getElementById("txtOnlyNonGP").value = document.getElementById("chkOnlyNonGP").checked;
+
+        
+    }
+
+</script>

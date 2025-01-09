@@ -1,0 +1,154 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - External Clinician Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h1>
+    </div>
+    @*
+    <form asp-action="StaffMemberDetails">
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Name:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="title" asp-for=@Model.staffMember.StaffTitle>
+                    @foreach(var item in Model.titles)
+                    {
+                        <option value=@item.Title>@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input name="firstname" asp-for=@Model.staffMember.StaffForename />
+            </div>
+            <div class="col-md-2">
+                <input name="lastname" asp-for=@Model.staffMember.StaffSurname />
+            </div>
+            <div class="col-md-2">
+                <label>Windows Login:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="loginName" asp-for=@Model.staffMember.EMPLOYEE_NUMBER />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Role:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="role" asp-for=@Model.staffMember.POSITION />
+            </div>
+            <div class="col-md-2">
+                <label>Type:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="type" asp-for=@Model.staffMember.CLINIC_SCHEDULER_GROUPS>
+                    @foreach (var item in Model.types)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Team:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="type" asp-for=@Model.staffMember.BILL_ID>
+                    @foreach (var item in Model.teams)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Start Date:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="startDate" asp-for=@Model.staffMember.EMPLOYMENT_START_DATE />
+            </div>
+            <div class="col-md-2">
+                <label>End Date:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="endDate" asp-for=@Model.staffMember.EMPLOYMENT_END_DATE id="txtEndDate" />
+            </div>
+            <div class="col-md-2">
+                <label>In Post:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkInPost" asp-for=@Model.staffMember.InPost />
+                <input name="isInPost" id="txtInPost" hidden="true" />
+            </div>
+        </div>
+
+        @if (Model.staffMember.CLINIC_SCHEDULER_GROUPS != "Admin")
+        {
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <label>GMC Number:</label>
+                </div>            
+                <div class="col-md-2">
+                    <input name="gmcNumber" asp-for=@Model.staffMember.GMCNumber />
+                </div>
+            </div>
+        }
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary">Save Record</button>
+            </div>
+        </div>
+
+    </form>*@
+
+</div>
+
+<script>
+    @*
+    document.getElementById("chkInPost").addEventListener("change", SetLeaver);
+    window.addEventListener("load", SetCheckBoxValues);
+
+    function SetLeaver()
+    {
+        if(!document.getElementById("chkInPost").checked)
+        {
+            if(document.getElementById("txtEndDate").value == "")
+            {
+                var date = new Date;
+                
+                document.getElementById("txtEndDate").value = date.toISOString().split('T')[0];
+            }
+        }
+        else
+        {
+            document.getElementById("txtEndDate").value = "";
+        }
+
+        SetCheckBoxValues();
+    }
+
+    function SetCheckBoxValues()
+    {
+        document.getElementById("txtInPost").value = document.getElementById("chkInPost").checked;
+    }
+    *@
+</script>

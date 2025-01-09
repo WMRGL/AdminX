@@ -30,8 +30,15 @@
 
   <ItemGroup>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>..\..\..\..\Websites\Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\SysAdmin\ClinicVenues.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

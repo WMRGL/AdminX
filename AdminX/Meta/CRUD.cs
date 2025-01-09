@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
-using static System.Net.Mime.MediaTypeNames;
+using System.Net;
 
 namespace AdminX.Meta
 {
@@ -12,7 +12,7 @@ namespace AdminX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "");
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "");
 
         public int PatientDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
@@ -51,10 +51,10 @@ namespace AdminX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "")
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "")
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
-            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
             if (string3 == null) { string3 = ""; }
             if (string4 == null) { string4 = ""; }
@@ -97,6 +97,10 @@ namespace AdminX.Meta
             {
                 cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
             }
+            if (string8 != "")
+            {
+                cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
+            }
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
@@ -135,7 +139,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
             cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
-            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = Dns.GetHostName();
             cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
             cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;

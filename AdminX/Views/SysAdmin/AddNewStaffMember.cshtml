@@ -1,0 +1,216 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Staff Member Details";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>New Staff Member</h1>
+    </div>
+
+    <form asp-action="AddNewStaffMember" id="frmSubmit">
+
+        @*<div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Staff Code:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="staffCode"  />
+            </div>
+            <div class="col-md-8">
+                <label>This should be a unique 4-letter code, and is not the same as their Windows login.</label>
+            </div>
+        </div>*@
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Name:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="title" asp-for=@Model.staffMember.StaffTitle>
+                    @foreach (var item in Model.titles)
+                    {
+                        <option value=@item.Title>@item.Title</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input name="firstname"  />
+            </div>
+            <div class="col-md-2">
+                <input name="lastname"  />
+            </div>
+            <div class="col-md-2">
+                <label>Windows Login:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="loginName" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>email address:</label>
+            </div>
+            <div class="col-md-2">
+                <input id="pw" name="email" />
+            </div>
+            @*
+            <div class="col-md-2">
+                <input type="password" id="pw" name="password" />
+            </div>
+            <div class="col-md-2">
+                <label>Confirm password:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="password" id="pwConfirm" />
+            </div>
+            *@
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Role:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="role"  />
+            </div>
+            <div class="col-md-2">
+                <label>Type:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="type" id="ddlStaffTypes">
+                    @foreach (var item in Model.types)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Team:</label>
+            </div>
+            <div class="col-md-2">
+                <select name="type">
+                    @foreach (var item in Model.teams)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Start Date:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="startDate"  />
+            </div>
+            @*
+            <div class="col-md-2">
+                <label>End Date:</label>
+            </div>            
+            <div class="col-md-2">
+                <input type="date" name="endDate"  />
+            </div>
+            *@
+            <div class="col-md-2">
+                <label>Manager/supervisor:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkSupervisor" />
+                <input name="isSupervisor" id="txtSupervisor" hidden="true" />
+            </div>
+            <div class="col-md-2">
+                <label>System Administrator:</label>
+            </div>
+            <div class="col-md-2">
+                <input type="checkbox" id="chkSystemAdministrator" />
+                <input name="isSystemAdministrator" id="txtSystemAdministrator" hidden="true" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5" id="gmcNumberFields" hidden="true">
+            <div class="col-md-2">
+                <label>GMC Number:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="gmcNumber"  />
+            </div>
+        </div>
+        
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" id="btnSubmit" class="btn btn-outline-primary">Save Record</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+
+    document.getElementById("chkSupervisor").addEventListener("change", SetCheckBoxValues);
+    document.getElementById("chkSystemAdministrator").addEventListener("change", SetCheckBoxValues);
+    document.getElementById("ddlStaffTypes").addEventListener("change", ShowGMCFields);
+    //document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+    
+    /*
+    function SetLeaver()
+    {
+        if(!document.getElementById("chkSupervisor").checked)
+        {
+            if(document.getElementById("txtEndDate").value == "")
+            {
+                var date = new Date;
+
+                document.getElementById("txtEndDate").value = date.toISOString().split('T')[0];
+            }
+        }
+        else
+        {
+            document.getElementById("txtEndDate").value = "";
+        }
+
+        SetCheckBoxValues();
+    }
+    */
+
+    function SetCheckBoxValues()
+    {
+        document.getElementById("txtSupervisor").value = document.getElementById("chkSupervisor").checked;
+        document.getElementById("txtSystemAdministrator").value = document.getElementById("chkSystemAdministrator").checked;        
+    }
+
+    function ShowGMCFields()
+    {
+        var type = document.getElementById("ddlStaffTypes");
+
+        if(type.value != "Admin")
+        {
+            document.getElementById("gmcNumberFields").hidden = false;
+        }
+        else
+        {
+            document.getElementById("gmcNumberFields").hidden = true;
+        }
+    }
+
+    function DoSubmit()
+    {        
+        //var pw1 = document.getElementById("pw");
+        //var pw2 = document.getElementById("pwConfirm");
+        
+        //if(pw1.value != "" && pw1.value == pw2.value)
+        //{            
+            document.getElementById("frmSubmit").Submit();
+        //}
+        //else
+       // {
+        //    window.alert("Passwords don't match.");
+        //}
+    }
+
+</script>
