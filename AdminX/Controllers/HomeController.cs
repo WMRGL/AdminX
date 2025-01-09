@@ -42,7 +42,9 @@ namespace AdminX.Controllers
                 {
                     _hvm.notificationMessage = _notificationData.GetMessage("AdminXOutage");
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                    _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home");
+
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home", "", _ip.GetIPAddress());
 
                     _hvm.name = user.NAME;
                    

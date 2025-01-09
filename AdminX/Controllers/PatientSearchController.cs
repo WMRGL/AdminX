@@ -109,7 +109,9 @@ namespace AdminX.Controllers
 
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                 }
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm);
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm, _ip.GetIPAddress());
 
                 return View(_pvm);
             }
@@ -126,7 +128,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "NewPatientSearch");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
 
                 _pvm.patientSearchResultsList = new List<PatientSearchResults>();
                 _pvm.relativeSearchResultsList = new List<PatientSearchResults>();
@@ -153,7 +157,6 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "NewPatientSearch");
 
                 if (firstname == "" || lastname == "" || postcode == "" || nhs == "" || dobToSearch == "0001-01-01")
                 {
@@ -199,7 +202,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "ExistingFileSelect");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - ExistingFileSelect", "", _ip.GetIPAddress());
 
                 _pvm.patientsList = new List<Patient>();
                 _pvm.forenameSearch = firstname;

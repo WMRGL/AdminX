@@ -35,7 +35,8 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diagnosis");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diagnosis", "", _ip.GetIPAddress());
                 _dvm.diagnosisList = _diseaseData.GetDiseaseListByPatient(id);
                 _dvm.patient = _patientData.GetPatientDetails(id);
 

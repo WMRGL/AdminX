@@ -53,7 +53,9 @@ namespace AdminX.Controllers
                 }
 
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
                 var letters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
 
@@ -78,7 +80,9 @@ namespace AdminX.Controllers
                 }
 
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
                 _lvm.patientDetails = _patientData.GetPatientDetails(id);
                 var letters = _dictatedLetterData.GetDictatedLettersForPatient(id);
@@ -100,7 +104,9 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Letter", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
                 _lvm.dictatedLettersPatients = _dictatedLetterData.GetDictatedLettersPatientsList(id);
