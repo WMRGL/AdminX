@@ -26,3 +26,5 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 31/12/2024 11:12:56: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 31/12/2024 11:13:00: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: EditPatientDetails
 1/6/2025 10:35:31 AM: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Triage
+08/01/2025 15:17:29: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Triage
+09/01/2025 07:49:01: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. - logged in user: iolatunbosun - form: Patient

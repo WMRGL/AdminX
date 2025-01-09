@@ -10,6 +10,7 @@ using System.Globalization;
 using AdminX.Models;
 using System.Security.Claims;
 using System.Numerics;
+using System.Runtime.Intrinsics.Arm;
 
 namespace AdminX.Controllers
 {
@@ -375,6 +376,49 @@ namespace AdminX.Controllers
             string pathway = activityDetails.PATHWAY; 
 
             return Json(new { linkedAppointment, referral, pathway });
+        }
+
+        [HttpGet]
+        public IActionResult UpdateReview(int id, int refID, int mpi)
+        {
+            _rvm.review = _reviewData.GetReviewDetails(id);
+            string login = User.Identity?.Name ?? "Unknown";
+            _rvm.staffMember = _staffMemberData.GetStaffDetails(login);
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            _rvm.activity = _activityData.GetActivityDetails(refID);
+            _rvm.referrals = _activityData.GetActivityList(mpi).Where(c => c.REFERRAL_DATE != null).ToList();
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Referrals",
+                    Controller = "Referral",
+                    Action = "ReferralDetails",
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        { "refID", refID.ToString() }
+                    }
+                },
+                new BreadcrumbItem
+                {
+                    Text = "Review",
+                    Controller = "Referral",
+                    Action = "Review",
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        { "refID", refID.ToString() },
+                         { "mpi", mpi.ToString() }
+
+                    }
+                },
+                new BreadcrumbItem { Text = "Update" }
+            };
+
+
+            return View(_rvm);
         }
     }
 }

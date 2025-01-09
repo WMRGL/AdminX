@@ -47,6 +47,7 @@
                         <th scope="col">Review ID </th>
                         <th scope="col">Linked Activity </th>
                         <th scope="col">Generated Referral </th>
+                        <th scope="col">Edit </th>
 
                     </tr>
                 </thead>
@@ -82,7 +83,9 @@
                             <td>@item.ReviewID</td>
                             <td>@item.Parent_RefID</td>
                             <td>@item.Child_RefID</td>
-
+                            <td> 
+                                <a class="btn btn-primary" asp-controller="Referral" asp-action="UpdateReview" asp-route-mpi="@item.MPI"
+                                asp-route-id="@item.ReviewID" asp-route-refID="@Model.referral.refid">Edit</a> </td>
                         </tr>
                     }
 
