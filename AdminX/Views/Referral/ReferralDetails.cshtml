@@ -28,10 +28,17 @@
             <div class="tab-pane fade show active" id="referral" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - Referral Details</h5>
+                        <div class="row mb-2 mb-xl-3">
+                            <div class="col-auto d-none d-sm-block">
+                                <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - Referral Details</h5>
+                            </div>
+
+                            <div class="col-auto ms-auto text-end mt-n1">
+                                <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
                         <table class="table table-borderless my-0">
                             <tbody>
                                 <tr>

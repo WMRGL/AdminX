@@ -22,8 +22,10 @@ namespace AdminX.ViewModels
         public Appointment Clinic { get; set; }
         public List<Appointment> ClinicList { get; set; }
         public List<ExternalFacility> facilities { get; set; }
+        public List<Review> reviews { get; set; }
         public int clockAgeDays { get; set; }
         public int clockAgeWeeks { get; set; }
-
+        public StaffMember staffMember { get; set; }
+        public ActivityItem activity { get; set; }
     }
 }
