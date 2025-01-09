@@ -64,7 +64,9 @@ namespace AdminX.Controllers
             try
             {       
                 _ivm.staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(_ivm.staffCode, "AdminX - Triage");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(_ivm.staffCode, "AdminX - Triage","",_ip.GetIPAddress());
 
                 _ivm.triages = _triageData.GetTriageListFull();
                 _ivm.icpCancerListOwn = _triageData.GetCancerICPList(User.Identity.Name).Where(r => r.GC_CODE == _ivm.staffCode).ToList();
@@ -86,7 +88,9 @@ namespace AdminX.Controllers
             {
                 //var triages = await _clinContext.Triages.FirstOrDefaultAsync(t => t.ICPID == id);
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - ICP Details", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - ICP Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);
 
@@ -252,7 +256,9 @@ namespace AdminX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP");}
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Cancer Review", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Cancer Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 
                 _ivm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -402,7 +408,9 @@ namespace AdminX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Cancer Post Clinic Letter", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Cancer Post Clinic Letter", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.icpCancer = _triageData.GetCancerICPDetails(id);
                 var icpDetails = _triageData.GetICPDetails(_ivm.icpCancer.ICPID);
@@ -463,7 +471,9 @@ namespace AdminX.Controllers
                 if (id == null) { return RedirectToAction("NotFound", "WIP"); }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Risk and Surveillance", "ID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Risk and Surveillance", "ID=" + id.ToString(), _ip.GetIPAddress());
 
         //        _ivm.riskDetails = _riskData.GetRiskDetails(id);
                 int mpi = _referralData.GetReferralDetails(_ivm.riskDetails.RefID).MPI;               

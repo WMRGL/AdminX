@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using AdminX.ViewModels;
+using AdminX.Models;
 
 namespace AdminX.Controllers
 {
@@ -18,6 +19,7 @@ namespace AdminX.Controllers
         private readonly IReviewData _reviewData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IReferralData _referralData;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
@@ -30,6 +32,7 @@ namespace AdminX.Controllers
             _reviewData = new ReviewData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _referralData = new ReferralData(_clinContext);
         }
 
         [Authorize]
@@ -43,7 +46,9 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);               
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews","", _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
 
@@ -65,7 +70,8 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews");
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _rvm.patient = _patientData.GetPatientDetails(id);
@@ -80,58 +86,111 @@ namespace AdminX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Create(int id)
+        public IActionResult AddReview(int mpi, int refID)
         {
-            try
-            {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString());
+            _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Review", "RefID=" + refID.ToString(), _ip.GetIPAddress());
 
-                _rvm.referrals = _activityData.GetActivityDetails(id);
-                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referrals.MPI);
-               
-                return View(_rvm);
-            }
-            catch (Exception ex)
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            _rvm.reviewList = _reviewData.GetReviewsListForPatient(mpi);
+            string login = User.Identity?.Name ?? "Unknown";
+            _rvm.staffMember = _staffUser.GetStaffMemberDetails(login);
+            _rvm.activity = _activityData.GetActivityDetails(refID);
+            _rvm.activityList = _activityData.GetActivityList(mpi).Where(c => c.REFERRAL_DATE != null).ToList();
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+
+            if (_rvm.patient != null && _rvm.patient.DOB != null)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
+                DateTime today = DateTime.Today;
+                int age = today.Year - _rvm.patient.DOB.Value.Year;
+                if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
+                {
+                    age--;
+                }
+                ViewBag.IsUnder15 = (age < 45);
             }
+            else
+            {
+                ViewBag.IsUnder15 = false;
+            }
+
+
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Referrals",
+                    Controller = "Referral",
+                    Action = "ReferralDetails",
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        { "refID", refID.ToString() }
+                    }
+                },
+                new BreadcrumbItem
+                {
+                    Text = "Review",
+                    Controller = "Referral",
+                    Action = "Review",
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        { "refID", refID.ToString() },
+                         { "mpi", mpi.ToString() }
+
+                    }
+                },
+                new BreadcrumbItem { Text = "Add" }
+            };
+
+
+            return View(_rvm);
         }
 
-        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Create(int mpi, int refID, string pathway, string category, string revDate, string comments, string? recipient)
+        public IActionResult AddReview(int mpi, int refID, string Owner, string Category, string Pathway, int Parent_RefID,
+            string Review_Recipient, DateTime? Completed_Date, string Completed_By, DateTime? Planned_Date, string Review_Status, string Comments
+            )
         {
-            try
+
+            string login = User.Identity?.Name ?? "Unknown";
+
+            int success = _crud.PatientReview(
+                     sType: "Review",
+                     sOperation: "Create",
+                     int1: mpi,
+                     string1: Pathway,
+                     string2: Owner,
+                     string3: Review_Recipient,
+                     string4: Category,
+                     string5: Completed_By,
+                     string7: Review_Status,
+                     string8: Comments,
+                     dDate1: Planned_Date,
+                     dDate2: Completed_Date,
+                     int2: Parent_RefID
+
+                 );
+            if (success != 1)
             {
-                if (recipient == null)
-                {
-                    recipient = "";
-                }
-                DateTime reviewDate = new DateTime();
-
-                if (revDate != null)
-                {
-                    reviewDate = DateTime.Parse(revDate);
-                }
-                else
-                {
-                    reviewDate = DateTime.Parse("1/1/1900");
-                }
-
-
-                int success = _crud.CallStoredProcedure("Review", "Create", mpi, refID, 0, pathway, category, recipient, comments, User.Identity.Name,
-                     reviewDate);
-
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-add(SQL)" }); }
-
-                return RedirectToAction("Index", "Review");
+                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
             }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
-            }
+
+
+            return RedirectToAction("Review", new { refID = refID, mpi = mpi });
+        }
+
+        [HttpGet]
+        public IActionResult GetLinkedAppointment(int refID)
+        {
+            var activityDetails = _activityData.GetActivityDetails(refID);
+            string linkedAppointment = activityDetails.RefID.ToString();
+            string referral = activityDetails.TYPE;
+            string pathway = activityDetails.PATHWAY;
+
+            return Json(new { linkedAppointment, referral, pathway });
         }
 
 
@@ -142,7 +201,8 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);

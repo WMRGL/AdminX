@@ -6,11 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using AdminX.Data;
 using Microsoft.AspNetCore.Http;
 using ClinicalXPDataConnections.Models;
-using System.Globalization;
 using AdminX.Models;
-using System.Security.Claims;
-using System.Numerics;
-using System.Runtime.Intrinsics.Arm;
+
 
 namespace AdminX.Controllers
 {
@@ -31,8 +28,8 @@ namespace AdminX.Controllers
         private readonly IListDiseaseData _diseaseData;
         private readonly IClinicData _clinicData;
         private readonly IExternalFacilityData _externalFacilityData;
-        private readonly IReviewData _reviewData;
-        private readonly IStaffMemberData _staffMemberData;
+        private readonly IReviewData _reviewData;    
+        private readonly IAuditService _audit;
 
 
         public ReferralController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
@@ -53,13 +50,19 @@ namespace AdminX.Controllers
             _clinicData = new ClinicData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
-            _staffMemberData = new StaffMemberData(_clinContext);
+            _audit = new AuditService(_config);
 
         }
 
         [HttpGet]
         public IActionResult ReferralDetails(int refID)
         {
+            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
+
             _rvm.referral = _referralData.GetReferralDetails(refID);
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
             //_rvm.Clinic = _clinicData.GetClinicDetails(refID);
@@ -93,6 +96,11 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult UpdateReferralDetails(int refID)
         {
+            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
+
             _rvm.referral = _referralData.GetReferralDetails(refID);
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
             _rvm.activities = _activityTypeData.GetReferralTypes();
@@ -225,6 +233,11 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult AddNew(int mpi)
         {
+            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Referral", "", _ip.GetIPAddress());
+
             _rvm.patient = _patientData.GetPatientDetails(mpi);
             _rvm.activities = _activityTypeData.GetReferralTypes();
             _rvm.consultants = _staffUserData.GetConsultantsList();
@@ -275,150 +288,6 @@ namespace AdminX.Controllers
             return View(_rvm);
         }
 
-		[HttpGet]
-		public IActionResult AddReview(int mpi, int refID)
-		{
-			_rvm.referral = _referralData.GetReferralDetails(refID);
-			_rvm.reviews = _reviewData.GetReviewsListForPatient(mpi);
-			string login = User.Identity?.Name ?? "Unknown";
-			_rvm.staffMember = _staffMemberData.GetStaffDetails(login);
-            _rvm.activity = _activityData.GetActivityDetails(refID);
-            _rvm.referrals = _activityData.GetActivityList(mpi).Where(c => c.REFERRAL_DATE != null).ToList();
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-
-            if (_rvm.patient != null && _rvm.patient.DOB != null)
-            {
-                DateTime today = DateTime.Today;
-                int age = today.Year - _rvm.patient.DOB.Value.Year;
-                if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
-                {
-                    age--;
-                }
-                ViewBag.IsUnder15 = (age < 45);
-            }
-            else
-            {
-                ViewBag.IsUnder15 = false;
-            }
-
-
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
-                {
-                    Text = "Referrals",
-                    Controller = "Referral",
-                    Action = "ReferralDetails",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() }
-                    }
-                },
-                new BreadcrumbItem
-                {
-                    Text = "Review",
-                    Controller = "Referral",
-                    Action = "Review",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() },
-                         { "mpi", mpi.ToString() }
-
-                    }
-                },
-                new BreadcrumbItem { Text = "Add" }
-            };
-
-
-            return View(_rvm);
-		}
-
-        [HttpPost]
-        public IActionResult AddReview(int mpi, int refID, string Owner, string Category, string Pathway, int Parent_RefID,
-            string Review_Recipient, DateTime? Completed_Date, string Completed_By, DateTime? Planned_Date, string Review_Status, string Comments
-            )
-        {
-           
-            string login = User.Identity?.Name ?? "Unknown";
-
-            int success = _CRUD.PatientReview(
-                     sType: "Review",
-                     sOperation: "Create",
-                     int1: mpi,
-                     string1: Pathway,
-                     string2: Owner,
-                     string3: Review_Recipient,
-                     string4: Category,
-                     string5: Completed_By,
-                     string7: Review_Status,
-                     string8: Comments,
-                     dDate1: Planned_Date,
-                     dDate2: Completed_Date,
-                     int2: Parent_RefID
-
-                 );
-            if (success != 1)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
-            }
-
-
-            return RedirectToAction("Review", new { refID = refID, mpi = mpi });
-        }
-
-        [HttpGet]
-        public IActionResult GetLinkedAppointment(int refID)
-        {
-            var activityDetails = _activityData.GetActivityDetails(refID);
-            string linkedAppointment = activityDetails.RefID.ToString();
-            string referral = activityDetails.TYPE; 
-            string pathway = activityDetails.PATHWAY; 
-
-            return Json(new { linkedAppointment, referral, pathway });
-        }
-
-        [HttpGet]
-        public IActionResult UpdateReview(int id, int refID, int mpi)
-        {
-            _rvm.review = _reviewData.GetReviewDetails(id);
-            string login = User.Identity?.Name ?? "Unknown";
-            _rvm.staffMember = _staffMemberData.GetStaffDetails(login);
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-            _rvm.activity = _activityData.GetActivityDetails(refID);
-            _rvm.referrals = _activityData.GetActivityList(mpi).Where(c => c.REFERRAL_DATE != null).ToList();
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
-                {
-                    Text = "Referrals",
-                    Controller = "Referral",
-                    Action = "ReferralDetails",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() }
-                    }
-                },
-                new BreadcrumbItem
-                {
-                    Text = "Review",
-                    Controller = "Referral",
-                    Action = "Review",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() },
-                         { "mpi", mpi.ToString() }
-
-                    }
-                },
-                new BreadcrumbItem { Text = "Update" }
-            };
-
-
-            return View(_rvm);
-        }
+		
     }
 }

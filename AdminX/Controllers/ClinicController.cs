@@ -50,7 +50,8 @@ namespace AdminX.Controllers
                 else
                 {
                     string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                    _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics","",_ip.GetIPAddress());
                                         
                     _cvm.staffMembers = _staffUser.GetClinicalStaffList();
                     
@@ -88,7 +89,9 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinic Details", "RefID=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);

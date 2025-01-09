@@ -70,7 +70,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString());
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 if (message != null && message != "")
                 {
@@ -190,7 +192,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";
 
                 if (fileNumber == null || fileNumber == "")
@@ -248,8 +252,7 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
-
+                
                 int day = dob.Day;
                 int month = dob.Month;
 
@@ -284,7 +287,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);                
 
@@ -341,7 +346,9 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
                 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
                 _pvm.patientsList = new List<Patient>();

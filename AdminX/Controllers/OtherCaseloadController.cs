@@ -32,7 +32,9 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - Caseloads", "StaffCode=" + staffCode);
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.caseLoad = new List<Caseload>();
                 if (staffCode != null)

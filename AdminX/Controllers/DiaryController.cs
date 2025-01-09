@@ -49,7 +49,8 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
@@ -75,7 +76,8 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 //_dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 _dvm.patient = _patientData.GetPatientDetails(mpi);
@@ -102,8 +104,7 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + refID.ToString());
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
 
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
@@ -135,7 +136,8 @@ namespace AdminX.Controllers
                 _dvm.documents = _docsData.GetDocumentsList();
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit DiaryEntry", "DiaryID=" + id.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit DiaryEntry", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 
                 return View(_dvm);

@@ -10,7 +10,12 @@ namespace AdminX.ViewModels
         public Patient patient { get; set; }
         public ActivityItem referrals { get; set; }
         public List<StaffMember> staffMembers { get; set; }
+        public StaffMember staffMember { get; set; }
         public Review review { get; set; }
         public List<Review> reviewList { get; set; }
+        public Referral referral { get; set; }
+        public ActivityItem activity { get; set; }
+        public List<ActivityItem> activityList { get; set; }
+
     }
 }
