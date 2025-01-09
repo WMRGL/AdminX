@@ -1,7 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Data;
-using System.Net;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AdminX.Meta
 {
@@ -21,15 +22,20 @@ namespace AdminX.Meta
 
         public int ReferralDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
-       string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
-       int? int5 = 0, int? int6 = 0, int? int7 = 0,
-             bool? bool1 = false, bool? bool2 = false, string? string14 = "");
+       string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "",
+       string? string14 = "", string? string15 = "", string? string16 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
+       int? int5 = 0, int? int6 = 0, int? int7 = 0, bool? bool1 = false, bool? bool2 = false);
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname,
         DateTime DOB, string postCode, string nhsNo);
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
+
+        public int PatientReview(string sType, string sOperation, int int1, string string1, string string2, string? string3 = "",
+       string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, int? int2 = 0);
     }
+
+
     public class CRUD : ICRUD //CRUD stands for "create-update-delete", and contains the call to the SQL stored procedure that handles all
                               //data modifications - creation, updates, and deletions. It does not retrieve any data, but uses a generic
                               //list of integers, strings, dates, and booleans that are passed to it.
@@ -164,9 +170,9 @@ namespace AdminX.Meta
 
         public int ReferralDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
-       string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
-       int? int5 = 0, int? int6 = 0, int? int7 = 0,
-             bool? bool1 = false, bool? bool2 = false, string? string14 = "")
+       string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", 
+       string? string14 = "", string? string15 = "", string? string16 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
+       int? int5 = 0, int? int6 = 0, int? int7 = 0, bool? bool1 = false, bool? bool2 = false)
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -209,6 +215,8 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string12", SqlDbType.VarChar).Value = string12;
             cmd.Parameters.Add("@string13", SqlDbType.VarChar).Value = string13;
             cmd.Parameters.Add("@string44", SqlDbType.VarChar).Value = string14;
+            cmd.Parameters.Add("@string15", SqlDbType.VarChar).Value = string15;
+            cmd.Parameters.Add("@string16", SqlDbType.VarChar).Value = string16;
 
            // cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); 
@@ -220,6 +228,42 @@ namespace AdminX.Meta
             return iReturnValue;
 
 
+        }
+
+        public int PatientReview(string sType, string sOperation, int int1, string string1, string string2, string? string3 = "",
+       string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, int? int2 = 0)
+        {
+
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
+           
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AxReviewCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
+            cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
+            cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
+            cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
+            cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
+            //cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+            cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
         }
 
 

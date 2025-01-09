@@ -6,115 +6,202 @@
 <div action="container">
     <h1 class="text-center">New referral for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
-    @if(Model.referrals.Count() > 1)
+    @if (Model.referrals.Count() > 1)
     {
-        <h2 class="text-center">There is already an active referral for this patient. You can't add another one without closing the existing one first.</h2>
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        There is already an active referral for this patient. You can't add another one without closing the existing one first.
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {
-        <form asp-action="AddNew">
-            <div class="row" hidden="true">
-                <input name="mpi" asp-for=@Model.patient.MPI />
-            </div>
-            <div class="row mb-5 g-5">
-                <h3>Referral Details</h3>
-                <div class="col-md-1">
-                    <label>Type</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="refType">
-                        @foreach(var item in Model.activities)
-                        {
-                            <option value=@item.APP_TYPE>@item.APP_TYPE</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <label>Date</label>
-                </div>
-                <div class="col-md-2">
-                    <input type="date" name="refDate" />
-                </div>
-                <div class="col-md-1">
-                    <label>Pathway</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="refPathway">
-                        @foreach (var item in Model.pathways)
-                        {
-                            <option value=@item>@item</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-1">
-                    <label>Indication</label>
-                </div>
-                <div class="col-md-2">
-                    <input type="text" name="indication" />
-                </div>
-            </div>
 
-            <div class="row mb-5 g-5">
-                <h3>CGU Staff details</h3>
-                <div class="col-md-2">
-                    <label>Consultant</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="consultant">
-                        @foreach (var item in Model.consultants)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label>Genetic Counsellor</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="consultant">
-                        @foreach (var item in Model.gcs)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label>Admin Contact</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="admin">
-                        @foreach (var item in Model.admin)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-            </div>
+        <div class="card">
 
-            <div class="row mb-5 g-5">
-                <h3>Referrer details</h3>
-                <div class="col-md-2">
-                    <label>Referring Clinician</label>
-                </div>
-                <div class="col-md-10">
-                    <select name="refPhys">
-                        @foreach (var item in Model.referrers)
-                        {
-                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>
-                        }
-                    </select>
-                </div>
+            <div class="card-body">
+                <form asp-action="AddNew">
+                    <div class="row" hidden="true">
+                        <input name="mpi" asp-for=@Model.patient.MPI />
+                    </div>
+                    <h5>Referral Details</h5>
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="type">Type</label>
+                            <select class="form-select js-choice" id="type" name="refType">
+                                @foreach (var item in Model.activities)
+                                {
+                                    <option value=@item.APP_TYPE>@item.APP_TYPE</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="refDate">Date</label>
+                            <input type="date" class="form-control" id="refDate" name="refDate" />
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="refPathway">Pathway</label>
+                            <select class="form-select" id="refPathway" name="refPathway">
+                                @foreach (var item in Model.pathways)
+                                {
+                                    <option value=@item>@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label" for="indication">Indication</label>
+                            <input type="text" class="form-control" id="indication" name="indication" />
+                        </div>
+                    </div>
+                    <h5>CGU Staff details</h5>
+                    <div class="row">
+                        <div class="mb-3 col-md-4">
+                            <label class="form-label" for="consultant">Consultant</label>
+                            <select class="form-select js-choice" id="consultant" name="consultant">
+                                @foreach (var item in Model.consultants)
+                                {
+                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label class="form-label" for="refDate">Genetic Counsellor</label>
+                            <select name="gc" class="form-select js-choice">
+                                @foreach (var item in Model.gcs)
+                                {
+                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label class="form-label" for="refDate">Admin Contact</label>
+                            <select class="form-select js-choice" name="admin">
+                                @foreach (var item in Model.admin)
+                                {
+                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <h5>Referrer details</h5>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label" for="refDate">Referring Clinician</label>
+                                <select class="form-select js-choice" name="refPhys">
+                                    @foreach (var item in Model.referrers)
+                                    {
+                                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
             </div>
+        </div>
 
 
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Save</button>
-                </div>
-            </div>
-        </form>
     }
 
+    <div class="card">
+
+        <div class="card-body">
+            <form asp-action="AddNew">
+                <div class="row" hidden="true">
+                    <input name="mpi" asp-for=@Model.patient.MPI />
+                </div>
+                <h5>Referral Details</h5>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="type">Type</label>
+                        <select class="form-select js-choice" id="type" name="refType">
+                            @foreach (var item in Model.activities)
+                            {
+                                <option value=@item.APP_TYPE>@item.APP_TYPE</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="refDate">Date</label>
+                        <input type="date" class="form-control" id="refDate" name="refDate" />
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="refPathway">Pathway</label>
+                        <select class="form-select" id="refPathway" name="refPathway">
+                            @foreach (var item in Model.pathways)
+                            {
+                                <option value=@item>@item</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="indication">Indication</label>
+                        <input type="text" class="form-control" id="indication" name="indication" />
+                    </div>
+                </div>
+                <h5>CGU Staff details</h5>
+                <div class="row">
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="consultant">Consultant</label>
+                        <select class="form-select js-choice" id="consultant" name="consultant">
+                            @foreach (var item in Model.consultants)
+                            {
+                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="refDate">Genetic Counsellor</label>
+                        <select name="gc" class="form-select js-choice">
+                            @foreach (var item in Model.gcs)
+                            {
+                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="refDate">Admin Contact</label>
+                        <select class="form-select js-choice" name="admin">
+                            @foreach (var item in Model.admin)
+                            {
+                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                            }
+                        </select>
+                    </div>
+                    <h5>Referrer details</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label" for="refDate">Referring Clinician</label>
+                            <select class="form-select js-choice" name="refPhys">
+                                @foreach (var item in Model.referrers)
+                                {
+                                    <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2">
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
 
