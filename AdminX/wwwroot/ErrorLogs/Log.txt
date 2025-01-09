@@ -42,3 +42,7 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 02/01/2025 15:44:59: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: Facilities
 03/01/2025 11:42:31: Something went wrong with the database update. - logged in user: mnln - form: Clinic-edit(SQL)
 03/01/2025 11:43:24: Something went wrong with the database update. - logged in user: mnln - form: Clinic-edit(SQL)
+06/01/2025 15:06:40: Procedure or function sp_CreateAudit has too many arguments specified. - logged in user: mnln - form: Home
+06/01/2025 15:07:25: Object reference not set to an instance of an object. - logged in user: mnln - form: SysAdmin
+06/01/2025 15:39:18: Failed to convert parameter value from a IPHostEntry to a String. - logged in user: mnln - form: Home
+07/01/2025 12:37:34: No such host is known. - logged in user: mnln - form: Home

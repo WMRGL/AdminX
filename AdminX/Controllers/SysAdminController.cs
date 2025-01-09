@@ -1,13 +1,10 @@
 ﻿using AdminX.Meta;
 using AdminX.ViewModels;
-using AspNetCoreGeneratedDocument;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using CPTest.Connections;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Net.Mail;
+
 
 namespace AdminX.Controllers
 {
@@ -24,7 +21,8 @@ namespace AdminX.Controllers
         private readonly SysAdminVM _savm;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
-        private readonly ICRUD _crud;
+        private readonly ICRUD _crud;        
+
         public SysAdminController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
         {
             _clinContext = context;
@@ -35,10 +33,10 @@ namespace AdminX.Controllers
             _facilityData = new ExternalFacilityData(_clinContext);
             _venueData = new ClinicVenueData(_clinContext);
             _titleData = new TitleData(_clinContext);
-            _savm = new SysAdminVM();
+            _savm = new SysAdminVM();            
             _audit = new AuditService(_config);
             _constants = new ConstantsData(_docContext);
-            _crud = new CRUD(_config);
+            _crud = new CRUD(_config);            
         }
 
         [HttpGet]
@@ -57,9 +55,10 @@ namespace AdminX.Controllers
                     if(_constants.GetConstant("DeleteICPBtn", 1).Contains(User.Identity.Name.ToUpper()))
                     {
                         _savm.isEditStaff = true;
-                    }                    
+                    }
 
-                    _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin");
+                    IPAddressFinder _ip = new IPAddressFinder(HttpContext); //this is necessary to do here, because there's simply no way to have the DLL find it!
+                    _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin", "", _ip.GetIPAddress());
 
                     return View(_savm);
                 }
@@ -285,8 +284,7 @@ namespace AdminX.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> Clinicians(string? firstNameSearch, string? lastNameSearch, bool? isOnlyCurrent = false, 
-            bool? isOnlyGP = false, bool? isOnlyNonGP = false)
+        public async Task<IActionResult> Clinicians(string? firstNameSearch, string? lastNameSearch, bool? isOnlyCurrent = false, bool? isOnlyGP = false, bool? isOnlyNonGP = false)
         {
             try
             {
@@ -336,6 +334,89 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ClinicianDetails(string clinCode)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+
+                
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ClinicianDetails" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClinicianDetails(string clinCode, string name)
+        {
+
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+
+            int iSuccess = _crud.CallStoredProcedure("Clinician", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
+                false, false, 0, 0, 0, "", "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
+
+            return RedirectToAction("Clinicians", new { message = "Changes saved.", success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddNewClinician()
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+
+                _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
+                
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinician-Add" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality)
+        {
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+
+            string clinCode = lastName + firstName.Substring(0, 1);
+            
+            if(_clinicianData.GetClinicianDetails(clinCode) != null)
+            {
+                int i = 1;
+
+                CheckCode: //to make sure the code is unique
+                if (_clinicianData.GetClinicianDetails(clinCode + i.ToString()) != null)
+                {
+                    i += 1;
+                    goto CheckCode;
+                }
+                
+                clinCode = clinCode + i.ToString();
+            }
+
+            int iSuccess = _crud.CallStoredProcedure("Clinician", "Add", 0, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
+
+            return RedirectToAction("Clinicians", new { message = "New clinician added.", success = true });
+
+        }
+
+
+        [HttpGet]
         public async Task<IActionResult> Facilities(string? message, bool? success)
         {
             try
@@ -368,13 +449,79 @@ namespace AdminX.Controllers
                     _savm.facilities = _savm.facilities.Where(s => s.NAME.Contains(nameSearch)).ToList();
                 }
 
-
                 return View(_savm);
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Facilities" });
             }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> FacilityDetails(string facCode)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
+
+
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Facility Details" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FacilityDetails(string facCode, string name)
+        {
+
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
+
+            int iSuccess = _crud.CallStoredProcedure("Facility", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
+                false, false, 0, 0, 0, "", "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-edit(SQL)" }); }
+
+            return RedirectToAction("Facilities", new { message = "Changes saved.", success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddNewFacility()
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
+
+
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "New Facility" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewFacility(string name)
+        {
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
+
+            int iSuccess = _crud.CallStoredProcedure("Facility", "Add", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
+                false, false, 0, 0, 0, "", "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-add(SQL)" }); }
+
+            return RedirectToAction("Facilities", new { message = "New facility added.", success = true });
+
         }
 
         [HttpGet]
@@ -390,7 +537,7 @@ namespace AdminX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Facilities" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Venues" });
             }
         }
 
@@ -407,10 +554,75 @@ namespace AdminX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Facilities" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Venues" });
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> VenueDetails(string clinCode)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
+
+
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "VenueDetails" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> VenueDetails(string clinCode, string name)
+        {
+
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
+
+            int iSuccess = _crud.CallStoredProcedure("Venue", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
+                false, false, 0, 0, 0, "", "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-add(SQL)" }); }
+
+            return RedirectToAction("ClinicVenues", new { message = "Changes saved.", success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddNewVenue()
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
+
+
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "New Venue" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewVenue(string name)
+        {
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
+
+            int iSuccess = _crud.CallStoredProcedure("Venue", "Add", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
+                false, false, 0, 0, 0, "", "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-edit(SQL)" }); }
+
+            return RedirectToAction("ClinicVenues", new { message = "New clinic venue added.", success = true });
+
+        }
 
     }
 }

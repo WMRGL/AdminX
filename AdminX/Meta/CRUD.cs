@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Net;
 
 namespace AdminX.Meta
 {
@@ -132,7 +133,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
             cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
-            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = Dns.GetHostName();
             cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
             cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;
