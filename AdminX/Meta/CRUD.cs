@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
-using static System.Net.Mime.MediaTypeNames;
+using System.Net;
 
 namespace AdminX.Meta
 {
