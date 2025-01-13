@@ -12,7 +12,6 @@ namespace AdminX.Controllers
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _documentContext;
         private readonly PatientVM _pvm;
         private readonly ICRUD _crud;
         private readonly IConfiguration _config;
@@ -35,10 +34,9 @@ namespace AdminX.Controllers
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
 
-        public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config, AdminContext adminContext)
+        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext)
         {
             _clinContext = context;
-            _documentContext = documentContext;
             _adminContext = adminContext;
             _config = config;
             _crud = new CRUD(_config);
@@ -61,7 +59,6 @@ namespace AdminX.Controllers
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
         }
-
 
         [Authorize]
         public async Task<IActionResult> PatientDetails(int id, string? message, bool? success)
@@ -113,9 +110,10 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PatientDetails(bool? DECEASED, DateTime? DECEASED_DATE, int mpi)
+        public async Task<IActionResult> PatientDetails(bool? DECEASED, DateTime? DECEASED_DATE, int mpi, bool? isSuccess, string? sMessage)
         {
             string deceased = Request.Form["DECEASED"];
             string interpreterRequired = Request.Form["IsInterpreterReqd"];
@@ -144,12 +142,11 @@ namespace AdminX.Controllers
 
             int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", language, "", "", User.Identity.Name, DECEASED_DATE, null, deseasedStatus, interpreter);
 
-
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
 
             return RedirectToAction("PatientDetails", new { id = mpi });
-
         }
+
         public static string CalculateAge(DateTime dob)
         {
             int years = DateTime.Now.Year - dob.Year;
@@ -180,8 +177,6 @@ namespace AdminX.Controllers
                 months += 12;
             }
             return $"{years} years {months} months";
-
-
         }
 
         [HttpGet]
@@ -453,6 +448,5 @@ namespace AdminX.Controllers
             
             return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
-
     }
 }

@@ -24,6 +24,7 @@ namespace AdminX.ViewModels
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }        
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> gcs { get; set; }
+        public List<StaffMember> clinicalStaff { get; set; }
         public List<string> secteams { get; set; }
         public List<string> specialities { get; set; }
         public List<ActivityItem> activities { get; set; }
