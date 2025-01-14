@@ -1,0 +1,239 @@
+﻿@model AdminX.ViewModels.ICPVM
+@{
+    ViewData["Title"] = "Admin-X - ICP Details";
+}
+
+<div class="container card">
+    <div class="row mb-5 g-2 mt-2">
+        <div class="col-md-2">
+        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
+            <a type="button" class="btn btn-default btn-outline-primary" asp-controller="Triage" asp-action="Index">Back to Triage Index</a>
+        </div>
+        <div class="col-md-1">
+            <a class="btn btn-default btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.triage.MPI>Patient Details</a>
+        </div>    
+    </div>
+
+    <h1>ICP Details</h1>
+
+    <div class="container">
+        <dl class="row">            
+            
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.triage.Name):
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.Name)
+            </dd>           
+            <dt class="col-sm-2">
+                Consultant:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.ConsultantName)
+            </dd>
+            <dt class="col-sm-2">
+                GC:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.GCName)
+            </dd>
+            <dt class="col-sm-2">
+                Referral Date:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.RefDate) @if (Model.referralAgeDays != null)
+                {
+                    <span>&emsp;&emsp;<b>Age:</b> @Model.referralAgeDays days (@Model.referralAgeWeeks weeks)</span>
+                }
+            </dd>
+            <dt class="col-sm-2">
+                Pathway:
+            </dt>
+            <dd class="col-sm-10" id="referralPathway">
+                @Html.DisplayFor(model => model.triage.ReferralPathway)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.triage.CGU_No)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.triage.CGU_No)
+            </dd>
+            <dt class="col-sm-2">
+                Referred By:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.ReferringClinician) - @Html.DisplayFor(model => model.referralDetails.ReferringFacility)
+            </dd>
+            <dt class="col-sm-2">
+                Indication:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.INDICATION)
+            </dd>   
+            <dt class="col-sm-2">
+                Notes:
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.referralDetails.REASON_FOR_REFERRAL)
+            </dd>
+
+        </dl>      
+
+    </div>
+    
+    
+
+    
+    <form id="formICPGeneral" asp-action="DoGeneralTriage">
+        <div id="metadata-general" hidden="true">
+            @*<input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />*@
+            <input name="icpID" asp-for=@Model.triage.ICPID />
+            <input id="txtTP1" name="tp" />
+            <input id="txtTP2" name="tp2" />
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label>Treatment Pathway:</label>
+            </div>
+            <div class="col-md-5">
+                <select id="ddlTreatPath1" name="tp" asp-for=@Model.triage.TreatPath>                    
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.generalActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">                
+            </div>
+            <div class="col-md-2">
+                
+            </div>
+        </div>        
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <select id="ddlTreatPath2-NoClinic" name="tp2nc" asp-for=@Model.triage.TreatPath2>
+                    <option value="">Select...</option>
+                    @foreach (var item in Model.generalActionsList2)
+                    {
+                        if (item.Clinic == false)
+                        {
+                            <option value=@item.ID>@item.Action</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2"></div>
+        </div>        
+        
+        <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <button id="btnGeneralTriage" class="btn btn-default btn-outline-primary">Complete Triage</button>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </form>
+
+    <form id="formICPCancer" asp-action="DoCancerTriage">
+        <div id="metadata-cancer" hidden="true">
+            <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
+        </div>
+        <div class="row">            
+            <div class="col-md-2">
+                <label>Action on Referral Letter</label>
+            </div>
+            <div class="col-md-10">
+                <select id="ddlCancerAction" name=action>
+                    @foreach (var item in @Model.cancerActionsList)
+                    {
+                        <option value=@item.ID>@item.Action</option>
+                    }                    
+                </select>
+            </div>
+            <div class="row mb-5 g-5">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <button id="btnCancerTriage" class="btn btn-default btn-outline-primary">Complete Triage</button>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script type="text/javascript">
+
+    //document.getElementById("btnBack").addEventListener("click", GoBack);    
+    document.getElementById("btnGeneralTriage").addEventListener("click", DoGeneralTriage);
+    document.getElementById("btnCancerTriage").addEventListener("click", DoCancerTriage);
+    window.addEventListener("load", LoadICP);
+
+    function GoBack() 
+    {
+        window.history.back();
+        //window.close();
+    }
+
+    
+
+
+    function LoadICP() 
+    {
+        var _rp = "@(Model.triage.ReferralPathway)";
+        var _gc = "@(Model.triage.GCTriaged)";
+        var _cons = "@(Model.triage.ConsTriaged)";
+        document.getElementById("formICPGeneral").hidden = true;
+        document.getElementById("formICPCancer").hidden = true;
+       
+        if (_rp.match("Gen*")) 
+        {        
+            document.getElementById("formICPGeneral").hidden = false;
+            document.getElementById("metadata-general").hidden = true;
+            
+            document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";            
+        }
+        
+        else 
+        {            
+            document.getElementById("formICPCancer").hidden = false;
+        }
+    }
+
+
+    function DoGeneralTriage()
+    {
+        
+        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+        var _facility = document.getElementById("ddlFacility");
+        
+        if (CheckFormValid() == 1) 
+        {
+            //window.alert("Submitted!");
+            document.getElementById("formICPGeneral").submit;
+        }        
+    }
+
+    function DoCancerTriage()
+    {
+        document.getElementById("formICPCancer").submit;
+    }
+
+
+
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") 
+        {
+            window.alert("Please choose a treatment pathway.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+</script>

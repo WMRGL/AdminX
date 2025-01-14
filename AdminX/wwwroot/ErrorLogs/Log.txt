@@ -31,3 +31,7 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 09/01/2025 13:43:09: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: DictatedLetter
 09/01/2025 13:43:35: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: DictatedLetter
 09/01/2025 13:47:45: Data is Null. This method or property cannot be called on Null values. - logged in user: mnln - form: DictatedLetter
+14/01/2025 08:57:57: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
+14/01/2025 08:58:26: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
+14/01/2025 09:06:56: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
+14/01/2025 09:07:41: Data is Null. This method or property cannot be called on Null values. - logged in user: adzadmin - form: Triage
