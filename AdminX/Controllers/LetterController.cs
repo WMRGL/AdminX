@@ -115,7 +115,7 @@ public class LetterController : Controller
                 datesInfo = $"Dictated Date: {_lvm.dictatedLetter.DateDictated.Value.ToString("dd/MM/yyyy")}" + System.Environment.NewLine +
                                    $"Date Typed: {_lvm.dictatedLetter.CreatedDate.Value.ToString("dd/MM/yyyy")}";
             }         
-            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI);
+            _lvm.patient = _patientData.GetPatientDetails(_lvm.dictatedLetter.MPI.GetValueOrDefault());
             tf.DrawString($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}", fontItalic, XBrushes.Black, new XRect(20, 270, page.Width, 200));
 
             tf.DrawString(datesInfo, font, XBrushes.Black, new XRect(20, 290, page.Width / 2, 200));

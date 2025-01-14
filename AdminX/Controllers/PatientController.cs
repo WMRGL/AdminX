@@ -34,6 +34,9 @@ namespace AdminX.Controllers
         private readonly AdminContext _adminContext;
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
+        private readonly ReviewVM _rvm;
+        private readonly IReviewData _reviewData;
+
 
         public PatientController(ClinicalContext context, DocumentContext documentContext, IConfiguration config, AdminContext adminContext)
         {
@@ -60,6 +63,8 @@ namespace AdminX.Controllers
             _audit = new AuditService(_config);
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
+            _rvm = new ReviewVM();
+            _reviewData = new ReviewData(_clinContext);
         }
 
 
@@ -97,6 +102,8 @@ namespace AdminX.Controllers
                 _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
                 _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                 _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
+                //_pvm.referral = _referralData.GetReferralDetails(id);
+                _pvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
 
                 if (_pvm.patient.DECEASED == -1)
                 {

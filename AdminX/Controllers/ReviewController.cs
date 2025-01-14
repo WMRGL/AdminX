@@ -5,6 +5,7 @@ using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using AdminX.ViewModels;
 using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Controllers
 {
@@ -50,13 +51,114 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);               
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews","", _ip.GetIPAddress());
 
-                _rvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
+                _rvm.reviewList = _reviewData.GetReviewsListAll();
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                new BreadcrumbItem { Text = "Review" }
+            };
 
                 return View(_rvm);
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult GetReviews()
+        {
+            try
+            {
+                // DataTables parameters
+                var draw = Request.Form["draw"].FirstOrDefault();
+                var start = Request.Form["start"].FirstOrDefault();
+                var length = Request.Form["length"].FirstOrDefault();
+                var sortColumnIndex = Request.Form["order[0][column]"].FirstOrDefault();
+                var sortColumnName = Request.Form["columns[" + sortColumnIndex + "][name]"].FirstOrDefault();
+                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+                var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+
+                List<Review> reviews = _reviewData.GetReviewsListAll();
+
+                if (!string.IsNullOrEmpty(searchValue))
+                {
+                    searchValue = searchValue.ToLower();
+                    reviews = reviews.Where(r =>
+                        r.CGU_No.ToLower().Contains(searchValue) ||
+                        r.FIRSTNAME.ToLower().Contains(searchValue) ||
+                        r.LASTNAME.ToLower().Contains(searchValue) ||
+                        r.Owner.ToLower().Contains(searchValue) ||
+                        (r.Planned_Date.HasValue && r.Planned_Date.Value.ToString("dd/MM/yyyy").ToLower().Contains(searchValue))
+                    ).ToList(); 
+                }
+
+                if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortColumnDirection))
+                {
+                    Func<Review, object> orderingFunction = (r) =>
+                    {
+                        switch (sortColumnName)
+                        {
+                            case "CGU_No": return r.CGU_No;
+                            case "Patient": return r.FIRSTNAME; 
+                            case "MPI": return r.MPI;
+                            case "Planned_Date": return r.Planned_Date;
+                            case "Owner": return r.Owner;
+                            default: return r.Planned_Date; 
+                        }
+                    };
+
+                    if (sortColumnDirection == "asc")
+                    {
+                        reviews = reviews.OrderBy(orderingFunction).ToList();
+                    }
+                    else
+                    {
+                        reviews = reviews.OrderByDescending(orderingFunction).ToList();
+                    }
+                }
+
+                int recordsTotal = reviews.Count();
+
+                var data = reviews.Skip(skip).Take(pageSize).ToList();
+
+                // Returning Json Data
+                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Create(int id)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString());
+
+                //_rvm.referrals = _activityData.GetActivityDetails(id);
+                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
+                _rvm.patient = _patientData.GetPatientDetails(id);
+                _rvm.activityList = _activityData.GetActivityList(id).Where(c => c.REFERRAL_DATE != null).ToList();
+
+
+
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
             }
         }
 
@@ -120,16 +222,6 @@ namespace AdminX.Controllers
             ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
-                {
-                    Text = "Referrals",
-                    Controller = "Referral",
-                    Action = "ReferralDetails",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() }
-                    }
-                },
                 new BreadcrumbItem
                 {
                     Text = "Review",
@@ -249,6 +341,23 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-edit" });
             }
+        }
+
+        [HttpGet]
+        public IActionResult Review(int mpi, int refID)
+        {
+
+            _rvm.reviewList = _reviewData.GetReviewsListForPatient(mpi);
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                
+                new BreadcrumbItem { Text = "Review" }
+            };
+
+            return View(_rvm);
         }
     }
 }

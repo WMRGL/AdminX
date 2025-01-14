@@ -28,3 +28,23 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 1/6/2025 10:35:31 AM: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Triage
 08/01/2025 15:17:29: Data is Null. This method or property cannot be called on Null values. - logged in user: iolatunbosun - form: Triage
 09/01/2025 07:49:01: Execution Timeout Expired.  The timeout period elapsed prior to completion of the operation or the server is not responding. - logged in user: iolatunbosun - form: Patient
+09/01/2025 11:14:51: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:15:37: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:17:08: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:17:22: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:18:29: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:23:19: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:23:32: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:23:44: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:24:03: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:24:19: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:25:56: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:27:06: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:46:09: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:47:14: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 11:52:31: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 14:37:49: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 14:41:29: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 14:43:55: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 14:44:21: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add
+09/01/2025 14:54:39: Object reference not set to an instance of an object. - logged in user: iolatunbosun - form: Review-add

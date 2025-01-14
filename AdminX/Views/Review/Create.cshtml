@@ -3,6 +3,104 @@
     ViewData["Title"] = "Clinic-X - New Review";
 }
 
+<div class="card">
+    <div class="card-body">
+        <form action="@Url.Action("AddReview", "Referral")" method="get">
+            <div class="form-group row">
+                <label for="inputEmail3" class="col-sm-2 col-form-label">Linked Activities</label>
+                <div class="col-sm-10">
+                    <select class="form-select js-choice" name="refID">
+                        @foreach (var item in Model.activityList)
+                        {
+                            <option value="@item.RefID">@item.TYPE - @item.REFERRAL_DATE - @item.RefID</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+        </form>
+
+
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Schedule Patient Review</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="row">
+                <input type="hidden" value="" name="MPI">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="linnkedAppt">Linked Appointment</label>
+                    <input type="text" class="form-control" id="linkedApptInput" name="Parent_RefID" value="" readonly>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="reftype">Referral</label>
+                    <input type="text" class="form-control" id="reftype" value="" readonly>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="pathway">Pathway</label>
+                    <input type="text" class="form-control" id="pathway" name="pathway" value="" readonly>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="inputEmail4">Owner</label>
+                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="linnkedAppt">Review By</label>
+                    <input type="text" class="form-control" name="Review_Recipient" id="linnkedAppt" value="@Model.staffMember.STAFF_CODE" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="reftype">Category</label>
+                    <select class="form-select" name="category" id="">
+                        <option value="Standard">Standard</option>
+                        <option value="Non-Standard">Non-Standard</option>
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="pathway">Booked Date</label>
+                    <input type="date" class="form-control" id="pathway" name="Planned_Date" required />
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="inputEmail4">Completed By</label>
+                    <input type="text" class="form-control" name="Completed_By" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="linnkedAppt">Completed On</label>
+                    <input type="date" class="form-control" name="Completed_Date" id="linnkedAppt">
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="reftype">Review Status</label>
+                    <select class="form-select" name="Review_Status" id="">
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="inputAddress2">Comment</label>
+                <textarea class="form-control" name="Comments" id="" cols="30" rows="5"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+            @if (ViewBag.IsUnder15 != null && ViewBag.IsUnder15)
+            {
+                <button type="button" class="btn btn-outline-dark float-end" id="scheduleReviewBtn">Schedule Review when patient is 15</button>
+            }
+        </form>
+    </div>
+</div>
+
+
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">
         @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
@@ -23,9 +121,7 @@
         <form id="ReviewForm" asp-action="Create">
             <div class="row mb-5 g-5">
                 <div id="meta" hidden="true">
-                    <input asp-for=@Model.patient.MPI name ="mpi" />
-                    <input asp-for=@Model.referrals.RefID name="refID" />
-                    <input asp-for=@Model.referrals.PATHWAY name="pathway" />
+                 
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -98,4 +194,29 @@
     }
 
 </script>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('select[name="refID"]').change(function () {
+                var selectedRefID = $(this).val();
+
+                $.ajax({
+                    url: '@Url.Action("GetLinkedAppointment", "Review")',
+                    type: 'GET',
+                    data: { refID: selectedRefID },
+                    success: function (data) {
+                        $('#linkedApptInput').val(data.linkedAppointment);
+                        $('#reftype').val(data.referral);
+                        $('#pathway').val(data.pathway);
+                    },
+                    error: function () {
+                        alert('Error retrieving linked appointment details.');
+                    }
+                });
+            });
+        });
+    </script>
+}
 

@@ -262,31 +262,7 @@ namespace AdminX.Controllers
             return View(_rvm);
         }
 
-        [HttpGet]
-        public IActionResult Review(int mpi, int refID)
-        {
-            
-            _rvm.reviews = _reviewData.GetReviewsListForPatient(mpi);
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
-                {
-                    Text = "Referrals",
-                    Controller = "Referral",
-                    Action = "ReferralDetails",
-                    RouteValues = new Dictionary<string, string>
-                    {
-                        { "refID", refID.ToString() }
-                    }
-                },
-                new BreadcrumbItem { Text = "Review" }
-            };
-
-            return View(_rvm);
-        }
+        
 
 		
     }
