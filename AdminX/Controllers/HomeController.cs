@@ -17,9 +17,13 @@ namespace AdminX.Controllers
         private readonly IVersionData _version;
         private readonly INotificationData _notificationData;
         private readonly IAuditService _audit;
+		private readonly IClinicData _clinicData;
+		private readonly ITriageData _triageData;
+		private readonly IReviewData _reviewData;
+        private readonly IDictatedLetterData _dictatedLetterData;
 
 
-        public HomeController(ClinicalContext context, IConfiguration config)
+		public HomeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
             _config = config;
@@ -28,7 +32,12 @@ namespace AdminX.Controllers
             _version = new VersionData();
             _notificationData = new NotificationData(_clinContext);
             _audit = new AuditService(_config);
-        }
+			_clinicData = new ClinicData(_clinContext);
+			_triageData = new TriageData(_clinContext);
+            _reviewData = new ReviewData(_clinContext);
+			_dictatedLetterData = new DictatedLetterData(_clinContext);
+
+		}
 
         public IActionResult Index()
         {
@@ -51,9 +60,13 @@ namespace AdminX.Controllers
                     _hvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
                     _hvm.dllVersion = _version.GetDLLVersion();
                     _hvm.appVersion = _config.GetValue("AppVersion", "");
+                    _hvm.contactOutcomes = _clinicData.GetAllOutstandingClinics().Count();
+                    _hvm.triageOutcomes = _triageData.GetTriageListFull().Count();
+                    _hvm.reviewOutcomes = _reviewData.GetReviewsListAll().Count();
+                    _hvm.dictatedLetters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE).Count();
 
 
-                    return View(_hvm);
+					return View(_hvm);
                 }
             }
             catch (Exception ex)

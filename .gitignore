@@ -363,4 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /AdminX/secrets.json
 ClinicalXPDataConnections.dll
-/AdminX/wwwroot/ErrorLogs/Log.txt
+AdminX/wwwroot/ErrorLogs/Log.txt
+
