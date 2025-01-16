@@ -2,6 +2,7 @@
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace AdminX.Controllers
         private readonly IRelativeData _relativeData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly APIController _api;
 
         public RelativeController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
         {
@@ -34,6 +36,7 @@ namespace AdminX.Controllers
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
             _audit = new AuditService(_config);
+            _api = new APIController(_clinContext, _docContext, _config);
         }
 
 
@@ -156,7 +159,8 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Add Relative", "WMFACSID=" + wmfacsid.ToString());
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
                 _rdvm.WMFACSID = wmfacsid;
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
@@ -224,9 +228,14 @@ namespace AdminX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Import Revatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
+
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
                 _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
                 _rvm.relationslist = _relativeData.GetRelationsList();
+                _rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
                 return View(_rvm);
             }

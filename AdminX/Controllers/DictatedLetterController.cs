@@ -43,7 +43,7 @@ namespace AdminX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? staffCode)
         {
             try
             {
@@ -57,9 +57,14 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
-                var letters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE);
+                var letters = _dictatedLetterData.GetDictatedLettersListFull();
 
-                _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
+                if(staffCode != null)
+                {
+                    letters = letters.Where(l => l.LetterFromCode == staffCode).ToList();
+                }
+                _lvm.clinicalStaff = _staffUser.GetClinicalStaffList();
+                _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
 
                 return View(_lvm);
@@ -70,7 +75,7 @@ namespace AdminX.Controllers
             }
         }
 
-        public async Task<IActionResult> DictatedLettersForPatient(int id)
+        public async Task<IActionResult> DictatedLettersForPatient(string cguNo)
         {
             try
             {
@@ -84,11 +89,15 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
-                _lvm.patientDetails = _patientData.GetPatientDetails(id);
-                var letters = _dictatedLetterData.GetDictatedLettersForPatient(id);
+                _lvm.patientDetails = _patientData.GetPatientDetailsByCGUNo(cguNo);
 
-                _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
-                _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+                if (_lvm.patientDetails != null)
+                {
+                    var letters = _dictatedLetterData.GetDictatedLettersForPatient(_lvm.patientDetails.MPI);
+
+                    _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing" && l.Status != "Printed").ToList();
+                    _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+                }
 
                 return View(_lvm);
             }
@@ -266,7 +275,7 @@ namespace AdminX.Controllers
         {
             try
             {                
-                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
+                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
@@ -280,8 +289,9 @@ namespace AdminX.Controllers
         {
             try
             {
-                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
+                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
                 //return RedirectToAction("Edit", new { id = dID });
+                _crud.CallStoredProcedure("DictatedLetter", "Print", dID,0,0,"","","","",User.Identity.Name,null,null); //updates everything to say the letter was printed
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
             catch (Exception ex)

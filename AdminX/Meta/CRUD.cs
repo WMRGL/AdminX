@@ -26,9 +26,7 @@ namespace AdminX.Meta
        string? string14 = "", string? string15 = "", string? string16 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
        int? int5 = 0, int? int6 = 0, int? int7 = 0, bool? bool1 = false, bool? bool2 = false);
 
-        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname,
-        DateTime DOB, string postCode, string nhsNo);
-
+        
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
 
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
@@ -262,18 +260,6 @@ namespace AdminX.Meta
             conn.Close();
 
             return iReturnValue;
-        }
-
-
-        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
-        {
-            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-            conn.Open();
-            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
-                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
-                "', '" + nhsNo + "')", conn);
-            cmd.ExecuteNonQuery();
-            conn.Close();
         }
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode)

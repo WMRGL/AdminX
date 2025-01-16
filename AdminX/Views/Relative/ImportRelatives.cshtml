@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.RelativeVM
 @{
-    ViewData["Title"] = "Clinic-X - Relatives Available in Phenotips";
+    ViewData["Title"] = "Admin-X - Relatives Available in Phenotips";
 }
 
 <div class="container">
@@ -26,7 +26,7 @@
                         <form asp-action="ImportRelatives">
                             <td>                            
                                 <input name="wmfacsid" value=@item.WMFACSID hidden="true" />                                                          
-                                <button class="btn btn-success">Import Relative</button>
+                                <button class="btn btn-primary">Import Relative</button>
                                 <input name="dob" value=@item.DOB hidden="true" />
                                 <input name="dod" value=@item.DOD hidden="true" />
                             </td>
@@ -71,7 +71,7 @@
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <a class="btn btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Return to patient details</a>
+            <a class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Return to patient details</a>
         </div>
     </div>
 

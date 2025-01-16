@@ -11,6 +11,7 @@ namespace AdminX.ViewModels
         public Relative relative { get; set; }
         public DocumentsContent documentsContent { get; set; }
         public StaffMember staffMember { get; set; }
+        public StaffMember letterOwner { get; set; }
         public ExternalClinician referrer { get; set; }
         public ExternalClinician gp { get; set; }
         public ExternalClinician other { get; set; }
