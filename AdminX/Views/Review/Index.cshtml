@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Admin-X - Reviews";
-    ViewData["HomeBtn"] = Html.ActionLink("Create New Review", "Create", "Review", new { id = 134311 }, new { @class = "btn btn-primary m-1" });
 
 }
 
@@ -50,7 +49,7 @@
                     {
                         "data": "reviewID", "name": "ReviewID", "autoWidth": true,
                         "render": function (data, type, row) {
-                            return '<a href="/Review/Edit?id=' + data + '" class="btn btn-lg btn-outline-primary">Select</a>';
+                            return '<a href="/Review/Edit?id=' + data + '" class="btn btn-lg btn-outline-primary">Edit</a>';
                         }
                     },
                     { "data": "cgU_No", "name": "CGU_No", "autoWidth": true },
