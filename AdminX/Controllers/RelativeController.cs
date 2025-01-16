@@ -5,30 +5,32 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.Intrinsics.Arm;
+using APIControllers.Controllers;
+using APIControllers.Data;
 
 namespace AdminX.Controllers
 {
     public class RelativeController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
+        
+        private readonly ClinicalContext _clinContext;        
+        private readonly APIContext _apiContext;        
         private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
+        private readonly IStaffUserData _staffUser;        
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relativeData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly APIController _api;
 
-        public RelativeController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
+        public RelativeController(ClinicalContext context, APIContext apiContext, IConfiguration config)
         {
-            _clinContext = context;
-            _docContext = docContext;
-            _config = config;
+            
+            _clinContext = context;            
+            _apiContext = apiContext;
+            _config = config;            
             _crud = new CRUD(_config);
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
@@ -36,27 +38,9 @@ namespace AdminX.Controllers
             _rdvm = new RelativeDiagnosisVM();
             _rvm = new RelativeVM();
             _audit = new AuditService(_config);
-            _api = new APIController(_clinContext, _docContext, _config);
+            _api = new APIController(_apiContext, _config);
+            
         }
-
-
-        [Authorize]
-        public IActionResult Index()
-        {
-            try
-            {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relatives");
-
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative" });
-            }
-        }
-
-
 
         [Authorize]
         [HttpGet]
@@ -173,7 +157,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1,
             string forename2, string surname, string relation, string sDOB, string sDOD,
@@ -235,7 +219,19 @@ namespace AdminX.Controllers
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
                 _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
                 _rvm.relationslist = _relativeData.GetRelationsList();
-                _rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
+                List<APIControllers.Models.Relative> relList = new List<APIControllers.Models.Relative>();
+                _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
+
+                relList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
+                foreach(var r in relList)
+                {
+                    _rvm.phenotipsRelativesList.Add(new ClinicalXPDataConnections.Models.Relative { WMFACSID = r.WMFACSID, RelTitle = r.RelTitle, RelForename1 = r.RelForename1,
+                    RelForename2 = r.RelForename2, RelSurname = r.RelSurname, DOB = r.DOB, DOD = r.DOD, RelSex = r.RelSex });
+                }
+
+                //_rvm.phenotipsRelativesList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
                 return View(_rvm);
             }
@@ -245,5 +241,6 @@ namespace AdminX.Controllers
             }
         }
 
+        
     }
 }
