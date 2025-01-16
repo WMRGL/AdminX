@@ -1,5 +1,6 @@
 ﻿using ClinicalXPDataConnections.Data;
-using ClinicalXPDataConnections.Meta;
+using APIControllers.Controllers;
+using APIControllers.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
@@ -8,12 +9,14 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
+        private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
 
-        public PhenotipsController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
+        public PhenotipsController(ClinicalContext clinContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = clinContext;
             _docContext = docContext;
+            _apiContext = apiContext;
             _config = config;
         }
 
@@ -22,7 +25,7 @@ namespace AdminX.Controllers
             string sMessage = "";
             bool isSuccess = false;
 
-            APIController api = new APIController(_clinContext, _docContext, _config);
+            APIController api = new APIController(_apiContext, _config);
 
             Int16 result = await api.PushPtToPhenotips(mpi);
 

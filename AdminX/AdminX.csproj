@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="APIControllers">
+      <HintPath>..\..\..\..\Websites\Libraries\APIControllers.dll</HintPath>
+    </Reference>
     <Reference Include="ClinicalXPDataConnections">
       <HintPath>..\..\..\..\Websites\Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
