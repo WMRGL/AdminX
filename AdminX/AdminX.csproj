@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\..\..\..\Websites\Libraries\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>..\..\..\Websites\Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -37,5 +37,7 @@ namespace AdminX.ViewModels
         public string? nhs { get; set; }
         public string? cguNumber { get; set; }
         public string? ethnicCode { get; set; }
+        public Referral referral { get; set; }
+        public List<Review> reviewList { get; set; }
     }
 }

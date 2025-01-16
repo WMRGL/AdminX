@@ -34,22 +34,12 @@
             <br />
             <br />
             <div class="row mb-5 g-5">
-                <div class="col-md-1"></div>
-                <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Contact Outcomes</a>
-                </div>        
-                <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a>
-                </div>
+                <div class="col-md-1"></div>        
+                
                 <div class="col-md-2">
                     <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Cancer ICPs for Review</a>
-                </div>
-                <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Patient Reviews</a>
                 </div>        
-                <div class="col-md-2">
-                    <a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Dictated Letters</a>
-                </div>
+                
                 <div class="col-md-1"></div>
             </div>
         
@@ -63,5 +53,109 @@
         </div>
         
     </div>
+
+
+<div class="row">
+	<div class="col-xl-6 col-xxl-5 d-flex">
+		<div class="w-100">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title">Contact Outcomes:</h5>
+								</div>
+								<div class="col-auto mt-0">
+									<h1>@Model.contactOutcomes</h1>
+								</div>
+							</div>
+							<div class="mb-0">
+								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Contact Outcomes</a></span>
+							</div>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title">Patient Review:</h5>
+								</div>
+								<div class="col-auto mt-0">
+									<h1>@Model.reviewOutcomes</h1>
+								</div>
+							</div>
+							<div class="mb-0">
+								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Patient Reviews</a></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title">Patient Review:</h5>
+								</div>
+								<div class="col-auto mt-0">
+									<h1>@Model.reviewOutcomes</h1>
+								</div>
+							</div>
+							<div class="mb-0">
+								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Patient Reviews</a></span>
+							</div>
+						</div>
+					</div>
+					<div class="card">
+						<div class="card-body">
+							<div class="row">
+								<div class="col mt-0">
+									<h5 class="card-title">Dictated Letters:</h5>
+								</div>
+								<div class="col-auto mt-0">
+									<h1>@Model.dictatedLetters</h1>
+								</div>
+							</div>
+							<div class="mb-0">
+								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Dictated Letters</a></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xl-6 col-xxl-7">
+		<div class="card flex-fill w-100">
+			<div class="card-header">
+				<div class="float-end">
+					<form class="row g-2">
+						<div class="col-auto">
+							<select class="form-select form-select-sm bg-light border-0">
+								<option>Jan</option>
+								<option value="1">Feb</option>
+								<option value="2">Mar</option>
+								<option value="3">Apr</option>
+							</select>
+						</div>
+						<div class="col-auto">
+							<input type="text" class="form-control form-control-sm bg-light rounded-2 border-0" style="width: 100px;" placeholder="Search..">
+						</div>
+					</form>
+				</div>
+				<h5 class="card-title mb-0">Recent Movement</h5>
+			</div>
+			<div class="card-body pt-2 pb-3">
+				<div class="chart chart-sm">
+					<div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+					<canvas id="chartjs-dashboard-line" width="850" height="250" style="display: block; width: 850px; height: 250px;" class="chartjs-render-monitor"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
 
 

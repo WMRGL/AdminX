@@ -1,50 +1,76 @@
 ﻿@model AdminX.ViewModels.ReviewVM
+
 @{
     ViewData["Title"] = "Admin-X - Reviews";
+    ViewData["HomeBtn"] = Html.ActionLink("Create New Review", "Create", "Review", new { id = 134311 }, new { @class = "btn btn-primary m-1" });
+
 }
 
-<div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        <h2>Outstanding Reviews</h2>
+
+
+<div class="card">
+<div class="card-header">
+    <h5 class="card-title">Outstanding Reviews</h5>
+
+</div>
+<div class="card-body">
+    <div class="table-responsive">
+            <table class="table table-bordered p-2 table-hover" id="reviewsTable">
+    <thead>
+        <tr>
+            <th data-name="ReviewID"></th>
+            <th data-name="CGU_No">CGU No</th>
+            <th data-name="Patient">Patient</th>
+            <th data-name="Category">Category</th>
+            <th data-name="Planned_Date">@Html.DisplayNameFor(model => model.review.Planned_Date)</th>
+            <th data-name="Owner">Owner/Requester</th>
+        </tr>
+    </thead>
+    <tbody>
+        </tbody>
+</table>
     </div>
 
-    <div class="d-grid">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>CGU No</th>
-                    <th>Patient</th>
-                    <th>Category</th>
-                    <th>@Html.DisplayNameFor(model => model.review.Planned_Date)</th>                
-                    <th>Owner/Requester</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.reviewList)
-                {
-                    <tr>
-                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID class="btn btn-success">Select</a></td>
-                        <td>@item.CGU_No</td>
-                        <td>@item.FIRSTNAME @item.LASTNAME</td>
-                        <td>@item.Category</td>
-                        @if (@item.Planned_Date != null)
-                        {
-                            <td>@item.Planned_Date.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        <td>@item.Owner</td>
-                    </tr>                
-                }
-            </tbody>
-        </table>
-    </div>
-    @*
-    <div class="row mb-5 g-5">
-        <h2>Requested Reviews</h2>
-    </div>
-    *@
 </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#reviewsTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/Review/GetReviews", 
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "data": "reviewID", "name": "ReviewID", "autoWidth": true,
+                        "render": function (data, type, row) {
+                            return '<a href="/Review/Edit?id=' + data + '" class="btn btn-lg btn-outline-primary">Select</a>';
+                        }
+                    },
+                    { "data": "cgU_No", "name": "CGU_No", "autoWidth": true },
+                    {
+                        "data": null, "name": "Patient", "autoWidth": true,
+                        "render": function (data, type, row) {
+                            return row.firstname + " " + row.lastname;
+                        }
+                    },
+                    { "data": "category", "name": "Category", "autoWidth": true },
+                    {
+                        "data": "planned_Date", "name": "Planned_Date", "autoWidth": true,
+                        "render": function (data) {
+                            return data ? new Date(data).toLocaleDateString('en-GB') : 'N/A'; 
+                        }
+                    },
+                    { "data": "owner", "name": "Owner", "autoWidth": true }
+                ]
+                
+            });
+        });
+    </script>
+}

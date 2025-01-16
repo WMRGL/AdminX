@@ -31,8 +31,8 @@ namespace AdminX.Meta
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
 
-        public int PatientReview(string sType, string sOperation, int int1, string string1, string string2, string? string3 = "",
-       string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, int? int2 = 0);
+        public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
+       string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null,  int? int2 = 0);
     }
 
 
@@ -230,12 +230,11 @@ namespace AdminX.Meta
 
         }
 
-        public int PatientReview(string sType, string sOperation, int int1, string string1, string string2, string? string3 = "",
-       string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, int? int2 = 0)
+        public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
+       string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, int? int2 = 0)
         {
 
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
-            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
            
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
@@ -244,15 +243,14 @@ namespace AdminX.Meta
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
             cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
             cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
             cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
             cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
             cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
             cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
             cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
-            cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
-            cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
             //cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;

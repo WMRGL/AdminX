@@ -1,12 +1,11 @@
-﻿@model AdminX.ViewModels.ReferralVM
+﻿@model AdminX.ViewModels.ReviewVM
 
 @{
     ViewData["Title"] = "Admin-X - Review";
-    ViewData["HomeBtn"] = Html.Raw("<button type=\"button\" class=\"btn btn-primary m-1\" id=\"createReviewBtn\">Create New Review</button>");
 
  }
 
-@if (Model.reviews.Count() > 0)
+@if (Model.reviewList.Count() > 0)
 {
     <div class="card" >
         <div class="card-body">
@@ -47,11 +46,12 @@
                         <th scope="col">Review ID </th>
                         <th scope="col">Linked Activity </th>
                         <th scope="col">Generated Referral </th>
+                        <th scope="col">Edit </th>
 
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.reviews)
+                    @foreach (var item in Model.reviewList)
                     {
                         <tr>
                             <td>@item.MPI</td>
@@ -82,7 +82,9 @@
                             <td>@item.ReviewID</td>
                             <td>@item.Parent_RefID</td>
                             <td>@item.Child_RefID</td>
-
+                            <td> 
+                                <a class="btn btn-primary" asp-controller="Review" asp-action="UpdateReview" asp-route-mpi="@item.MPI"
+                                asp-route-id="@item.ReviewID" asp-route-refID="@Model.referral.refid">Edit</a> </td>
                         </tr>
                     }
 
@@ -95,27 +97,27 @@
 
 </div>
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $("#createReviewBtn").click(function () {
-        @if (Model.reviews.Count() > 0)
-        {
-            <text>
-              if (confirm("This patient already has a review. Do you want to add a new one?")) {
-                      window.location.href = '@Html.Raw(Url.Action("AddReview", "Referral", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
-                         } else {
-                        $("#reviewAlertCard").hide();
-                                    }
-            </text>
-        }
-        else
-        {
-            <text>
-               window.location.href = '@Html.Raw(Url.Action("AddReview", "Referral", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
-            </text>
-        }
-                    });
-        });
-    </script>
-}
+ @section Scripts {
+     <script>
+         $(document).ready(function () {
+             $("#createReviewBtn").click(function () {
+         @if (Model.reviewList.Count() > 0)
+         {
+             <text>
+               if (confirm("This patient already has a review. Do you want to add a new one?")) {
+                       window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
+                          } else {
+                         $("#reviewAlertCard").hide();
+                                     }
+             </text>
+         }
+         else
+         {
+             <text>
+                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.referral.MPI, refId = Model.referral.refid }))';
+             </text>
+         }
+                     });
+         });
+     </script>
+ }

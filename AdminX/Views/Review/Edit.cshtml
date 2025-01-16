@@ -1,7 +1,176 @@
 ﻿@model AdminX.ViewModels.ReviewVM
 @{
     ViewData["Title"] = "Clinic-X - Review Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-primary m-1" });
+
 }
+
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Information</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless my-0">
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>Patient Name</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.FIRSTNAME @Model.patient.LASTNAME
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>CGU No</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.CGU_No
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>MPI</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.MPI
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>Date of Birth</strong>
+                                    <div class="text-muted">
+                                        @if (@Model.patient.DOB != null)
+                                        {
+                                            @Model.patient.DOB.Value.ToString("dd/MM/yyyy")
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>Sex</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.SEX
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>NHS No</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.SOCIAL_SECURITY
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <div class="flex-grow-1 ms-3">
+                                    <strong>Postcode</strong>
+                                    <div class="text-muted">
+                                        @Model.patient.POSTCODE
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                       
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Schedule Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h5>
+    </div>
+    <div class="card-body">
+        <form method="post" asp-action="Create" id="ReviewForm">
+            <div class="row">
+                <input type="hidden" value="@Model.review.MPI" name="MPI">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="linnkedAppt">Linked Appointment</label>
+                    <input type="text" class="form-control" id="linkedApptInput" name="Parent_RefID" value="@Model.review.Parent_RefID" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="reftype">Referral</label>
+                    <input type="text" class="form-control" id="reftype" value="" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="pathway">Pathway</label>
+                    <input type="text" class="form-control" id="pathway" name="pathway" value="" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="reftype">Review Status</label>
+                    <select class="form-select" name="Review_Status" id="">
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="inputEmail4">Owner</label>
+                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="linnkedAppt">Review By</label>
+                    <select class="form-select js-choice" id="linnkedAppt" name="Review_Recipient">
+                        <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.STAFF_CODE</option>
+                        @foreach (var item in Model.staffMembers)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="reftype">Category</label>
+                    <select class="form-select" name="category" id="">
+                        <option value="Standard">Standard</option>
+                        <option value="Non-Standard">Non-Standard</option>
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="pathway">Booked Date</label>
+                    <input type="date" class="form-control" id="Planned_Date" name="Planned_Date" required />
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="inputAddress2">Comment</label>
+                <textarea class="form-control" name="Comments" id="" cols="30" rows="5"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+
+            @if (ViewBag.IsUnder15 != null && ViewBag.IsUnder15)
+            {
+                <button type="button" class="btn btn-outline-dark float-end" id="scheduleReviewBtn">Schedule Review when patient is 15</button>
+            }
+
+        </form>
+    </div>
+</div>
+
 
 <div class="container card">
     <div class="row mb-5 g-2 mt-2">

@@ -8,7 +8,7 @@ namespace AdminX.ViewModels
     public class ReviewVM
     {
         public Patient patient { get; set; }
-        public ActivityItem referrals { get; set; }
+        public ActivityItem activityDetail { get; set; }
         public List<StaffMember> staffMembers { get; set; }
         public StaffMember staffMember { get; set; }
         public Review review { get; set; }

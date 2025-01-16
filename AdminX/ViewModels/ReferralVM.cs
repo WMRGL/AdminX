@@ -27,5 +27,6 @@ namespace AdminX.ViewModels
         public int clockAgeWeeks { get; set; }
         public StaffMember staffMember { get; set; }
         public ActivityItem activity { get; set; }
+        public Review review { get; set; }
     }
 }
