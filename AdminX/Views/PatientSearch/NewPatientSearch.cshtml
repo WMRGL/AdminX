@@ -2,214 +2,233 @@
 @{
     ViewData["Title"] = "Admin-X - New Patient Search";
 }
-
-<div class="container">
-
+<div class="container-fluid">
     @if (Model.message != null)
     {
-        @if (Model.success)
-        {
-            <div class="alert alert-success d-block text-center">
-                <h3>@Model.message</h3>
+        <div class="card">
+            <div class="card-body">
+
+                @if (Model.success)
+                {
+
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            @Model.message
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            @Model.message
+                        </div>
+                    </div>
+                }
+
             </div>
-        }
-        else
-        {
-            <div class="alert alert-danger d-block text-center">
-                <h3>@Model.message</h3>
-            </div>
-        }
+        </div>
     }
 
 
-    <div class="row mb-5 g-5">
-        <h1 class="text-center">New patient creation</h1>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title text-dark">New patient creation</h3>
+            <h6 class="card-subtitle ">To begin the process, enter the new patient's demographics to search the database</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="NewPatientSearch" id="ptSearchForm">
+                <div class="row">
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="firstName">Firstname</label>
+                        <input type="text" class="form-control" name="firstname" id="firstName" asp-for=@Model.forenameSearch required>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="lastName">Surname</label>
+                        <input type="text" class="form-control" name="lastname" id="lastName" asp-for=@Model.surnameSearch required>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="DOB">DOB</label>
+                        <input type="date" class="form-control" name="dobToSearch" id="DOB" asp-for=@Model.dobSearch required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="postCode">PostCode</label>
+                        <input type="text" class="form-control" name="postcode" id="postCode" asp-for=@Model.postcodeSearch required>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="nhsNo">NHS Number</label>
+                        <input type="text" class="form-control" name="nhs" id="nhsNo" asp-for=@Model.nhsNoSearch required>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="doSearch">Search</button>
+                <a type="button" class="btn btn-outline-primary float-end" asp-controller="PatientSearch" asp-action="NewPatientSearch">New Search</a>
+            </form>
+        </div>
     </div>
 
-    <div class="row mb-5 g-5">
-        <h3 class="text-center">To begin the process, enter the new patient's demographics to search the database</h3>
-    </div>
 
-    <form asp-action="NewPatientSearch" id="ptSearchForm">
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Firstname</label>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="firstname" id="firstName" asp-for=@Model.forenameSearch />
-            </div>
-            <div class="col-md-2">
-                <label>Surname</label>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="lastname" id="lastName" asp-for=@Model.surnameSearch />
-            </div>
-            <div class="col-md-2">
-                <label>DOB</label>
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="dobToSearch" id="DOB" asp-for=@Model.dobSearch />
-            </div>
-        </div>
-        <div class="row mb-5">
-            <div class="col-md-2">
-                <label>PostCode</label>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="postcode" id="postCode" asp-for=@Model.postcodeSearch/>
-            </div>
-            <div class="col-md-2">
-                <label>NHS Number</label>
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="nhs" id="nhsNo" asp-for=@Model.nhsNoSearch />
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary" id="doSearch">Search</button>
-            </div>
-            <div class="col-md-8">
-            </div>
-
-            <div class="col-md-2">
-                <a type="button" class="btn btn-outline-primary" asp-controller="PatientSearch" asp-action="NewPatientSearch">New Search</a>
-            </div>
-        </div>
-    </form>
-
-    <div class="row mb-5 g-5">
+    <div class=" ">
         @if (Model.patientSearchResultsList.Count > 0)
         {
-            <h3>Matching Patients:</h3>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-dark">Matching Patients</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive table-hover tabletable-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CGU Number</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Date of Birth</th>
+                                <th>PostCode</th>
+                                <th>NHS Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.patientSearchResultsList)
+                            {
+                                <tr>
+                                    <td>@item.CGUNo</td>
+                                    <td>@item.Firstname</td>
+                                    <td>@item.Lastname</td>
+                                    @if (item.DOB != null)
+                                    {
+                                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>@item.PostCode</td>
+                                    <td>@item.NHSNo</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Date of Birth</th>
-                        <th>PostCode</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.patientSearchResultsList)
-                    {
-                        <tr>
-                            <td>@item.CGUNo</td>
-                            <td>@item.Firstname</td>
-                            <td>@item.Lastname</td>
-                            @if(item.DOB != null)
-                            {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td></td>
-                            }
-                            <td>@item.PostCode</td>
-                            <td>@item.NHSNo</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+
         }
     </div>
-    <div class="row mb-5 g-5">
+    <div>
         @if (Model.relativeSearchResultsList.Count() > 0)
         {
-            <h3>Matching Relatives:</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Date of Birth</th>                        
-                        <th>PostCode</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.relativeSearchResultsList)
-                    {
-                        <tr>
-                            <td>@item.CGUNo</td>
-                            <td>@item.Firstname</td>
-                            <td>@item.Lastname</td>
-                            @if (item.DOB != null)
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-dark">Matching Relatives</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive table-hover tabletable-striped table-bordered ">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CGU Number</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Date of Birth</th>
+                                <th>PostCode</th>
+                                <th>NHS Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.relativeSearchResultsList)
                             {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                <tr>
+                                    <td>@item.CGUNo</td>
+                                    <td>@item.Firstname</td>
+                                    <td>@item.Lastname</td>
+                                    @if (item.DOB != null)
+                                    {
+                                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>@item.PostCode</td>
+                                    <td>@item.NHSNo</td>
+                                </tr>
                             }
-                            else
-                            {
-                                <td></td>
-                            }
-                            <td>@item.PostCode</td>
-                            <td>@item.NHSNo</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         }
     </div>
-    <div class="row mb-5 g-5">
+    <div>
         @if (Model.pedigreeSearchResultsList.Count() > 0)
         {
-            <h3>Matching Pedigrees:</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Date of Birth</th>
-                        <th>PostCode</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.pedigreeSearchResultsList)
-                    {
-                        <tr>
-                            <td>@item.CGUNo</td>
-                            <td>@item.Firstname</td>
-                            <td>@item.Lastname</td>
-                            @if (item.DOB != null)
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title text-dark">Matching Pedigrees</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-responsive table-hover table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CGU Number</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Date of Birth</th>
+                                <th>PostCode</th>
+                                <th>NHS Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.pedigreeSearchResultsList)
                             {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                <tr>
+                                    <td>@item.CGUNo</td>
+                                    <td>@item.Firstname</td>
+                                    <td>@item.Lastname</td>
+                                    @if (item.DOB != null)
+                                    {
+                                        <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>@item.PostCode</td>
+                                    <td>@item.NHSNo</td>
+                                </tr>
                             }
-                            else
-                            {
-                                <td></td>
-                            }
-                            <td>@item.PostCode</td>
-                            <td>@item.NHSNo</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
         }
     </div>
 
 
-    <div class="row mb-5 g-5">
-        <div class="col-md-4">
+    
+        <div >
             <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew"
                asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch
-            hidden="true" id="newPtNew">Add Patient (New File)</a>
-        </div>
-        <div class="col-md-4"></div>
+               hidden="true" id="newPtNew">Add Patient (New File)</a>
+        <a type="button" class="btn btn-outline-primary float-end" asp-controller="PatientSearch" asp-action="SelectFile"
+           asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd")
+           asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
 
-        <div class="col-md-4">
-            <a type="button" class="btn btn-outline-primary" asp-controller="PatientSearch" asp-action="SelectFile" 
-            asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") 
-            asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
-        </div>
     </div>
+
+       
+           
 
 </div>
 
@@ -217,28 +236,25 @@
 
     //document.getElementById("clear").addEventListener("click", ClearForm);
     window.addEventListener("load", ShowButtons);
-       
 
-    function ShowButtons()
-    {
+
+    function ShowButtons() {
         var fName = document.getElementById("firstName");
         var lName = document.getElementById("lastName");
         var dBirth = document.getElementById("DOB");
         var pCode = document.getElementById("postCode");
-        var nHS = document.getElementById("nhsNo");       
-         
+        var nHS = document.getElementById("nhsNo");
 
-        if(fName.value != "" && lName.value != "" && dBirth.value != "0001-01-01" && pCode.value != "" && nHS != "")
-        {
-            document.getElementById("newPtNew").hidden=false;
-            document.getElementById("newPtExisting").hidden=false;
+
+        if (fName.value != "" && lName.value != "" && dBirth.value != "0001-01-01" && pCode.value != "" && nHS != "") {
+            document.getElementById("newPtNew").hidden = false;
+            document.getElementById("newPtExisting").hidden = false;
         }
-        else
-        {
-            document.getElementById("newPtNew").hidden=true;
-            document.getElementById("newPtExisting").hidden=true;
+        else {
+            document.getElementById("newPtNew").hidden = true;
+            document.getElementById("newPtExisting").hidden = true;
         }
-    }   
+    }
 
 
 </script>

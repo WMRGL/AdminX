@@ -396,7 +396,7 @@
                         <table class="table table-borderless my-0">
                             <tbody>
                                 <tr>
-                           
+
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -471,7 +471,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                
+
                                 <tr>
                                     <td>
                                         <div class="d-flex">
@@ -667,7 +667,7 @@
                                     </td>
                                 </tr>
 
-            
+
                                 <tr>
                                     <td>
                                         <div class="d-flex">
@@ -718,7 +718,7 @@
                                     </td>
                                 </tr>
 
-                               
+
                                 <tr>
                                     <td>
                                         <div class="d-flex">
@@ -752,7 +752,7 @@
                                     </td>
                                 </tr>
 
-                               
+
                             </tbody>
                         </table>
                     </div>
@@ -899,7 +899,15 @@
                                         {
                                             <tr>
                                                 <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
-                                                <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                                @if (d.DiaryDate != null)
+                                                {
+                                                    <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
+
                                                 <td>@d.DiaryWithName</td>
                                                 <td>@d.DiaryAction</td>
                                                 <td>@d.DiaryText</td>
@@ -1161,7 +1169,7 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <a asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>                        
+                    <a asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
                     <a asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-primary">Add New Relative</a>
                 </div>
 
@@ -1201,9 +1209,9 @@
             <text>
                             if (confirm("This patient already has a review. Do you want to add a new one?")) {
                                 window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
-                                      } else {
+                                                  } else {
                                 $("#reviewAlertCard").hide();
-                                                 }
+                                                             }
             </text>
         }
         else
@@ -1212,7 +1220,7 @@
                             window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
             </text>
         }
-                             });
+                                     });
         });
     </script>
 }
