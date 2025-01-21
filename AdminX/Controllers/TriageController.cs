@@ -6,6 +6,7 @@ using AdminX.ViewModels;
 using System.Data;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
+using AdminX.Models;
 
 namespace AdminX.Controllers
 {
@@ -56,6 +57,14 @@ namespace AdminX.Controllers
 
                 _ivm.triages = _triageData.GetTriageListFull();
                 //_ivm.icpCancerList = _triageData.GetCancerICPList(User.Identity.Name).ToList();
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                new BreadcrumbItem { Text = "Triage" }
+            };
+
                 return View(_ivm);
             }
             catch (Exception ex)
@@ -90,6 +99,19 @@ namespace AdminX.Controllers
                 _ivm.cancerActionsList = _icpActionData.GetICPCancerActionsList();
                 _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Triage",
+                    Controller = "Triage",
+                    Action = "Index",
+
+                },
+                new BreadcrumbItem { Text = "Add" }
+            };
 
                 return View(_ivm);
             }

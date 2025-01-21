@@ -112,6 +112,15 @@
                     data: { filterClinician: selectedClinician },
                     success: function (data) {
                         $("#tableContainer").html(data);
+                        $("#tableContainer").html(data);
+
+                        $('#clinicsTable').DataTable({
+                            info: true,
+                            order: false, 
+                            paging: true,
+                            autoWidth: false,
+                            width: "100%"
+                                });
                     },
                     error: function () {
                         alert("An error occurred while updating the list.");
