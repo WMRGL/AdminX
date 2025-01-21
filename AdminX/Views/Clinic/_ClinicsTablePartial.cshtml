@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ClinicalXPDataConnections.Models.Appointment>
+
+
+
+<div id="tableContainer" class="table-responsive">
+    <table id="clinicsTable" class="table defaultTable table-bordered table-responsive table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Patient</th>
+                <th>Clinician</th>
+                <th>Clinic Details</th>
+                <th>Date/time</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @Model)
+            {
+                <tr>
+                    <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
+                    <td>@item.CGU_No - @item.FIRSTNAME @item.LASTNAME</td>
+                    <td>@item.Clinician</td>
+                    <td>@item.Clinic (@item.FACILITY)</td>
+                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") at @item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

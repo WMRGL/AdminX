@@ -77,6 +77,37 @@ namespace AdminX.Controllers
             }
         }
 
+
+        [HttpGet]
+        public IActionResult GetFilteredClinics(string filterClinician)
+        {
+            try
+            {
+                List<Appointment> filteredClinics;
+
+                if (string.IsNullOrEmpty(filterClinician))
+                {
+                    filteredClinics = _clinicData.GetAllOutstandingClinics();
+                }
+                else
+                {
+                    filteredClinics = _clinicData.GetClinicList(filterClinician);
+                }
+
+                filteredClinics = filteredClinics.Where(c => c.BOOKED_DATE <= DateTime.Today)
+                                                 .OrderByDescending(c => c.BOOKED_DATE)
+                                                 .ThenBy(c => c.BOOKED_TIME)
+                                                 .ToList();
+
+                return PartialView("_ClinicsTablePartial", filteredClinics);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> ApptDetails(int id)
