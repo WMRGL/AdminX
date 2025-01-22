@@ -120,7 +120,7 @@ namespace AdminX.Meta
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
-            SqlCommand cmd = new SqlCommand("dbo.sp_AxReferralCRUD", conn);
+            SqlCommand cmd = new SqlCommand("dbo.sp_AxPatientCRUD", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
             cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;

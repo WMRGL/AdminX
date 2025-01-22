@@ -6,6 +6,7 @@ using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using AdminX.Data;
+using AdminX.Models;
 
 namespace AdminX.Controllers
 {
@@ -110,6 +111,14 @@ namespace AdminX.Controllers
                 {
                     _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
                 }
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+              
+                new BreadcrumbItem { Text = "Patient" }
+            };
+
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -235,6 +244,18 @@ namespace AdminX.Controllers
                         _pvm.message = message;
                     }
                 }
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Patient",
+                  
+
+                },
+                new BreadcrumbItem { Text = "New" }
+            };
 
                 return View(_pvm);
             }

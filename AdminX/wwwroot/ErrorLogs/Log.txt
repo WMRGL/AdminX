@@ -77,3 +77,46 @@ The statement has been terminated. - logged in user: mnln - form: NewPatientSear
 17/01/2025 09:40:02: A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server) - logged in user: iolatunbosun - form: Home
 17/01/2025 09:40:29: A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible. Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: Named Pipes Provider, error: 40 - Could not open a connection to SQL Server) - logged in user: iolatunbosun - form: PatientSearch
 17/01/2025 10:55:47: Something went wrong with the database update. - logged in user: iolatunbosun - form: PatientDetails-ChangeCGUNo(SQL)
+21/01/2025 15:00:10: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:00:24: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:00:49: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:01:13: @string14 is not a parameter for procedure sp_AxReferralCRUD. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:02:59: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:03:07: @string14 is not a parameter for procedure sp_AxReferralCRUD. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:07:23: Cannot insert the value NULL into column 'PEDNO', table 'Clinical_Dev.dbo.PEDIGREE'; column does not allow nulls. INSERT fails.
+start tr_reviews_after_update
+@mpi - 
+245432
+start tr_reviews_after_update
+@mpi - 
+245432
+[Patient_DCTM_Sts_INSERT_Trigger]
+
+start tr_reviews_after_update
+@mpi - 
+245432
+The statement has been terminated. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:09:03: Cannot insert the value NULL into column 'PEDNO', table 'Clinical_Dev.dbo.PEDIGREE'; column does not allow nulls. INSERT fails.
+ Address - CGU INSERT Trigger
+
+start tr_reviews_after_update
+@mpi - 
+245433
+start tr_reviews_after_update
+@mpi - 
+245433
+start tr_reviews_after_update
+@mpi - 
+245433
+[Patient_DCTM_Sts_INSERT_Trigger]
+
+start tr_reviews_after_update
+@mpi - 
+245433
+[WMFACS_Addressee_Insert_Trigger]
+
+start tr_reviews_after_update
+@mpi - 
+245433
+The statement has been terminated. - logged in user: iolatunbosun - form: Patient
+21/01/2025 15:27:48: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient

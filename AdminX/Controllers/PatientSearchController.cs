@@ -113,6 +113,13 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm, _ip.GetIPAddress());
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                new BreadcrumbItem { Text = "Search" }
+            };
+
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -141,6 +148,19 @@ namespace AdminX.Controllers
                     _pvm.success = success.GetValueOrDefault();
                     _pvm.message = message;
                 }
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Search",
+                    Controller = "PatientSearch",
+                    Action = "Index",
+
+                },
+                new BreadcrumbItem { Text = "New" }
+            };
 
                 return View(_pvm);
             }
