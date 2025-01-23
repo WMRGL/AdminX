@@ -120,3 +120,7 @@ start tr_reviews_after_update
 245433
 The statement has been terminated. - logged in user: iolatunbosun - form: Patient
 21/01/2025 15:27:48: SqlDateTime overflow. Must be between 1/1/1753 12:00:00 AM and 12/31/9999 11:59:59 PM. - logged in user: iolatunbosun - form: Patient
+23/01/2025 10:16:27: Could not find a part of the path 'C:\Projects\AdminX\AdminX\wwwroot\DOTLetterPreviews\preview-iolatunbosun.pdf'. - logged in user: iolatunbosun - form: DictatedLetter-preview
+23/01/2025 10:18:08: Could not find a part of the path 'C:\CGU_DB\Letters\DOTLetter-159146-1-DOT-227740-0-9201588-1-20250123101808-127663.pdf'. - logged in user: iolatunbosun - form: DictatedLetter-preview
+23/01/2025 10:55:35: Something went wrong with the database update. - logged in user: iolatunbosun - form: DictatedLetter-edit(SQL)
+23/01/2025 11:08:00: Something went wrong with the database update. - logged in user: iolatunbosun - form: DictatedLetter-edit(SQL)

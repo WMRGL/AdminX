@@ -151,6 +151,14 @@ namespace AdminX.Controllers
                 List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem { Text = "Letters", Controller = "DictatedLetter", Action = "Index"  },
+
+                    new BreadcrumbItem { Text = "Update" }
+                };
+
                 return View(_lvm);
             }
             catch (Exception ex)
