@@ -81,20 +81,22 @@
                                 <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
                             </h1>
 
-                            <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
-                                 <form id="Preview" asp-action="PreviewDOT">
-                    <div class="row mb-5 g-5">
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-primary" id="btnPreview">Preview</button>
-                        </div>
-                        <div class="col-md-8">
-                            <label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>
-                        </div>
-                    </div>
-                    <div hidden="true">
-                        <input asp-for="dictatedLetters.DoTID" name="dID" />
-                    </div>
-                </form>
+    <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
+
+    <div class="container mb-5">
+        <form id="Preview" asp-action="PreviewDOT">
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-primary" id="btnPreview">Preview</button>
+                </div>
+                <div class="col-md-8">
+                    @*<label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>*@
+                </div>
+            </div>
+            <div hidden="true">
+                <input asp-for="dictatedLetters.DoTID" name="dID" />
+            </div>
+        </form>
 
                 @if (Model.dictatedLetters.Status == "For Printing")
                 {

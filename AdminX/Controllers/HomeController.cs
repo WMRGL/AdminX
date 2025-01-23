@@ -63,7 +63,7 @@ namespace AdminX.Controllers
                     _hvm.contactOutcomes = _clinicData.GetAllOutstandingClinics().Count();
                     _hvm.triageOutcomes = _triageData.GetTriageListFull().Count();
                     _hvm.reviewOutcomes = _reviewData.GetReviewsListAll().Count();
-                    _hvm.dictatedLetters = _dictatedLetterData.GetDictatedLettersList(user.STAFF_CODE).Count();
+                    _hvm.dictatedLetters = _dictatedLetterData.GetDictatedLettersListFull().Count();
 
 
 					return View(_hvm);
