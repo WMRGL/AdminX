@@ -2,7 +2,6 @@
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIControllers.Controllers;
