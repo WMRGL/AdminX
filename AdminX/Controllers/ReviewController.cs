@@ -6,6 +6,7 @@ using AdminX.Meta;
 using AdminX.ViewModels;
 using AdminX.Models;
 using ClinicalXPDataConnections.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdminX.Controllers
 {
@@ -53,11 +54,11 @@ namespace AdminX.Controllers
 
                 _rvm.reviewList = _reviewData.GetReviewsListAll();
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
 
-                new BreadcrumbItem { Text = "Review" }
-            };
+                    new BreadcrumbItem { Text = "Review" }
+                };
 
                 return View(_rvm);
             }
@@ -86,22 +87,20 @@ namespace AdminX.Controllers
 
                 List<Review> reviews = _reviewData.GetReviewsListAll();
 
-                if (!string.IsNullOrEmpty(searchValue))
-                {
-                    Console.WriteLine(searchValue);
-                    searchValue = searchValue.ToLower();
-                    reviews = reviews.Where(r =>
-                        r.CGU_No.ToLower().Contains(searchValue) ||
-                        r.FIRSTNAME.ToLower().Contains(searchValue) ||
-                        r.LASTNAME.ToLower().Contains(searchValue) ||
-                        r.Owner.ToLower().Contains(searchValue) ||
-                        (r.Planned_Date.HasValue && r.Planned_Date.Value.ToString("dd/MM/yyyy").ToLower().Contains(searchValue))
-                    ).ToList();
-                    Console.WriteLine(searchValue);
+				if (!string.IsNullOrEmpty(searchValue))
+				{
+					searchValue = searchValue.ToLower();
+					reviews = reviews.Where(r =>
+						(r.CGU_No !=null && r.CGU_No.ToLower().Contains(searchValue)) ||
+						(r.FIRSTNAME != null && r.FIRSTNAME.ToLower().Contains(searchValue)) ||
+						(r.LASTNAME != null && r.LASTNAME.ToLower().Contains(searchValue)) ||
+						(r.Owner != null && r.Owner.ToLower().Contains(searchValue)) ||
+						(r.Planned_Date.HasValue && r.Planned_Date.Value.ToString("dd/MM/yyyy").ToLower().Contains(searchValue))
+					
+					).ToList(); 
+				}
 
-                }
-
-                if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortColumnDirection))
+				if (!string.IsNullOrEmpty(sortColumnName) && !string.IsNullOrEmpty(sortColumnDirection))
                 {
                     Func<Review, object> orderingFunction = (r) =>
                     {
@@ -125,7 +124,6 @@ namespace AdminX.Controllers
                         reviews = reviews.OrderByDescending(orderingFunction).ToList();
                     }
                 }
-
                 int recordsTotal = reviews.Count();
 
                 var data = reviews.Skip(skip).Take(pageSize).ToList();
@@ -274,11 +272,23 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
+                _rvm.patient = _patientData.GetPatientDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.activityList = _activityData.GetActivityList(id).Where(c => c.REFERRAL_DATE != null).ToList();
                 _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
+                _rvm.activityDetail = _activityData.GetActivityDetails((int)_rvm.review.Parent_RefID);
+
+                if (_rvm.activityDetail is null)
+                {
+                    TempData["ErrorMessage"] = "Patient does not have Referral ID";
+                    return RedirectToAction("Index", "Review");
+                }
+
+                if (_rvm.patient is null)
+                {
+                    TempData["ErrorMessage"] = "Patient does not have Patient ID";
+                    return RedirectToAction("Index", "Review");
+                }
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
@@ -307,7 +317,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string status, string comments, string revDate)
+        public async Task<IActionResult> Edit(int id, string Review_Status, string Comments, string revDate, DateTime? Planned_Date)
         {
             try
             {
@@ -324,10 +334,12 @@ namespace AdminX.Controllers
                     reviewDate = DateTime.Parse("1/1/1900");
                 }
                                
-                int success = _crud.CallStoredProcedure("Review", "Edit", id, 0, 0, status, comments, "", "", User.Identity.Name,
-                    reviewDate);
+                int success = _crud.CallStoredProcedure("Review", "Update", id, 0, 0, string1: Review_Status, string2: Comments, "", "", User.Identity.Name,
+                    reviewDate, dDate2: Planned_Date);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Review-edit(SQL)" }); }
+
+                TempData["SuccessMessage"] = "Patient updated successfully";
 
                 return RedirectToAction("Index", "Review");
             }

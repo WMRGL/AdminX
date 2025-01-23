@@ -50,10 +50,10 @@
                                 <div class="flex-grow-1 ms-3">
                                     <strong>Date of Birth</strong>
                                     <div class="text-muted">
-                                        @if (@Model.patient.DOB != null)
-                                        {
-                                            @Model.patient.DOB.Value.ToString("dd/MM/yyyy")
-                                        }
+                                         @if (@Model.patient.DOB != null)
+                                         {
+                                             @Model.patient.DOB.Value.ToString("dd/MM/yyyy")
+                                         }
                                     </div>
                                 </div>
                             </div>
@@ -105,35 +105,44 @@
         <h5 class="card-title mb-0">Schedule Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Html.ValueFor(model => model.patient.MPI)>@Html.DisplayFor(model => model.patient.FIRSTNAME) @Html.DisplayFor(model => model.patient.LASTNAME)</a></h5>
     </div>
     <div class="card-body">
-        <form method="post" asp-action="Create" id="ReviewForm">
+        <form method="post"  id="ReviewForm">
             <div class="row">
                 <input type="hidden" value="@Model.review.MPI" name="MPI">
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Linked Appointment</label>
                     <input type="text" class="form-control" id="linkedApptInput" name="Parent_RefID" value="@Model.review.Parent_RefID" readonly>
                 </div>
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Referral</label>
-                    <input type="text" class="form-control" id="reftype" value="" readonly>
+                    @if (Model.activityDetail.TYPE != null)
+                    {
+                        <input type="text" class="form-control" id="reftype" value="@Model.activityDetail.TYPE" readonly>
+                    } else
+                    {
+                        <input type="text" class="form-control" id="reftype" value="" readonly>
+                    }
+
                 </div>
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="pathway">Pathway</label>
-                    <input type="text" class="form-control" id="pathway" name="pathway" value="" readonly>
+                    <input type="text" class="form-control" id="pathway" name="pathway" value="@Model.activityDetail.PATHWAY" readonly>
                 </div>
-                <div class="mb-3 col-md-3">
+                
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Review Status</label>
                     <select class="form-select" name="Review_Status" id="">
+                        <option value="@Model.review.Review_Status" selected>@Model.review.Review_Status</option>
                         <option value="Pending">Pending</option>
                         <option value="Completed">Completed</option>
                     </select>
                 </div>
-            </div>
-            <div class="row">
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="inputEmail4">Owner</label>
                     <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
                 </div>
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Review By</label>
                     <select class="form-select js-choice" id="linnkedAppt" name="Review_Recipient">
                         <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.STAFF_CODE</option>
@@ -143,21 +152,38 @@
                         }
                     </select>
                 </div>
-                <div class="mb-3 col-md-3">
+              
+            </div>
+            <div class="row">
+                  <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Category</label>
                     <select class="form-select" name="category" id="">
+                        <option value="@Model.review.Category" selected>@Model.review.Category</option>
                         <option value="Standard">Standard</option>
                         <option value="Non-Standard">Non-Standard</option>
                     </select>
                 </div>
-                <div class="mb-3 col-md-3">
+                <div class="mb-3 col-md-4">
                     <label class="form-label" for="pathway">Booked Date</label>
-                    <input type="date" class="form-control" id="Planned_Date" name="Planned_Date" required />
+                    @if (Model.review.Planned_Date != null)
+                    {
+                        <input type="date" class="form-control" value=@Model.review.Planned_Date.Value.ToString("yyyy-MM-dd") id="Planned_Date" name="Planned_Date" />
+
+                    }
+                    else
+                    {
+                        <input type="date" class="form-control" id="Planned_Date" name="Planned_Date" />
+
+                    }
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="[Review_Recipient]">Recipient</label>
+                    <input type="text" class="form-control" name="Review_Recipient" id="[Review_Recipient]" value="@Html.DisplayFor(model => model.review.Recipient)" readonly>
                 </div>
             </div>
             <div class="mb-3">
                 <label class="form-label" for="inputAddress2">Comment</label>
-                <textarea class="form-control" name="Comments" id="" cols="30" rows="5"></textarea>
+                <textarea class="form-control" name="Comments" id="" cols="30" rows="5">@Model.review.Comments</textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -172,101 +198,6 @@
 </div>
 
 
-<div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-        <div class="col-md-2">
-            <a class="btn btn-default btn-success" asp-controller="Review" asp-action="Index">Back to Reviews Index</a>
-        </div>
-        <div class="col-md-1">
-            <a class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Patient Details</a>
-        </div>
-        <div class="col-md-9"></div>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <h1>Review for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</a></h1>
-    </div>
-
-    <div>
-        <dl class="row">
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.patient.CGU_No):
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.review.CGU_No)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.review.Planned_Date):
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.review.Planned_Date)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.review.Category):
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.review.Category)
-            </dd>
-            @if (Model.review.Owner != Model.review.Recipient)
-            {
-                <dt class="col-sm-2">
-                    Owner/Requester:
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.review.Owner)
-                </dd>
-            }
-            @if (@Html.ValueFor(model => model.review.RecipientLogin).ToString().ToUpper() != @Html.ViewContext.HttpContext.User.Identity.Name.ToString().ToUpper())
-            {
-                <dt class="col-sm-2">
-                    Recipient:
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.review.Recipient)
-                </dd>
-            }
-        </dl>
-
-        <form id="ReviewForm" asp-action="Edit">
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label>Date Completed: (leave blank to use today's date)</label>
-                </div>
-                <div class="col-md-2">
-                    <input class="w-100" id="txtDateComplete" asp-for=@Model.review.Completed_Date name="revDate" />
-                </div>
-                <div class="col-md-2">
-                    <label>Status:</label>
-                </div>
-                <div class="col-md-2">
-                    <select class="w-100" id="ddlComplete" asp-for=@Model.review.Review_Status name="status">
-                        <option value="Pending">Pending</option>
-                        <option value="Complete">Complete</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <input class="w-100" asp-for=@Model.review.ReviewID name="id" hidden="true" />
-                </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label>Comments:</label>
-                </div>
-                <div class="col-md-10">
-                    <textarea rows="8" cols="40" asp-for=@Model.review.Comments name="comments" id="txtComments"></textarea>
-                </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-                    <button type="button" class="btn btn-default btn-success" id="btnSave">Save</button>
-                </div>
-                <div class="col-md-2"></div>
-            </div>
-        </form>
-    </div>
-</div>
 
 <script>
 

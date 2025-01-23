@@ -37,29 +37,15 @@
             </div>
         </div>
     }
-    @if (Model.message != null)
-    {
-        @if (Model.success)
-        {
-            <div class="alert alert-success d-block text-center">
-                <h3>@Model.message</h3>
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-danger d-block text-center">
-                <h3>@Model.message</h3>
-            </div>
-        }
-    }
+   
 
     <div class="card">
         <div class="card-body">
-            <form asp-action="AddNew">
+            <form method="post" asp-action="AddNew">
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="inputEmail">CGU Number</label>
-                        <input name="cguNumber" asp-for="@Model.cguNumber" disabled="true" />
+                        <input name="cguNumber" value="@Model.cguNumber" asp-for="@Model.cguNumber" readonly />
                     </div>
                 </div>
 
@@ -154,45 +140,43 @@
                 </div>
 
                 <div class="row">
-                    <div class="mb-3 col-md-3">
+                    <div class="mb-3 col-md-6">
                         <label class="form-label" >Address</label>
                         <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1">
                     </div>
-                </div>
-                <div class="row">
-                    <div class="mb-3 col-md-3">                        
-                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="TEL">Contact Number</label>
+                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-md-3">                        
+                    <div class="mb-3 col-md-6">                        
+                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2">
+                    </div> <div class="mb-3 col-md-6">                        
+                        <label class="form-label" for="Mobile">Mobile</label>
+                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="Mobile Number">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">                        
                         <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" placeholder="ADDRESS3">
                     </div>
+                    <div class="mb-3 col-md-6">
+                         <label class="form-label" for="EmailAddress">Email Address</label>
+                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address">
+                    </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-md-3">
+                    <div class="mb-3 col-md-6">
                         <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4" placeholder="ADDRESS4">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-md-3">                        
+                    <div class="mb-3 col-md-6">                        
                         <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE" asp-for=@Model.postCode>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label" for="TEL">Contact Number</label>
-                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number">
-                    </div>
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label" for="Mobile">Mobile</label>
-                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="Mobile Number">
-                    </div>
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label" for="EmailAddress">Email Address</label>
-                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address">
-                    </div>
-                </div>
+                
                 <button type="submit" class="btn btn-primary btn-lg">Save Patient</button>
             </form>
         </div>

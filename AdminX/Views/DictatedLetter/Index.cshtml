@@ -4,147 +4,181 @@
     ViewData["Title"] = "Clinic-X - Dictated Letters";
 }
 
-<div class="container card">
+
+
+
+<div class="container-fluid">
     @*<div>
-        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
 
-    <form asp-action="Index">
-        <div class="row g-2 mb-5 mt-2">
-            <div class="col-md-2">
-                <label>Select Clinician:</label>
-            </div>
-            <div class="col-md-6">
-                <select name="staffCode">
-                    <option value="" selected></option>
-                    @foreach (var item in Model.clinicalStaff)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Select</button>
-            </div>
+    <div class="card">
+        <div class="card-body">
+
+            <form asp-action="Index">
+                <div class="row g-2 mb-5 mt-2">
+                    <div class="col-md-2">
+                        <label class="form-label">Select Clinician:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select js-choice" name="staffCode">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.clinicalStaff)
+                            {
+                                <option value=@item.STAFF_CODE>@item.NAME</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Select</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <form asp-action="DictatedLettersForPatient">
+                <div class="row g-2 mb-5 mt-2">
+                    <div class="col-md-2">
+                        <label>Enter CGU Number (including point number) to search by patient:</label>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" type="text" name="cguNo" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+
         </div>
-    </form>
-    
+    </div>
 
-    <form asp-action="DictatedLettersForPatient">
-        <div class="row g-2 mb-5 mt-2">
-            <div class="col-md-2">
-                <label>Enter CGU Number (including point number) to search by patient:</label>
-            </div>
-            <div class="col-md-6">
-                <input name="cguNo" />
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-    </form>
-   
-
-
-    <div class="d-grid">       
+    <div class="card">
         @if (Model.dictatedLettersForPrinting.Count() == 0)
         {
-            <h1>There are no letters awaiting printing</h1>                   
+            <div class="card-body">
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>There are no letters awaiting printing</h3>
+                    </div>
+                </div>
+            </div>
+
         }
         else
         {
-            <div class="row g-5 mb-5">
-                <h2 class="text-center">Letters awaiting printing:</h2>
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="text-dark">Letters awaiting printing</h3>
+                </div>
             </div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU No</th>
-                        <th>Patient</th>
-                        <th>Letter To</th>
-                        <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
-                        <th>Status</th>
-                        <th>Comments</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.dictatedLettersForPrinting)
-                    {
-                        @if (item.Status == "For Printing")
-                        {
-                            <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-primary">@item.CGU_No</a></td>
-                                <td>@item.Patient</td>
-                                <td>@item.LetterTo</td>                                
-                                @if (@item.DateDictated.HasValue)
-                                {
-                                    <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                            <td>@item.Status</td>
-                            <td>@item.Comments</td>
+
+            <div class="card-body">
+                <table class="table defaultTable table-responsive table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>CGU No</th>
+                            <th>Patient</th>
+                            <th>Letter To</th>
+                            <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
+                            <th>Status</th>
+                            <th>Comments</th>
                         </tr>
-                        }
-                    }
-                
-                </tbody>
-            </table>
-        }
-    </div>
-
-    <div class="d-grid">
-        @if (Model.dictatedLettersForApproval.Count() == 0)
-        {
-            <h1>There are no letters outstanding</h1>
-        }
-        else
-        {
-            <div class="row g-2 mb-5 mt-2">
-                @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().LetterFrom)!</h1>*@
-                <h2 class="text-center">Letters to be approved:</h2>
-            </div>
-
-
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU No</th>
-                        <th>Patient</th>
-                        <th>Letter To</th>
-                        <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
-                        <th>Status</th>
-                        <th>Comments</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.dictatedLettersForApproval)
-                    {
-                        @if (item.Status != "For Printing")
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.dictatedLettersForPrinting)
                         {
-                            <tr>
-                                <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-primary">@item.CGU_No</a></td>
-                                <td>@item.Patient</td>
-                                <td>@item.LetterTo</td>
-                                @if (@item.DateDictated.HasValue)
-                                {
-                                    <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                }
-                                <td>@item.Status</td>
-                                <td>@item.Comments</td>
-                            </tr>
+                            @if (item.Status == "For Printing")
+                            {
+                                <tr>
+                                    <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-outline-primary">@item.CGU_No</a></td>
+                                    <td>@item.Patient</td>
+                                    <td>@item.LetterTo</td>
+                                    @if (@item.DateDictated.HasValue)
+                                    {
+                                        <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>@item.Status</td>
+                                    <td>@item.Comments</td>
+                                </tr>
+                            }
                         }
-                    }
 
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
 
+    <div class="card">
+        <div class="card-body">
+            @if (Model.dictatedLettersForApproval.Count() == 0)
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>There are no letters outstanding</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3 class="text-dark">Letters to be approved</h3>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-responsive table-hover table-bordered defaultTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CGU No</th>
+                                <th>Patient</th>
+                                <th>Letter To</th>
+                                <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
+                                <th>Status</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.dictatedLettersForApproval)
+                            {
+                                @if (item.Status != "For Printing")
+                                {
+                                    <tr>
+                                        <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-outline-primary">@item.CGU_No</a></td>
+                                        <td>@item.Patient</td>
+                                        <td>@item.LetterTo</td>
+                                        @if (@item.DateDictated.HasValue)
+                                        {
+                                            <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
+                                        }
+                                        else
+                                        {
+                                            <td></td>
+                                        }
+                                        <td>@item.Status</td>
+                                        <td>@item.Comments</td>
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
 
 </div>

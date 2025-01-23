@@ -6,18 +6,20 @@
 
 <div class="card">
     @*<div>
-        <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
+    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
     </div>*@
 
-    <div class="row g-2 mb-5 mt-2">
+    <div
         @*<h1 class="text-center">Welcome @Html.DisplayFor(model => model.FirstOrDefault().Clinician)!</h1>*@
 
-        <h2 class="text-center">Cases to Triage:</h2>
+    </div>
+    <div class="card-header">
+        <h2 class="card-title text-dark">Cases to Triage</h2>
     </div>
 
-    <div class="d-grid">
-        <table class="defaultTable">
-            <thead>
+    <div class="card-body">
+        <table class="table defaultTable table-responsive table-bordered table-hover table-striped">
+            <thead class="table-dark">
                 <tr>
                     <th></th>
                     <th>File Number</th>
@@ -31,17 +33,17 @@
                 @foreach (var item in Model.triages)
                 {
                     <tr>
-                        <td><a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.ICPID class="btn btn-primary">Select</a></td>
+                        <td><a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.ICPID class="btn btn-outline-primary">Select</a></td>
                         <td>@item.CGU_No</td>
                         <td>@item.ReferralPathway</td>
                         <td>@item.RefType</td>
                         <td>@item.Name</td>
-                        <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>                
+                        <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
 
-   
+
 </div>

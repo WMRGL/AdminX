@@ -6,6 +6,7 @@ using System.Data;
 using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using ClinicalXPDataConnections.Models;
+using AdminX.Models;
 
 namespace AdminX.Controllers
 {
@@ -13,7 +14,7 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly ClinicVM _cvm;
-        private readonly IConfiguration _config;        
+        private readonly IConfiguration _config;
         private readonly IPatientData _patientData;
         private readonly IReferralData _referralData;
         private readonly IActivityData _activityData;
@@ -21,7 +22,7 @@ namespace AdminX.Controllers
         private readonly IClinicData _clinicData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-        
+
         public ClinicController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
@@ -39,7 +40,7 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task <IActionResult> Index(string? filterClinician)
+        public async Task<IActionResult> Index(string? filterClinician)
         {
             try
             {
@@ -51,12 +52,12 @@ namespace AdminX.Controllers
                 {
                     string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                     IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                    _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics","",_ip.GetIPAddress());
-                                        
+                    _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics", "", _ip.GetIPAddress());
+
                     _cvm.staffMembers = _staffUser.GetClinicalStaffList();
-                    
-                    if(filterClinician != "" && filterClinician != null)
-                    {                        
+
+                    if (filterClinician != "" && filterClinician != null)
+                    {
                         _cvm.outstandingClinicsList = _clinicData.GetClinicList(filterClinician);
                     }
                     else
@@ -66,14 +67,52 @@ namespace AdminX.Controllers
 
                     _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.Where(c => c.BOOKED_DATE <= DateTime.Today).OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                     _cvm.filterClinician = filterClinician; //to allow the HTML to keep selected parameters
-                    
+
+                    ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                    {
+                        new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                        new BreadcrumbItem { Text = "Clinic" }
+                    };
+
                     return View(_cvm);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic" });
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult GetFilteredClinics(string filterClinician)
+        {
+            try
+            {
+                List<Appointment> filteredClinics;
+
+                if (string.IsNullOrEmpty(filterClinician))
+                {
+                    filteredClinics = _clinicData.GetAllOutstandingClinics();
+                }
+                else
+                {
+                    filteredClinics = _clinicData.GetClinicList(filterClinician);
+                }
+
+                filteredClinics = filteredClinics.Where(c => c.BOOKED_DATE <= DateTime.Today)
+                                                 .OrderByDescending(c => c.BOOKED_DATE)
+                                                 .ThenBy(c => c.BOOKED_TIME)
+                                                 .ToList();
+
+                return PartialView("_ClinicsTablePartial", filteredClinics);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -101,11 +140,19 @@ namespace AdminX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
+                new BreadcrumbItem { Text = "Details"}
+            };
+
                 return View(_cvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic-AppDetails" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic-AppDetails" });
             }
         }
 
@@ -130,11 +177,23 @@ namespace AdminX.Controllers
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patients = _patientData.GetPatientDetails(mpi);
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
+                    new BreadcrumbItem { Text = "Details", Controller = "Clinic", Action = "ApptDetails", RouteValues = new Dictionary<string, string>
+                    {
+                        { "id", id.ToString() }
+                    }},
+
+                    new BreadcrumbItem { Text = "Clinic" }
+                };
+
                 return View(_cvm);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formname="Clinic-edit" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formname = "Clinic-edit" });
             }
         }
 
@@ -165,27 +224,27 @@ namespace AdminX.Controllers
                 //if (ethnicity == null)
                 //{
                 //    ethnicity = "";
-               // }
-                
+                // }
+
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
 
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName="Clinic-edit(SQL)" }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
                 if (letterRequired != "No")
                 {
                     int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "",
                     "", "", User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.",formName = "Clinic-edit(SQL)" }); }
+                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
                 }
 
-                return RedirectToAction("ApptDetails", new { id = refID });                
+                return RedirectToAction("ApptDetails", new { id = refID });
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="Clinic-edit" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic-edit" });
             }
-        }        
+        }
     }
 }

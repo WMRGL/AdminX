@@ -3,36 +3,40 @@
     ViewData["Title"] = "Admin-X - Clinics";
 }
 
-<div class="container card">
-    
-    <div class="d-grid">
+<div class="card">
+    <div class="card-body">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
                 <h2>Outstanding Contact Outcomes</h2>
             </div>
             <div class="row g-5 mb-3">
-                <div class="col-md-2" class="text-right">
+                <div class="col-md-2 text-right form-label">
                     <label>Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <select name=filterClinician asp-for=@Model.filterClinician>
+                    <select class="form-select js-choice" id="filterClinician" name="filterClinician" asp-for=@Model.filterClinician>
                         <option value="" selected>Select...</option>
-                        @foreach(var item in Model.staffMembers)
+                        @foreach (var item in Model.staffMembers)
                         {
                             <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
                         }
                     </select>
-                </div>                
+                </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary">Update List</button>
+                    <button type="button" id="updateListButton" class="btn btn-outline-primary">Update List</button>
                 </div>
             </div>
-            <div class="row g-5 mb-3">                
-                <div class="col-2">
-                </div>
-                <div class="col-8">                    
-                    <table class="table">
-                        <thead>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-grid">
+            <div class="row g-5 mb-3">
+                <div id="tableContainer" class="table-responsive">
+                    <table id="clinicsTable" class="table defaultTable table-bordered table-responsive table-hover">
+                        <thead class="table-dark">
                             <tr>
                                 <th></th>
                                 <th>Patient</th>
@@ -42,7 +46,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach(var item in @Model.outstandingClinicsList)
+                            @foreach (var item in @Model.outstandingClinicsList)
                             {
                                 <tr>
                                     <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
@@ -54,41 +58,35 @@
                             }
                         </tbody>
                     </table>
-                </div>                            
+                </div>
             </div>
-        </form>     @*well this doesn't make any sense... if I don't make the whole table part of the form, it blocks all the imputs!!!*@ 
-    </div>          @*you'd think I'd know better than to expect anything to actually make sense by now, wouldn't you??*@
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSelectPastClinic").addEventListener("click", OpenPastClinic);
     //document.getElementById("btnSelectFutureClinic").addEventListener("click", OpenFutureClinic);
-    
-    function GoBack() 
-    {
+
+    function GoBack() {
         window.history.back();
         //window.close();
     }
 
-    function OpenPastClinic() 
-    {
+    function OpenPastClinic() {
         OpenClinic(document.getElementById('ddlPastClinics'));
     }
 
-    function OpenFutureClinic() 
-    {   
+    function OpenFutureClinic() {
         OpenClinic(document.getElementById('ddlFutureClinics'));
     }
 
-    function OpenClinic(clinic)
-    {
-        if (clinic.value == "" || clinic.value == null)
-        {
+    function OpenClinic(clinic) {
+        if (clinic.value == "" || clinic.value == null) {
             alert("You must choose a clinic.");
         }
-        else
-        {
+        else {
             let _url = ""
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Clinic/ApptDetails?id=" + clinic.value;
             location.href = _url;
@@ -96,9 +94,40 @@
         }
     }
 
-    function SetShowOutstandingChecked()
-    {
+    function SetShowOutstandingChecked() {
         document.getElementById("txtIsShowOutstanding").value = document.getElementById("chkIsShowOutstanding").checked;
     }
 
 </script>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#updateListButton").click(function () {
+                var selectedClinician = $("#filterClinician").val();
+
+                $.ajax({
+                    url: "/Clinic/GetFilteredClinics",
+                    type: "GET",
+                    data: { filterClinician: selectedClinician },
+                    success: function (data) {
+                        $("#tableContainer").html(data);
+                        $("#tableContainer").html(data);
+
+                        $('#clinicsTable').DataTable({
+                            info: true,
+                            order: false, 
+                            paging: true,
+                            autoWidth: false,
+                            width: "100%"
+                                });
+                    },
+                    error: function () {
+                        alert("An error occurred while updating the list.");
+                    }
+                });
+            });
+        });
+
+    </script>
+}
