@@ -6,6 +6,7 @@ using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
+using AdminX.Models;
 
 namespace AdminX.Controllers
 {
@@ -66,6 +67,13 @@ namespace AdminX.Controllers
                 _lvm.clinicalStaff = _staffUser.GetClinicalStaffList();
                 _lvm.dictatedLettersForApproval = letters.Where(l => l.Status != "For Printing").ToList();
                 _lvm.dictatedLettersForPrinting = letters.Where(l => l.Status == "For Printing").ToList();
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                    new BreadcrumbItem { Text = "Letters" }
+                };
 
                 return View(_lvm);
             }

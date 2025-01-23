@@ -54,11 +54,11 @@ namespace AdminX.Controllers
 
                 _rvm.reviewList = _reviewData.GetReviewsListAll();
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
 
-                new BreadcrumbItem { Text = "Review" }
-            };
+                    new BreadcrumbItem { Text = "Review" }
+                };
 
                 return View(_rvm);
             }
@@ -281,6 +281,12 @@ namespace AdminX.Controllers
                 if (_rvm.activityDetail is null)
                 {
                     TempData["ErrorMessage"] = "Patient does not have Referral ID";
+                    return RedirectToAction("Index", "Review");
+                }
+
+                if (_rvm.patient is null)
+                {
+                    TempData["ErrorMessage"] = "Patient does not have Patient ID";
                     return RedirectToAction("Index", "Review");
                 }
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
