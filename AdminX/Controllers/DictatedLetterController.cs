@@ -14,7 +14,7 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
-        private readonly LetterController _lc;
+        private readonly AdminX.Controllers.LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;
         private readonly ICRUD _crud;
@@ -39,7 +39,7 @@ namespace AdminX.Controllers
             _dictatedLetterData = new DictatedLetterData(_clinContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
             _externalFacilityData = new ExternalFacilityData(_clinContext);            
-            _lc = new LetterController(_clinContext, _docContext);
+            _lc = new AdminX.Controllers.LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
         }
 
