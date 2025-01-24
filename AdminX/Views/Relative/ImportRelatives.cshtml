@@ -51,7 +51,7 @@
                             <td>
                                 <select name="relation">
                                     <option value="" selected>Not known</option>
-                                    @foreach(var rel in Model.relationslist)
+                                    @foreach(var rel in Model.relationsList)
                                     {
                                         <option value=@rel.RelCode>@rel.relation</option>
                                     }

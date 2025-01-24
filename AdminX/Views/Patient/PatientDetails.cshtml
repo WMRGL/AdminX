@@ -875,7 +875,7 @@
                     <div class="card-header">
                         <h5 class="card-title mb-0">Diary</h5>
                         <div class="col-auto ms-auto text-end mt-n1">
-                            <a href="#" class="btn btn-primary">Add Diary Entry</a>
+                            <a asp-controller="Diary" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Add Diary Entry</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -932,7 +932,7 @@
                             </div>
 
                             <div class="col-auto ms-auto text-end mt-n1">
-                                <a href="#" class="btn btn-primary">Add Referral</a>
+                                <a asp-controller="Referral" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Add Referral</a>
                             </div>
                         </div>
                     </div>
@@ -995,7 +995,7 @@
                             </div>
 
                             <div class="col-auto ms-auto text-end mt-n1">
-                                <a href="#" class="btn btn-primary">Add Referral</a>
+                                <a asp-controller="Referral" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Add Referral</a>
                             </div>
                         </div>
                     </div>
@@ -1058,7 +1058,7 @@
                             </div>
 
                             <div class="col-auto ms-auto text-end mt-n1">
-                                <a href="#" class="btn btn-primary me-2">Add Contact</a>
+                                <a asp-controller="WIP" asp-action="Index" class="btn btn-primary me-2">Add Contact</a>
                             </div>
                         </div>
                     </div>

@@ -166,7 +166,8 @@ namespace AdminX.Controllers
             Paragraph contentLetterContent = section.AddParagraph(letterContent);
             contentLetterContent.Format.Font.Size = 12;
 
-            string signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+            //string signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+            string signOff = _lvm.dictatedLetter.LetterFrom;
             string sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ", "")}{_lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
 
 
@@ -234,9 +235,7 @@ namespace AdminX.Controllers
                 can't actually print it because there's no way to give it your username, so it'll all be under the server's name
                 */
             }
-        }
-
-        //http://localhost:7168/Triage/FurtherRequest?id=40624
+        }  
 
         public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
