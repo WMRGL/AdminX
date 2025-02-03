@@ -38,6 +38,7 @@ namespace AdminX.Controllers
         private readonly IReviewData _reviewData;
         private readonly ICityData _cityData;
         private readonly IAreaNamesData _areaNamesData;
+        private readonly IGenderData _genderData;
 
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext)
@@ -68,6 +69,7 @@ namespace AdminX.Controllers
             _reviewData = new ReviewData(_clinContext);
             _cityData = new CityData(_adminContext);
             _areaNamesData = new AreaNamesData(_clinContext);
+            _genderData = new GenderData(_clinContext);
         }
 
         [Authorize]
@@ -207,8 +209,7 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                _pvm.cityList = _cityData.GetAllCities();
-                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
+                
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
@@ -240,6 +241,9 @@ namespace AdminX.Controllers
                 _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = _gpData.GetGPList();
                 _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
+                _pvm.cityList = _cityData.GetAllCities();
+                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
+                _pvm.genders = _genderData.GetGenderList();
 
                 if (success.HasValue)
                 {
@@ -273,7 +277,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
-            string language, bool isInterpreterReqd, string postcode,string address1, string address2, string address3, string address4, string areaCode, 
+            string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode,string address1, string address2, string address3, string address4, string areaCode, 
             string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex, 
             string middleName, string tel, string workTel, string mobile, string cguNumber)
         {
@@ -296,7 +300,7 @@ namespace AdminX.Controllers
                 else
                 {
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, false, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, cguNumber);
+                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, cguNumber);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }
@@ -320,7 +324,15 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _pvm.patient = _patientData.GetPatientDetails(mpi);                
+                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.titles = _titleData.GetTitlesList();
+                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
+                _pvm.GPList = _gpData.GetGPList();
+                _pvm.currentGPList = _pvm.GPList.Where(g => g.FACILITY == _pvm.patient.GP_Facility_Code).ToList();
+                _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
+                _pvm.cityList = _cityData.GetAllCities();
+                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
+                _pvm.genders = _genderData.GetGenderList();
 
                 if (success.HasValue)
                 {
@@ -343,7 +355,8 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
-            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile)
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile, 
+            bool isInterpreterRequired, bool isConsentToEmail)
         {
             try
             {
@@ -354,7 +367,7 @@ namespace AdminX.Controllers
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title,firstname,"",lastname,nhsno,postcode,gpCode,address1,address2,address3,
-                    address4,email,prevName,dob,null,maidenName,false,false,preferredName,ethnicCode,sex,middleName,tel,workTel,mobile);
+                    address4,email,prevName,dob,null,maidenName,isInterpreterRequired,isConsentToEmail,preferredName,ethnicCode,sex,middleName,tel,workTel,mobile);
 
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }

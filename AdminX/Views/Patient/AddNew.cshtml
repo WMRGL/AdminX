@@ -101,8 +101,7 @@
                         <select class="form-select" name="isInterpreterReqd">
                             <option value="false">No</option>
                             <option value="true">Yes</option>
-                        </select>
-                        
+                        </select>                        
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ethnic">Ethnicity</label>
@@ -116,8 +115,21 @@
                         </select>
                     </div>
                     <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="mb-3 col-md-3">
                         <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
-                        <select class="form-select" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
+                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
                             <option value="" selected>Select...</option>                            
                             @foreach (var item in Model.GPPracticeList)
                             {
@@ -126,15 +138,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="mb-3 col-md-9"></div>
+                <div class="row">                   
                     <div class="mb-3 col-md-3">                        
                         <select class="form-select" id="ddlGP" name="gpCode" hidden="true">
-                            @*option value="" selected>Select...</option>
-                            @foreach (var item in Model.GPList)
-                            {
-                                <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.NAME</option>
-                            }*@
+                            
                         </select>
                     </div>
                 </div>
@@ -170,6 +177,13 @@
                     <div class="mb-3 col-md-6">
                         <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4" placeholder="COUNTY">
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label">Consent to Electronic Communication</label>
+                        <select class="form-select" name="isConsentToEmail">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-6">                        
@@ -193,170 +207,7 @@
             </form>
         </div>
     </div>
-    @*
-    <form asp-action="AddNew">
-        <dl class="row">
-            <dt class="col-sm-2">
-                <label>Name:</label>
-            </dt>
-            <dd class="col-sm-10">
-                <select name="title">
-                    <option value="" selected></option>
-                    
-                    @foreach(var item in Model.titles)
-                    {
-                        <option value=@item.Title>@item.Title</option>
-                    }
-                    
-                </select>
-                <input type="text" name="firstName" />
-                <input type="text" name="lastName" />
-            </dd>
-           
-            <dt class="col-sm-2">
-                Preferred Name:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-
-            <dt class="col-sm-2"></dt>
-            <dd class="col-sm-4">
-
-            </dd>
-
-            
-            <dt class="col-sm-2">
-                Date of Birth:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="date" name="dob" />
-            </dd>
-
-            <dt class="col-sm-2">
-                Date of death (if applicable):
-            </dt>
-            <dd class="col-sm-4">
-                <input type="date" name="dod" />
-            </dd>
-
-            
-            <dt class="col-sm-2">
-                NHS Number:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" name="nhsno" />
-            </dd>
-            <dt class="col-sm-2">
-                Primary Language:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" name="language" />
-            </dd>
-
-            
-            <dt class="col-sm-2">
-                Ethnicity:
-            </dt>
-            <dd class="col-sm-4">
-                <select name="ethnic">
-                    <option value="" selected>Select...</option>
-                    
-                    @foreach(var item in Model.ethnicities)
-                    {
-                        <option value=@item.EthnicCode>@item.Ethnic</option>
-                    }                    
-                </select>
-            </dd>
-            <dt class="col-sm-2">
-                Interpreter required:
-            </dt>
-            <dd class="col-sm-4">
-                <select name="isInterpreterReqd">
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                </select>
-            </dd>
-
-            <dt class="col-sm-2">
-                GP Details:
-            </dt>
-            <dd class="col-sm-4">
-                <select id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
-                    <option value="" selected>Select...</option>
-                    
-                    @foreach (var item in Model.GPPracticeList)
-                    {
-                        <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
-                    }
-                    
-                </select>
-            </dd>
-            <dt class="col-sm-2"></dt>
-            <dd class="col-sm-4">
-                <select id="ddlGP" name="gpCode" hidden="true">
-                </select>
-            </dd>
-
-            <dd class="col-sm-12"><hr /></dd>
-
-            
-            <dt class="col-sm-2">
-                Address:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-            <dt class="col-sm-2">
-                Contact number:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-            <dt class="col-sm-2">
-                Mobile:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-10">
-                <input type="text" />
-            </dd>
-
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-10">
-                <input type="text" />
-            </dd>
-
-            <dt class="col-sm-2">
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-            <dt class="col-sm-2">
-                Email Address:
-            </dt>
-            <dd class="col-sm-4">
-                <input type="text" />
-            </dd>
-        </dl>
-
-        <div class="row">
-            <div action="col-md-2">
-                <button class="btn btn-success" type="submit">Save Patient</button>
-            </div>
-        </div>
-    </form>*@
+    
 </div>
 
 

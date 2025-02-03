@@ -701,7 +701,7 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Email:</strong>
                                                 <div class="text-muted">
-                                                    @if (Model.patient.EmailAddress != null)
+                                                    @if (Model.patient.EmailAddress != null && Model.patient.EmailCommsConsent == "Yes")
                                                     {
                                                         @if (Model.patient.EmailCommsConsent == "Yes")
                                                         {
