@@ -39,5 +39,7 @@ namespace AdminX.ViewModels
         public string? ethnicCode { get; set; }
         public Referral referral { get; set; }
         public List<Review> reviewList { get; set; }
+        public List<ListCity> cityList { get; set; }
+        public List<AreaNames> areaNamesList { get; set; }
     }
 }

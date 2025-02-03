@@ -43,25 +43,7 @@ namespace AdminX.Controllers
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _constantsData = new ConstantsData(_docContext);
         }
-
-        /*
-        public async Task<IActionResult> Letter(int id, int mpi, string user, string referrer)
-        {
-            try
-            {
-
-                _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
-                _lvm.patient = _patientData.GetPatientDetails(mpi);
-                _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
-                _lvm.referrer = _externalClinicianData.GetClinicianDetails(referrer);
-
-                return View(_lvm);
-            }
-            catch (Exception ex)
-            {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Letter" });
-            }
-        }*/
+               
 
         //Creates a preview of the DOT letter
         public void PrintDOTPDF(int dID, string user, bool isPreview)
@@ -88,7 +70,7 @@ namespace AdminX.Controllers
             Paragraph title = section.AddParagraph();
             title.AddFormattedText("WEST MIDLANDS REGIONAL CLINICAL GENETICS SERVICE", TextFormat.Bold);
             title.Format.Alignment = ParagraphAlignment.Center;
-            title.Format.Font.Size = 12; //yes, we literally have to do this for every single paragraph!!
+            //title.Format.Font.Size = 12; //yes, we literally have to do this for every single paragraph!!
 
             spacer = section.AddParagraph();
 
@@ -99,7 +81,7 @@ namespace AdminX.Controllers
             ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
             table.Rows.Height = 50;
             table.Columns.Width = 250;
-            table.Format.Font.Size = 12;
+            //table.Format.Font.Size = 12;
             MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
             row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
             MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
@@ -133,10 +115,10 @@ namespace AdminX.Controllers
 
             spacer = section.AddParagraph();
             Paragraph contentRefNo = section.AddParagraph($"Please quote our reference on all correspondence: {_lvm.patient.CGU_No}");
-            contentRefNo.Format.Font.Size = 12;
+            //contentRefNo.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentDatesInfo = section.AddParagraph(datesInfo);
-            contentDatesInfo.Format.Font.Size = 12;
+            //contentDatesInfo.Format.Font.Size = 12;
 
             string address = "";
             address = _lvm.dictatedLetter.LetterTo;
@@ -144,27 +126,27 @@ namespace AdminX.Controllers
             spacer = section.AddParagraph();
             spacer = section.AddParagraph();
             Paragraph contentPatientAddress = section.AddParagraph(address);
-            contentPatientAddress.Format.Font.Size = 12;
+            //contentPatientAddress.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentToday = section.AddParagraph(DateTime.Today.ToString("dd MMMM yyyy"));
-            contentToday.Format.Font.Size = 12;
+            //contentToday.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentSalutation = section.AddParagraph($"Dear {_lvm.dictatedLetter.LetterToSalutation}");
-            contentSalutation.Format.Font.Size = 12;
+            //contentSalutation.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentLetterRe = section.AddParagraph();
             contentLetterRe.AddFormattedText(_lvm.dictatedLetter.LetterRe, TextFormat.Bold);
-            contentLetterRe.Format.Font.Size = 12;
+            //contentLetterRe.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentSummary = section.AddParagraph();
             contentSummary.AddFormattedText(_lvm.dictatedLetter.LetterContentBold, TextFormat.Bold);
-            contentSummary.Format.Font.Size = 12;
+            //contentSummary.Format.Font.Size = 12;
             spacer = section.AddParagraph();
 
             string letterContent = RemoveHTML(_lvm.dictatedLetter.LetterContent);
 
             Paragraph contentLetterContent = section.AddParagraph(letterContent);
-            contentLetterContent.Format.Font.Size = 12;
+            //contentLetterContent.Format.Font.Size = 12;
 
             //string signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
             string signOff = _lvm.dictatedLetter.LetterFrom;
@@ -176,7 +158,7 @@ namespace AdminX.Controllers
             spacer = section.AddParagraph();
 
             Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
-            contentSignOff.Format.Font.Size = 12;
+            //contentSignOff.Format.Font.Size = 12;
             spacer = section.AddParagraph();
             Paragraph contentSig = section.AddParagraph();
             if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
@@ -185,7 +167,7 @@ namespace AdminX.Controllers
             }
             spacer = section.AddParagraph();
             Paragraph contentSignOffName = section.AddParagraph(signOff);
-            contentSignOffName.Format.Font.Size = 12;
+            //contentSignOffName.Format.Font.Size = 12;
 
             int printCount = 1;
 
@@ -199,21 +181,20 @@ namespace AdminX.Controllers
                 spacer = section.AddParagraph();
                 spacer = section.AddParagraph();
                 Paragraph ccHead = section.AddParagraph("CC:");
-                ccHead.Format.Font.Size = 12;
+                //ccHead.Format.Font.Size = 12;
 
                 foreach (var item in ccList)
                 {
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
                     Paragraph contentCC = section.AddParagraph(item.CC);
-                    contentCC.Format.Font.Size = 12;
+                    //contentCC.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
                     printCount = printCount += 1;
                 }
             }
-
-            //document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf"));
+                        
 
             PdfDocumentRenderer pdf = new PdfDocumentRenderer();
             pdf.Document = document;
@@ -298,7 +279,7 @@ namespace AdminX.Controllers
 
                     table.Rows.Height = 50;
                     table.Columns.Width = 250;
-                    table.Format.Font.Size = 12;
+                    ////table.Format.Font.Size = 12;
                     MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
                     row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
                     MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
@@ -321,13 +302,11 @@ namespace AdminX.Controllers
                 else
                 {
                     Paragraph contentOurAddress = section.AddParagraph(_lvm.documentsContent.OurAddress);
-                    contentOurAddress.Format.Font.Size = 12;
+                    //contentOurAddress.Format.Font.Size = 12;
                     contentOurAddress.Format.Alignment = ParagraphAlignment.Right;
                 }
 
-
-
-                /*
+                /* //not sure if this line is needed...?
                 if (_lvm.documentsContent.DirectLine != null) //because we have to trap them nulls!
                 {
                     spacer = section.AddParagraph();
@@ -381,7 +360,14 @@ namespace AdminX.Controllers
 
                 if (_lvm.documentsContent.LetterTo == "RD")
                 {
-                    //placeholder
+                    var refAddressee = _externalClinicianData.GetClinicianDetails(_lvm.referrer.MasterClinicianCode);
+                    salutation = refAddressee.TITLE + " " + refAddressee.FIRST_NAME + " " + refAddressee.NAME;
+                    var refFac = _externalFacilityData.GetFacilityDetails(refAddressee.FACILITY);
+                    address = refFac.NAME + Environment.NewLine;
+                    address += refFac.ADDRESS + Environment.NewLine;
+                    address += refFac.CITY + Environment.NewLine;
+                    address += refFac.STATE + Environment.NewLine;
+                    address += refFac.ZIP + Environment.NewLine;
                 }
 
                 if (_lvm.documentsContent.LetterTo == "GP")
@@ -390,10 +376,10 @@ namespace AdminX.Controllers
                     salutation = gpAddressee.TITLE + " " + gpAddressee.FIRST_NAME + " " + gpAddressee.NAME;
                     var gpFac = _externalFacilityData.GetFacilityDetails(gpAddressee.FACILITY);
                     address = gpFac.NAME + Environment.NewLine;
-                    address = address + gpFac.ADDRESS + Environment.NewLine;
-                    address += address + gpFac.CITY + Environment.NewLine;
-                    address += address + gpFac.STATE + Environment.NewLine;
-                    address += address + gpFac.ZIP + Environment.NewLine;
+                    address += gpFac.ADDRESS + Environment.NewLine;
+                    address += gpFac.CITY + Environment.NewLine;
+                    address += gpFac.STATE + Environment.NewLine;
+                    address += gpFac.ZIP + Environment.NewLine;
                 }
 
                 if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo")
@@ -410,7 +396,7 @@ namespace AdminX.Controllers
 
 
 
-                if (address != "" && !docCode.Contains("CF"))
+                if (address != "")
                 {
                     MigraDoc.DocumentObjectModel.Tables.Table table2 = section.AddTable();
                     MigraDoc.DocumentObjectModel.Tables.Column addressInfo = table2.AddColumn();
@@ -420,7 +406,7 @@ namespace AdminX.Controllers
 
                     table2.Rows.Height = 50;
                     table2.Columns.Width = 250;
-                    table2.Format.Font.Size = 12;
+                    //table2.Format.Font.Size = 12;
                     MigraDoc.DocumentObjectModel.Tables.Row row1 = table2.AddRow();
                     row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
                     row1[0].AddParagraph(name + System.Environment.NewLine + address);
@@ -433,7 +419,7 @@ namespace AdminX.Controllers
 
                     emailEtc = emailEtc + DateTime.Today.ToString("dd MMMM yyyy");
 
-                    row1[1].AddParagraph(emailEtc);
+                    //row1[1].AddParagraph(emailEtc);
                 }
                 //Content containers for all of the paragraphs, as well as other data required
 
@@ -442,16 +428,17 @@ namespace AdminX.Controllers
                 if (_lvm.documentsContent.LetterTo == "PTREL" || _lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.DocCode == "DT13")
                 {
                     Paragraph contentQuoteRef = section.AddParagraph("CGU No. : " + _lvm.patient.CGU_No);
-                    contentQuoteRef.Format.Font.Size = 12;
+                    //contentQuoteRef.Format.Font.Size = 12;
                 }
                 spacer = section.AddParagraph();
 
-                if (address != "" && !docCode.Contains("CF"))
+                if (address != "")
                 {
                     Paragraph contentSalutation = section.AddParagraph("Dear " + salutation);
-                    contentSalutation.Format.Font.Size = 12;
+                    //contentSalutation.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
                 }
-                //WHY IS THERE ALWAYS A NULL SOMEWHWERE?????????
+                
                 string referrerName = "";
                 if (_lvm.referrer != null) { referrerName = _lvm.referrer.TITLE + " " + _lvm.referrer.FIRST_NAME + " " + _lvm.referrer.NAME; }
                 string gpName = "";
@@ -485,7 +472,7 @@ namespace AdminX.Controllers
                 {
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent = section.AddParagraph(content1);
-                    letterContent.Format.Font.Size = 12;
+                    //letterContent.Format.Font.Size = 12;
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
 
                 }
@@ -497,13 +484,13 @@ namespace AdminX.Controllers
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     signOff = "CGU Booking Centre";
                     ccs[0] = referrerName;
                 }
@@ -511,18 +498,123 @@ namespace AdminX.Controllers
                 //KC letter
                 if (docCode == "Kc")
                 {
-                    pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it! Oh PDFSharp you are so wonderful.
+                    pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it!
 
                     content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
                         Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
                         Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
                     content2 = _lvm.documentsContent.Para5;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                if (docCode == "RejFH")
+                {
+                    Paragraph contentRe = section.AddParagraph();
+                    contentRe.AddFormattedText("Re: " + patName + ", " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
+                    //contentRe.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    //letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para3);
+                    //letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    //letterContent3.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    //letterContent4.Format.Font.Size = 12;
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                if (docCode == "RejFHAW")
+                {
+                    Paragraph contentRe = section.AddParagraph();                    
+                    contentRe.AddFormattedText("Re: " + patName + ", " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
+                    //contentRe.Format.Font.Size = 12;
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    //letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
+                    //letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
+                    //letterContent3.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    //letterContent4.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    //letterContent5.Format.Font.Size = 12;
+
+                    signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                }
+
+                //OOR1
+                if (docCode == "OOR1")
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
+                    MigraDoc.DocumentObjectModel.Tables.Column contentPatAddress = table.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    MigraDoc.DocumentObjectModel.Tables.Column contentPatDOB = table.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table.Rows.Height = 50;
+                    table.Columns.Width = 150;
+                    //table.Format.Font.Size = 12;
+                    MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
+                    row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    row1.Format.Font.Bold = true;
+                    //row1.Format.Font.Size = 12;
+                    row1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    //letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
+                    //letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
+                    //letterContent3.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    //letterContent4.Format.Font.Size = 12;
+                }
+
+                //OOR1
+                if (docCode == "OOR2")
+                {
+                    MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
+                    MigraDoc.DocumentObjectModel.Tables.Column contentPatAddress = table.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    MigraDoc.DocumentObjectModel.Tables.Column contentPatDOB = table.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table.Rows.Height = 50;
+                    table.Columns.Width = 100;
+                    //table.Format.Font.Size = 12;
+                    MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
+                    row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    row1.Format.Font.Bold = true;
+                    //row1.Format.Font.Size = 12;
+                    row1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    //letterContent1.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
+                    //letterContent2.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
+                    //letterContent3.Format.Font.Size = 12;
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    //letterContent4.Format.Font.Size = 12;
                 }
 
                 //PrC letter
@@ -534,16 +626,16 @@ namespace AdminX.Controllers
                     content4 = _lvm.documentsContent.Para4;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
@@ -558,20 +650,20 @@ namespace AdminX.Controllers
                     content5 = _lvm.documentsContent.Para9;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     if (content2 != null && content2 != "")
                     {
                         Paragraph letterContent2 = section.AddParagraph();
                         letterContent2.AddFormattedText(content2, TextFormat.Bold);
-                        letterContent2.Format.Font.Size = 12;
+                        //letterContent2.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
                     ccs[1] = gpName;
@@ -609,28 +701,28 @@ namespace AdminX.Controllers
                         content6 = _lvm.documentsContent.Para9;
                     }
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     if (content2 != null && content2 != "")
                     {
                         Paragraph letterContent2 = section.AddParagraph(content2);
-                        letterContent2.Format.Font.Size = 12;
+                        //letterContent2.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content3 != null && content3 != "")
                     {
                         Paragraph letterContent3 = section.AddParagraph(content3);
-                        letterContent3.Format.Font.Size = 12;
+                        //letterContent3.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content4 != null && content4 != "")
                     {
                         Paragraph letterContent4 = section.AddParagraph(content4);
-                        letterContent4.Format.Font.Size = 12;
+                        //letterContent4.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     Paragraph letterContent5 = section.AddParagraph(content5);
-                    letterContent5.Format.Font.Size = 12;
+                    //letterContent5.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -653,18 +745,18 @@ namespace AdminX.Controllers
                     }
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     if (content2 != null && content2 != "")
                     {
                         Paragraph letterContent2 = section.AddParagraph(content2);
-                        letterContent2.Format.Font.Size = 12;
+                        //letterContent2.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content3 != null && content3 != "")
                     {
                         Paragraph letterContent3 = section.AddParagraph(content3);
-                        letterContent3.Format.Font.Size = 12;
+                        //letterContent3.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -704,27 +796,27 @@ namespace AdminX.Controllers
                     }
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     if (content3 != "")
                     {
                         Paragraph letterContent3 = section.AddParagraph(content3);
-                        letterContent3.Format.Font.Size = 12;
+                        //letterContent3.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content4 != "")
                     {
                         Paragraph letterContent4 = section.AddParagraph(content4);
-                        letterContent4.Format.Font.Size = 12;
+                        //letterContent4.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content5 != "")
                     {
                         Paragraph letterContent5 = section.AddParagraph(content5);
-                        letterContent5.Format.Font.Size = 12;
+                        //letterContent5.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -764,30 +856,30 @@ namespace AdminX.Controllers
                     }
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     if (content2 != "")
                     {
                         Paragraph letterContent2 = section.AddParagraph(content2);
-                        letterContent2.Format.Font.Size = 12;
+                        //letterContent2.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
 
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     if (content4 != "")
                     {
                         Paragraph letterContent4 = section.AddParagraph(content4);
-                        letterContent4.Format.Font.Size = 12;
+                        //letterContent4.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     if (content5 != "")
                     {
                         Paragraph letterContent5 = section.AddParagraph(content5);
-                        letterContent5.Format.Font.Size = 12;
+                        //letterContent5.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -803,13 +895,13 @@ namespace AdminX.Controllers
                     content3 = additionalText;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -841,16 +933,16 @@ namespace AdminX.Controllers
                     content4 = _lvm.documentsContent.Para4;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(content5);
-                    letterContent5.Format.Font.Size = 12;
+                    //letterContent5.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -866,16 +958,16 @@ namespace AdminX.Controllers
                     content4 = _lvm.documentsContent.Para9;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -891,16 +983,16 @@ namespace AdminX.Controllers
                     content4 = _lvm.documentsContent.Para4;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -913,20 +1005,20 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     if (content2 != null)
                     {
                         Paragraph letterContent2 = section.AddParagraph();
                         letterContent2.AddFormattedText(content2, TextFormat.Bold);
-                        letterContent1.Format.Font.Size = 12;
+                        //letterContent1.Format.Font.Size = 12;
                         spacer = section.AddParagraph();
                     }
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -952,7 +1044,7 @@ namespace AdminX.Controllers
                     contentPtDOB.Format.Alignment = ParagraphAlignment.Left;
                     table.Rows.Height = 50;
                     table.Columns.Width = 250;
-                    table.Format.Font.Size = 12;
+                    //table.Format.Font.Size = 12;
                     MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
                     row1[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1[1].AddParagraph(ptDOB);
@@ -960,19 +1052,19 @@ namespace AdminX.Controllers
                     row1.Format.Font.Bold = true;
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para5);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para6 + $" {siteText.ToLower()} " + _lvm.documentsContent.Para7);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
@@ -981,9 +1073,9 @@ namespace AdminX.Controllers
                 if (docCode == "DT01")
                 {
                     Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
-                    letterContentPatName.Format.Font.Size = 12;
+                    //letterContentPatName.Format.Font.Size = 12;
                     Paragraph letterContentPatDOB = section.AddParagraph("Date of birth: " + patDOB.ToString("dd/MM/yyyy"));
-                    letterContentPatDOB.Format.Font.Size = 12;
+                    //letterContentPatDOB.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     if (relID == 0)
@@ -998,13 +1090,13 @@ namespace AdminX.Controllers
                     content3 = _lvm.documentsContent.Para3;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1018,14 +1110,14 @@ namespace AdminX.Controllers
                 {
                     salutation = "Colleague";
                     Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
-                    letterContentPatName.Format.Font.Size = 12;
+                    //letterContentPatName.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContentPatDOB = section.AddParagraph("Date of birth: " + patDOB.ToString("dd/MM/yyyy"));
-                    letterContentPatDOB.Format.Font.Size = 12;
+                    //letterContentPatDOB.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContentPatAddress = section.AddParagraph(patAddress);
-                    letterContentPatAddress.Format.Font.Size = 12;
+                    //letterContentPatAddress.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2;
@@ -1033,16 +1125,16 @@ namespace AdminX.Controllers
                     content3 = _lvm.documentsContent.Para4;
                     content4 = _lvm.documentsContent.Para5;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1052,30 +1144,30 @@ namespace AdminX.Controllers
                 if (docCode == "DT11")
                 {
                     Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
-                    letterContentPatName.Format.Font.Size = 12;
+                    //letterContentPatName.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     ExternalClinician clin = _externalClinicianData.GetClinicianDetails(clinicianCode);
 
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para4;
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content5 = _lvm.documentsContent.Para8;
                     Paragraph letterContent5 = section.AddParagraph(content5);
-                    letterContent5.Format.Font.Size = 12;
+                    //letterContent5.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1095,32 +1187,32 @@ namespace AdminX.Controllers
                         "B15 2TG"; //because of course it's hard-coded in CGU_DB
 
                     Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
-                    letterContentPatName.Format.Font.Size = 12;
+                    //letterContentPatName.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContentRecipient = section.AddParagraph();
                     letterContentRecipient.AddFormattedText(recipient, TextFormat.Bold);
-                    letterContentRecipient.Format.Font.Size = 12;
+                    //letterContentRecipient.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content3 = _lvm.documentsContent.Para4;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content4 = _lvm.documentsContent.Para8;
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     enclosures = "copy of completed consent form (Letter code CF04)";
@@ -1133,38 +1225,38 @@ namespace AdminX.Controllers
                 {
                     Paragraph letterContentPatName = section.AddParagraph();
                     letterContentPatName.AddFormattedText("Re: " + patName + System.Environment.NewLine + patAddress, TextFormat.Bold);
-                    letterContentPatName.Format.Font.Size = 12;
+                    //letterContentPatName.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContentPatDOB = section.AddParagraph();
                     letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
-                    letterContentPatDOB.Format.Font.Size = 12;
+                    //letterContentPatDOB.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     Paragraph letterContentCancerSite = section.AddParagraph();
                     letterContentCancerSite.AddFormattedText("Cancer Site: " + siteText, TextFormat.Bold);
-                    letterContentCancerSite.Format.Font.Size = 12;
+                    //letterContentCancerSite.Format.Font.Size = 12;
                     letterContentCancerSite.Format.Alignment = ParagraphAlignment.Right;
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content4 = _lvm.documentsContent.Para4;
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    letterContent4.Format.Font.Size = 12;
+                    //letterContent4.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1184,21 +1276,21 @@ namespace AdminX.Controllers
                         " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
 
                     Paragraph letterContentRelDets = section.AddParagraph(relDets);
-                    letterContentRelDets.Format.Font.Size = 12;
+                    //letterContentRelDets.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContentPatDets = section.AddParagraph(patDets);
-                    letterContentPatDets.Format.Font.Size = 12;
+                    //letterContentPatDets.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para10;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    letterContent3.Format.Font.Size = 12;
+                    //letterContent3.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1211,16 +1303,16 @@ namespace AdminX.Controllers
                     //totalLength = totalLength + 20;
                     Paragraph letterContentPt = section.AddParagraph();
                     letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
-                    letterContentPt.Format.Font.Size = 12;
+                    //letterContentPt.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1232,10 +1324,10 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    letterContent1.Format.Font.Size = 12;
+                    //letterContent1.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    letterContent2.Format.Font.Size = 12;
+                    //letterContent2.Format.Font.Size = 12;
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1249,17 +1341,14 @@ namespace AdminX.Controllers
                 sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
 
                 spacer = section.AddParagraph();
-
-
+                               
 
                 Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
-                contentSignOff.Format.Font.Size = 12;
+                //contentSignOff.Format.Font.Size = 12;
                 spacer = section.AddParagraph();
 
                 if (signOff == "CGU Booking Centre")
                 {
-                    spacer = section.AddParagraph();
-                    spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph(); //apparently it's not possible to set a paragraph to have a fixed height.
                 }
@@ -1271,10 +1360,15 @@ namespace AdminX.Controllers
                     {
                         MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(@$"wwwroot\Signatures\{sigFilename}");
                     }
+                    else
+                    {
+                        spacer = section.AddParagraph();
+                        spacer = section.AddParagraph();
+                    }
                 }
-
+                
                 Paragraph contentSignOffName = section.AddParagraph(signOff);
-                contentSignOffName.Format.Font.Size = 12;
+                //contentSignOffName.Format.Font.Size = 12;
 
                 if (enclosures != "")
                 {
@@ -1290,7 +1384,7 @@ namespace AdminX.Controllers
                     int ccLength = 50;
                     spacer = section.AddParagraph();
                     Paragraph contentCC = section.AddParagraph("cc:");
-                    contentCC.Format.Font.Size = 12;
+                    //contentCC.Format.Font.Size = 12;
                     //tfcc.DrawString("cc:", font, XBrushes.Black, new XRect(40, ccLength, 500, 100));
 
                     //Add a page for all of the CC addresses (must be declared here or we can't use it)            
@@ -1324,7 +1418,7 @@ namespace AdminX.Controllers
                             spacer = section.AddParagraph();
                             spacer = section.AddParagraph();
                             Paragraph contentCCDetail = section.AddParagraph(cc);
-                            contentCCDetail.Format.Font.Size = 12;
+                            //contentCCDetail.Format.Font.Size = 12;
                             ccLength += 150;
                             printCount = printCount += 1;
                             spacer = section.AddParagraph();
@@ -1678,7 +1772,6 @@ namespace AdminX.Controllers
             int len = imageSig.PixelWidth;
             int hig = imageSig.PixelHeight;
 
-
             /*
             var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
             string filePath = par.ConstantValue;
@@ -1697,19 +1790,8 @@ namespace AdminX.Controllers
 
             if (!isPreview.GetValueOrDefault())
             {
-                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
-
-                /*                 
-                can't actually print it because there's no way to give it your username, so it'll all be under the server's name
-                */
-            }
-
-            /*    
-            }
-            catch (Exception ex)
-            {
-                RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "StdLetter" });
-            }*/
+                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");                
+            }            
         }
 
 

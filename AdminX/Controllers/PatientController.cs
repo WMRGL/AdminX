@@ -36,6 +36,8 @@ namespace AdminX.Controllers
         private readonly IPatientAlertData _patientAlertData;
         private readonly ReviewVM _rvm;
         private readonly IReviewData _reviewData;
+        private readonly ICityData _cityData;
+        private readonly IAreaNamesData _areaNamesData;
 
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext)
@@ -64,6 +66,8 @@ namespace AdminX.Controllers
             _patientAlertData = new PateintAlertData(_clinContext);
             _rvm = new ReviewVM();
             _reviewData = new ReviewData(_clinContext);
+            _cityData = new CityData(_adminContext);
+            _areaNamesData = new AreaNamesData(_clinContext);
         }
 
         [Authorize]
@@ -203,6 +207,8 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
+                _pvm.cityList = _cityData.GetAllCities();
+                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
