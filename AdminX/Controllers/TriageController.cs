@@ -100,6 +100,10 @@ namespace AdminX.Controllers
                 _ivm.generalActionsList = _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = _icpActionData.GetICPGeneralActionsList2();
 
+                _ivm.clinicians = _clinicianData.GetClinicianList(); 
+                _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY != null).ToList();
+                _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY.Contains("Genetics")).ToList();
+
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
@@ -224,7 +228,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DoCancerTriage(int icpID, int action)
+        public async Task<IActionResult> DoCancerTriage(int icpID, int action, string? clinician = "")
         {
             try
             {
@@ -239,11 +243,43 @@ namespace AdminX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
-                if (action == 5)
+                LetterController _lc = new LetterController(_clinContext, _docContext);
+
+                switch (action)
                 {
-                    //LetterController _lc = new LetterController(_clinContext, _docContext);
-                    //_lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer);
+                    case 1:
+                        //do nothing
+                        break;
+                    case 2:
+                        _lc.DoPDF(5, mpi, refID, User.Identity.Name, referrer); //send Ack
+                        break;
+                    case 3:
+                        //do nothing //not currently used
+                        break;
+                    case 4:
+                        _lc.DoPDF(227, mpi, refID, User.Identity.Name, referrer); //send RejFHAW
+                        break;
+                    case 5:
+                        _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer); // send KC
+                        break;
+                    case 6:
+                        //do nothing //no letter, patient sent FHF
+                        break;
+                    case 7:
+                        //do nothing //no letter, self referred
+                        break;
+                    case 8:
+                        _lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,0,"","",0,clinician);//send OOR1 and OOR2 (//)out of area)
+                        _lc.DoPDF(183, mpi, refID, User.Identity.Name, referrer);
+                        break;
+                    case 9:
+                        //send DNMRC //not meet criteria
+                        break;
+                    case 10:
+                        _lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer); //send RejFH
+                        break;
                 }
+                
 
                 return RedirectToAction("Index");
             }

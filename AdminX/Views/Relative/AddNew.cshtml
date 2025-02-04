@@ -1,14 +1,14 @@
-﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+﻿@model AdminX.ViewModels.RelativeVM
 @{
     ViewData["Title"] = "Clinic-X - Relative Details";
 }
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <div class="col-md-2">            
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>    
-    
+        <div class="col-auto ms-auto text-end mt-n1">
+            <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
+        </div>
+
         <div class="col-md-6"></div>        
     </div>
 
@@ -57,7 +57,7 @@
                     @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
                     <select class="w-100" asp-for=@Model.relativeDetails.Relation name="relation">
                         <option value="">Select...</option>
-                        @foreach(var r in Model.relationList)
+                        @foreach(var r in Model.relationsList)
                         {
                             <option value=@r.RelCode>@r.relation</option>
                         }
@@ -102,7 +102,7 @@
 
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
         </div>
     </div>
 </div>

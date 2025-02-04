@@ -20,6 +20,7 @@ namespace AdminX.ViewModels
         public List<Alert> alerts { get; set; }
         public List<Diary> diary { get; set; }
         public List<ExternalClinician> GPList { get; set; }
+        public List<ExternalClinician> currentGPList { get; set; }
         public ExternalClinician GP { get; set; }
         public List<ExternalFacility> GPPracticeList { get; set; }
         public ExternalFacility GPPractice { get; set; }
@@ -39,5 +40,8 @@ namespace AdminX.ViewModels
         public string? ethnicCode { get; set; }
         public Referral referral { get; set; }
         public List<Review> reviewList { get; set; }
+        public List<ListCity> cityList { get; set; }
+        public List<AreaNames> areaNamesList { get; set; }
+        public List<Gender> genders { get; set; }
     }
 }

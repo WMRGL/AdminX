@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <h1>Select Family File</h1>
+        <h1>Enter the family file the patient is to be added to</h1>
     </div>
 
 
@@ -17,9 +17,9 @@
             <div id="metadata" hidden="true">
                 <input name="mpi" asp-for=@Model.patient.MPI />                
             </div>
-            
-            <div class="col-md-2">
-                <label>Enter File Number:</label>
+            @*Delete this line because Isaiah says so*@
+            <div class="col-md-4">
+                <label>Enter Destination File Number: (without point numbers)</label>
             </div>
             <div class="col-md-4">
                 <input type="text" name="NewFileNo" asp-for=@Model.cguNumber />
@@ -33,6 +33,7 @@
     <div class="table">
         @if (Model.patientsList.Count() > 0)
         {
+            <h4>This file contains the following patients:</h4>
             <table class="table">
                 <thead>
                     <tr>
@@ -66,7 +67,7 @@
                         <input name="newFileNumber" asp-for=@Model.cguNumber />
                     </div>
                     <div class="col-md-4">
-                        <button type="submit" class="btn btn-outline-primary">Add Patient To New File</button>
+                        <button type="submit" class="btn btn-outline-primary">Add Patient To This File</button>
                     </div>
                 </div>
             </form>

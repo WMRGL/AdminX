@@ -145,11 +145,11 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
-                _rdvm.WMFACSID = wmfacsid;
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
-                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _relativeData.GetGenderList();
-                return View(_rdvm);
+                _rvm.WMFACSID = wmfacsid;
+                _rvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                _rvm.relationsList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
+                _rvm.genderList = _relativeData.GetGenderList();
+                return View(_rvm);
             }
             catch (Exception ex)
             {
@@ -217,7 +217,7 @@ namespace AdminX.Controllers
 
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
                 _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
-                _rvm.relationslist = _relativeData.GetRelationsList();
+                _rvm.relationsList = _relativeData.GetRelationsList();
 
                 List<APIControllers.Models.Relative> relList = new List<APIControllers.Models.Relative>();
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();

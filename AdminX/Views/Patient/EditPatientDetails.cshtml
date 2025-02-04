@@ -1,5 +1,306 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model AdminX.ViewModels.PatientVM
+
 @{
+    ViewData["Title"] = "Admin-X - Add New Patient";
+    ViewData["Page"] = "/ Add New Patient ";
 }
+
+<div class="">
+    @if (Model.message != null)
+    {
+        <div class="card">
+            <div class="card-header"></div>
+            <div class="card-body">
+                @if (Model.success)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            <h3>@Model.message</h3>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" asp-action="EditPatientDetails">
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label">CGU Number</label>
+                        <input name="cguNumber" asp-for=@Model.patient.CGU_No readonly />
+                        <input name="mpi" asp-for=@Model.patient.MPI hidden="true" />                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label">Title</label>
+                        <select class="form-select" name="title" asp-for=@Model.patient.Title>
+                            <option value="" selected></option>
+                            @foreach (var item in Model.titles)
+                            {
+                                <option value=@item.Title>@item.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="firstName">Firstname</label>
+                        <input type="text" name="firstName" class="form-control" id="firstName" asp-for=@Model.patient.FIRSTNAME>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="secondName">Secondname</label>
+                        <input type="text" name="secondName" class="form-control" id="secondName" placeholder="Secondname" asp-for=@Model.patient.PtForename2>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="lastName">LastName</label>
+                        <input type="text" name="lastName" class="form-control" id="lastName" asp-for=@Model.patient.LASTNAME>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="preferredName">Preferred Name</label>
+                        <input type="text" name="preferredName" class="form-control" id="preferredName" placeholder="Preferred Name" asp-for=@Model.patient.PtAKA>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.patient.DOB>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of death (if applicable)</label>
+                        <input type="date" name="dod" class="form-control" id="dob" placeholder="Date of death (if applicable)" asp-for=@Model.patient.DECEASED_DATE>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="nhsno">NHS Number</label>
+                        <input type="text" name="nhsno" class="form-control" id="nhsno" asp-for=@Model.patient.SOCIAL_SECURITY>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="language">Primary Language (if not English)</label>
+                        <input type="text" name="language" class="form-control" id="language" asp-for=@Model.patient.PrimaryLanguage>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Interpreter required</label>
+                        <select class="form-select" name="isInterpreterReqd">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ethnic">Ethnicity</label>
+                        <select class="form-select" name="ethnicCode" asp-for=@Model.patient.EthnicCode>
+                            <option value="" selected>Select...</option>
+
+                            @foreach (var item in Model.ethnicities)
+                            {
+                                <option value=@item.EthnicCode>@item.Ethnic</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
+                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()" asp-for=@Model.patient.GP_Facility_Code>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.GPPracticeList)
+                            {
+                                <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME, @item.ADDRESS, @item.ZIP</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">                    
+                    <div class="mb-3 col-md-3">
+                        <select class="form-select" id="ddlGP" name="gpCode" asp-for=@Model.patient.GP_Code>
+                            @foreach(var item in Model.currentGPList)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" asp-for=@Model.patient.ADDRESS1>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="TEL">Contact Number</label>
+                        <input type="text" name="TEL" class="form-control" id="TEL" asp-for=@Model.patient.TEL>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" asp-for=@Model.patient.ADDRESS2>
+                    </div> <div class="mb-3 col-md-6">
+                        <label class="form-label" for="Mobile">Mobile</label>
+                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" asp-for=@Model.patient.PtTelMobile>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" asp-for=@Model.patient.ADDRESS3>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="EmailAddress">Email Address</label>
+                        <input type="text" name="email" class="form-control" id="EmailAddress"  asp-for=@Model.patient.EmailAddress>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4"  asp-for=@Model.patient.ADDRESS4>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label">Consent to Electronic Communication</label>
+                        <select class="form-select" id="IsConsentToEmail" name="isConsentToEmail">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" asp-for=@Model.patient.POSTCODE>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <select name="AreaCode" class="form-control" id="AreaCode" asp-for=@Model.patient.PtAreaCode>
+                            <option value="">Select Area Code</option>
+                            @foreach (var item in Model.areaNamesList)
+                            {
+                                <option value=@item.AreaCode>@item.AreaCode - @item.AreaName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg">Save Patient</button>
+            </form>
+        </div>
+    </div>    
+</div>
+
+
+<script>
+
+    document.getElementById("ADDRESS3").addEventListener("change", GetCountyFromCity);
+    window.addEventListener("load", SetConsentBox);
+
+    function SetConsentBox()
+    {
+        
+        if("@Model.patient.EmailCommsConsent" == "Yes")
+        {           
+            document.getElementById("IsConsentToEmail").value = "true";
+        }
+        else
+        {
+            document.getElementById("IsConsentToEmail").value = "false";
+        }
+    }
+    
+    function ShowGPList()
+    {
+        var _practice = document.getElementById("ddlGPPractice");
+        var _gp = document.getElementById("ddlGP");
+        var options = _gp.options.length - 1;
+
+        for (i = options; i >= 0; i--)
+        {
+            _gp.remove(i);
+        }
+
+        var clinCodeArray = [];
+        var clinArray = [];
+        var facilityCodeArray = [];
+
+        @foreach (var item in Model.GPList)
+        {
+            @:clinCodeArray.push("@item.MasterClinicianCode");
+            @:clinArray.push("@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)");
+            @:facilityCodeArray.push("@item.FACILITY");
+        }
+
+        for (var i = 0; i < facilityCodeArray.length; i++)
+        {
+            if(facilityCodeArray[i] != _practice.value)
+            {
+                delete clinCodeArray[i];
+                delete clinArray[i];
+            }
+        }
+
+        for (var i in clinCodeArray)
+        {
+            var opt = document.createElement('option');
+            opt.value = clinCodeArray[i];
+            opt.innerHTML = clinArray[i]
+            _gp.appendChild(opt);
+        }
+
+        //_gp.value = "@Model.patient.GP_Code";
+    }
+
+    function GetCountyFromCity()
+    {
+        var city = document.getElementById("ADDRESS3");
+        var county = document.getElementById("ADDRESS4");
+        var areaCode = document.getElementById("AreaCode");
+        var cityUpper = city.value.toUpperCase();
+        city.value = cityUpper;
+        var cityArray = [];
+        var countyArray = [];
+        var areaCodeArray = [];
+
+    @foreach (var item in Model.cityList)
+    {
+        @:cityArray.push("@item.TownCity");
+        @:countyArray.push("@item.County");
+        @:areaCodeArray.push("@item.AreaCode");
+    }
+
+        for (var i in cityArray)
+        {
+            if(cityArray[i] == cityUpper)
+            {
+                county.value = countyArray[i];
+                areaCode.value = areaCodeArray[i];
+            }
+        }
+    }
+
+
+</script>

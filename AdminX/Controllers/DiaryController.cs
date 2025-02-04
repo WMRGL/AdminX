@@ -85,7 +85,8 @@ namespace AdminX.Controllers
                 _dvm.documents = _docsData.GetDocumentsList();
 
 
-                return View(_dvm);
+                //return View(_dvm);
+                return RedirectToAction("Index", "WIP");
             }
             catch (Exception ex)
             {

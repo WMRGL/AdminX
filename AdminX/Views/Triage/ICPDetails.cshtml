@@ -150,7 +150,7 @@
                     </select>
                 </div>
                 <div class="col-12">
-                    <button id="btnGeneralTriage" class="btn btn-default btn-outline-primary">Complete Triage</button>
+                    <button id="btnGeneralTriage" type="button" class="btn btn-default btn-outline-primary">Complete Triage</button>
                 </div>
             </form>
 
@@ -162,7 +162,7 @@
                     <div class="col-md-2">
                         <label>Action on Referral Letter</label>
                     </div>
-                    <div class="col-md-10">
+                    <div class="col-md-6">
                         <select id="ddlCancerAction" name=action class="form-select">
                             @foreach (var item in @Model.cancerActionsList)
                             {
@@ -170,20 +170,31 @@
                             }
                         </select>
                     </div>
-                    <div class="row ">
-                        <div class="col-md-2"></div>
-                        <div class="col-md-8">
-                            <button id="btnCancerTriage" class="btn btn-default btn-outline-primary mt-2">Complete Triage</button>
-                        </div>
-                        <div class="col-md-2"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2" id="lblOthGenetics" hidden="true">
+                        <label>Forward to New Genetics Unit:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="clinician" id="ddlOthGenetics" class="form-select" hidden="true">
+                            <option value="" selected>Select...</option>
+                            @foreach(var item in Model.clinicians)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                            }
+                        </select>
                     </div>
                 </div>
-
+                <div class="row ">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <button id="btnCancerTriage" type="button" class="btn btn-default btn-outline-primary mt-2">Complete Triage</button>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
             </form>
-
         </div>
     </div>
-
 </div>
 
 <script type="text/javascript">
@@ -191,56 +202,86 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnGeneralTriage").addEventListener("click", DoGeneralTriage);
     document.getElementById("btnCancerTriage").addEventListener("click", DoCancerTriage);
+    document.getElementById("ddlCancerAction").addEventListener("change", ShowOtherGenetics);
     window.addEventListener("load", LoadICP);
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
+    function ShowOtherGenetics()
+    {
+        if(document.getElementById("formICPCancer").hidden == false)
+        {
+            if(document.getElementById("ddlCancerAction").value == 8)
+            {
+                document.getElementById("lblOthGenetics").hidden = false;
+                document.getElementById("ddlOthGenetics").hidden = false;
+            }
+            else
+            {
+                document.getElementById("lblOthGenetics").hidden = true;
+                document.getElementById("ddlOthGenetics").hidden = true;
+            }
+        }
+    }
 
 
 
-    function LoadICP() {
+    function LoadICP() 
+    {
         var _rp = "@(Model.triage.ReferralPathway)";
         var _gc = "@(Model.triage.GCTriaged)";
         var _cons = "@(Model.triage.ConsTriaged)";
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
 
-        if (_rp.match("Gen*")) {
+        if (_rp.match("Gen*")) 
+        {
             document.getElementById("formICPGeneral").hidden = false;
             document.getElementById("metadata-general").hidden = true;
-
-            document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
+            //document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
         }
-
-        else {
+        else 
+        {
             document.getElementById("formICPCancer").hidden = false;
         }
     }
 
 
-    function DoGeneralTriage() {
+    function DoGeneralTriage() 
+    {
 
         var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
         var _facility = document.getElementById("ddlFacility");
 
-        if (CheckFormValid() == 1) {
-            //window.alert("Submitted!");
-            document.getElementById("formICPGeneral").submit;
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("formICPGeneral").submit();
         }
     }
 
-    function DoCancerTriage() {
-        document.getElementById("formICPCancer").submit;
+    function DoCancerTriage() 
+    {
+        if(document.getElementById("ddlCancerAction").value == 8 && document.getElementById("ddlOthGenetics").value == "")
+        {
+            window.alert("Please pick a genetics unit to forward the referral to.");
+        }
+        else
+        {
+            document.getElementById("formICPCancer").submit();
+        }
     }
 
 
 
-    function CheckFormValid() { //validation to ensure all required data is entered
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
 
-        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") {
+        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") 
+        {
             window.alert("Please choose a treatment pathway.");
             return 0;
         }
