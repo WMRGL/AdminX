@@ -13,6 +13,7 @@ var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ClinicalContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<AdminContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
+builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -1,0 +1,89 @@
+﻿@model AdminX.ViewModels.LabReportVM
+
+@{
+    ViewData["Title"] = "Admin-X - Lab Patient Search";
+}
+
+<div class="container">
+    <form asp-action="LabPatientSearch">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Name:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="firstname" />
+            </div>
+            <div class="col-md-2">
+                <input name="lastname" />
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Date of Birth:</label>
+            </div>
+        
+            <div class="col-md-2">
+                <input type="date" name="dob" />
+            </div>
+            <div class="col-md-2">
+                <label>Postcode:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="postcode" />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">            
+            <div class="col-md-2">
+                <label>NHS No:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="nhsno" />
+            </div>
+        </div>
+
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+
+
+    @if (Model.patientsList.Count() > 0)
+    {
+        @foreach(var item in Model.patientsList)
+        {
+            <div class="row">
+                <div class="col-md-2">
+                    <a asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
+                </div>
+                <div class="col-md-2">
+                    @item.FIRSTNAME @item.LASTNAME
+                </div>
+                <div class="col-md-2">
+                    @if (@item.DOB != null)
+                    {
+                        @item.DOB.Value.ToString("dd/MM/yyyy")
+                    }
+                </div>
+                <div class="col-md-2">
+                    @item.ZIP
+                </div>
+                <div class="col-md-2">
+                    @item.SOCIAL_SECURITY
+                </div>
+            </div>
+
+        }
+    }
+    else
+    {
+        if(Model.searchTerms != null)
+        {
+            <h2>No results found.</h2>
+        }
+    }
+</div>

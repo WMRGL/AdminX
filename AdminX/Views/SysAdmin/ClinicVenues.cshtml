@@ -103,7 +103,7 @@
                 @foreach(var item in Model.venues)
                 {
                     <tr>
-                        <td><a type="button" class="btn btn-outline-primary" asp-action="FacilityDetails" asp-route-facilityCode=@item.FACILITY>Details</a></td>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="VenueDetails" asp-route-clinCode=@item.FACILITY>Details</a></td>
                         <td>@item.FACILITY</td>
                         <td>@item.NAME</td>
                         <td>@item.LOCATION</td>                        

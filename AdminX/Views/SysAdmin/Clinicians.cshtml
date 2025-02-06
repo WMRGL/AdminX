@@ -125,7 +125,7 @@
                 @foreach(var item in Model.clinicians)
                 {
                     <tr>
-                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinicianCode=@item.MasterClinicianCode>Details</a></td>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinCode=@item.MasterClinicianCode>Details</a></td>
                         <td>@item.MasterClinicianCode</td>
                         <td>@item.TITLE @item.FIRST_NAME @item.NAME</td>
                         <td>@item.POSITION</td>
@@ -133,11 +133,11 @@
                         <td>@item.FACILITY</td>
                         @if (item.Is_Gp == 0)
                         {
-                            <td>Yes</td>
+                            <td>No</td>
                         }
                         else
                         {
-                            <td>No</td>
+                            <td>Yes</td>
                         }
                         @if(item.NON_ACTIVE == 0)
                         {

@@ -9,6 +9,8 @@ namespace AdminX.ViewModels
     {
         public Patient patient { get; set; }
         public List<Patient> patientsList { get; set; }
+        public Patient nextPatient { get; set; }
+        public Patient previousPatient { get; set; }
         public List<Relative> relatives { get; set; }
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }

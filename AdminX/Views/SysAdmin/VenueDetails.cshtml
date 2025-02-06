@@ -1,0 +1,88 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Clinic Venue Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>Details for @Model.venue.NAME (@Model.venue.FACILITY)</h1>
+    </div>
+    
+    <form asp-action="VenueDEtails">
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Code:</label>
+            </div>            
+            <div class="col-md-2">
+                <input name="clinicCode" asp-for=@Model.venue.FACILITY />
+            </div>
+            <div class="col-md-2">
+                <label>Name:</label>
+            </div>
+            <div class="col-md-2">
+                <input name="name" asp-for=@Model.venue.NAME />
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Location</label>
+            </div>
+            <div class="col-md-2">
+                <textarea name="location" asp-for=@Model.venue.LOCATION></textarea>
+            </div>
+        </div>
+            
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-primary">Save Record</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    @*
+    document.getElementById("chkInPost").addEventListener("change", SetLeaver);
+    window.addEventListener("load", SetCheckBoxValues);
+
+    function SetLeaver()
+    {
+        if(!document.getElementById("chkInPost").checked)
+        {
+            if(document.getElementById("txtEndDate").value == "")
+            {
+                var date = new Date;
+                
+                document.getElementById("txtEndDate").value = date.toISOString().split('T')[0];
+            }
+        }
+        else
+        {
+            document.getElementById("txtEndDate").value = "";
+        }
+
+        SetCheckBoxValues();
+    }
+
+    function SetCheckBoxValues()
+    {
+        document.getElementById("txtInPost").value = document.getElementById("chkInPost").checked;
+    }
+    *@
+</script>

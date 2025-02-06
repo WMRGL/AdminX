@@ -61,11 +61,23 @@
 
     <form asp-action="Facilities">
         <div class="row mb-5">
-            <div class="col-md-2">
+            <div class="col-md-1 text-right">
                 <label>Name</label>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <input name="nameSearch" />
+            </div>
+            <div class="col-md-1 text-right">
+                <label>City</label>
+            </div>
+            <div class="col-md-3">
+                <input name="citySearch" />
+            </div>
+            <div class="col-md-1 text-right">
+                <label>Code</label>
+            </div>
+            <div class="col-md-3">
+                <input name="codeSearch" />
             </div>
         </div>
 
@@ -98,11 +110,8 @@
         </div>
     </form>
 
-
-
-
     <div class="row  mb-5 g-5">
-        <table class="table">
+        <table class="table defaultTable">
             <thead>
                 <tr>
                     <th></th>
@@ -117,17 +126,17 @@
                 @foreach(var item in Model.facilities)
                 {
                     <tr>
-                        <td><a type="button" class="btn btn-outline-primary" asp-action="FacilityDetails" asp-route-facilityCode=@item.MasterFacilityCode>Details</a></td>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="FacilityDetails" asp-route-facCode=@item.MasterFacilityCode>Details</a></td>
                         <td>@item.MasterFacilityCode</td>
                         <td>@item.NAME</td>
                         <td>@item.CITY</td>
                         @if (item.IS_GP_SURGERY == 0)
                         {
-                            <td>Yes</td>
+                            <td>No</td>
                         }
                         else
                         {
-                            <td>No</td>
+                            <td>Yes</td>
                         }
                         @if(item.NONACTIVE == 0)
                         {

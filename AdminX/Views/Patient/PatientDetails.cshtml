@@ -55,6 +55,22 @@
     </div>
 }
 
+@if (Model.alerts.Count > 0)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>There are active alerts for this patient</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-3 col-xl-2">
 
@@ -94,23 +110,44 @@
 
     <div class="col-md-9 col-xl-10">
         <div class="tab-content">
-            <h1>@Model.patient.CGU_No - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+            <div class="row">
+                <div class="col-md-2">
+                    @if(Model.previousPatient != null)
+                    {
+                        <a asp-action="PatientDetails" asp-route-id=@Model.previousPatient.MPI>
+                            <h4>
+                                @*Arrow comes from www.iconpacks.net*@
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                                <path d="M 0.053 44.915 l 33.782 -19.553 v 13.353 h 56.029 c 0.075 0 0.136 0.061 0.136 0.136 v 12.298 c 0 0.075 -0.061 0.136 -0.136 0.136 H 33.835 v 13.353 L 0.053 45.085 C -0.018 45.05 -0.018 44.95 0.053 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    </g>
+                                </svg>
+                                @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
+                            </h4>
+                        </a>
+                    }
+                </div>
+                <div class="col-md-8">
+                    <h1 class="text-center">@Model.patient.CGU_No - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+                </div>
+                <div class="col-md-2">
+                    @if (Model.nextPatient != null)
+                    {
+                        <a asp-action="PatientDetails" asp-route-id=@Model.nextPatient.MPI>
+                            <h4>
+                                @Model.nextPatient.FIRSTNAME @Model.nextPatient.LASTNAME
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                                <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    </g>
+                                </svg>
+                            </h4>
+                        </a>
+                    }
+                </div>
+            </div>
             <div class="tab-pane fade active show" id="pathway-indicator" role="tabpanel">
-                @if (Model.alerts.Count > 0)
-                {
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                                <div class="alert-icon">
-                                    <i class="far fa-fw fa-bell"></i>
-                                </div>
-                                <div class="alert-message">
-                                    <h3>There are active alerts for this patient</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+                
 
                 @if (Model.patient.DCTM_Folder_ID == null)
                 {
@@ -390,7 +427,6 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
-
                     </div>
                     <div class="card-body">
                         <table class="table table-borderless my-0">
@@ -513,7 +549,6 @@
                                                         {
                                                             @Model.currentage
                                                         }
-
                                                     </div>
                                                 }
 
@@ -772,7 +807,7 @@
                             </div>
 
                             <div class="mb-3 row">
-                                <label class="col-form-label col-sm-2  pt-sm-0">Date of Dead</label>
+                                <label class="col-form-label col-sm-2  pt-sm-0">Date of Death</label>
                                 <div class="col-sm-8">
                                     <input type="date" name="DECEASED_DATE" class="form-control mb-2 " id="dod">
                                 </div>
