@@ -325,7 +325,9 @@ namespace AdminX.Controllers
                     _pvm.message = "Patient saved.";
                 }
 
-                return RedirectToAction("AddNew", "Patient", new { success = _pvm.success, message = _pvm.message });
+                _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
+
+                return RedirectToAction("PatientDetails", "Patient", new { mpi = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
             }
             catch (Exception ex)
             {
@@ -515,5 +517,7 @@ namespace AdminX.Controllers
             
             return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
+
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using ClinicalXPDataConnections.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Data;
@@ -31,6 +32,7 @@ namespace AdminX.Meta
 
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
        string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null,  int? int2 = 0);
+        public int MergePatient(int mpiFrom, int mpiTo, string staffCode);
     }
 
 
@@ -267,11 +269,27 @@ namespace AdminX.Meta
         {
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
-            SqlCommand cmd = new SqlCommand("Insert into dbo.PatientSearches (Firstname, Lastname, DOB, PostCode, NHSNo, SearchBy, SearchDate, SearchType) values('"
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PatientSearches (Firstname, Lastname, DOB, PostCode, NHSNo, SearchBy, SearchDate, SearchType) values ('"
                 + firstName + "', '" + lastName + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" + 
                 DateTime.Today.ToString("yyyy-MM-dd") + "', 'NewPatientSearch')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();
+        }
+
+        public int MergePatient(int mpiFrom, int mpiTo, string staffCode)
+        {
+            int success = 0;
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PatientMerges (mpi_from, mpi_to, DateStamp, Status, LoggedOnUser) values ("
+                + mpiFrom + ", " + mpiTo + ", '" + DateTime.Today.ToString("yyyy-MM-dd") + "', 0, '" + staffCode + "')", conn);
+            Console.WriteLine(cmd.CommandText);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            success = 1;
+
+            return success;
         }
 
     }
