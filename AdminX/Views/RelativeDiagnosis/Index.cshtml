@@ -5,16 +5,27 @@
 *@
 @{
     ViewData["Title"] = "Admin-X - Relatives' Diagnoses";
+    ViewData["Page"] = "/ Relative / Diagnoses";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-primary m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" }),
+        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" }),        
+    };
+}
+
+
+
 <div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
+    @*<div class="row mb-5 g-5">
+        <div class="col-md-2">            
+            <a type="button" class="btn btn-default btn_primary" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
         </div>        
-    </div>
+    </div>*@
 
     <div class="row mb-5">
         <hr />
@@ -43,7 +54,7 @@
                     @foreach (var item in Model.relativesDiagnosisList)
                     {
                         <tr>
-                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-success">Edit</a></td>
+                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-primary">Edit</a></td>
                             <td>@item.Diagnosis</td>
                             <td>@item.AgeDiag</td>
                             <td>@item.Hospital</td>
@@ -68,8 +79,8 @@
     <div class=row mb-5 g-5>
         <div class="col-md-2">
             <div col-md-2>
-                @*<button id="btnAddNew" class="btn btn-default btn-success">Add New</button>*@
-                <a class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
+                @*<button id="btnAddNew" class="btn btn-default btn_primary">Add New</button>*@
+                <a type="button" class="btn btn-primary" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
             </div>
         </div>
     </div>

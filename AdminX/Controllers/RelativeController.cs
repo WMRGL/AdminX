@@ -48,9 +48,10 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - View Relative", "ID=" + id.ToString());
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
+                _rdvm.MPI = _rdvm.patient.MPI;
 
                 return View(_rdvm);
             }
@@ -66,7 +67,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", "ID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Relative", "ID=" + id.ToString());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;

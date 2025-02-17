@@ -1,19 +1,20 @@
 ﻿@model AdminX.ViewModels.RelativeDiagnosisVM
 @{
     ViewData["Title"] = "Admin-X - Relative Details";
+    ViewData["Page"] = "/ Relative / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back to Patient</button>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Record Diagnoses</a>
-        </div>
-        <div class="col-md-6"></div>       
-    </div>
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-primary m-1" }),
+        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" }),
+        Html.ActionLink("Record Diagnoses", "Index", "RelativeDiagnosis", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" })
+    };
+}
+
+<div class="container">   
 
     <div class="row mb-5">
         <hr />
@@ -85,7 +86,7 @@
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+            <a type="button" class="btn btn-default btn-primary" asp-action="Edit Details" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
         </div>
     </div>
 </div>
