@@ -138,6 +138,11 @@ namespace AdminX.Controllers
                     _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
                 }
 
+                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0)
+                {
+                    _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
+                }
+
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },

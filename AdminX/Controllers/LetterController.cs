@@ -13,7 +13,7 @@ using PdfSharpCore.Pdf;
 namespace AdminX.Controllers
 {
 
-    public class LetterController
+    public class LetterControllerLOCAL
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
@@ -28,7 +28,7 @@ namespace AdminX.Controllers
         private readonly IExternalFacilityData _externalFacilityData;
         private readonly IConstantsData _constantsData;
 
-        public LetterController(ClinicalContext clinContext, DocumentContext docContext)
+        public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext)
         {
             _clinContext = clinContext;
             _docContext = docContext;

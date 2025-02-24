@@ -1,55 +1,171 @@
 ﻿@model AdminX.ViewModels.DictatedLetterVM
 
 @{
-    ViewData["Title"] = "Clinic-X - Dictated Letters";
+    ViewData["Title"] = "Admin-X - Dictated Letters";
 }
 
 
-
-
-<div class="container-fluid">
-    @*<div>
-    <input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />
-    </div>*@
-
+<div class="container-fluid">    
     <div class="card">
         <div class="card-body">
+            <button class="btn btn-default text-center btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#collapseDOTOverview" aria-expanded="false" aria-controls="collapseExample"><h2>Dictated Letters Overview (click to expand/hide)</h2></button>
 
-            <form asp-action="Index">
-                <div class="row g-2 mb-5 mt-2">
-                    <div class="col-md-2">
-                        <label class="form-label">Select Clinician:</label>
-                    </div>
-                    <div class="col-md-6">
-                        <select class="form-select js-choice" name="staffCode">
-                            <option value="" selected></option>
-                            @foreach (var item in Model.clinicalStaff)
-                            {
-                                <option value=@item.STAFF_CODE>@item.NAME</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-primary">Select</button>
-                    </div>
+            <div class="row collapse hide" id="collapseDOTOverview">
+                                
+                <div class="col-md-5">
+                    @if (Model.dictatedlettersReportClinicians.Count() > 0)
+                    {
+                        <h3>Dictated Letters for Clinicians</h3>
+                        <table class="table defaultTable">
+                            <thead>
+                                <tr>
+                                    <th>Clinician Name</th>
+                                    <th>Drafts</th>
+                                    <th>Oldest Draft</th>
+                                    <th>For Approval</th>
+                                    <th>Oldest For Approval</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.dictatedlettersReportClinicians)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.DraftCount</td>
+                                        @if (item.OldestDraft != null)
+                                        {
+                                            <td>@item.OldestDraft</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                        <td>@item.ForApprovalCount</td>
+                                        @if (item.OldestForApproval != null)
+                                        {
+                                            <td>@item.OldestForApproval</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
                 </div>
-            </form>
+                
+                <div class="col-md-7">
+                    @if (Model.dictatedLettersSecTeamReports.Count() > 0)
+                    {
+                        <h3>Dictated Letters for Secretaries</h3>
+                        <table class="table defaultTable">
+                            <thead>
+                                <tr>
+                                    <th>Clinician Name</th>
+                                    <th>Secretarial Team</th>
+                                    <th>Drafts</th>
+                                    <th>Oldest Draft</th>
+                                    @*<th>For Approval</th>
+                                    <th>Oldest For Approval</th>*@
+                                    <th>For Corrections</th>
+                                    <th>Oldest For Corrections</th>
+                                    <th>For Printing</th>
+                                    <th>Oldest For Printing</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.dictatedLettersSecTeamReports)
+                                {
+                                    <tr>
+                                        <td>@item.Name</td>
+                                        <td>@item.SecretarialTeam</td>
+                                        <td>@item.DraftCount</td>
+                                        @if (item.OldestDraft != null)
+                                        {
+                                            <td>@item.OldestDraft</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                        @*
+                                        <td>@item.ForApprovalCount</td>
+                                        @if (item.OldestForApproval != null)
+                                        {
+                                            <td>@item.OldestForApproval</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }*@
+                                        <td>@item.ForCorrections</td>
+                                        @if (item.OldestForCorrections != null)
+                                        {
+                                            <td>@item.OldestForCorrections</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                        <td>@item.ForPrintingCount</td>
+                                        @if (item.OldestForPrinting != null)
+                                        {
+                                            <td>@item.OldestForPrinting</td>
+                                        }
+                                        else
+                                        {
+                                            <td>N/A</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
 
-
-            <form asp-action="DictatedLettersForPatient">
-                <div class="row g-2 mb-5 mt-2">
-                    <div class="col-md-2">
-                        <label>Enter CGU Number (including point number) to search by patient:</label>
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" type="text" name="cguNo" />
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-outline-primary">Search</button>
-                    </div>
                 </div>
-            </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <form asp-action="Index">
 
+                        <div class="row g-2 mb-5 mt-2">
+                            <div class="col-md-2">
+                                <label class="form-label">Select Clinician:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-select js-choice" name="staffCode">
+                                    <option value="" selected></option>
+                                    @foreach (var item in Model.clinicalStaff)
+                                    {   
+                                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-primary">Select</button>
+                            </div>
+                        </div>
+
+                    </form>
+                    <form asp-action="DictatedLettersForPatient">
+                        <div class="row g-2 mb-5 mt-2">
+                            <div class="col-md-2">
+                                <label>Enter CGU Number (including point number) to search by patient:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" type="text" name="cguNo" />
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-primary">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>                
+            </div>
         </div>
     </div>
 
@@ -66,7 +182,6 @@
                     </div>
                 </div>
             </div>
-
         }
         else
         {
@@ -110,7 +225,6 @@
                                 </tr>
                             }
                         }
-
                     </tbody>
                 </table>
             </div>
@@ -172,13 +286,10 @@
                                     </tr>
                                 }
                             }
-
                         </tbody>
                     </table>
                 </div>
             }
-
         </div>
     </div>
-
 </div>

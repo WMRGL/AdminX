@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.Models
 {
@@ -48,6 +49,74 @@ namespace AdminX.Models
         public string ResultSource { get; set; }
         public int? RelsID { get; set; }
         public int? InternalIndividualID { get; set; }
-    }   
-    
+    }
+
+    [Table("View_DictatedLettersReport_Clinicians", Schema = "dbo")]
+    public class DictatedlettersReportClinicians
+    {
+        [Key]
+        public string LetterFromCode { get; set; }
+        public string Name { get; set; }
+        [Column("Draft Count")]
+        public int DraftCount { get; set; }
+        [Column("Oldest Draft")]
+        public string? OldestDraft { get; set; }
+        [Column("For Approval Count")]
+        public int ForApprovalCount { get; set; }
+        [Column("Oldest For Approval")]
+        public string? OldestForApproval { get; set; }
+
+    }
+
+    [Table("View_DictatedLetters_SecTeam_Report", Schema = "dbo")]
+    public class DictatedLettersSecTeamReport
+    {
+        [Key]
+        [Column("Secretarial Team")]
+        public string SecretarialTeam { get; set; }
+        [Column("Draft Count")]
+        public int DraftCount { get; set; }
+        [Column("Oldest Draft")]
+        public string? OldestDraft { get; set; }
+        [Column("For Approval Count")]
+        public int ForApprovalCount { get; set; }
+        [Column("Oldest For Approval")]
+        public string? OldestForApproval { get; set; }
+        [Column("For Corrections")]
+        public int ForCorrections { get; set; }
+        [Column("Oldest For Corrections")]
+        public string? OldestForCorrections { get; set; }
+        [Column("For Printing Count")]
+        public int ForPrintingCount { get; set; }
+        [Column("Oldest For Printing")]
+        public string? OldestForPrinting { get; set; }
+    }
+
+    [Keyless]
+    [Table("DictatedLettersReport", Schema = "dbo")]
+    public class DictatedLettersReport
+    {
+        public string LetterFromCode { get; set; }
+        public string Name { get; set; }
+        [Column("Secretarial Team")]
+        public string SecretarialTeam { get; set; }
+        [Column("Draft Count")]
+        public int DraftCount { get; set; }
+        [Column("Oldest Draft")]
+        public string? OldestDraft { get; set; }
+        [Column("For Approval Count")]
+        public int ForApprovalCount { get; set; }
+        [Column("Oldest For Approval")]
+        public string? OldestForApproval { get; set; }
+        [Column("For Corrections")]
+        public int ForCorrections { get; set; }
+        [Column("Oldest For Corrections")]
+        public string? OldestForCorrections { get; set; }
+        [Column("For Printing Count")]
+        public int ForPrintingCount { get; set; }
+        [Column("Oldest For Printing")]
+        public string? OldestForPrinting { get; set; }
+    }
+
+
 }

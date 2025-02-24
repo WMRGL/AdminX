@@ -23,7 +23,7 @@ namespace AdminX.Meta
 
         public List<ActivityType> GetReferralTypes()
         {
-            IQueryable<ActivityType> apptypes = _adminContext.ActivityType.Where(t => t.NON_ACTIVE == 0 && t.ISREFERRAL == true);
+            IQueryable<ActivityType> apptypes = _adminContext.ActivityType.Where(t => (t.NON_ACTIVE == 0 && t.ISREFERRAL == true) || t.APP_TYPE.Contains("Temp"));
             return apptypes.ToList();
         }
         public List<ActivityType> GetApptTypes()

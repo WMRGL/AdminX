@@ -15,6 +15,8 @@ namespace AdminX.Data
         public DbSet<PatientSearches> PatientSearches { get; set; }
         public DbSet<PatientSearchResults> PatientSearchResults { get; set; }
         public DbSet<ListCity> ListCity { get; set; }
-
+        public DbSet<DictatedlettersReportClinicians> DictatedlettersReportClinicians { get; set; }
+        public DbSet<DictatedLettersSecTeamReport> DictatedLettersSecTeamReport { get; set; }
+        public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }
     }
 }

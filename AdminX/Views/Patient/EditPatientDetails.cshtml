@@ -3,7 +3,18 @@
 @{
     ViewData["Title"] = "Admin-X - Add New Patient";
     ViewData["Page"] = "/ Add New Patient ";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        
+    };
+}
+
+
 
 <div class="">
     @if (Model.message != null)
@@ -21,7 +32,6 @@
                             <h3>@Model.message</h3>
                         </div>
                     </div>
-
                 }
                 else
                 {

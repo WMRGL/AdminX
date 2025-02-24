@@ -7,6 +7,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using AdminX.Models;
+using AdminX.Data;
 
 namespace AdminX.Controllers
 {
@@ -14,7 +15,8 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
-        private readonly AdminX.Controllers.LetterController _lc;
+        private readonly AdminContext _adminContext;
+        private readonly LetterController _lc;
         private readonly DictatedLetterVM _lvm;
         private readonly IConfiguration _config;
         private readonly ICRUD _crud;
@@ -23,13 +25,15 @@ namespace AdminX.Controllers
         private readonly IActivityData _activityData;
         private readonly IDictatedLetterData _dictatedLetterData;
         private readonly IExternalClinicianData _externalClinicianData;
-        private readonly IExternalFacilityData _externalFacilityData;        
+        private readonly IExternalFacilityData _externalFacilityData;
+        private readonly IDictatedLettersReportData _dotReportData;
         private readonly IAuditService _audit;
 
-        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext)
+        public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, AdminContext adminContext)
         {
             _clinContext = clinContext;
             _docContext = docContext;
+            _adminContext = adminContext;
             _config = config;
             _crud = new CRUD(_config);
             _lvm = new DictatedLetterVM();
@@ -38,8 +42,9 @@ namespace AdminX.Controllers
             _activityData = new ActivityData(_clinContext);
             _dictatedLetterData = new DictatedLetterData(_clinContext);
             _externalClinicianData = new ExternalClinicianData(_clinContext);
-            _externalFacilityData = new ExternalFacilityData(_clinContext);            
-            _lc = new AdminX.Controllers.LetterController(_clinContext, _docContext);
+            _externalFacilityData = new ExternalFacilityData(_clinContext);
+            _dotReportData = new DictatedLettersReportData(_adminContext);
+            _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
         }
 
@@ -74,6 +79,9 @@ namespace AdminX.Controllers
 
                     new BreadcrumbItem { Text = "Letters" }
                 };
+
+                _lvm.dictatedlettersReportClinicians = _dotReportData.GetReportClinicians();
+                _lvm.dictatedLettersSecTeamReports = _dotReportData.GetDictatedLettersReport();
 
                 return View(_lvm);
             }
