@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
-using AdminX.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using System.Data;
-using ClinicalXPDataConnections.Meta;
+﻿using AdminX.Data;
 using AdminX.Meta;
+using AdminX.Models;
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace AdminX.Controllers
 {
     public class DiaryController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly AdminContext _adminContext;
         private readonly DocumentContext _docContext;
         private readonly DiaryVM _dvm;
         private readonly IConfiguration _config;
@@ -19,12 +22,14 @@ namespace AdminX.Controllers
         private readonly IReferralData _referralData;
         private readonly IStaffUserData _staffUser;
         private readonly IDocumentsData _docsData;
+        private readonly IDiaryActionData _diaryActionData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
 
-        public DiaryController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
+        public DiaryController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
         {
             _clinContext = context;
+            _adminContext = adminContext;
             _docContext = documentContext;
             _config = config;
             _dvm = new DiaryVM();
@@ -33,6 +38,7 @@ namespace AdminX.Controllers
             _referralData = new ReferralData(_clinContext);            
             _staffUser = new StaffUserData(_clinContext);    
             _docsData = new DocumentsData(_docContext);
+            _diaryActionData = new DiaryActionData(_adminContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
         }        
@@ -54,7 +60,8 @@ namespace AdminX.Controllers
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);
                 _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-
+                _dvm.defaultRef = _referralData.GetReferralDetails(_dvm.diary.RefID.GetValueOrDefault());
+                _dvm.defaultAction = _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
 
                 return View(_dvm);
             }
@@ -82,11 +89,26 @@ namespace AdminX.Controllers
                 //_dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 _dvm.patient = _patientData.GetPatientDetails(mpi);
                 _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                if (_dvm.referralsList.Count > 0)
+                {
+                    _dvm.defaultRef = _dvm.referralsList.OrderByDescending(r => r.refid).First();
+                }
+                //_dvm.staffList = _staffUser.GetStaffMemberListAll();
                 _dvm.documents = _docsData.GetDocumentsList();
+                //_dvm.clinicians = _staffUser.GetConsultantsList();
+                //_dvm.currentStaffUser = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
+                _dvm.documentsList = _docsData.GetDocumentsList();
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
 
-                //return View(_dvm);
-                return RedirectToAction("Index", "WIP");
+                    new BreadcrumbItem { Text = "New Diary Entry" }
+                };
+
+                return View(_dvm);
+                //return RedirectToAction("Index", "AddNew");
             }
             catch (Exception ex)
             {
@@ -96,7 +118,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> AddNew(int refID, DateTime diaryDate, string diaryCons, string diaryAction, string diaryText, string docCode)
+        public async Task<IActionResult> AddNew(int refID, DateTime diaryDate, string diaryWith, string diaryCons, string diaryAction, string diaryText, string? docCode = "")
         {
             try
             {
@@ -107,11 +129,17 @@ namespace AdminX.Controllers
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
 
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
-                _dvm.documents = _docsData.GetDocumentsList();
+                _dvm.patient = _patientData.GetPatientDetails(_referralData.GetReferralDetails(refID).MPI);
+                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                //_dvm.documents = _docsData.GetDocumentsList();
 
-                return View(_dvm);
+                int success = _crud.CallStoredProcedure("Diary", "Create", refID, _dvm.patient.MPI, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diary-create(SQL)" }); }
+
+                int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+
+                return RedirectToAction("DiaryDetails", "Diary", new { id = diaryid });
             }
             catch (Exception ex)
             {
@@ -131,15 +159,16 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                _dvm.diary = _diaryData.GetDiaryEntry(id);
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
-                _dvm.documents = _docsData.GetDocumentsList();
-
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit DiaryEntry", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
+                _dvm.diary = _diaryData.GetDiaryEntry(id);
+                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
+                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                _dvm.documents = _docsData.GetDocumentsList();
+                _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
+                _dvm.documentsList = _docsData.GetDocumentsList();
                 
                 return View(_dvm);
             }
@@ -151,7 +180,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int diaryID, int refID, DateTime diaryDate, string diaryCons, string diaryAction, string diaryText, string docCode)
+        public async Task<IActionResult> Edit(int diaryID, int refID, DateTime diaryDate, string diaryAction, string diaryText, string? docCode = "")
         {
             try
             {
@@ -159,12 +188,11 @@ namespace AdminX.Controllers
                 {
                     return NotFound();
                 }
+                                
 
-                //_dvm.diary = _diaryData.
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
-                _dvm.documents = _docsData.GetDocumentsList();
+                int success = _crud.CallStoredProcedure("Diary", "Update", diaryID, refID, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diary-create(SQL)" }); }
 
                 return RedirectToAction("DiaryDetails", new { id = diaryID });
             }

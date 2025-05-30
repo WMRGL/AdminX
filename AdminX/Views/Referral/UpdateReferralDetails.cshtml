@@ -66,7 +66,14 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="pathway">Pathway</label>
-                                        <input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
+                                        @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
+                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
+                                            <option value="">Select...</option>
+                                            @foreach (var item in Model.pathways)
+                                            {
+                                                <option value=@item>@item</option>
+                                            }
+                                        </select>
 
                                     </div>
                                     <div class="mb-3 col-md-4">
@@ -415,7 +422,14 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="pathway">Pathway</label>
-                                        <input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>
+                                        @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
+                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
+                                            <option value="">Select...</option>
+                                            @foreach (var item in Model.pathways)
+                                            {
+                                                <option value=@item>@item</option>
+                                            }
+                                        </select>
 
                                     </div>
                                     <div class="mb-3 col-md-4">
@@ -626,7 +640,7 @@
                         facilityStateArray[i] + " " +
                         facilityPostcodeArray[i];
 
-                    facilityDetails.value = fullDetails;
+                    facilityDetails.value = fullDetails.replace("&#x27;", "'");
                 }
             }
 

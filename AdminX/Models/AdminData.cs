@@ -118,5 +118,13 @@ namespace AdminX.Models
         public string? OldestForPrinting { get; set; }
     }
 
+    [Table("ListDiaryAction", Schema = "dbo" )]
+    public class DiaryAction
+    {
+        [Key]
+        public string ActionCode { get; set; }
+        public string? Action { get; set; }
+    }
+
 
 }

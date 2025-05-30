@@ -62,7 +62,7 @@ namespace AdminX.Controllers
 
             IPAddressFinder _ip = new IPAddressFinder(HttpContext);
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
-
+            _rvm.pathways = new List<string> { "Cancer", "General" };
             _rvm.referral = _referralData.GetReferralDetails(refID);
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
             //_rvm.Clinic = _clinicData.GetClinicDetails(refID);
@@ -78,7 +78,7 @@ namespace AdminX.Controllers
                 {
                     _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
-                _rvm.clockAgeWeeks = (int)Math.Ceiling((double)_rvm.clockAgeDays / 7);
+                _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
             }
 
 
@@ -109,7 +109,7 @@ namespace AdminX.Controllers
             _rvm.admin = _staffUserData.GetAdminList();
             _rvm.admin_status = _adminStatusData.GetStatusAdmin();
             _rvm.referrers = _externalClinicianData.GetClinicianList();
-            _rvm.pathways = new List<string> { "Cancer", "General" };
+            _rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
             _rvm.diseases = _diseaseData.GetDiseases();
             _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
             if (_rvm.referral.ClockStartDate != null)
@@ -122,7 +122,7 @@ namespace AdminX.Controllers
                 {
                     _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
                 }
-                _rvm.clockAgeWeeks = (int)Math.Ceiling((double)_rvm.clockAgeDays / 7);
+                _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
             }
 
 

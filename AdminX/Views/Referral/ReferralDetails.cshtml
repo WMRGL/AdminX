@@ -54,12 +54,12 @@
                                     </td>
                                     <td class="flex-grow-1 ms-3">
                                         <strong>Referral Date</strong>
-                                       <div class="text-muted">
+                                        <div class="text-muted">
                                             @if (Model.referral.RefDate != null)
                                             {
                                                 @Model.referral.RefDate.Value.ToString("dd/MM/yyyy")
                                             }
-                                       </div>
+                                        </div>
                                     </td>
                                     <td class="flex-grow-1 ms-3">
                                         <strong>UBRN</strong>
@@ -79,7 +79,7 @@
                                         <div class="flex-grow-1 ms-3">
                                             <strong>Pathway</strong>
                                             <div class="text-muted">
-                                            @Model.referral.PATHWAY
+                                                @Model.referral.PATHWAY
                                             </div>
                                         </div>
                                     </td>
@@ -90,7 +90,7 @@
                                             <div class="flex-grow-1 ms-3">
                                                 <strong>Sub Pathway</strong>
                                                 <div class="text-muted">
-                                                    Needed
+                                                    @Model.referral.Pathway_Subset
                                                 </div>
                                             </div>
                                         </div>
@@ -199,7 +199,18 @@
                                         <div class="flex-grow-1 ms-3">
                                             <strong>Clock Age</strong>
                                             <div class="text-muted">
-                                                <p>@Model.clockAgeDays days (@Model.clockAgeWeeks weeks)</p>
+                                                @if (@Model.clockAgeDays == 1)
+                                                {
+                                                    <p>@Model.clockAgeDays day (@Model.clockAgeWeeks weeks)</p>
+                                                }
+                                                else if (@Model.clockAgeWeeks == 1)
+                                                {
+                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks week)</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks weeks)</p>
+                                                }
                                             </div>
                                         </div>
                                     </td>

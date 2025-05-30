@@ -1,8 +1,16 @@
 ﻿@model AdminX.ViewModels.DiaryVM
 @{
-    ViewData["Title"] = "AdminX-X - Diary Details";
+    ViewData["Title"] = "Admin-X - Diary Details";
     ViewData["Page"] = "/ Patient / Diary Details";
     ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+         Html.ActionLink("Edit Entry", "Edit", "Diary", new { id = Model.diary.DiaryID }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
 }
 
 @if (Model.message != null)
@@ -45,7 +53,55 @@
         </div>
     </div>
 
-    <div class="col-md-9 col-xl-10">
-        <p>stuff goes here</p>
+    <div class="row mb-5 g-5">
+        <div class="col-md-1">
+            <label><b>Diary Date:</b></label>
+        </div>
+        <div class="col-md-2">
+            @Model.diary.DiaryDate.Value.ToString("dd/MM/yyyy")
+        </div>
+        <div class="col-md-1">
+            <label><b>Diary With:</b></label>
+        </div>
+        <div class="col-md-2">
+            @Model.diary.DiaryWithName
+        </div>
+        <div class="col-md-1">
+            <label><b>Consultant:</b></label>
+        </div>
+        <div class="col-md-2">
+            @Model.diary.DiaryConsName
+        </div>
+        <div class="col-md-1">
+            <label><b>Action:</b></label>
+        </div>
+        <div class="col-md-2">
+            @Model.diary.DiaryAction - @Model.defaultAction.Action
+        </div>
+    </div>
+    <div class="row mb-5 g-5">
+        <div class="col-md-1">
+            <label><b>Referral:</b></label>
+        </div>
+        <div class="col-md-6">
+            @Model.defaultRef.refid - @Model.defaultRef.RefType by @Model.defaultRef.ReferringClinician on @Model.defaultRef.RefDate.Value.ToString("dd/MM/yyyy")
+        </div>
+        @if (Model.diary.DocCode != null)
+        {
+            <div class="col-md-1">
+                <label><b>Doccode:</b></label>
+            </div>
+            <div class="col-md-6">
+                @Model.diary.DocCode
+            </div>
+        }
+    </div>
+    <div class="row mb-5 g-5">
+        <div class="col-md-1">
+            <label><b>Diary Text:</b></label>
+        </div>
+        <div class="col-md-9">
+            @Model.diary.DiaryText
+        </div>
     </div>
 </div>

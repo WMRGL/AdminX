@@ -144,11 +144,11 @@ namespace AdminX.Controllers
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
               
-                new BreadcrumbItem { Text = "Patient" }
-            };
+                    new BreadcrumbItem { Text = "Patient" }
+                };
 
                 return View(_pvm);
             }
@@ -281,16 +281,17 @@ namespace AdminX.Controllers
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
                 {
-                    Text = "Patient",
-                  
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient",
+                      
 
-                },
-                new BreadcrumbItem { Text = "New" }
-            };
+                    },
+
+                    new BreadcrumbItem { Text = "New" }
+                };
 
                 return View(_pvm);
             }
