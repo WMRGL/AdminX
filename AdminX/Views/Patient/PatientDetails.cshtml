@@ -10,7 +10,7 @@
     {
         Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
         Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
-        Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
+        Html.ActionLink("Create New Contact", "AddNew", "Clinic", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
         Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
@@ -72,6 +72,23 @@
     </div>
 }
 
+@if (Model.patient.DCTM_Folder_ID == null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
+                    <a id="btnMakeElectronic" class="btn btn-primary mb-1" asp-controller="Patient" asp-action="MakePatientElectronic" asp-route-mpi=@Model.patient.MPI>Click to Make File Electronic</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-3 col-xl-2">
 
@@ -81,10 +98,10 @@
             </div>
 
             <div class="list-group list-group-flush" role="tablist">
-                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
                     Pathway Indicator
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
                     Patient Details
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
@@ -147,25 +164,13 @@
                     }
                 </div>
             </div>
-            <div class="tab-pane fade active show" id="pathway-indicator" role="tabpanel">
+
+            
+
+            <div class="tab-pane fade" id="pathway-indicator" role="tabpanel">
                 
 
-                @if (Model.patient.DCTM_Folder_ID == null)
-                {
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
-                                <div class="alert-icon">
-                                    <i class="far fa-fw fa-bell"></i>
-                                </div>
-                                <div class="alert-message">
-                                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
-                                    <a id="btnMakeElectronic" class="btn btn-primary mb-1" asp-controller="Patient" asp-action="MakePatientElectronic" asp-route-mpi=@Model.patient.MPI>Click to Make File Electronic</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+                
                 @if (Model.patientPathway != null)
                 {
                     <div class="card">
@@ -409,7 +414,7 @@
                 }
 
             </div>
-            <div class="tab-pane fade" id="patient-details" role="tabpanel">
+            <div class="tab-pane fade active show" id="patient-details" role="tabpanel">
                 @if (Model.patient.DECEASED == -1)
                 {
                     <div class="card">
@@ -1219,12 +1224,15 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadEDMSLink);
 
-    function LoadEDMSLink() {
-        //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") {
-            document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+    function LoadEDMSLink()
+    {
+            //only load EDMS link if there actually is one
+        if ("@(Model.patient.DCTM_Folder_ID)" != "")
+        {
+            document.getElementById("btnEDMS").href = "@Model.edmsLink"  + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else {
+        else
+        {
             document.getElementById("btnEDMS").hidden = true;
         }
     }
@@ -1238,6 +1246,7 @@
 
 @section Scripts {
     <script>
+       
         $(document).ready(function () {
             $("#createReviewBtn").click(function () {
         @if (Model.reviewList.Count() > 0)

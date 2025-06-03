@@ -45,5 +45,6 @@ namespace AdminX.ViewModels
         public List<ListCity> cityList { get; set; }
         public List<AreaNames> areaNamesList { get; set; }
         public List<Gender> genders { get; set; }
+        public string edmsLink { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using AdminX.Models;
 
 namespace AdminX.ViewModels
 {
@@ -11,10 +12,13 @@ namespace AdminX.ViewModels
         public ActivityItem activityItem { get; set; }
         public Appointment Clinic { get; set; }
         public Referral linkedReferral { get; set; }
-        public List<Outcome> outcomes { get; set; }
-        public Patient patients { get; set; }        
+        public List<Outcome> outcomes { get; set; }        
+        public Patient patient { get; set; }        
         public List<Appointment> outstandingClinicsList { get; set; }
         //public DateTime clinicFilterDate { get; set; }
         public string filterClinician { get; set; }
+        public List<Referral> referralsList { get; set; }
+        public List<ActivityType> appTypeList { get; set; }
+        public List<ClinicVenue> venueList { get; set; }
     }
 }

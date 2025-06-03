@@ -19,7 +19,7 @@
     </div>
     <div class="row g-5 mb-5">
         <form id="frmAddNew" asp-action="AddNew">
-            <div hidden="true"><input name="id" asp-for=@Model.relativeDetails.relsid /></div>
+            <div hidden><input name="id" asp-for=@Model.relativeDetails.relsid /></div>
             <div class="row g-5 mb-5">
                 <h2>Diagnosis Details:</h2>
             </div>
@@ -131,7 +131,7 @@
             </div>*@
 
 
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="relID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
             </div>
         </form>

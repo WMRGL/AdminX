@@ -28,7 +28,7 @@
 
             <div class="card-body">
                 <form asp-action="AddNew">
-                    <div class="row" hidden="true">
+                    <div class="row" hidden>
                         <input name="mpi" asp-for=@Model.patient.MPI />
                     </div>
                     <div class="col-auto ms-auto text-end mt-n1">
@@ -122,7 +122,7 @@
 
         <div class="card-body">
             <form asp-action="AddNew">
-                <div class="row" hidden="true">
+                <div class="row" hidden>
                     <input name="mpi" asp-for=@Model.patient.MPI />
                 </div>
                 <h5>Referral Details</h5>

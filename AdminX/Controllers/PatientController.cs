@@ -13,6 +13,8 @@ namespace AdminX.Controllers
     public class PatientController : Controller
     {
         private readonly ClinicalContext _clinContext;
+        private readonly DocumentContext _documentContext;
+        private readonly AdminContext _adminContext;
         private readonly PatientVM _pvm;
         private readonly ICRUD _crud;
         private readonly IConfiguration _config;
@@ -30,21 +32,22 @@ namespace AdminX.Controllers
         private readonly IDiaryData _diaryData;
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
-        private readonly IAuditService _audit;
-        private readonly AdminContext _adminContext;
+        private readonly IAuditService _audit;        
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
-        private readonly ReviewVM _rvm;
+        //private readonly ReviewVM _rvm;
         private readonly IReviewData _reviewData;
         private readonly ICityData _cityData;
         private readonly IAreaNamesData _areaNamesData;
         private readonly IGenderData _genderData;
+        private readonly IConstantsData _constantsData;
 
 
-        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext)
+        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext)
         {
             _clinContext = context;
             _adminContext = adminContext;
+            _documentContext = documentContext;
             _config = config;
             _crud = new CRUD(_config);
             _pvm = new PatientVM();
@@ -65,11 +68,12 @@ namespace AdminX.Controllers
             _audit = new AuditService(_config);
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
-            _rvm = new ReviewVM();
+            //_rvm = new ReviewVM();
             _reviewData = new ReviewData(_clinContext);
             _cityData = new CityData(_adminContext);
             _areaNamesData = new AreaNamesData(_clinContext);
             _genderData = new GenderData(_clinContext);
+            _constantsData = new ConstantsData(_documentContext);
         }
 
         [Authorize]
@@ -128,6 +132,7 @@ namespace AdminX.Controllers
                 _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
                 //_pvm.referral = _referralData.GetReferralDetails(id);
                 _pvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
+                _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
 
                 if (_pvm.patient.DECEASED == -1)
                 {
@@ -198,6 +203,12 @@ namespace AdminX.Controllers
         {
             int years = DateTime.Now.Year - dob.Year;
             int months = DateTime.Now.Month - dob.Month;
+            if(months < 0)
+            {
+                months += 12;
+                years -= 1; 
+            }
+
             return $"{years} years, {months} months";
         }
 

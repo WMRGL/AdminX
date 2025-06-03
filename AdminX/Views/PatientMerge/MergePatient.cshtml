@@ -16,7 +16,7 @@
     <form asp-action="MergePatient">
         <div class="row">
             <div class="col-md-6">
-                <input name="mpiFrom" asp-for=@Model.patientFrom.MPI hidden="true" />
+                <input name="mpiFrom" asp-for=@Model.patientFrom.MPI hidden />
                 <h2>Patient to be Merged From</h2>
                 <h3>(this patient will be deleted)</h3>
 
@@ -91,7 +91,7 @@
                     </div>
                 </div>
                 <div class="row mb-5 g-5">                
-                    <input name="mpiTo" asp-for=@Model.patientTo.MPI hidden="true" />
+                    <input name="mpiTo" asp-for=@Model.patientTo.MPI hidden />
                     <button type="submit" class="btn btn-primary">Merge Patients</button>
                 </div>            
             }

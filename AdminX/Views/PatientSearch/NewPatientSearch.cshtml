@@ -220,10 +220,10 @@
         <div >
             <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew"
                asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd") asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch
-               hidden="true" id="newPtNew">Add Patient (New File)</a>
+               hidden id="newPtNew">Add Patient (New File)</a>
         <a type="button" class="btn btn-outline-primary float-end" asp-controller="PatientSearch" asp-action="SelectFile"
            asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd")
-           asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch hidden="true" id="newPtExisting">Add Patient (Existing File)</a>
+           asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch hidden id="newPtExisting">Add Patient (Existing File)</a>
 
     </div>
 

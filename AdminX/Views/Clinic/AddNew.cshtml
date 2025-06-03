@@ -1,0 +1,304 @@
+﻿@model AdminX.ViewModels.ClinicVM
+@{
+    ViewData["Title"] = "Admin-X - Add Contact";
+    ViewData["Page"] = "/ Patient / Add Contact";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
+<div class="container-fluid ">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title text-dark">
+                <h3>Add Contact</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="ContactOutcome" asp-action="AddNew">
+                <div>
+                    <dl class="row mb-5">
+                        <input name="mpi" asp-for=@Model.patient.MPI hidden />
+                        <dt class="col-sm-2">
+                            <label>Linked Referral</label>
+                        </dt>
+                        <dd class="col-sm-10">
+                            <select name="linkedRefID">
+                                @foreach(var item in Model.referralsList)
+                                {
+                                    <option value=@item.refid>@item.refid - @item.RefType on @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.PATHWAY</option>
+                                }
+                            </select>
+                        </dd>
+
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.activityItem.TYPE):
+                        </dt>
+                        <dd class="col-sm-10">
+                            <select name="appType" id="ddlAppType">
+                                <option value="">Select...</option>
+                                @foreach (var item in Model.appTypeList)
+                                {
+                                    <option value=@item.APP_TYPE>@item.APP_TYPE</option>
+                                }
+                            </select>
+                        </dd>
+                        <dt class="col-sm-2">
+                            Contact Date:
+                        </dt>
+                        <dd class="col-sm-10">
+                            <input type="date" name="bookedDate" />
+                        </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
+                        </dt>
+                        <dd class="col-sm-10">
+                            <input type="time" name="bookedTime" />
+                        </dd>
+                        
+                    </dl>
+                </div>
+
+
+                <div class="mb-5">
+
+                    <div id="TelAdmin" hidden>
+                        <div class="row mb-5">
+                            <div class="col-md-2">
+                                <label>Time Spent:</label>
+                            </div>
+                            <div class="col-md-1  text-md-end">
+                                <input class="w-100" name="timeSpent" />
+                            </div>
+                            <div class="col-md-2">
+                                <label>Priority:</label>
+                            </div>
+                            <div class="col-md-2  text-md-end">
+                                <select name="urgency">
+                                    <option value="Routine" selected>Routine</option>
+                                    <option value="Urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-md-2 text-md-end">
+                                <label>Caller's Name:</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="w-100" name="callersName" />
+                            </div>
+                            <div class="col-md-2 text-md-end">
+                                <label>Organisation:</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="w-100" name="callersOrg" />
+                            </div>
+                            <div class="col-md-2  text-md-end">
+                                <label>Contact Number:</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="w-100" name="callersTelNo" />
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-md-2  text-md-end">
+                                <label>Message:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="w-100" name="message"></textarea>
+                            </div>
+                            <div class="col-md-2  text-md-end">
+                                <label>Add As Clinical Note:</label>
+                            </div>
+                            <div class="col-md-2  text-md-end">
+                                <input type="checkbox" id="chkAddAsNote" />
+                                <input name="isAddAsNote" type="text" id="txtAddAsNote" hidden />
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div id="ContactDetails" hidden>
+                        <div class="row mb-5">
+                            <div class="col-md-2">
+                                Clinic Venue:
+                            </div>
+                            <div class="col-md-10">
+                                <select name="venue">
+                                    <option value="">Select</option>
+                                    @foreach (var item in Model.venueList)
+                                    {
+                                        <option value=@item.FACILITY>@item.FACILITY - @item.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                Contact Outcome:
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlContactOutcome" name="counseled" class="w-100 form-select">
+                                    <option value="" selected>select...</option>
+                                    @foreach (var o in Model.outcomes)
+                                    {
+                                        <option value="@o.CLINIC_OUTCOME">@o.CLINIC_OUTCOME</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlSeenBy" name="clinician1" class="w-100 js-choice form-select">
+                                    <option value="" selected>select...</option>
+                                    @foreach (var c in Model.staffMembers)
+                                    {
+                                        <option value="@c.STAFF_CODE">@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <select id="ddlSeenBy" name="clinician2" class="w-100 js-choice form-select">
+                                    <option value="" selected>select...</option>
+                                    @foreach (var c in Model.staffMembers)
+                                    {
+                                        <option value="@c.STAFF_CODE">@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <select id="ddlSeenBy" name="clinician3" class="w-100 js-choice form-select">
+                                    <option value="" selected>select...</option>
+                                    @foreach (var c in Model.staffMembers)
+                                    {
+                                        <option value="@c.STAFF_CODE">@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        @*<div class="row mb-5">
+                            <div class="col-md-2">
+                                <label for="txtArrivalTime" id="lblArrivalTime">Arrival Time:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="txtArrivalTime" type="time" name="arrivalTime" class="w-100" />
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>*@
+                        <div class="row mb-5">
+                            <div class="col-md-2">
+                                <label for="txtNoPatientsSeen" id="lblNoPatientsSeen">No. Patients Seen:</label>
+                            </div>
+                            <div class="col-md-6">
+                                <input id="txtNoPatientsSeen" name="noSeen" class="w-100" />
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        
+                        <div class="row mb-5">
+                            <div class="col-md-2">
+                                <label for="ddlLetterRequired" id="lblLetterRequired">Letter Required:</label>
+                            </div>
+                            <div class="col-md-8">
+                                <select id="ddlLetterRequired" name="letterRequired" class="w-100">
+                                    <option value="Yes - Within 10 Days">Yes - Within 10 Days</option>
+                                    <option value="Yes - Later">Yes - Later</option>
+                                    <option selected value="No">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>                        
+                        <div class="row mb-5">
+                            <div class="col-md-2">
+                                <label for="ddlClockStop" id="lblClockStop">Clock Stop:</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlClockStop" name="isClockStop" class="w-100">
+                                    <option value="" selected></option>
+                                    <option value="True">Yes</option>
+                                    <option value="False">No</option>
+                                </select>
+                                <input id="txtRefID" name="refID" hidden />
+                            </div>
+                            <div class="col-md-2">
+                                <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlCloseRef" name="isComplete" class="w-100">
+                                    <option value="True">Yes</option>
+                                    <option selected value="False">No</option>
+                                </select>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+
+                <div class="row mb-5">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <button type="button" class="btn btn-default btn-outline-primary" id="btnCompleteCOF">Save</button>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.getElementById("btnCompleteCOF").addEventListener("click", DoSubmit);
+    document.getElementById("ddlAppType").addEventListener("change", ShowAppType);
+    document.getElementById("chkAddAsNote").addEventListener("change", SetAddAsNote);
+
+    function DoSubmit()
+    {
+        document.getElementById("ContactOutcome").submit();
+    }
+
+    function ShowAppType()
+    {
+        if(document.getElementById("ddlAppType").value == "Tel. Admin")
+        {
+            document.getElementById("ContactDetails").hidden = true;
+            document.getElementById("TelAdmin").hidden = false;
+        }
+        else
+        {
+            document.getElementById("ContactDetails").hidden = false;
+            document.getElementById("TelAdmin").hidden = true;
+        }
+        
+    }
+
+    function SetAddAsNote()
+    {        
+        document.getElementById("txtAddAsNote").value = document.getElementById("chkAddAsNote").checked;
+    }
+    
+
+</script>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

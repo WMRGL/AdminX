@@ -10,9 +10,9 @@
         </div>            
         <div class="col-md-2">
             <form id="DictatedLetterDelete" asp-action="Delete">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
                 <input type="button" class="btn btn-default btn-primary" value="Delete" id="btnReqDelete" />
-                <div class="row mb-1 g-1" id="ConfDelete" hidden="true">
+                <div class="row mb-1 g-1" id="ConfDelete" hidden>
                     <h6>Are you sure? You won't be able to undo this.</h6>
                     <input type="button" class="btn btn-default btn-primary" value="Yes" id="btnDelete" />
                     <input type="button" class="btn btn-default btn-primary" value="No" id="btnNoDelete" />
@@ -47,7 +47,7 @@
                     @*<label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>*@
                 </div>
             </div>
-            <div hidden="true">
+            <div hidden>
                 <input asp-for="dictatedLetters.DoTID" name="dID" />
             </div>
         </form>
@@ -60,14 +60,14 @@
                         <button type="button" class="btn btn-primary" id="btnPrint">Print and File in EDMS</button>
                     </div>                
                 </div>
-                <div hidden="true">
+                <div hidden>
                     <input asp-for="dictatedLetters.DoTID" name="dID" />
                 </div>
             </form>
         }
 
         <form id="DictatedLetter" asp-action="Edit">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input asp-for="dictatedLetters.DoTID" name="dID" />
                 <input id="txtisAddressChanged" name="isAddresseeChanged" />
                 <input id="txtLetterToCode" name="letterToCode" />
@@ -99,7 +99,7 @@
                             <option value="Other">Other</option>
                         </select>                    
                     
-                        <select class="w-100" id="ddlLetterToType" hidden="true">                            
+                        <select class="w-100" id="ddlLetterToType" hidden>                            
                             <option value="">Select...</option>
                             @foreach (var item in Model.specialities)
                             {
@@ -108,7 +108,7 @@
                         </select>
                     
                     
-                        <select class="w-100" id="ddlLetterToClinician" hidden="true">
+                        <select class="w-100" id="ddlLetterToClinician" hidden>
                             
                         </select>                    
                     </div>
@@ -192,7 +192,7 @@
             <div class="row mb-5">
                 <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
                 <div class="col-md-11">
-                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden="true"></textarea>
+                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden></textarea>
                     <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
                         @Html.Raw(@Model.dictatedLetters.LetterContent)
                     </div>
@@ -220,8 +220,8 @@
 
         <div class="collapse" id="collapsePatientsTable">
             <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true" />
-                <input id="txtPID" name="pID" hidden="true" />
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input id="txtPID" name="pID" hidden />
                 <table class="table">
                     <thead>
                         <tr>
@@ -256,7 +256,7 @@
             <h3>CCs currently added to letter:</h3>
             <div class="row mb-5 g-5">
                 <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
-                    <input id="txtCCID" name="id" hidden="true" />
+                    <input id="txtCCID" name="id" hidden />
                     <table class="table">
                         <thead>
                             <tr>
@@ -279,7 +279,7 @@
                 </form>
             </div>
             <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden="true"/>
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden/>
                 <div class="row">
                     <div class="col-md-8">
                         <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
@@ -302,7 +302,7 @@
                                 <option value="GP">GP</option>
                                 <option value="Other">Other</option>
                             </select>
-                            <select class="w-100" id="ddlCCType2" hidden="true">
+                            <select class="w-100" id="ddlCCType2" hidden>
                                 <option value="" selected>Select...</option>
                                 @foreach (var item in Model.specialities)
                                 {
@@ -311,7 +311,7 @@
                             </select>
 
                             
-                            <select id="ddlCC" hidden="true">
+                            <select id="ddlCC" hidden>
                                 
                             </select>
                         </div>
@@ -320,7 +320,7 @@
                                 <textarea rows="8" cols="40" id="txtCC"></textarea>
                             </div>
                             <div class="col-md-2">
-                                <input type="text" id="txtCCCode" name="cc" hidden="true"/>
+                                <input type="text" id="txtCCCode" name="cc" hidden/>
                             </div>
                         </div>
                     </div>            

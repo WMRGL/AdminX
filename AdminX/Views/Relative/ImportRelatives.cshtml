@@ -16,6 +16,7 @@
                     <th>DOB</th>
                     <th>DOD (if applicable)</th>
                     <th>Sex</th>
+                    <th>Relation to Patient</th>
                 </tr>
             </thead>
         
@@ -25,12 +26,12 @@
                     <tr>
                         <form asp-action="ImportRelatives">
                             <td>                            
-                                <input name="wmfacsid" value=@item.WMFACSID hidden="true" />                                                          
+                                <input name="wmfacsid" value=@item.WMFACSID hidden />                                                          
                                 <button class="btn btn-primary">Import Relative</button>
-                                <input name="dob" value=@item.DOB hidden="true" />
-                                <input name="dod" value=@item.DOD hidden="true" />
+                                <input name="dob" value=@item.DOB hidden />
+                                <input name="dod" value=@item.DOD hidden />
                             </td>
-                            <td>@item.RelForename1 @item.RelSurname <input name="firstname" value=@item.RelForename1 hidden="true" /> <input name="lastname" value=@item.RelSurname hidden="true" /></td>
+                            <td>@item.RelForename1 @item.RelSurname <input name="firstname" value=@item.RelForename1 hidden /> <input name="lastname" value=@item.RelSurname hidden /></td>
                             @if (item.DOB != DateTime.Parse("1900-01-01"))
                             {
                                 <td>@item.DOB.Value.ToString("dd/MM/yyyy") </td>
@@ -47,7 +48,7 @@
                             {
                                 <td></td>
                             }
-                            <td>@item.RelSex <input name="sex" value=@item.RelSex hidden="true" /></td>
+                            <td>@item.RelSex <input name="sex" value=@item.RelSex hidden /></td>
                             <td>
                                 <select name="relation">
                                     <option value="" selected>Not known</option>

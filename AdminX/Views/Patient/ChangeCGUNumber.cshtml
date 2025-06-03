@@ -14,7 +14,7 @@
 
     <div class="row mb-5 g-5">
         <form asp-action="ChangeCGUNumber">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="mpi" asp-for=@Model.patient.MPI />                
             </div>
             @*Delete this line because Isaiah says so*@
@@ -62,7 +62,7 @@
 
             <form asp-controller="Patient" asp-action="UpdateCGUNumber">
                 <div class="row mb-5 g-5">
-                    <div id="metadata2" hidden="true">
+                    <div id="metadata2" hidden>
                         <input name="mpi" asp-for=@Model.patient.MPI />
                         <input name="newFileNumber" asp-for=@Model.cguNumber />
                     </div>

@@ -121,7 +121,7 @@
         <div class="card-body">
             <form class="row row-cols-md-auto align-items-center" id="formICPGeneral" asp-action="DoGeneralTriage">
                 <h4 class="card-title text-dark">Treatment Pathway</h4>
-                <div id="metadata-general" hidden="true">
+                <div id="metadata-general" hidden>
                     @*<input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />*@
                     <input name="icpID" asp-for=@Model.triage.ICPID />
                     <input id="txtTP1" name="tp" />
@@ -155,7 +155,7 @@
             </form>
 
             <form id="formICPCancer" asp-action="DoCancerTriage">
-                <div id="metadata-cancer" hidden="true">
+                <div id="metadata-cancer" hidden>
                     <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
                 </div>
                 <div class="row">
@@ -172,11 +172,11 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2" id="lblOthGenetics" hidden="true">
+                    <div class="col-md-2" id="lblOthGenetics" hidden>
                         <label>Forward to New Genetics Unit:</label>
                     </div>
                     <div class="col-md-2">
-                        <select name="clinician" id="ddlOthGenetics" class="form-select" hidden="true">
+                        <select name="clinician" id="ddlOthGenetics" class="form-select" hidden>
                             <option value="" selected>Select...</option>
                             @foreach(var item in Model.clinicians)
                             {
