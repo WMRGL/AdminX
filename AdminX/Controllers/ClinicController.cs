@@ -156,6 +156,7 @@ namespace AdminX.Controllers
                 new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
                 new BreadcrumbItem { Text = "Details"}
             };
+               
 
                 return View(_cvm);
             }
@@ -275,9 +276,10 @@ namespace AdminX.Controllers
             string? message, string? urgency, bool? isAddAsNote = false, bool? isClockStop = false)
         {
             int refID = 0;
+           
 
             if (venue == null) { venue = ""; }
-            if (clinician1 == null) { clinician1 = ""; }
+            if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE; }
             if (noPatientsSeen == null) { noPatientsSeen = 1; }
 
             DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
@@ -303,20 +305,26 @@ namespace AdminX.Controllers
                 message;
 
                 string emailBodyText = "";
+                bool isHidden = true;
 
                 if (isAddAsNote.GetValueOrDefault())
                 {
                     emailBodyText = "A copy of this message has already been queued for creation in EDMS%0D%0A%0D%0A";
-
-                    _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name);
+                    isHidden = false;
                 }
 
+                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
+
                 emailBodyText = emailBodyText + emailMessage;
-                
+
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+                
             }            
             
             return RedirectToAction("ApptDetails", new { id = refID });
         }
+
+
+        
     }
 }

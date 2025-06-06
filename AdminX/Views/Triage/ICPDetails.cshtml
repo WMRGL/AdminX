@@ -128,7 +128,7 @@
                     <input id="txtTP2" name="tp2" />
                 </div>
                 <div class="col-12">
-                    <select id="ddlTreatPath1" name="tp" asp-for=@Model.triage.TreatPath class="form-select">
+                    <select id="ddlTreatPath1" name="tp1" asp-for=@Model.triage.TreatPath class="form-select">
                         <option value="">Select...</option>
                         @foreach (var item in Model.generalActionsList)
                         {
@@ -138,7 +138,18 @@
                 </div>
 
                 <div class="col-12">
-                    <select id="ddlTreatPath2-NoClinic" name="tp2nc" asp-for=@Model.triage.TreatPath2 class="form-select">
+                    <select id="ddlTreatPath2-Clinic" name="tp2c" asp-for=@Model.triage.TreatPath2 class="form-select" hidden>
+                        <option value="">Select...</option>
+                        @foreach (var item in Model.generalActionsList2)
+                        {
+                            if (item.Clinic == true)
+                            {
+                                <option value=@item.ID>@item.Action</option>
+                            }
+                        }
+                    </select>
+
+                    <select id="ddlTreatPath2-NoClinic" name="tp2nc" asp-for=@Model.triage.TreatPath2 class="form-select" hidden>
                         <option value="">Select...</option>
                         @foreach (var item in Model.generalActionsList2)
                         {
@@ -203,6 +214,7 @@
     document.getElementById("btnGeneralTriage").addEventListener("click", DoGeneralTriage);
     document.getElementById("btnCancerTriage").addEventListener("click", DoCancerTriage);
     document.getElementById("ddlCancerAction").addEventListener("change", ShowOtherGenetics);
+    document.getElementById("ddlTreatPath1").addEventListener("change", DoTreatPath1);
     window.addEventListener("load", LoadICP);
 
     function GoBack() 
@@ -228,13 +240,33 @@
         }
     }
 
+    function DoTreatPath1()
+    {
+        var _tp1 = document.getElementById("ddlTreatPath1");
+        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
 
+        if(_tp1.value == 2) //no clinic selected
+        {
+            _tp2nc.hidden = false;
+            _tp2c.hidden = true;
+        }
+        else if (_tp1.value == 3 || _tp1.value == 4 || _tp1.value == 5) //clinic selected
+        {
+            _tp2nc.hidden = true;
+            _tp2c.hidden = false;
+        }
+        else //no option selected
+        {
+            _tp2nc.hidden = true;
+            _tp2c.hidden = true;
+        }
+    }
 
     function LoadICP() 
     {
         var _rp = "@(Model.triage.ReferralPathway)";
-        var _gc = "@(Model.triage.GCTriaged)";
-        var _cons = "@(Model.triage.ConsTriaged)";
+        
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
 
@@ -243,6 +275,14 @@
             document.getElementById("formICPGeneral").hidden = false;
             document.getElementById("metadata-general").hidden = true;
             //document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
+            if(document.getElementById("ddlTreatPath1").value == 2)
+            {
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = false;
+            }
+            else if(document.getElementById("ddlTreatPath1").value > 2)
+            {
+                document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+            }
         }
         else 
         {
@@ -253,9 +293,9 @@
 
     function DoGeneralTriage() 
     {
-
+        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
         var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
-        var _facility = document.getElementById("ddlFacility");
+        //var _facility = document.getElementById("ddlFacility");
 
         if (CheckFormValid() == 1) 
         {
@@ -280,12 +320,13 @@
     function CheckFormValid() 
     { //validation to ensure all required data is entered
 
-        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "") 
+        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "" || 
+        (document.getElementById("ddlTreatPath2-NoClinic").value == "" && document.getElementById("ddlTreatPath2-Clinic").value == ""))
         {
             window.alert("Please choose a treatment pathway.");
             return 0;
         }
-
+       
         return 1;
     }
 

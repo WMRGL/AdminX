@@ -27,7 +27,11 @@ namespace AdminX.Meta
        string? string14 = "", string? string15 = "", string? string16 = "", int? int2 = 0, int? int3 = 0, int? int4 = 0,
        int? int5 = 0, int? int6 = 0, int? int7 = 0, bool? bool1 = false, bool? bool2 = false);
 
-        
+        public int TriageDetail(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
+       string? string5 = "", string? string6 = "", string? string7 = "", int? int4 = 0, int? int5 = 0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false);
+
+        public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username);
+
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
 
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
@@ -263,6 +267,65 @@ namespace AdminX.Meta
             conn.Close();
 
             return iReturnValue;
+        }
+
+
+        public int TriageDetail(string sType, string sOperation,  int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
+       string? string5 = "", string? string6 = "", string? string7 = "", int? int4=0, int? int5=0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false)
+        {
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AxTriageCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
+            cmd.Parameters.Add("@int3", SqlDbType.Int).Value = int3;
+            cmd.Parameters.Add("@int4", SqlDbType.Int).Value = int4;
+            cmd.Parameters.Add("@int5", SqlDbType.Int).Value = int5;
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
+            cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
+            cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
+            cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+            cmd.Parameters.Add("@bool1", SqlDbType.Bit).Value = bool1;
+            cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;
+            cmd.Parameters.Add("@bool3", SqlDbType.Bit).Value = bool3;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;            
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+        }
+
+        public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_ClinicPlannerCreateWaitingListEntry", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@MPI", SqlDbType.Int).Value = mpi;
+            cmd.Parameters.Add("@ClinicianID", SqlDbType.VarChar).Value = clinicianID;
+            cmd.Parameters.Add("@ClinicID", SqlDbType.VarChar).Value = clinicID;
+            cmd.Parameters.Add("@priorityLevel", SqlDbType.Int).Value = priorityLevel;
+            cmd.Parameters.Add("@refID", SqlDbType.Int).Value = refID;
+            cmd.Parameters.Add("@Username", SqlDbType.VarChar).Value = username;            
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+
         }
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode)

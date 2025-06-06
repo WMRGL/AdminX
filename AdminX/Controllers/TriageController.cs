@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Authorization;
-using AdminX.ViewModels;
-using System.Data;
-using ClinicalXPDataConnections.Meta;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.Models;
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace AdminX.Controllers
 {
@@ -126,8 +126,8 @@ namespace AdminX.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> DoGeneralTriage(int icpID, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp, int? tp2c, 
-            int? tp2nc, int? wlPriority)
+        public async Task<IActionResult> DoGeneralTriage(int icpID, string? clinician, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp1, int? tp2c, 
+            int? tp2nc, int? wlPriority, string? clinician2, string? facility2, int? duration2, string? comment2, bool isChild2)
         {
             try
             {
@@ -148,75 +148,50 @@ namespace AdminX.Controllers
 
                 if (tp2 == 3) { sApptIntent = "CLICS"; }
 
-                if (sStaffType == "Consultant")
-                {
-                    if (facility != null && facility != "") // && clinician != null && clinician != "")
-                    {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
+                
+                
+                int success = _crud.TriageDetail("ICP General", "Triage", icpID, tp1.GetValueOrDefault(), tp2, clinician, facility, comment, sApptIntent, User.Identity.Name, clinician2, facility2, comment2,
+                    duration, duration2, isSPR, isChild, isChild2);
 
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
-                        //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
-
-                        //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
-                    }
-                    else
-                    {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, tp.GetValueOrDefault(), 0,
-                        "", sApptIntent, "", comment, User.Identity.Name);
-
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
-                    }
-                }
-                else
-                {
-                    if (facility != null && facility != "") // && clinician != null && clinician != "")
-                    {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
-                        facility, sApptIntent, "", comment, User.Identity.Name, null, null, isSPR, isChild, duration);
-
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
-                        //_crud.CallStoredProcedure("Waiting List", "Create", mpi, 0, 0, facility, "General", "", comment, User.Identity.Name);
-
-                        //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer);
-                    }
-                    else
-                    {
-                        int success = _crud.CallStoredProcedure("ICP General", "Triage", icpID, 0, tp2,
-                        "", sApptIntent, "", comment, User.Identity.Name);
-
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage(SQL)" }); }
-                    }
-                }
-                //add to waiting list
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }
+                                
+                                
+                //add to cons waiting list
                 if (facility != null && facility != "")
                 {
-                    int success = _crud.CallStoredProcedure("Waiting List", "Create", mpi, wlPriority.GetValueOrDefault(), referral.refid, facility, "General", "",
-                        comment, User.Identity.Name);
+                    int successwl = _crud.AddToWaitingList(mpi, clinician, facility, wlPriority.GetValueOrDefault(), referral.refid, User.Identity.Name);
 
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
+                    if (successwl == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
                 }
+
+                if (facility2 != null && facility2 != "")
+                {
+                    int successwl = _crud.AddToWaitingList(mpi, clinician2, facility2, wlPriority.GetValueOrDefault(), referral.refid, User.Identity.Name);
+
+                    if (successwl == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
+                }
+
 
                 if (tp2 == 2) //CTB letter
                 {
-                    //LetterController _lc = new LetterController(_docContext);
-                    int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
+                    LetterController _lc = new LetterController(_clinContext, _docContext);
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", "CTBAck", "", "", User.Identity.Name);
+                    if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     int diaryID = _diaryData.GetLatestDiaryByRefID(refID, "CTBAck").DiaryID;
-                    //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                 }
 
                 if (tp2 == 6) //Dictate letter
                 { 
-                    int success2 = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", "", "", User.Identity.Name);
+                    int successDOT = _crud.CallStoredProcedure("Letter", "Create", 0, refID, 0, "", "", "", "", User.Identity.Name);
 
-                    if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
+                    if (successDOT == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-DOT(SQL)" }); }
                 }
 
                 if (tp2 == 7) //Reject letter
                 {
-                    //LetterController _lc = new LetterController(_docContext);
-                    //_lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
+                    LetterController _lc = new LetterController(_clinContext, _docContext);
+                    _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
                 }
 
                 return RedirectToAction("Index");
@@ -239,28 +214,40 @@ namespace AdminX.Controllers
                 string referrer = referral.ReferrerCode;
 
                 CRUD _crud = new CRUD(_config);
-                int success = _crud.CallStoredProcedure("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.TriageDetail("ICP Cancer", "Triage", icpID, action, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
 
                 LetterController _lc = new LetterController(_clinContext, _docContext);
+                int docID = 0;
+                docID = _icpActionData.GetICPCancerActionsList().Where(a => a.ID == action).FirstOrDefault().RelatedLetterID.GetValueOrDefault();
+                int diaryID = 0;
+
+
+                if (docID != 0)
+                {
+                    DocumentsData docData = new DocumentsData(_docContext);
+                    string docCode = docData.GetDocumentDetails(docID).DocCode;
+                    int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name);                   
+                    diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID;
+                }
 
                 switch (action)
                 {
                     case 1:
                         //do nothing
                         break;
-                    case 2:
-                        _lc.DoPDF(5, mpi, refID, User.Identity.Name, referrer); //send Ack
+                    case 2:                        
+                        _lc.DoPDF(5, mpi, refID, User.Identity.Name, referrer, "", "", 0,"", false, false, diaryID); //send Ack
                         break;
                     case 3:
                         //do nothing //not currently used
                         break;
                     case 4:
-                        _lc.DoPDF(227, mpi, refID, User.Identity.Name, referrer); //send RejFHAW
+                        _lc.DoPDF(227, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFHAW
                         break;
                     case 5:
-                        _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer); // send KC
+                        _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); // send KC
                         break;
                     case 6:
                         //do nothing //no letter, patient sent FHF
@@ -269,14 +256,14 @@ namespace AdminX.Controllers
                         //do nothing //no letter, self referred
                         break;
                     case 8:
-                        _lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,0,"","",0,clinician);//send OOR1 and OOR2 (//)out of area)
-                        _lc.DoPDF(183, mpi, refID, User.Identity.Name, referrer);
+                        _lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID,"","",0,clinician);//send OOR1 and OOR2 //(out of area)
+                        _lc.DoPDF(183, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                         break;
                     case 9:
                         //send DNMRC //not meet criteria
                         break;
                     case 10:
-                        _lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer); //send RejFH
+                        _lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFH
                         break;
                 }
                 

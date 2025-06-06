@@ -22,6 +22,8 @@
             </div>
         </div>
         <div class="card-body">
+            <h2 class="text-center" id="SavedMessage" hidden>Contact saved.</h2>
+
             <form id="ContactOutcome" asp-action="AddNew">
                 <div>
                     <dl class="row mb-5">
@@ -30,7 +32,7 @@
                             <label>Linked Referral</label>
                         </dt>
                         <dd class="col-sm-10">
-                            <select name="linkedRefID">
+                            <select name="linkedRefID" id="ddlRefID">
                                 @foreach(var item in Model.referralsList)
                                 {
                                     <option value=@item.refid>@item.refid - @item.RefType on @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.PATHWAY</option>
@@ -54,13 +56,13 @@
                             Contact Date:
                         </dt>
                         <dd class="col-sm-10">
-                            <input type="date" name="bookedDate" />
+                            <input type="date" name="bookedDate" id="txtBookedDate" />
                         </dd>
                         <dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
                         </dt>
                         <dd class="col-sm-10">
-                            <input type="time" name="bookedTime" />
+                            <input type="time" name="bookedTime" id="txtBookedTime" />
                         </dd>
                         
                     </dl>
@@ -131,7 +133,7 @@
                                 Clinic Venue:
                             </div>
                             <div class="col-md-10">
-                                <select name="venue">
+                                <select name="venue" id="ddlVenue">
                                     <option value="">Select</option>
                                     @foreach (var item in Model.venueList)
                                     {
@@ -269,7 +271,16 @@
     document.getElementById("chkAddAsNote").addEventListener("change", SetAddAsNote);
 
     function DoSubmit()
-    {
+    { //because we can't do the email and redirect back to the normal page, oh no! That would be far too helpful.
+
+        document.getElementById("ContactDetails").hidden = true;
+        document.getElementById("TelAdmin").hidden = true;
+        document.getElementById("SavedMessage").hidden = false;
+        document.getElementById("btnCompleteCOF").disabled=true;
+        document.getElementById("ddlRefID").disabled=true;
+        document.getElementById("ddlAppType").disabled=true;
+        document.getElementById("txtBookedDate").disabled=true;
+        document.getElementById("txtBookedTime").disabled=true;
         document.getElementById("ContactOutcome").submit();
     }
 
@@ -279,6 +290,7 @@
         {
             document.getElementById("ContactDetails").hidden = true;
             document.getElementById("TelAdmin").hidden = false;
+            document.getElementById("ddlVenue").value = "Telephone";            
         }
         else
         {
