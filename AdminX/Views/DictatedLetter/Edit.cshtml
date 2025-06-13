@@ -352,7 +352,8 @@
 
     function LoadEDMSLink() 
     {
-        document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+        //document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+        document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
     }
 
     function LoadLetter() 

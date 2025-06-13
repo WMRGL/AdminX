@@ -145,10 +145,10 @@ namespace AdminX.Controllers
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString());
 
-                //_rvm.referrals = _activityData.GetActivityDetails(id);
+                _rvm.activity = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(id);
-                _rvm.activityList = _activityData.GetActivityList(id).Where(c => c.REFERRAL_DATE != null).ToList();
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.activity.MPI);
+                _rvm.activityList = _activityData.GetActivityList(_rvm.patient.MPI).Where(c => c.REFERRAL_DATE != null).ToList();
                 _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
                 if (_rvm.patient != null && _rvm.patient.DOB != null)

@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Admin-X - Patient Details";
     ViewData["Page"] = "/ Patient / Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
 @{
@@ -11,9 +11,10 @@
         Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
         Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
         Html.ActionLink("Create New Contact", "AddNew", "Clinic", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
-        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
-        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),        
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Print Standard Letter", "Index", "LetterMenu", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>"),
         Html.ActionLink("Merge Patient", "MergePatient", "PatientMerge", new { mpiFrom = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
 

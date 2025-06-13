@@ -1,9 +1,10 @@
-﻿using ClinicalXPDataConnections.Data;
-using ClinicalXPDataConnections.Meta;
-using AdminX.Data;
+﻿using AdminX.Data;
 using AdminX.Meta;
 using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 
 namespace ClinicX.Controllers
 {
@@ -59,7 +60,9 @@ namespace ClinicX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
 
+                
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
                 _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
                 _rdvm.requestStatusList = _relativeDiagnosisData.GetRequestStatusList();     
                 _rdvm.staffList = _staffUser.GetStaffMemberList();

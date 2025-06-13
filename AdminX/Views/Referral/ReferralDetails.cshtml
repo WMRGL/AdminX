@@ -388,222 +388,8 @@
                                     </tr>
                                     }
                                 </tbody>
-                            </table>
-
+                            </table>                        
                         
-                        @*else if (Model.referral.PATHWAY?.Trim() == "General")
-                        {
-                            <table class="table table-borderless my-0">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div class="flex-grow-1 ms-3">
-                                                    <strong>Referral ID</strong>
-                                                    <div class="text-muted">
-                                                        @Model.referral.refid
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Referral Date</strong>
-                                            <div class="text-muted">
-                                                @if (Model.referral.RefDate != null)
-                                                {
-                                                    @Model.referral.RefDate.Value.ToString("dd/MM/yyyy")
-                                                }
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>UBRN</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.UBRN
-                                            </div>
-
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Referral Type</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.RefType
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Pathway</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.PATHWAY
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div class="flex-grow-1 ms-3">
-                                                    <strong>Sub Pathway</strong>
-                                                    <div class="text-muted">
-                                                        Needed
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Consultant</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.PATIENT_TYPE_CODE
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Counsellor/Nurse</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.GC_CODE
-                                            </div>
-
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Admin Contact</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.AdminContact
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Referrer</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.ReferringClinician
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div class="flex-grow-1 ms-3">
-                                                    <strong>Referral Facility</strong>
-                                                    <div class="text-muted">
-                                                        @Model.referral.ReferringFacility
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Comment</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.REASON_FOR_REFERRAL
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Pregnancy</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.PREGNANCY
-                                            </div>
-
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Admin Contact</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.AdminContact
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                @*<strong>Referrer Code</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.ReferrerCode
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div class="flex-grow-1 ms-3">
-                                                    <strong>Indication</strong>
-                                                    <div class="text-muted">
-                                                        @Model.referral.INDICATION
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Class</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.RefClass
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Clock Start</strong>
-                                            <div class="text-muted">
-                                                @if (Model.referral.ClockStartDate != null)
-                                                {
-                                                    @Model.referral.ClockStartDate.Value.ToString("dd/MM/yyyy")
-                                                }
-                                            </div>
-
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Clock Stop</strong>
-                                                <div class="text-muted">
-                                                    @if (Model.referral.ClockStopDate != null)
-                                                    {
-                                                        @Model.referral.ClockStopDate.Value.ToString("dd/MM/yyyy")
-                                                    }
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Clock Age</strong>
-                                                <div class="text-muted">
-                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks weeks)</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex">
-                                                <div class="flex-grow-1 ms-3">
-                                                    <strong>Referral Status</strong>
-                                                    <div class="text-muted">
-                                                        @Model.referral.COMPLETE
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="flex-grow-1 ms-3">
-                                            <strong>Admin Status</strong>
-                                            <div class="text-muted">
-                                                @Model.referral.Status_Admin
-
-                                            </div>
-                                        </td>
-
-                                        <td>
-                                            <div class="flex-grow-1 ms-3">
-                                                <strong>Breach Reason</strong>
-                                                <div class="text-muted">
-                                                    @Model.referral.REASON_FOR_BREACH
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                        }*@
                         <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@Model.referral.refid" class="btn btn-primary">Edit</a>
 
                     </div>
@@ -613,7 +399,17 @@
             <div class="tab-pane fade" id="appointment" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Related Appointments</h5>
+                        <div class="card-header">
+                            <div class="row mb-2 mb-xl-3">
+                                <div class="col-auto d-none d-sm-block">
+                                    <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.referral.RefType on @Model.referral.RefDate.Value.ToString("dd/MM/yyyy") - Related Appointments</h5>
+                                </div>
+
+                                <div class="col-auto ms-auto text-end mt-n1">
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                                </div>
+                            </div>
+                        </div>                       
                     </div>
                     <div class="card-body">
                         <table class="table">

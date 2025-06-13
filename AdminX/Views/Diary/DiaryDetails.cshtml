@@ -83,15 +83,15 @@
         <div class="col-md-1">
             <label><b>Referral:</b></label>
         </div>
-        <div class="col-md-6">
-            @Model.defaultRef.refid - @Model.defaultRef.RefType by @Model.defaultRef.ReferringClinician on @Model.defaultRef.RefDate.Value.ToString("dd/MM/yyyy")
+        <div class="col-md-5">
+            @Model.linkedRef.RefID - @Model.linkedRef.TYPE on @Model.linkedRef.DATE_SCHEDULED.Value.ToString("dd/MM/yyyy")
         </div>
         @if (Model.diary.DocCode != null)
         {
             <div class="col-md-1">
                 <label><b>Doccode:</b></label>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 @Model.diary.DocCode
             </div>
         }

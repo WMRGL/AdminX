@@ -7,6 +7,7 @@ using ClinicalXPDataConnections.Meta;
 using AdminX.Meta;
 using AdminX.Data;
 using AdminX.Models;
+using System.Globalization;
 
 namespace AdminX.Controllers
 {
@@ -265,7 +266,7 @@ namespace AdminX.Controllers
                         cguNumber = fileNumber + "." + patientNumber.ToString();
                     }
                 }
-
+                
                 _pvm.cguNumber = cguNumber;
                 _pvm.firstName = firstname;
                 _pvm.lastName = lastname;
@@ -336,6 +337,21 @@ namespace AdminX.Controllers
                 }
                 else
                 {
+                    TextInfo textInfo = new CultureInfo("en-GB", false).TextInfo; //to convert to proper case
+
+                    firstname = textInfo.ToTitleCase(firstname);
+                    lastname = textInfo.ToTitleCase(lastname);
+                    postcode = textInfo.ToUpper(postcode);
+                    address1 = textInfo.ToTitleCase(address1);
+                    if (address2 != null) { address2 = textInfo.ToTitleCase(address2); }
+                    if (address3 != null) { address3 = textInfo.ToTitleCase(address3); }
+                    if (address4 != null) { address4 = textInfo.ToTitleCase(address4); }
+                    if (prevName != null) { prevName = textInfo.ToTitleCase(prevName); }
+                    if (maidenName != null) { maidenName = textInfo.ToTitleCase(maidenName); }
+                    if (preferredName != null ) { preferredName = textInfo.ToTitleCase(preferredName); }
+                    if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
+
+
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
                     address4, email, prevName, dob, null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, cguNumber);
                     _pvm.success = true;

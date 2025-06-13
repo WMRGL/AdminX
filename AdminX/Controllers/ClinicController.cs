@@ -143,6 +143,7 @@ namespace AdminX.Controllers
 
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
+                _cvm.patient = _patientData.GetPatientDetails(_cvm.Clinic.MPI);
 
                 if (_cvm.Clinic == null)
                 {

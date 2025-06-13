@@ -20,6 +20,7 @@ namespace AdminX.Controllers
         private readonly IPatientData _patientData;
         private readonly IDiaryData _diaryData;
         private readonly IReferralData _referralData;
+        private readonly IActivityData _activityData;
         private readonly IStaffUserData _staffUser;
         private readonly IDocumentsData _docsData;
         private readonly IDiaryActionData _diaryActionData;
@@ -36,6 +37,7 @@ namespace AdminX.Controllers
             _patientData = new PatientData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
             _referralData = new ReferralData(_clinContext);            
+            _activityData = new ActivityData(_clinContext);
             _staffUser = new StaffUserData(_clinContext);    
             _docsData = new DocumentsData(_docContext);
             _diaryActionData = new DiaryActionData(_adminContext);
@@ -59,8 +61,8 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                _dvm.defaultRef = _referralData.GetReferralDetails(_dvm.diary.RefID.GetValueOrDefault());
+                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);                
+                _dvm.linkedRef = _activityData.GetActivityDetails(_dvm.diary.RefID.GetValueOrDefault());
                 _dvm.defaultAction = _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
 
                 return View(_dvm);

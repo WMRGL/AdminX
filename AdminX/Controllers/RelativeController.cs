@@ -70,7 +70,8 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Relative", "ID=" + id.ToString());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
+                _rdvm.MPI = _rdvm.patient.MPI;
                 _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
                 _rdvm.genderList = _relativeData.GetGenderList();
 

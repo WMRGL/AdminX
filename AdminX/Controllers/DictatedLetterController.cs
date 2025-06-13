@@ -28,6 +28,7 @@ namespace AdminX.Controllers
         private readonly IExternalFacilityData _externalFacilityData;
         private readonly IDictatedLettersReportData _dotReportData;
         private readonly IAuditService _audit;
+        private readonly IConstantsData _constantsData;
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, AdminContext adminContext)
         {
@@ -46,6 +47,7 @@ namespace AdminX.Controllers
             _dotReportData = new DictatedLettersReportData(_adminContext);
             _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
+            _constantsData = new ConstantsData(_docContext);
         }
 
         [Authorize]
@@ -158,6 +160,7 @@ namespace AdminX.Controllers
                 _lvm.clinicians = _externalClinicianData.GetClinicianList().Where(c => c.Is_GP == 0 && c.LAST_NAME != null && c.FACILITY != null).ToList();                
                 List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
+                _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
 
                 return View(_lvm);
             }

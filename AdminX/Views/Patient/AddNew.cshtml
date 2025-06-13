@@ -61,23 +61,33 @@
                         </select>
                     </div>
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="firstName">Firstname</label>
+                        <label class="form-label" for="firstName">Forename</label>
                         <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Firstname" asp-for=@Model.firstName>
                     </div>
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="secondName">Secondname</label>
-                        <input type="text" name="secondName" class="form-control" id="secondName" placeholder="Secondname">
+                        <label class="form-label" for="secondName">Middle name</label>
+                        <input type="text" name="middleName" class="form-control" id="secondName" placeholder="Secondname">
                     </div>
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="lastName">LastName</label>
+                        <label class="form-label" for="lastName">Surname</label>
                         <input type="text" name="lastName" class="form-control" id="lastName" placeholder="LastName" asp-for=@Model.lastName>
                     </div>
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="preferredName">Preferred Name</label>
-                        <input type="text" name="" class="form-control" id="preferredName" placeholder="Preferred Name">
+                        <input type="text" name="preferredName" class="form-control" id="preferredName" placeholder="Preferred Name">
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="maidenName">Maiden Name</label>
+                        <input type="text" name="maidenName" class="form-control" id="maidenName" placeholder="Maiden Name">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="previousName">Other Previous Name</label>
+                        <input type="text" name="prevName" class="form-control" id="previousName" placeholder="Other Previous Name">
+                    </div>
+                </div>
+                <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Date of Birth</label>
                         <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.dob>

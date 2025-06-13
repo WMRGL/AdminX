@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Authorization;
+﻿using AdminX.Data;
+using AdminX.Meta;
+using AdminX.Models;
 using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using AdminX.Meta;
-using AdminX.Data;
-using AdminX.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace AdminX.Controllers
 {
@@ -195,10 +196,12 @@ namespace AdminX.Controllers
                     _pvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
                     _pvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
 
-                    _pvm.forenameSearch = firstname;
-                    _pvm.surnameSearch = lastname;
+                    TextInfo textInfo = new CultureInfo("en-GB", false).TextInfo; //to convert to proper case
+
+                    _pvm.forenameSearch = textInfo.ToTitleCase(firstname);
+                    _pvm.surnameSearch = textInfo.ToTitleCase(lastname);
                     _pvm.dobSearch = DOB;
-                    _pvm.postcodeSearch = postcode;
+                    _pvm.postcodeSearch = textInfo.ToUpper(postcode);
                     _pvm.nhsNoSearch = nhs;
 
                     _pvm.success = true;

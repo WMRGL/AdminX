@@ -1,7 +1,8 @@
 ﻿@model AdminX.ViewModels.ClinicVM
 @{
     ViewData["Title"] = "Admin-X - Appointment Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.Clinic.MPI }, new { @class = "btn btn-primary m-1" });
+    ViewData["Page"] = "/ Appointment / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 
 }
 
@@ -9,19 +10,21 @@
 @if (Model.Clinic.BOOKED_DATE <= DateTime.Today)
 {
     ViewBag.HomeButton = new[]
-           {
-
-        Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id = Model.Clinic.RefID }, new { @class = "btn btn-outline-primary m-1", @id = "btnRecordOutcome" }),
-        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.Clinic.MPI }, new { @class = "btn btn-outline-primary m-1", @id = "btnRecordOutcome" })
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Related Referral", "ReferralDetails", "Referral", new { refID = Model.linkedReferral.refid }, new { @class = "btn btn-light bg-white me-2 m-1", @id = "btnRecordOutcome" }),
+        Html.ActionLink("Record Outcome", "Edit", "Clinic", new { id = Model.Clinic.RefID }, new { @class = "btn btn-light bg-white me-2 m-1", @id = "btnRecordOutcome" }),
+        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.Clinic.RefID }, new { @class = "btn btn-light bg-white me-2 m-1", @id = "btnRecordOutcome" })
 
     };
 }
 else
 {
     ViewBag.HomeButton = new[]
- {
-    Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.Clinic.MPI }, new { @class = "btn btn-outline-primary m-1", @id = "btnRecordOutcome" }),
-};
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Related Referral", "ReferralDetails", "Referral", new { refID = Model.linkedReferral.refid }, new { @class = "btn btn-light bg-white me-2 m-1", @id = "btnRecordOutcome" }),
+    };
 }
 
 

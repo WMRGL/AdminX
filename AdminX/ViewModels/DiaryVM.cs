@@ -18,6 +18,7 @@ namespace AdminX.ViewModels
         public List<DiaryAction> diaryActionsList { get; set; }
         public List<Document> documentsList { get; set; }
         public Referral defaultRef { get; set; }
+        public ActivityItem linkedRef { get; set; }
         public DiaryAction defaultAction { get; set; }
         public string message { get; set; }
         public bool success { get; set; }

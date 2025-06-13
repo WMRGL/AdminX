@@ -6,15 +6,15 @@
 @{
     ViewData["Title"] = "Admin-X - Relatives' Diagnoses";
     ViewData["Page"] = "/ Relative / Diagnoses";
-    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
 @{
     ViewBag.HomeButton = new[]
     {
-        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-primary m-1" }),
-        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" }),
-        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-primary m-1" }),        
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),        
     };
 }
 

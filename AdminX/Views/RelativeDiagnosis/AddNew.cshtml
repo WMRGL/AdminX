@@ -1,18 +1,23 @@
 ﻿@model AdminX.ViewModels.RelativeDiagnosisVM
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
-    ViewData["Title"] = "Admin-X - Add New Relatives' Diagnosis";
+    ViewData["Title"] = "Admin-X - Add New Relatives' Diagnoses";
+    ViewData["Page"] = "/ Relative / Diagnoses / New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Diagnosis List", "Index", "RelativeDiagnosis", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
+
 <div class="container">    
-    <div class="row g-5 mb-5">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-primary" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
-        </div>
-    </div>
 
     <div class="row g-5 mb-5">
         <h1>Add new diagnosis</h1>

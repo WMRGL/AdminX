@@ -3,6 +3,14 @@
     ViewData["Title"] = "Admin-X - New Referral";
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {            
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPatientDetails" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+    };
+}
+
 <div action="container">
     <h1 class="text-center">New referral for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
 
