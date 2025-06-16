@@ -1254,7 +1254,7 @@
         {
             <text>
                             if (confirm("This patient already has a review. Do you want to add a new one?")) {
-                                window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
+                                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
                                                   } else {
                                 $("#reviewAlertCard").hide();
                                                              }
@@ -1263,7 +1263,7 @@
         else
         {
             <text>
-                            window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
+                                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
             </text>
         }
                                      });

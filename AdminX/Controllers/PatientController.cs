@@ -132,7 +132,7 @@ namespace AdminX.Controllers
                 _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                 _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
                 //_pvm.referral = _referralData.GetReferralDetails(id);
-                _pvm.reviewList = _reviewData.GetReviewsList(User.Identity.Name);
+                _pvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
 
                 if (_pvm.patient.DECEASED == -1)

@@ -272,7 +272,7 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
-                _rvm.patient = _patientData.GetPatientDetails(id);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
@@ -290,17 +290,17 @@ namespace AdminX.Controllers
                     return RedirectToAction("Index", "Review");
                 }
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
                 {
-                    Text = "Review",
-                    Controller = "Review",
-                    Action = "Index",
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Review",
+                        Controller = "Review",
+                        Action = "Index",
 
-                },
+                    },
                 new BreadcrumbItem { Text = "Update" }
-            };
+                };
 
 
                 if (_rvm.review == null)
@@ -364,6 +364,78 @@ namespace AdminX.Controllers
             };
 
             return View(_rvm);
+        }
+
+        [HttpGet]
+        public IActionResult AddReview(int mpi, int refID)
+        {
+            _rvm.patient = _patientData.GetPatientDetails(mpi);
+            _rvm.activityList = _activityData.GetActivityList(mpi);
+            _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _rvm.staffMembers = _staffUser.GetStaffMemberList();
+
+            if(refID != 0)
+            {
+                _rvm.activity = _activityData.GetActivityDetails(refID);
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Review",
+                    Controller = "Review",
+                    Action = "Index",
+
+                },
+                new BreadcrumbItem { Text = "Add" }
+            };
+
+                if (_rvm.patient != null && _rvm.patient.DOB != null)
+                {
+                    DateTime today = DateTime.Today;
+                    int age = today.Year - _rvm.patient.DOB.Value.Year;
+                    if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
+                    {
+                        age--;
+                    }
+                    ViewBag.IsUnder15 = (age < 15);
+                    ViewBag.DateOfFifteen = _rvm.patient.DOB.Value.AddYears(15).ToString("yyyy-MM-dd");
+
+                }
+                else
+                {
+                    ViewBag.IsUnder15 = false;
+                }
+            }
+
+            return View(_rvm);
+        }
+
+        [HttpPost]
+        public IActionResult AddReview(int mpi, int refID, string Owner, string Category, string Pathway, string Review_Recipient, DateTime? Planned_Date, string Comments)
+        {
+            try
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "RefID=" + refID.ToString());
+
+                _rvm.activity = _activityData.GetActivityDetails(refID);
+                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.activity.MPI);
+                _rvm.activityList = _activityData.GetActivityList(_rvm.patient.MPI).Where(c => c.REFERRAL_DATE != null).ToList();
+                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+
+                
+
+                _crud.PatientReview("Review", "Create", User.Identity.Name, mpi, Pathway, Owner, Review_Recipient, Category, "", "Pending", Comments, Planned_Date, refID);
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
+            }
         }
     }
 }

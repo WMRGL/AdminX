@@ -107,7 +107,7 @@
     <div class="card-body">
         <form method="post"  id="ReviewForm">
             <div class="row">
-                <input type="hidden" value="@Model.review.MPI" name="MPI">
+                <input value="@Model.review.ReviewID" name="id" hidden>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Linked Appointment</label>
                     <input type="text" class="form-control" id="linkedApptInput" name="Parent_RefID" value="@Model.review.Parent_RefID" readonly>
@@ -140,12 +140,12 @@
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="inputEmail4">Owner</label>
-                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
+                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.NAME" readonly>
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Review By</label>
                     <select class="form-select js-choice" id="linnkedAppt" name="Review_Recipient">
-                        <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.STAFF_CODE</option>
+                        <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.NAME</option>
                         @foreach (var item in Model.staffMembers)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -164,10 +164,10 @@
                     </select>
                 </div>
                 <div class="mb-3 col-md-4">
-                    <label class="form-label" for="pathway">Booked Date</label>
+                    <label class="form-label" for="pathway">Planned Date</label>
                     @if (Model.review.Planned_Date != null)
                     {
-                        <input type="date" class="form-control" value=@Model.review.Planned_Date.Value.ToString("yyyy-MM-dd") id="Planned_Date" name="Planned_Date" />
+                        <input type="date" class="form-control" asp-for=@Model.review.Planned_Date.Value.ToString("yyyy-MM-dd") id="Planned_Date" name="Planned_Date" />
 
                     }
                     else
