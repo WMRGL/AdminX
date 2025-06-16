@@ -11,7 +11,8 @@
         Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
         Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
         Html.ActionLink("Create New Contact", "AddNew", "Clinic", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
-        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),        
+        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }), 
+        Html.ActionLink("Create New Alert", "Create", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewAlert" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
         Html.ActionLink("Print Standard Letter", "Index", "LetterMenu", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
@@ -106,7 +107,7 @@
                     Patient Details
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
-                    Alert
+                    Active Alerts
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#diary" role="tab" aria-selected="false" tabindex="-1">
                     Diary
@@ -148,6 +149,20 @@
                 </div>
                 <div class="col-md-8">
                     <h1 class="text-center">@Model.patient.CGU_No - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+                    @if(Model.patientsList.Count() > 1)
+                    {
+                        <form asp-action="JumpToPatient">
+                            <h4 class="text-center">
+                                <select name="id">
+                                @foreach(var item in Model.patientsList)
+                                {
+                                    <option value=@item.MPI>@item.CGU_No - @item.FIRSTNAME @item.LASTNAME</option>
+                                }
+                                </select>
+                                <button type="submit" class="btn btn-default btn-outline-primary">Go</button>
+                            </h4>
+                        </form>
+                    }
                 </div>
                 <div class="col-md-2">
                     @if (Model.nextPatient != null)
@@ -879,6 +894,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
+                                            <th></th>
                                             <th scope="col">Type</th>
                                             <th scope="col">Protected Address</th>
                                             <th scope="col">Effective From</th>
@@ -890,6 +906,7 @@
                                         @foreach (var a in Model.alerts)
                                         {
                                             <tr>
+                                                <td><a type="button" class="btn btn-default btn-outline-primary" asp-controller="Alert" asp-action="AlertDetails" asp-route-alertID=@a.AlertID>Details</a></td>
                                                 <td>@a.AlertType</td>
                                                 @if (@a.ProtectedAddress)
                                                 {

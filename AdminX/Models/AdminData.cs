@@ -126,5 +126,14 @@ namespace AdminX.Models
         public string? Action { get; set; }
     }
 
+    [Table("AlertTypes", Schema = "dbo")]
+    public class AlertTypes
+    {
+        [Key]
+        public int AlertTypeID { get; set; }
+        public string AlertType { get; set; }
+        public bool InUse { get; set; }
+    }
+
 
 }

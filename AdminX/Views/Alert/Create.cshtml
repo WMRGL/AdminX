@@ -1,0 +1,62 @@
+﻿@model AdminX.ViewModels.AlertVM
+
+@{
+    ViewData["Title"] = "Admin-X - Alert";
+    ViewData["Page"] = "/ Alert / Create";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Alerts List", "Index", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAlertIndex" }),
+    };
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-head">
+            <h1>New Alert for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</a></h1>
+        </div>
+        <div class="card-body">
+            <div class="row mb-5 mt-2">
+                <form asp-action="Create">
+                    <input name="mpi" asp-for=@Model.patient.MPI hidden />
+                    <dt class="col-sm-2">Alert Type:</dt>
+                    <dd class="col-sm-10">
+                        <select name="alertType">
+                            <option value="" selected>Select</option>
+                            @foreach (var item in Model.alertTypes)
+                            {
+                                <option value=@item.AlertType>@item.AlertType</option> @*Of course we store the description and not the ID.*@
+                            }
+                        </select>
+                    </dd>
+                    <dt class="col-sm-2">Effective:</dt>
+                    <dd class="col-sm-6">
+                        <input type="date" name="startDate" />
+                    </dd>
+                    <dt class="col-sm-2">Protected Address</dt>
+                    <dd class="col-sm-10">
+                        <select name="isProtectedAddress" asp-for=@Model.alert.ProtectedAddress>
+                            <option value=false selected>No</option>
+                            <option value=true>Yes</option>
+                        </select>
+                    </dd>
+                    <dt class="col-sm-2">Comments:</dt>
+                    <dd class="col-sm-10">
+                        <textarea name="comments"></textarea>
+                    </dd>
+
+                    <div class="row mb-5 g-5">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-default btn-outline-primary">Save</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

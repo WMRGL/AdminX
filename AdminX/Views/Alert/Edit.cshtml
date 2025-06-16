@@ -1,0 +1,85 @@
+﻿@model AdminX.ViewModels.AlertVM
+
+@{
+    ViewData["Title"] = "Admin-X - Alert";
+    ViewData["Page"] = "/ Alert / Edit";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Alerts List", "Index", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAlertIndex" }),
+    };
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-head">
+            <h1>Alert details for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</a></h1>
+        </div>
+        <div class="card-body">
+            <div class="row mb-5 mt-2">
+                <form asp-action="Edit">
+                    <input name="alertID" asp-for=@Model.alert.AlertID hidden />
+                    <dt class="col-sm-2">Alert Type:</dt>
+                    <dd class="col-sm-10">
+                        <select name="alertType" asp-for=@Model.alert.AlertType>
+                            <option value="" selected>Select</option>
+                            @foreach (var item in Model.alertTypes)
+                            {
+                                <option value=@item.AlertType>@item.AlertType</option> @*Of course we store the description and not the ID.*@
+                            }
+                        </select>
+                    </dd>
+                    <dt class="col-sm-2">Effective:</dt>
+                    <dd class="col-sm-6">
+                        @Model.alert.EffectiveFromDate.ToString("dd/MM/yyyy") <span> - </span> <input type="date" name="endDate" id="txtEndDate" asp-for=@Model.alert.EffectiveToDate />                         
+                    
+                        <label>Set end date to today</label><input type="checkbox" id="chkEndDate" />
+                    </dd>
+                    <dt class="col-sm-2">Protected Address</dt>
+                    <dd class="col-sm-10">
+                        <select name="isProtectedAddress" asp-for=@Model.alert.ProtectedAddress>
+                            <option value=false selected>No</option>
+                            <option value=true>Yes</option>
+                        </select>
+                    </dd>
+                    <dt class="col-sm-2">Comments:</dt>
+                    <dd class="col-sm-10">
+                        <textarea name="comments" asp-for=@Model.alert.Comments></textarea>
+                    </dd>
+
+                    <div class="row mb-5 g-5">
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-default btn-outline-primary">Save</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    document.getElementById("chkEndDate").addEventListener("change", SetEndDate);
+
+    function SetEndDate()
+    {       
+        if(document.getElementById("chkEndDate").checked)
+        {
+            document.getElementById("txtEndDate").valueAsDate = new Date();
+        }
+        else
+        {
+            document.getElementById("txtEndDate").value = "";
+        }
+    }
+
+</script>

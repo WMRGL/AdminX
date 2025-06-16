@@ -19,5 +19,6 @@ namespace AdminX.Data
         public DbSet<DictatedLettersSecTeamReport> DictatedLettersSecTeamReport { get; set; }
         public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }
         public DbSet<DiaryAction> DiaryAction { get; set; }
+        public DbSet<AlertTypes> AlertTypes { get; set; }
     }
 }

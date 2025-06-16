@@ -33,7 +33,7 @@ namespace AdminX.Controllers
         private readonly IDiaryData _diaryData;
         private readonly IExternalClinicianData _gpData;
         private readonly IExternalFacilityData _gpPracticeData;
-        private readonly IAuditService _audit;        
+        private readonly IAuditService _audit;
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
         //private readonly ReviewVM _rvm;
@@ -96,10 +96,11 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
 
-                List<Patient> patients = new List<Patient>();
-                patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+                //List<Patient> patients = new List<Patient>();
+                _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList();
+                //patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
-                if (patients.Count > 0)
+                if (_pvm.patientsList.Count > 0)
                 {
                     int regNo;
                     string cguno = _pvm.patient.CGU_No;
@@ -127,7 +128,7 @@ namespace AdminX.Controllers
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
                 _pvm.diary = _diaryData.GetDiaryList(id);
-                _pvm.languages  = _languageData.GetLanguages();
+                _pvm.languages = _languageData.GetLanguages();
                 _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
                 _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                 _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
@@ -152,7 +153,7 @@ namespace AdminX.Controllers
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-              
+
                     new BreadcrumbItem { Text = "Patient" }
                 };
 
@@ -176,8 +177,8 @@ namespace AdminX.Controllers
             if (deceased == "on")
             {
                 deseasedStatus = true;
-            } 
-            
+            }
+
             if (interpreterRequired == "on")
             {
                 interpreter = true;
@@ -204,10 +205,10 @@ namespace AdminX.Controllers
         {
             int years = DateTime.Now.Year - dob.Year;
             int months = DateTime.Now.Month - dob.Month;
-            if(months < 0)
+            if (months < 0)
             {
                 months += 12;
-                years -= 1; 
+                years -= 1;
             }
 
             return $"{years} years, {months} months";
@@ -239,34 +240,34 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber, 
+        public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber,
             string? message, bool? success)
         {
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                
+
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";
 
                 if (fileNumber == null || fileNumber == "")
-                {                    
+                {
                     cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
                 }
                 else
                 {
                     List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
                     int patientNumber = patList.Count();
-                    
+
                     if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
                     {
                         cguNumber = fileNumber + "." + patientNumber.ToString();
                     }
                 }
-                
+
                 _pvm.cguNumber = cguNumber;
                 _pvm.firstName = firstname;
                 _pvm.lastName = lastname;
@@ -298,7 +299,7 @@ namespace AdminX.Controllers
                     new BreadcrumbItem
                     {
                         Text = "Patient",
-                      
+
 
                     },
 
@@ -315,15 +316,15 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
-            string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode,string address1, string address2, string address3, string address4, string areaCode, 
-            string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex, 
+            string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode, string address1, string address2, string address3, string address4, string areaCode,
+            string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex,
             string middleName, string tel, string workTel, string mobile, string cguNumber)
         {
             try
             {
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-                
+
                 int day = dob.Day;
                 int month = dob.Month;
 
@@ -348,7 +349,7 @@ namespace AdminX.Controllers
                     if (address4 != null) { address4 = textInfo.ToTitleCase(address4); }
                     if (prevName != null) { prevName = textInfo.ToTitleCase(prevName); }
                     if (maidenName != null) { maidenName = textInfo.ToTitleCase(maidenName); }
-                    if (preferredName != null ) { preferredName = textInfo.ToTitleCase(preferredName); }
+                    if (preferredName != null) { preferredName = textInfo.ToTitleCase(preferredName); }
                     if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
 
 
@@ -410,7 +411,7 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
-            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile, 
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile,
             bool isInterpreterRequired, bool isConsentToEmail)
         {
             try
@@ -421,8 +422,8 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
-                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title,firstname,"",lastname,nhsno,postcode,gpCode,address1,address2,address3,
-                    address4,email,prevName,dob,null,maidenName,isInterpreterRequired,isConsentToEmail,preferredName,ethnicCode,sex,middleName,tel,workTel,mobile);
+                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
+                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile);
 
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
@@ -446,12 +447,12 @@ namespace AdminX.Controllers
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
-                
+
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
                 _pvm.patientsList = new List<Patient>();
 
                 return View(_pvm);
-                
+
             }
             catch (Exception ex)
             {
@@ -472,8 +473,8 @@ namespace AdminX.Controllers
                 //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
-                
-                return View(_pvm);                
+
+                return View(_pvm);
             }
             catch (Exception ex)
             {
@@ -485,15 +486,15 @@ namespace AdminX.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateCGUNumber(int mpi, string newFileNumber)
         {
-            
+
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
             List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
-            
+
             int patientNumber = patList.Count();
-            
+
             string cguNumber = "";
             string sMessage = "";
             bool isSuccess = false;
@@ -530,9 +531,9 @@ namespace AdminX.Controllers
                 sMessage = "Destination file number unavailable, please check the integrity of the file you are merging into.";
             }
 
-            return RedirectToAction("PatientDetails", new { id = mpi, message=sMessage, success=isSuccess });
+            return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
-                
+
         public async Task<IActionResult> MakePatientElectronic(int mpi)
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
@@ -547,10 +548,13 @@ namespace AdminX.Controllers
 
             string sMessage = "File made electronic. Please wait a few minutes to allow the EDMS structure to complete.";
             bool isSuccess = true;
-            
+
             return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
 
-        
+        public async Task<IActionResult> JumpToPatient(int id)
+        {
+            return RedirectToAction("PatientDetails", "Patient", new { id = id });
+        }
     }
 }
