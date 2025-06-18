@@ -124,6 +124,7 @@ namespace AdminX.Controllers
                 List<Referral> referrals = _referralData.GetReferralsList(id);
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
+                _pvm.tempReges = _referralData.GetTempRegList(id);
                 _pvm.appointments = _appointmentData.GetAppointmentListByPatient(id);
                 _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = _alertData.GetAlertsList(id);
@@ -145,7 +146,7 @@ namespace AdminX.Controllers
                     _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
                 }
 
-                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0)
+                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0)
                 {
                     _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
                 }
@@ -361,7 +362,7 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
 
-                return RedirectToAction("PatientDetails", "Patient", new { mpi = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
+                return RedirectToAction("PatientDetails", "Patient", new { id = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
             }
             catch (Exception ex)
             {

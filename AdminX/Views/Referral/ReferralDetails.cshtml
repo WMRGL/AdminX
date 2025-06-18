@@ -226,31 +226,29 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="flex-grow-1 ms-3">
-                                        <strong>Admin Status</strong>
-                                        <div class="text-muted">
-                                            @Model.referral.Status_Admin
-                                        </div>
-                                    </td>
-                                    <td class="flex-grow-1 ms-3">
-                                        <strong>Information Gathering</strong>
-                                        <div class="text-muted">
-                                             Needed
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="flex-grow-1 ms-3">
-                                            <strong>Breach Reason</strong>
+                                    @if (Model.referral.PATHWAY?.Trim() != "Cancer")
+                                    { 
+                                        <td class="flex-grow-1 ms-3">
+                                            <strong>Information Gathering</strong>
                                             <div class="text-muted">
-                                                Needed
+                                                 @Model.referral.Clics
                                             </div>
-                                        </div>
+                                        </td>
+                                    }
+                                    <td>
+                                        
                                     </td>
                                     
                                 </tr>
                                 @if (Model.referral.PATHWAY?.Trim() == "Cancer")
                                 {     
                                     <tr>
+                                        <td class="flex-grow-1 ms-3">
+                                            <strong>Admin Status</strong>
+                                            <div class="text-muted">
+                                                @Model.referral.Status_Admin
+                                            </div>
+                                        </td>
                                         <td>
                                             <div class="d-flex">
                                                 <div class="flex-grow-1 ms-3">
@@ -262,7 +260,7 @@
                                                         }
                                                         else if (@Model.referral.RefFHF == 1)
                                                         {
-                                                            <p>1</p>
+                                                            <p>Yes</p>
                                                         }
                                                         else
                                                         {
@@ -278,7 +276,7 @@
                                                     <strong>Referral Reason Code</strong>
                                                     <div class="text-muted">
                                                         <ul class="list-unstyled">
-                                                            <li>@Model.referral.RefReasonCode</li>
+                                                            <li>@Model.referral.RefReason</li>
                                                             <li>@Model.referral.OthReason1</li>
                                                             <li>@Model.referral.OthReason2</li>
                                                             <li>@Model.referral.OthReason3</li>
@@ -299,9 +297,13 @@
                                                                 {
                                                                     <span>No</span>
                                                                 }
-                                                                else if (@Model.referral.RefReasonAff == 1)
+                                                                else if (@Model.referral.RefReasonAff == -1)
                                                                 {
                                                                     <span>Yes</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>Unclear</span>
                                                                 }
                                                             </li>
                                                             @if (Model.referral.OthReason1 != null)
@@ -311,9 +313,13 @@
                                                                     {
                                                                         <span>No</span>
                                                                     }
-                                                                    else if (@Model.referral.OthReason1Aff == 1)
+                                                                    else if (@Model.referral.OthReason1Aff == -1)
                                                                     {
                                                                         <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
                                                                     }
                                                                 </li>
                                                             }
@@ -325,9 +331,13 @@
                                                                     {
                                                                         <span>No</span>
                                                                     }
-                                                                    else if (@Model.referral.OthReason2Aff == 1)
+                                                                    else if (@Model.referral.OthReason2Aff == -1)
                                                                     {
                                                                         <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
                                                                     }
                                                                 </li>
                                                             }
@@ -339,9 +349,13 @@
                                                                     {
                                                                         <span>No</span>
                                                                     }
-                                                                    else if (@Model.referral.OthReason3Aff == 1)
+                                                                    else if (@Model.referral.OthReason3Aff == -1)
                                                                     {
                                                                         <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
                                                                     }
                                                                 </li>
                                                             }
@@ -353,9 +367,13 @@
                                                                     {
                                                                         <span>No</span>
                                                                     }
-                                                                    else if (@Model.referral.OthReason4Aff == 1)
+                                                                    else if (@Model.referral.OthReason4Aff == -1)
                                                                     {
                                                                         <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
                                                                     }
                                                                 </li>
                                                             }

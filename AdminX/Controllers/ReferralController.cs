@@ -30,6 +30,10 @@ namespace AdminX.Controllers
         private readonly IExternalFacilityData _externalFacilityData;
         private readonly IReviewData _reviewData;    
         private readonly IAuditService _audit;
+        private readonly IDiseaseData _indicationData;
+        private readonly IPathwayData _pathwayData;
+        private readonly IPriorityData _priorityData;
+        private readonly IRefReasonData _refReasonData;
 
 
         public ReferralController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
@@ -51,7 +55,10 @@ namespace AdminX.Controllers
             _externalFacilityData = new ExternalFacilityData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
             _audit = new AuditService(_config);
-
+            _indicationData = new DiseaseData(_clinContext);
+            _pathwayData = new PathwayData(_clinContext);
+            _priorityData = new PriorityData(_clinContext);
+            _refReasonData = new RefReasonData(_clinContext);
         }
 
         [HttpGet]
@@ -112,6 +119,8 @@ namespace AdminX.Controllers
             _rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
             _rvm.diseases = _diseaseData.GetDiseases();
             _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+            _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
             if (_rvm.referral.ClockStartDate != null)
             {
                 if (_rvm.referral.ClockStopDate != null)
@@ -148,8 +157,8 @@ namespace AdminX.Controllers
         [HttpPost]
         public IActionResult UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
              string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
-             string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, bool? RefReasonAff, bool? OthReason1Aff,
-             bool? OthReason2Aff, bool? OthReason3Aff, bool? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, string? REASON_FOR_BREACH)
+             string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
+             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic)
         {
             
             string login = User.Identity?.Name ?? "Unknown";
@@ -178,14 +187,18 @@ namespace AdminX.Controllers
                      dDate2: ClockStopDate,
                      string13: Status_Admin,
                      string14: RefReasonCode,
-                     string15: Clics,
-                     string16: REASON_FOR_BREACH,
                      int2: RefFHF,
-                     int3: RefReasonAff.HasValue && RefReasonAff.Value ? 1 : 0,
-                     int4: OthReason1Aff.HasValue && OthReason1Aff.Value ? 1 : 0,
-                     int5: OthReason2Aff.HasValue && OthReason2Aff.Value ? 1 : 0,
-                     int6: OthReason3Aff.HasValue && OthReason3Aff.Value ? 1 : 0,
-                     int7: OthReason4Aff.HasValue && OthReason4Aff.Value ? 1 : 0
+                     int3: RefReasonAff,
+                     int4: OthReason1Aff,
+                     int5: OthReason2Aff,
+                     int6: OthReason3Aff,
+                     int7: OthReason4Aff,
+                     int8: symptomatic,
+                     string15: OthReason1,
+                     string16: OthReason2,
+                     string17: OthReason3,
+                     string18: OthReason4
+                     
 
                  );
                 if (success != 1)
@@ -200,6 +213,13 @@ namespace AdminX.Controllers
                     sOperation: "Update",
                     sLogin: login,
                     int1: refid,
+                    int2: null,
+                    int3: null,
+                    int4: null,
+                    int5: null,
+                    int6: null,
+                    int7: null,
+                    int8: null,
                     string1: RefType,
                     string2: INDICATION,
                     text: REASON_FOR_REFERRAL,
@@ -215,10 +235,7 @@ namespace AdminX.Controllers
                     string12: COMPLETE,
                     dDate1: ClockStartDate,
                     dDate2: ClockStopDate,
-                    string13: Status_Admin,
-                    string15: Clics,
-                     string16: REASON_FOR_BREACH
-
+                    string13: Status_Admin
 
                 );
                 if (success != 1)
@@ -247,19 +264,36 @@ namespace AdminX.Controllers
             _rvm.referrers = _externalClinicianData.GetClinicianList();
             _rvm.pathways = new List<string> { "Cancer", "General" };
             _rvm.admin_status = _adminStatusData.GetStatusAdmin();
+            _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+            _rvm.subPathways = _pathwayData.GetSubPathwayList();
+            _rvm.priorityList = _priorityData.GetPriorityList();
+            _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
+            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
 
             return View(_rvm);
         }
 
 
         [HttpPost]
-        public IActionResult AddNew(int mpi, string refType, DateTime refDate, DateTime clockStartDate, string refPhys, string refPathway, string indication, string consultant,
-            string gc, string admin, string UBRN)
+        public IActionResult AddNew(int mpi, string refType, DateTime refDate, DateTime clockStartDate, string refPhys, string refPathway, string? subPathway, 
+            string indication, string consultant, string gc, string admin, string UBRN, string clinClass, string pregnancy, string? refReason, string? refReason1, 
+            string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff, int? OthReason2Aff, int? OthReason3Aff, 
+            int? OthReason4Aff, string? comments, int? symptomatic, int? RefFHF, string? Status_Admin)
         {
-            int success = _CRUD.CallStoredProcedure("Referral", "Create", mpi, 0, 0, refType, indication, refPathway, refPhys, User.Identity.Name,
-                refDate, clockStartDate, false, false, 0, 0, 0, consultant, gc, admin, 0, 0, 0, 0, 0, UBRN);
+            //int success = _CRUD.CallStoredProcedure("Referral", "Create", mpi, 0, 0, refType, indication, refPathway, refPhys, User.Identity.Name,
+            //  refDate, clockStartDate, false, false, 0, 0, 0, consultant, gc, admin, 0, 0, 0, 0, 0, UBRN);
 
-            return View(_rvm);
+            int success = _CRUD.ReferralDetail("Referral", "Create", User.Identity.Name, mpi, RefFHF,refReasonAff, OthReason1Aff, 
+                OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic, refType, indication, comments, refPathway, UBRN, subPathway, 
+                consultant, gc, admin, refPhys, pregnancy, clinClass, "Active", refDate, null, Status_Admin, refReason, refReason1, 
+                refReason2, refReason3, refReason4, false, false);
+
+            if (success != 1)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+            }
+
+            return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
         }
 
         

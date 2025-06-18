@@ -45,19 +45,10 @@
 
   <ItemGroup>
     <Reference Include="APIControllers">
-      <HintPath>G:\Technical Improvements Group\C# Libraries\APIControllers.dll</HintPath>
+      <HintPath>..\..\..\..\Websites\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>G:\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="APIControllers">
-      <HintPath>\\zion.matrix.local\dfsrootbwh\Cling\Technical Improvements Group\C# Libraries\APIControllers.dll</HintPath>
-    </Reference>
-    <Reference Include="ClinicalXPDataConnections">
-      <HintPath>\\zion.matrix.local\dfsrootbwh\Cling\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>..\..\..\..\Websites\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

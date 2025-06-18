@@ -17,6 +17,7 @@ namespace AdminX.ViewModels
         public List<YesNo> yesno { get; set; }         
         public List<Referral> activeReferrals { get; set; }
         public List<Referral> inactiveReferrals { get; set; }
+        public List<Referral> tempReges { get; set; }
         public List<Appointment> appointments { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
