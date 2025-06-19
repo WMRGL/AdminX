@@ -149,7 +149,7 @@
                     }
                 </div>
                 <div class="col-md-8">
-                    <h1 class="text-center">@Model.patient.CGU_No - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
+                    <h1 class="text-center">@Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null){ <span>"</span>@Model.patient.PtAKA<span>"</span>} @Model.patient.LASTNAME</h1>
                     @if(Model.patientsList.Count() > 1)
                     {
                         <form asp-action="JumpToPatient">
@@ -804,6 +804,16 @@
                                                     @Html.DisplayFor(model => model.patient.GP_Code)
                                                     <br />
                                                     @Html.DisplayFor(model => model.GP.TITLE) @Html.DisplayFor(model => model.GP.FIRST_NAME) @Html.DisplayFor(model => model.GP.NAME)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Strategy District:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PtAreaCode) - @Html.DisplayFor(model => model.patient.PtAreaName)
                                                 </div>
                                             </div>
                                         </div>

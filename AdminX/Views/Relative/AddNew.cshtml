@@ -67,11 +67,11 @@
                     DOB:
                 </dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="dob" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="sDOB" />
                 </dd>               
                 <dt class="col-sm-2">DOD: (if deceased)</dt>
                 <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="dod" />
+                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="sDOD" />
                 </dd>        
                 <dt class="col-sm-2">
                     Sex:
@@ -93,7 +93,7 @@
                     <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
                         <option value=1>Yes</option>
-                        <option value=2>Don't know</option>
+                        <option value=2 selected>Don't know</option>
                     </select>
                 </dd>
             </dl>

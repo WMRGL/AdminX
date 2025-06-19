@@ -27,6 +27,7 @@
                     <th>Type</th>
                     <th>Name</th>
                     <th>Referral Date</th>
+                    <th>To be triaged by</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +40,7 @@
                         <td>@item.RefType</td>
                         <td>@item.Name</td>
                         <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Clinician</td>
                     </tr>
                 }
             </tbody>

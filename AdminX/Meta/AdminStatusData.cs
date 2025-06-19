@@ -21,7 +21,7 @@ namespace AdminX.Meta
 
         public List<ListStatusAdmin> GetStatusAdmin()
         {
-            List<ListStatusAdmin> statusAdmins = _adminContext.ListStatusAdmin.ToList();
+            List<ListStatusAdmin> statusAdmins = _adminContext.ListStatusAdmin.OrderBy(a => a.Sequence).ToList();
             return statusAdmins;
         }
     }

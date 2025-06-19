@@ -1,0 +1,16 @@
+﻿@model AdminX.ViewModels.RelativeDiaryVM
+
+@{
+    ViewData["Title"] = "Admin-X - Relative Diary";
+    ViewData["Page"] = "/ Relative / Diary";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Diary List", "Index", "RelativeDiary", new { id = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" })
+    };
+}

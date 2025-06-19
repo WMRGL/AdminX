@@ -424,7 +424,7 @@ namespace AdminX.Controllers
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile);
+                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode);
 
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }

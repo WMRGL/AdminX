@@ -1,18 +1,19 @@
 ﻿@model AdminX.ViewModels.ReviewVM
 @{
-    ViewData["Title"] = "Admin-X - Reviews";
+    ViewData["Title"] = "Admin-X - Reviews";    
+    ViewData["Page"] = "/ Reviews / Patient Review List";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container card">
-    <div class="row mb-5 g-2 mt-2">
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home Page</a>
-        </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Patient Details</a>
-        </div>
-    </div>
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Full Review List", "Index", "Review", new { }, new { @class = "btn btn-light bg-white me-2 m-1" }),        
+    };
+}
 
+<div class="container card">    
     <div class="row mb-5 g-2 mt-2">
         <h2>Outstanding Reviews for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h2>
     </div>
@@ -33,7 +34,7 @@
                 @foreach (var item in Model.reviewList)
                 {
                     <tr>
-                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID class="btn btn-success">Select</a></td>
+                        <td><a asp-action="Edit" asp-route-id=@item.ReviewID class="btn btn-default btn-primary">Select</a></td>
                         <td>@item.CGU_No</td>
                         <td>@item.FIRSTNAME @item.LASTNAME</td>
                         <td>@item.Category</td>

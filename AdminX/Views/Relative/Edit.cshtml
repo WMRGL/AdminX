@@ -48,6 +48,13 @@
             </dl>
             <dl class="row">
                 <dt class="col-sm-2">
+                    Previous Name (if known):
+                </dt>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurnameBirth name="prevSurname" />
+                </dd>
+                
+                <dt class="col-sm-2">
                     Relation to Proband:
                 </dt>
                 <dd class="col-sm-2">
@@ -79,7 +86,7 @@
                 </dt>
                 <dd class="col-sm-2">
                     @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelSex name="sex">
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
                         {

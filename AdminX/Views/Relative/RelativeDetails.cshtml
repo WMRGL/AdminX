@@ -31,6 +31,10 @@
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+                @if (Model.relativeDetails.RelSurnameBirth != null)
+                {
+                    <span>(was </span> @Model.relativeDetails.RelSurnameBirth<span>)</span>
+                }
             </dd>
             <dt class="col-sm-2">
                 Relation to Proband:

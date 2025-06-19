@@ -84,9 +84,8 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string title, string forename1,
-            string forename2, string surname, string relation, string dob, string dod,
-            int isAffected, string sex)
+        public async Task<IActionResult> Edit(int id, string? title, string forename1, string? forename2, string surname, string relation, string dob, string dod,
+            int isAffected, string sex, string? prevSurname)
         {
             try
             {
@@ -103,7 +102,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    birthDate = DateTime.Parse("1/1/1900");
+                    birthDate = DateTime.Parse("1900-01-01");
                 }
 
                 if (dod != null)
@@ -112,7 +111,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    deathDate = DateTime.Parse("1/1/1900");
+                    deathDate = DateTime.Parse("1900-01-01");
                 }
 
                 if (title == null)
@@ -126,7 +125,7 @@ namespace AdminX.Controllers
                 }
 
                 int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
-                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
+                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, prevSurname);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-edit(SQL)" }); }
 

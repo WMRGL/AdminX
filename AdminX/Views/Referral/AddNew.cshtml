@@ -60,6 +60,7 @@
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="refPathway">Pathway</label>
                             <select class="form-select" id="refPathway" name="refPathway">
+                                <option value="" selected>Select</option>
                                 @foreach (var item in Model.pathways)
                                 {
                                     <option value=@item>@item</option>
@@ -81,7 +82,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="indication">Indication</label>                            
-                            <select class="form-control" name="indication">
+                            <select class="form-control" id="ddlIndication" name="indication">
                                 <option value="" selected>Select</option>
                                 @foreach (var item in Model.indicationList)
                                 {
@@ -91,7 +92,7 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="clinClass">Class/Urgency</label>
-                            <select class="form-control" name="clinClass">
+                            <select class="form-control" id="ddlClinClass" name="clinClass">
                                 <option value="" selected>Select</option>
                                 @foreach (var item in Model.priorityList)
                                 {
@@ -101,7 +102,7 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="Pregnancy">Pregnancy</label>
-                            <select class="form-control" name="pregnancy">
+                            <select class="form-control" id="ddlPregnancy" name="pregnancy">
                                 <option value="" selected>Select</option>
                                 @foreach (var item in Model.pregnancy)
                                 {
@@ -145,29 +146,35 @@
                         </div>
                         <h5>Referrer details</h5>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-10">
                                 <label class="form-label" for="refDate">Referring Clinician</label>
-                                <select class="form-select js-choice" name="refPhys">
+                                <select class="form-select js-choice" id="ddlRefPhys" name="refPhys">
+                                    <option value=@Model.patient.GP_Code selected>Use Patient's GP (@Model.patient.GP - @Model.patient.GP_Facility)</option>
                                     @foreach (var item in Model.referrers)
                                     {
                                         <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>
                                     }
                                 </select>
                             </div>
-                        </div>
+                            @*
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-default btn-outline-primary" id="btnSetGP">Set to GP</button>
+                            </div>
+                            *@ @*This refuses to work for some reason, it simply will NOT have the GP in the list!!!!*@
+                        </div>                        
+                        
                         
                         <div class="row mb-5 g-5" id="cancerStuff" hidden>
                             <h5>Cancer referral details</h5>
-                            <div class="row">
-                                
+                            <div class="row">                                
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="admin_status">Admin Status</label>
-                                    <select id="admin_status" name="Status_Admin" class="form-control js-choice">
+                                    <select id="admin_status" name="Status_Admin" class="form-control">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.admin_status)
                                         {
-                                            <option value="@item.Status_Admin">@item.Status_Admin</option>
-                                        }
+                                            <option value=@item.Status_Admin>@item.Status_Admin</option> 
+                                        } 
 
                                     </select>
                                 </div>
@@ -234,9 +241,9 @@
                                 <div class="col-md-2">
                                     <select class="form-select js-choice" name="refReasonAff">
                                         <option value="0">Not affected</option>
-                                        <option value="-1">affected</option>
+                                        <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
-                                    </select>
+                                    </select> @*Because of the tri-state, and because the old data has -1 and 0, we have to use 1 for "unclear" now.*@
                                 </div>
                             </div>
                             <div class="row">
@@ -252,7 +259,7 @@
                                 <div class="col-md-2">
                                     <select class="form-select js-choice" name="OthReason1Aff">
                                         <option value="0">Not affected</option>
-                                        <option value="-1">affected</option>
+                                        <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
                                     </select>
                                 </div>
@@ -270,7 +277,7 @@
                                 <div class="col-md-2">
                                     <select class="form-select js-choice" name="OthReason2Aff">
                                         <option value="0">Not affected</option>
-                                        <option value="-1">affected</option>
+                                        <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
                                     </select>
                                 </div>
@@ -288,7 +295,7 @@
                                 <div class="col-md-2">
                                     <select class="form-select js-choice" name="OthReason3Aff">
                                         <option value="0">Not affected</option>
-                                        <option value="-1">affected</option>
+                                        <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
                                     </select>
                                 </div>
@@ -306,7 +313,7 @@
                                 <div class="col-md-2">
                                     <select class="form-select js-choice" name="OthReason4Aff">
                                         <option value="0">Not affected</option>
-                                        <option value="-1">affected</option>
+                                        <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
                                     </select>
                                 </div>
@@ -335,6 +342,7 @@
 <script>
 
     document.getElementById("refPathway").addEventListener("change", ShowCancerStuff);
+    //document.getElementById("btnSetGP").addEventListener("click", SetReferrerToGP);
     window.addEventListener("load", ShowCancerStuff);
 
     function ShowCancerStuff()
@@ -343,12 +351,28 @@
 
         if(document.getElementById("refPathway").value == "Cancer")
         {
-            cStuff.hidden = false;
+            cStuff.hidden = false;            
+            document.getElementById("ddlIndication").value = "?Cancer";
+            document.getElementById("ddlClinClass").value = "Routine";
+            document.getElementById("ddlPregnancy").value = "No Pregnancy";
+            document.getElementById("admin_status").value = "New Referral";
         }
         else
         {
             cStuff.hidden = true;
+            document.getElementById("ddlIndication").value = "";
+            document.getElementById("ddlClinClass").value = "";
+            document.getElementById("ddlPregnancy").value = "";
+            document.getElementById("admin_status").value = "";
         }
+    }
+
+    function SetReferrerToGP()
+    {
+        var _refer = document.getElementById("ddlRefPhys");
+        const _newRefer = "@Model.patient.GP_Code";
+        window.alert(_newRefer);        
+        _refer.value = _newRefer;
     }
 
 </script>

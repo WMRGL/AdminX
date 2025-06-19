@@ -262,14 +262,20 @@ namespace AdminX.Controllers
             _rvm.admin = _staffUserData.GetAdminList();
             _rvm.referrals = _activityData.GetActiveReferralList(mpi);
             _rvm.referrers = _externalClinicianData.GetClinicianList();
+            _rvm.referrers.Add(_externalClinicianData.GetPatientGPReferrer(mpi));
             _rvm.pathways = new List<string> { "Cancer", "General" };
             _rvm.admin_status = _adminStatusData.GetStatusAdmin();
             _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
             _rvm.subPathways = _pathwayData.GetSubPathwayList();
             _rvm.priorityList = _priorityData.GetPriorityList();
             _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
-            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();            
 
+
+            foreach (var item in _rvm.admin_status)
+            {
+                Console.WriteLine(item.Sequence);
+            }
             return View(_rvm);
         }
 

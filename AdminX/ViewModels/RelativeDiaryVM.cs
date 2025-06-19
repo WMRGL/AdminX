@@ -1,4 +1,5 @@
-﻿using ClinicalXPDataConnections.Models;
+﻿using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.ViewModels
@@ -9,5 +10,7 @@ namespace AdminX.ViewModels
         public List<RelativeDiary> relativeDiaryList { get; set; }
         public Relative relative { get; set; }
         public Patient patient { get; set; }
+        public List<DiaryAction> diaryActionsList { get; set; }
+        public List<Document> documentsList { get; set; }
     }
 }

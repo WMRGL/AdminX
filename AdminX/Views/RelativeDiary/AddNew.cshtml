@@ -1,0 +1,95 @@
+﻿@model AdminX.ViewModels.RelativeDiaryVM
+
+@{
+    ViewData["Title"] = "Admin-X - Relative Diary";
+    ViewData["Page"] = "/ Relative / Diary";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Diary List", "Index", "RelativeDiary", new { relID = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" })
+    };
+}
+
+<div class="container">   
+
+    <div class="row mb-5 g-5">
+        <h1>New Diary Entry for @Model.relative.RelForename1 @Model.relative.RelSurname</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <form id="frmAddNew" asp-action="AddNew">
+            <div class="row mb-5 g-5">
+                <input asp-for=@Model.relative.relsid name="RelID" hidden />
+                <div class="col-md-1">
+                    <label>Diary Date:</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="diaryDate" class="w-100" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                </div>
+                
+                <div class="col-md-1">
+                    <label>Action Code:</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="actionCode" class="w-100">
+                        <option value="">Select</option>
+                        @foreach (var item in Model.diaryActionsList)
+                        {
+                            @if (item.Action != null)
+                            {
+                                <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                            }
+                            else
+                            {
+                                <option value=@item.ActionCode>@item.ActionCode</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    DocCode:
+                </div>
+                <div class="col-md-6">
+                    <select name="docCode" class="w-100">
+                        <option value="">Select</option>
+                        @foreach (var item in Model.documentsList)
+                        {
+                            <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                        }
+                    </select>
+                </div>                
+            </div>
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    DiaryText:
+                </div>
+                <div class="col-md-8">
+                    <input name="diaryText" class="w-100" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-5 mb-5">
+        <div class="col-md-2">
+            <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("btnSave").addEventListener("click", DoSubmit);
+
+    function DoSubmit()
+    {
+        document.getElementById("frmAddNew").submit();
+    }
+</script>
