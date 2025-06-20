@@ -130,9 +130,7 @@ namespace ClinicX.Controllers
                 _rdvm.tumourMorphList = _relativeDiagnosisData.GetTumourMorphList();
 
                 string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;
-               
-                //there are too many strings, so I need to concatenate them all to send them to the SP
-                //(it's either that or add another 4 optional string variables!!!)
+                           
 
                 int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
                     false, false, 0, 0, 0, siteCode, latCode, morphCode);

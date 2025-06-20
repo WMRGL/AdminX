@@ -4,8 +4,6 @@ using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using AdminX.Data;
-using Microsoft.AspNetCore.Http;
-using ClinicalXPDataConnections.Models;
 using AdminX.Models;
 
 
@@ -71,8 +69,7 @@ namespace AdminX.Controllers
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
             _rvm.pathways = new List<string> { "Cancer", "General" };
             _rvm.referral = _referralData.GetReferralDetails(refID);
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-            //_rvm.Clinic = _clinicData.GetClinicDetails(refID);
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);            
             _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
 
             if (_rvm.referral.ClockStartDate != null)
@@ -271,11 +268,6 @@ namespace AdminX.Controllers
             _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
             _rvm.referralReasonsList = _refReasonData.GetRefReasonList();            
 
-
-            foreach (var item in _rvm.admin_status)
-            {
-                Console.WriteLine(item.Sequence);
-            }
             return View(_rvm);
         }
 
@@ -285,10 +277,7 @@ namespace AdminX.Controllers
             string indication, string consultant, string gc, string admin, string UBRN, string clinClass, string pregnancy, string? refReason, string? refReason1, 
             string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff, int? OthReason2Aff, int? OthReason3Aff, 
             int? OthReason4Aff, string? comments, int? symptomatic, int? RefFHF, string? Status_Admin)
-        {
-            //int success = _CRUD.CallStoredProcedure("Referral", "Create", mpi, 0, 0, refType, indication, refPathway, refPhys, User.Identity.Name,
-            //  refDate, clockStartDate, false, false, 0, 0, 0, consultant, gc, admin, 0, 0, 0, 0, 0, UBRN);
-
+        {            
             int success = _CRUD.ReferralDetail("Referral", "Create", User.Identity.Name, mpi, RefFHF,refReasonAff, OthReason1Aff, 
                 OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic, refType, indication, comments, refPathway, UBRN, subPathway, 
                 consultant, gc, admin, refPhys, pregnancy, clinClass, "Active", refDate, null, Status_Admin, refReason, refReason1, 
@@ -301,9 +290,5 @@ namespace AdminX.Controllers
 
             return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
         }
-
-        
-
-		
     }
 }

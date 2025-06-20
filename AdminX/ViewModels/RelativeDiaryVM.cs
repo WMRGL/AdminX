@@ -12,5 +12,7 @@ namespace AdminX.ViewModels
         public Patient patient { get; set; }
         public List<DiaryAction> diaryActionsList { get; set; }
         public List<Document> documentsList { get; set; }
+
+        public StaffMember staffMember { get; set; }
     }
 }

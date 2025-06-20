@@ -135,5 +135,16 @@ namespace AdminX.Models
         public bool InUse { get; set; }
     }
 
-
+    [Keyless]
+    [Table("ViewMergeHistory", Schema = "dbo")]
+    public class  MergeHistory
+    {
+        public int MPI { get; set; }
+        public int? OldMPI { get; set; }
+        public string NewPedigreeNumber { get; set; }
+        public string OldPedigreeNumber { get; set; }
+        public string PatientName { get; set; }
+        public string Type { get; set; }
+        public string MergedBy { get; set; }
+    }
 }

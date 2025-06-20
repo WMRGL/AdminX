@@ -16,7 +16,6 @@ namespace AdminX.Controllers
         private readonly IPatientData _patientData;
         private readonly ICRUD _crud;
         private readonly RelativeDiaryVM _rdvm;
-        private readonly ClinicalContext _clinContext;
         private readonly AdminContext _adminContext;
         private readonly DocumentContext _docContext;        
         private readonly IStaffUserData _staffUser;
@@ -32,7 +31,6 @@ namespace AdminX.Controllers
             _patientData = new PatientData(_context);
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiaryVM();
-            _clinContext = context;
             _adminContext = adminContext;
             _docContext = documentContext;
             _config = config;                        
@@ -44,6 +42,11 @@ namespace AdminX.Controllers
         }
         public IActionResult Index(int relID)
         {
+            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rdvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
+
             _rdvm.relative = _relData.GetRelativeDetails(relID);
             _rdvm.relativeDiaryList = _relDiaryData.GetRelativeDiaryList(relID);
             _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
@@ -55,12 +58,15 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult AddNew(int relID)
         {
+            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rdvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
+
             _rdvm.relative = _relData.GetRelativeDetails(relID);
             _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
             _rdvm.documentsList = _docsData.GetDocumentsList();
             _rdvm.diaryActionsList = _diaryActionData.GetDiaryActions();
-
-            
 
             return View(_rdvm);
         }
@@ -79,6 +85,11 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult Edit(int diaryID)
         {
+            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rdvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Relative Diary", "DiaryID=" + diaryID.ToString(), _ip.GetIPAddress());
+
             _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
             _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
 
