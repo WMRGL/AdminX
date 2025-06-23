@@ -36,10 +36,8 @@ namespace AdminX.Controllers
             return View(_vm);
         }
         [HttpPost]
-        public async Task<IActionResult> Upload(int mpi, string docType, int taskRouting, IFormFile fileToUpload)
+        public async Task<IActionResult> Upload(int mpi, string docType, int taskRouting, IFormFile fileToUpload)        
         {
-            string bleh = fileToUpload.FileName.Substring(fileToUpload.FileName.IndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.IndexOf("."));
-
             string destFilename = mpi.ToString() + "-" + docType + "-" + taskRouting.ToString() + "-" +
                 DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() +
                 DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + 

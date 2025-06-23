@@ -10,6 +10,7 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Back to Alert Details", "AlertDetails", "Alert", new { alertID = Model.alert.AlertID }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAlertIndex" }),
         Html.ActionLink("Alerts List", "Index", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAlertIndex" }),
     };
 }

@@ -35,22 +35,73 @@ else
 {
     <form method="post" enctype="multipart/form-data">
         <input asp-for=@Model.patient.MPI name="mpi" hidden />
-        <input asp-for="UploadedFile" name="fileToUpload" />
-        <select name="docType">
-            <option value="">Select</option>
-            @foreach (var item in Model.docKinds)
-            {
-                <option value=@item.DocumentKind>@item.DocumentKind - @item.DocumentKindDescription</option>
-            }
-        </select>
-        <select name="taskRouting">
-            <option value="0">No task</option>
-            <option value="1">Task for Consultant</option>
-            <option value="2">Task for GC</option>
-            <option value="3">Task for Admin</option>
-        </select>
+        @*<input asp-for="UploadedFile" name="fileToUpload" />*@
+        <input type="file" name="fileToUpload" />
+
+        @*<div class="text-center" id="dropZone" style="width:500px; height:200px; border:solid">
+            <p>Drag files 'ere to upload.</p>
+        </div>*@
+
+
+
+        <div>
+            <select name="docType">
+                <option value="">Select</option>
+                @foreach (var item in Model.docKinds)
+                {
+                    <option value=@item.DocumentKind>@item.DocumentKind - @item.DocumentKindDescription</option>
+                }
+            </select>
+            <select name="taskRouting">
+                <option value="0">No task</option>
+                <option value="1">Task for Consultant</option>
+                <option value="2">Task for GC</option>
+                <option value="3">Task for Admin</option>
+            </select>
+        </div>
 
         <input class="btn btn-outline-primary" type="submit" />
     </form>
     
 }
+
+
+<script>
+
+    //document.getElementById("txtUploadStuff").addEventListener("drop", GetFilesforUpload);
+    document.getElementById("dropZone").addEventListener("drop", dropHandler);
+    document.getElementById("dropZone").addEventListener("dragover", dragOverHandler);
+
+    function dropHandler(ev) 
+    {        
+        ev.preventDefault();
+        
+        
+        if (ev.dataTransfer.items) 
+        {
+            [...ev.dataTransfer.items].forEach((item, i) => 
+            {
+                if (item.kind === "file") 
+                {
+                    const file = item.getAsFile();
+                    
+                }
+            });
+        } 
+        else 
+        {
+            [...ev.dataTransfer.files].forEach((file, i) => 
+            {
+                
+            });
+        }
+    }
+
+    function dragOverHandler(ev) 
+    {       
+        ev.preventDefault();
+    }
+
+    
+
+</script>

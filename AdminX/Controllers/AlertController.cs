@@ -9,20 +9,24 @@ namespace AdminX.Controllers
 {
     public class AlertController : Controller
     {
+        private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
         private readonly AdminContext _adminContext;
         private readonly IPatientData _patientData;
         private readonly IAlertData _alertData;
         private readonly IAlertTypeData _alertTypeData;
+        private readonly ICRUD _crud;
         private readonly AlertVM _avm;
 
-        public AlertController(ClinicalContext context, AdminContext adminContext)
+        public AlertController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
         {
+            _config = config;
             _context = context;
             _adminContext = adminContext;
             _patientData = new PatientData(_context);
             _alertData = new AlertData(_context);
             _alertTypeData = new AlertTypeData(_adminContext);
+            _crud = new CRUD(_config);
             _avm = new AlertVM();
         }
 
@@ -54,15 +58,15 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public IActionResult Create(int mpi, string alertType, bool isProtectedAddress, DateTime? startDate, string? comments)
-        {            
-            //CRUD etc
+        {
+            int success = _crud.CallStoredProcedure("Alert", "Create", mpi, 0, 0, alertType, comments, "", "", User.Identity.Name, startDate, null, isProtectedAddress, false);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-edit(SQL)" }); }
+
             int alertID = _alertData.GetAlertsList(mpi).OrderByDescending(a => a.AlertID).FirstOrDefault().AlertID;
 
             return RedirectToAction("AlertDetails", "Alert", new { alertID = alertID });
         }
-
-
-
 
         [HttpGet]
         public IActionResult Edit(int alertID)
@@ -82,8 +86,20 @@ namespace AdminX.Controllers
             {
                 endDate = DateTime.Parse("1900-01-01"); //because SQL can't take a null date so we have to convert it, then change it back again
             }
-            //CRUD etc
-            
+
+            int success = _crud.CallStoredProcedure("Alert", "Edit", alertID, 0, 0, alertType, comments, "", "", User.Identity.Name, endDate, null, isProtectedAddress, false);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-edit(SQL)" }); }
+
+            return RedirectToAction("AlertDetails", "Alert", new { alertID = alertID });
+        }
+
+        public IActionResult StandDown(int alertID)
+        {
+            int success = _crud.CallStoredProcedure("Alert", "StandDown", alertID, 0, 0, "", "", "", "", User.Identity.Name, null, null, false, false);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-end(SQL)" }); }
+
             return RedirectToAction("AlertDetails", "Alert", new { alertID = alertID });
         }
     }

@@ -5,6 +5,13 @@
     ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
+    };
+}
+
 <div class="container">
     <div class="row mb-5 g-5">
         <h1>Enter the family file the patient is to be added to</h1>
