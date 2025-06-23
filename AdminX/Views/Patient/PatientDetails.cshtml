@@ -14,6 +14,7 @@
         Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }), 
         Html.ActionLink("Create New Alert", "Create", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewAlert" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Upload Files to EDMS", "Upload", "EDMSMover", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMSUpload" }),
         Html.ActionLink("Print Standard Letter", "Index", "LetterMenu", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>"),

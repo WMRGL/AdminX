@@ -1,0 +1,56 @@
+﻿@model AdminX.ViewModels.EDMSVM
+@{
+}
+
+@if (Model.Message != null)
+{
+    @if (!Model.isSuccess)
+    {
+        <div class="alert alert-danger" style="text-align:center">
+            @Model.Message
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-success" style="text-align:center">
+            @Model.Message
+        </div>
+    }
+}
+
+<div class="text-center">
+    <h1>Upload File</h1>
+    <p>Note: please upload PDFs files if you can, anything else might not be processed correctly.</p>
+</div>
+
+<div class="row mb-5 g-5">
+    
+</div>
+
+@if (Model.patient.DCTM_Folder_ID == null || Model.patient.DCTM_Folder_ID == "")
+{
+    <h2>No EDMS file available, please make patient electronic first</h2>
+}
+else
+{
+    <form method="post" enctype="multipart/form-data">
+        <input asp-for=@Model.patient.MPI name="mpi" hidden />
+        <input asp-for="UploadedFile" name="fileToUpload" />
+        <select name="docType">
+            <option value="">Select</option>
+            @foreach (var item in Model.docKinds)
+            {
+                <option value=@item.DocumentKind>@item.DocumentKind - @item.DocumentKindDescription</option>
+            }
+        </select>
+        <select name="taskRouting">
+            <option value="0">No task</option>
+            <option value="1">Task for Consultant</option>
+            <option value="2">Task for GC</option>
+            <option value="3">Task for Admin</option>
+        </select>
+
+        <input class="btn btn-outline-primary" type="submit" />
+    </form>
+    
+}
