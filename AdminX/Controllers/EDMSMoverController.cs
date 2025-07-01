@@ -38,25 +38,33 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> Upload(int mpi, string docType, int taskRouting, IFormFile fileToUpload)        
         {
-            string destFilename = mpi.ToString() + "-" + docType + "-" + taskRouting.ToString() + "-" +
-                DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() +
-                DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + 
-                fileToUpload.FileName.Substring(fileToUpload.FileName.IndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.IndexOf("."));
-
-
-            string targetFileName = _constantsData.GetConstant("FilePathEDMS", 1) + "\\" + destFilename;
-            
-            string sMessage = "";
-            bool isSuccess = false;
-            
-            using (var stream = new FileStream(targetFileName, FileMode.Create))
+            try
             {
-                await fileToUpload.CopyToAsync(stream);
-                sMessage = "Success - File uploaded.";
-                isSuccess = true;
+
+                string destFilename = mpi.ToString() + "-" + docType + "-" + taskRouting.ToString() + "-" +
+                    DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() +
+                    DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() +
+                    fileToUpload.FileName.Substring(fileToUpload.FileName.IndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.IndexOf("."));
+
+
+                string targetFileName = _constantsData.GetConstant("FilePathEDMS", 1) + "\\" + destFilename;
+
+                string sMessage = "";
+                bool isSuccess = false;
+
+                using (var stream = new FileStream(targetFileName, FileMode.Create))
+                {
+                    await fileToUpload.CopyToAsync(stream);
+                    sMessage = "Success - File uploaded.";
+                    isSuccess = true;
+                }
+
+                return RedirectToAction("Upload", new { mpi=mpi, message = sMessage, success = isSuccess });                
             }
-            
-            return RedirectToAction("Upload", new { mpi=mpi, message = sMessage, success = isSuccess });
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
+            }
         }
     }
 }

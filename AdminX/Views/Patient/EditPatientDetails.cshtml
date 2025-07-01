@@ -207,7 +207,7 @@
 
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <select name="AreaCode" class="form-control" id="AreaCode" name="areaCode" asp-for=@Model.patient.PtAreaCode>
+                        <select name="AreaCode" class="form-control" id="AreaCode" name="areaCode" >
                             <option value="">Select Area Code</option>
                             @foreach (var item in Model.areaNamesList)
                             {
@@ -227,7 +227,7 @@
 <script>
 
     document.getElementById("ADDRESS3").addEventListener("change", GetCountyFromCity);
-    window.addEventListener("load", SetConsentBox);
+    window.addEventListener("load", LoadPatient);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
 
     function DoSubmit()
@@ -299,9 +299,25 @@
 
 
 
-    function SetConsentBox()
-    {
-        
+    function LoadPatient()
+    {    
+        var areaIDArray = []; //all this is necessary because the MPT only stores the code and the name, not the ID. 
+                                //but the code is not a unique key, so there's no way to bind it with asp-for!
+                                //we need to ID, and the only way to get the ID and insert it is like this.
+
+        @foreach(var item in Model.areaNamesList)
+        {
+            if(Model.patient.PtAreaCode == item.AreaCode && Model.patient.PtAreaName == item.AreaName)
+            {
+                @:areaIDArray.push("@item.AreaID");
+            }
+        }
+
+        if(areaIDArray.length != 0)
+        {
+            document.getElementById("AreaCode").value = areaIDArray[0];
+        }
+
         if("@Model.patient.EmailCommsConsent" == "Yes")
         {           
             document.getElementById("IsConsentToEmail").value = "true";
