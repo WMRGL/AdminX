@@ -37,6 +37,8 @@ namespace AdminX.Meta
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
        string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null,  int? int2 = 0);
         public int MergePatient(int mpiFrom, int mpiTo, string staffCode);
+
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo);
     }
 
 
@@ -354,6 +356,17 @@ namespace AdminX.Meta
             success = 1;
 
             return success;
+        }
+
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
         }
 
     }

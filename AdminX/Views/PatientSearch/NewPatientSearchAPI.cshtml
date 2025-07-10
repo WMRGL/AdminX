@@ -1,0 +1,93 @@
+﻿@model AdminX.ViewModels.PatientSearchVM
+@{
+    ViewData["Title"] = "Admin-X - New Patient Search";
+}
+<div class="container-fluid">
+    @if (Model.message != null)
+    {
+        <div class="card">
+            <div class="card-body">
+
+                @if (Model.success)
+                {
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            @Model.message
+                        </div>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="alert alert-danger alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            @Model.message
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    }
+
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title text-dark">New patient creation</h3>
+            <h6 class="card-subtitle ">To begin the process, enter the new patient's demographics to search the database</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="NewPatientSearch" id="ptSearchForm">
+                <div class="row">
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="firstName">Firstname</label>
+                        <input type="text" class="form-control" name="firstname" id="firstName" asp-for=@Model.forenameSearch required>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="lastName">Surname</label>
+                        <input type="text" class="form-control" name="lastname" id="lastName" asp-for=@Model.surnameSearch required>
+                    </div>
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="DOB">DOB</label>
+                        <input type="date" class="form-control" name="dobToSearch" id="DOB" asp-for=@Model.dobSearch required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="postCode">PostCode</label>
+                        <input type="text" class="form-control" name="postcode" id="postCode" asp-for=@Model.postcodeSearch required>
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="nhsNo">NHS Number</label>
+                        <input type="text" class="form-control" name="nhs" id="nhsNo" asp-for=@Model.nhsNoSearch required>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="doSearch">Search</button>
+                <a type="button" class="btn btn-outline-primary float-end" asp-controller="PatientSearch" asp-action="NewPatientSearchAPI">New Search</a>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card">
+        @if(Model.jsonTest != null)
+        {
+            <p>@Model.jsonTest</p>
+        }
+    </div>
+</div>
+
+<script>
+
+    
+
+</script>

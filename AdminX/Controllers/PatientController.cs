@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AdminX.Data;
+using AdminX.Meta;
+using AdminX.Models;
+using AdminX.ViewModels;
+using APIControllers.Controllers;
+using APIControllers.Data;
 using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
-using AdminX.ViewModels;
-using ClinicalXPDataConnections.Meta;
-using AdminX.Meta;
-using AdminX.Data;
-using AdminX.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Globalization;
 
 namespace AdminX.Controllers
@@ -16,6 +19,7 @@ namespace AdminX.Controllers
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _documentContext;
         private readonly AdminContext _adminContext;
+        private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly ICRUD _crud;
         private readonly IConfiguration _config;
@@ -42,13 +46,15 @@ namespace AdminX.Controllers
         private readonly IAreaNamesData _areaNamesData;
         private readonly IGenderData _genderData;
         private readonly IConstantsData _constantsData;
+        private readonly APIController _api;
 
 
-        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext)
+        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext, APIContext apiContext)
         {
             _clinContext = context;
             _adminContext = adminContext;
             _documentContext = documentContext;
+            _apiContext = apiContext;
             _config = config;
             _crud = new CRUD(_config);
             _pvm = new PatientVM();
@@ -75,6 +81,7 @@ namespace AdminX.Controllers
             _areaNamesData = new AreaNamesData(_clinContext);
             _genderData = new GenderData(_clinContext);
             _constantsData = new ConstantsData(_documentContext);
+            _api = new APIController(_apiContext, _config);
         }
 
         [Authorize]
@@ -149,6 +156,24 @@ namespace AdminX.Controllers
                 if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0)
                 {
                     _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
+                }
+
+                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
+                {
+                    if (_api.GetPhenotipsPatientID(id).Result != "")
+                    {
+                        _pvm.isPatientInPhenotips = true;
+                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+
+                        _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
+                        _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
+                    }
+                    if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
+                    {
+                        _pvm.isPhenotipsAvailable = true;
+                    }
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -556,6 +581,23 @@ namespace AdminX.Controllers
         public async Task<IActionResult> JumpToPatient(int id)
         {
             return RedirectToAction("PatientDetails", "Patient", new { id = id });
+        }
+
+        public async Task<IActionResult> SynchronisePhenotips(int id)
+        {
+            APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+            int result = api.SynchroniseMirrorWithPhenotips(id).Result;
+
+            string message = "Synch okay";
+            bool success = true;
+            
+            if(result == 0)
+            {
+                message = "Record mismatch, please check both systems for inconsistencies.";
+                success = false;
+            }
+
+            return RedirectToAction("PatientDetails", new { id = id, message = message, success = success });
         }
     }
 }

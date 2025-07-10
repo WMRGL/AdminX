@@ -8,6 +8,8 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using APIControllers;
+using APIControllers.Data;
 
 namespace AdminX.Controllers
 {
@@ -15,6 +17,7 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly AdminContext _adminContext;
+        private readonly APIContext _apiContext;
         private readonly PatientSearchVM _pvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
@@ -25,10 +28,11 @@ namespace AdminX.Controllers
         private readonly IAuditService _audit;
 
 
-        public PatientSearchController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
+        public PatientSearchController(ClinicalContext context, AdminContext adminContext, APIContext apiContext, IConfiguration config)
         {
             _clinContext = context;
             _adminContext = adminContext;
+            _apiContext = apiContext;
             _config = config;
             _pvm = new PatientSearchVM();
             _staffUser = new StaffUserData(_clinContext);
@@ -217,6 +221,82 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "NewPatientSearch" });
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> NewPatientSearchAPI(string? message, bool? success)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
+
+                
+
+                if (message != null)
+                {
+                    _pvm.success = success.GetValueOrDefault();
+                    _pvm.message = message;
+                }
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Search",
+                    Controller = "PatientSearch",
+                    Action = "Index",
+
+                },
+                new BreadcrumbItem { Text = "New" }
+            };
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "APISearch" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NewPatientSearchAPI(string firstname, string lastname, string dobToSearch, string postcode, string nhs)
+        {
+            try
+            {
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
+
+                APIControllers.Controllers.APIControllerLOCAL api = new APIControllers.Controllers.APIControllerLOCAL(_apiContext, _config);
+
+                _pvm.jsonTest = api.SearchSCRPatients(firstname, lastname).Result;
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Search",
+                    Controller = "PatientSearch",
+                    Action = "Index",
+
+                },
+                new BreadcrumbItem { Text = "New" }
+            };
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "APISearch" });
+            }
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> SelectFile(string firstname, string lastname, DateTime dob, string postcode, string nhs)

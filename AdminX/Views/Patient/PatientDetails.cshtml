@@ -14,15 +14,43 @@
         @*Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("Create New Alert", "Create", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewAlert" }),*@
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+        Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPhenotips", target="_blank" }),
         Html.ActionLink("Upload Files to EDMS", "Upload", "EDMSMover", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMSUpload" }),
         Html.ActionLink("Print Standard Letter", "Index", "LetterMenu", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         Html.ActionLink("Change CGU Number (file merge)", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
         @*Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>"),*@
         Html.ActionLink("Patient Merge", "MergePatient", "PatientMerge", new { mpiFrom = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
-
+        Html.ActionLink("Synch with Phenotips", "SynchronisePhenotips", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id="btnPhenotipsSynch"  }),
     };
 }
 
+@if (Model.isPhenotipsAvailable)
+{
+    if (Model.isPatientInPhenotips)
+    {
+        if (Model.isCancerPPQComplete)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert-success text-center">
+                        <h3>A Cancer PPQ has been submitted by the patient</h3>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.isGeneralPPQComplete)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert-success text-center">
+                        <h3>A General PPQ has been submitted by the patient</h3>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+}
 
 @if (Model.staffMember.BILL_ID == "Technical")
 {
@@ -91,6 +119,11 @@
         </div>
     </div>
 }
+
+
+
+
+
 
 <div class="row">
 
@@ -1271,39 +1304,57 @@
         }
         else
         {
+            document.getElementById("btnEDMSUpload").hidden = true;
             document.getElementById("btnEDMS").hidden = true;
+        }
+        if("@(Model.isPatientInPhenotips)" == "True" && "@(Model.isPhenotipsAvailable)" == "True")
+        {
+            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
+        }
+        else
+        {
+            document.getElementById("btnPhenotips").hidden = true;
+            document.getElementById("btnPhenotipsSynch").hidden = true;
         }
     }
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
 </script>
 
-@section Scripts {
+@section Scripts 
+{
     <script>
        
-        $(document).ready(function () {
-            $("#createReviewBtn").click(function () {
-        @if (Model.reviewList.Count() > 0)
+        $(document).ready(function () 
         {
-            <text>
-                            if (confirm("This patient already has a review. Do you want to add a new one?")) {
-                                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
-                                                  } else {
-                                $("#reviewAlertCard").hide();
-                                                             }
-            </text>
-        }
-        else
-        {
-            <text>
-                                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
-            </text>
-        }
-                                     });
+            $("#createReviewBtn").click(function () 
+            {
+                @if (Model.reviewList.Count() > 0)
+                {
+                    <text>
+                        if (confirm("This patient already has a review. Do you want to add a new one?")) 
+                        {
+                            window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                        } 
+                        else 
+                        {
+                            $("#reviewAlertCard").hide();
+                        }
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                    </text>
+                }
+            });
         });
+    
     </script>
 }

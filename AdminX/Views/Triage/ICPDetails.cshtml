@@ -1,9 +1,19 @@
 ﻿@model AdminX.ViewModels.ICPVM
 @{
     ViewData["Title"] = "Admin-X - ICP Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.triage.MPI }, new { @class = "btn btn-primary m-1" });
-
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.triage.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Triage List", "Index", "Triage", new {  }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
+        
+    };
+}
+
 
 <div class="container-fluid">
     <div class="card flex-fill">

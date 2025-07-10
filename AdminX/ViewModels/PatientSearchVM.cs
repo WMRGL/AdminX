@@ -21,6 +21,7 @@ namespace AdminX.ViewModels
         public string postcodeSearch { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
+        public string jsonTest { get; set; }
 
     }
 }

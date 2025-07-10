@@ -47,5 +47,12 @@ namespace AdminX.ViewModels
         public List<AreaNames> areaNamesList { get; set; }
         public List<Gender> genders { get; set; }
         public string edmsLink { get; set; }
+        public string phenotipsLink { get; set; }
+        public bool isPhenotipsAvailable { get; set; }
+        public bool isCancerPPQScheduled { get; set; }
+        public bool isCancerPPQComplete { get; set; }
+        public bool isGeneralPPQScheduled { get; set; }
+        public bool isGeneralPPQComplete { get; set; }
+        public bool isPatientInPhenotips { get; set; }
     }
 }
