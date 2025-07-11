@@ -4,6 +4,7 @@ using AdminX.Models;
 using AdminX.ViewModels;
 using APIControllers.Controllers;
 using APIControllers.Data;
+using APIControllers.Meta;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
@@ -47,7 +48,7 @@ namespace AdminX.Controllers
         private readonly IGenderData _genderData;
         private readonly IConstantsData _constantsData;
         private readonly APIController _api;
-
+        private readonly IPhenotipsMirrorData _phenotipsMirrorData;
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext, APIContext apiContext)
         {
@@ -82,6 +83,7 @@ namespace AdminX.Controllers
             _genderData = new GenderData(_clinContext);
             _constantsData = new ConstantsData(_documentContext);
             _api = new APIController(_apiContext, _config);
+            _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
         }
 
         [Authorize]
@@ -584,9 +586,8 @@ namespace AdminX.Controllers
         }
 
         public async Task<IActionResult> SynchronisePhenotips(int id)
-        {
-            APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
-            int result = api.SynchroniseMirrorWithPhenotips(id).Result;
+        {            
+            int result = _api.SynchroniseMirrorWithPhenotips(id).Result;
 
             string message = "Synch okay";
             bool success = true;
@@ -595,9 +596,25 @@ namespace AdminX.Controllers
             {
                 message = "Record mismatch, please check both systems for inconsistencies.";
                 success = false;
+                return RedirectToAction("PhenotipsPatientRecord", new { id = id, message = message, success = success });
             }
 
             return RedirectToAction("PatientDetails", new { id = id, message = message, success = success });
+        }
+
+        public async Task<IActionResult> PhenotipsPatientRecord(int id, string? message, bool? success)
+        {
+            _pvm.patient = _patientData.GetPatientDetails(id);
+            _pvm.ptPatient = _phenotipsMirrorData.GetPhenotipsPatientByID(id);
+            _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
+
+            if (message != null && message != "")
+            {
+                _pvm.message = message;
+                _pvm.success = success.GetValueOrDefault();
+            }
+
+            return View(_pvm);
         }
     }
 }

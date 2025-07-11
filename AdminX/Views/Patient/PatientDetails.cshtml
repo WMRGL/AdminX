@@ -50,12 +50,13 @@
         }
 
     }
+    else
+    {
+        <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+    }
+
 }
 
-@if (Model.staffMember.BILL_ID == "Technical")
-{
-    <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
-}
 
 @if (Model.message != null)
 {

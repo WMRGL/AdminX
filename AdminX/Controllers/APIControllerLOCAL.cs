@@ -14,7 +14,7 @@ namespace APIControllers.Controllers
         private readonly IConfiguration _config;
         private readonly IAPIPatientData _APIPatientData;
         private readonly IAPIConstantsData _constants;
-        private readonly IPhenotipsMirrorData _phenotipsMirrorData;
+        private readonly IAPIPhenotipsMirrorData _phenotipsMirrorData;
         private readonly APIHPOCodeData _hpo;
         private string apiURLBase;
         private string apiURL;
@@ -27,7 +27,7 @@ namespace APIControllers.Controllers
             _APIPatientData = new APIPatientData(_context);
             _constants = new APIConstantsData(_context);
             _hpo = new APIHPOCodeData(_context);
-            _phenotipsMirrorData = new PhenotipsMirrorData(_context);
+            _phenotipsMirrorData = new APIPhenotipsMirrorData(_context);
             apiURLBase = _constants.GetConstant("PhenotipsURL", 1).Trim();
             authKey = _constants.GetConstant("PhenotipsAPIAuthKey", 1).Trim();
             apiKey = _constants.GetConstant("PhenotipsAPIAuthKey", 2).Trim();
@@ -114,7 +114,10 @@ namespace APIControllers.Controllers
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 string apiCall = "{\"patient_name\":{\"first_name\":\"" + $"{patient.FIRSTNAME}" + "\",\"last_name\":\"" + $"{patient.LASTNAME}" + "\"}";
                 apiCall = apiCall + ",\"date_of_birth\":{\"year\":" + yob.ToString() + ",\"month\":" + mob.ToString() + ",\"day\":" + dob.ToString() + "}";
-                apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"}";
+                apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"";
+                apiCall = apiCall + ",\"labeled_eids\":[{\"label\":\"NHS Number\",\"value\":\"" + $"{patient.SOCIAL_SECURITY}" + "\"}";
+                apiCall = apiCall + ",{\"label\":\"MPI\",\"value\":\"" + $"{patient.MPI}" + "\"}]";
+                apiCall = apiCall + "}";
 
                 request.AddJsonBody(apiCall, false);
                 var response = await client.PostAsync(request);
@@ -128,8 +131,8 @@ namespace APIControllers.Controllers
                     result = 1; //success result
 
                     string ptID = await GetPhenotipsPatientID(patient.MPI);
-                    //AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
-                    //    patient.POSTCODE, patient.SOCIAL_SECURITY);
+                    AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                        patient.POSTCODE, patient.SOCIAL_SECURITY);
                 }
                 else
                 {
@@ -578,9 +581,18 @@ namespace APIControllers.Controllers
             }
         }
 
+        public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo)
+        {
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
+                "', '" + nhsNo + "')", conn);
+            cmd.ExecuteNonQuery();
+            conn.Close();
+        }
 
-        
-               
+
 
         public async Task<List<HPOTerm>> GetHPOCodes(string searchTerm)
         {

@@ -26,7 +26,7 @@
         ViewBag.HomeButton = new[]
         {
             Html.ActionLink("Back to Dictated Letters Index", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnIndex" }),
-            Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { mpi = Model.dictatedLetters.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPatientDetails" }),
+            Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.dictatedLetters.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPatientDetails" }),
             Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
         };
     }

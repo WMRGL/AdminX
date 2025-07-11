@@ -54,5 +54,6 @@ namespace AdminX.ViewModels
         public bool isGeneralPPQScheduled { get; set; }
         public bool isGeneralPPQComplete { get; set; }
         public bool isPatientInPhenotips { get; set; }
+        public PhenotipsPatient ptPatient { get; set; }
     }
 }
