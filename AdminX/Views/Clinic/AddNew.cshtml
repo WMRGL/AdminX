@@ -133,7 +133,7 @@
                                 Clinic Venue:
                             </div>
                             <div class="col-md-10">
-                                <select name="venue" id="ddlVenue">
+                                <select name="venue" id="ddlVenue" class="w-100">
                                     <option value="">Select</option>
                                     @foreach (var item in Model.venueList)
                                     {
@@ -142,14 +142,28 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row" id="ddlToBeSeenBy">
+                            <div class="col-md-2">
+                                Clinician:
+                            </div>
+                            <div class="col-md-10">
+                                <select name="clinician1" class="w-100">
+                                    <option value="" selected>select...</option>
+                                    @foreach (var c in Model.staffMembers)
+                                    {
+                                        <option value="@c.STAFF_CODE">@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
 
-
+                        <div id="OutcomeDetails">
                         <div class="row">
                             <div class="col-md-2">
                                 Contact Outcome:
                             </div>
                             <div class="col-md-4">
-                                <select id="ddlContactOutcome" name="counseled" class="w-100 form-select">
+                                <select id="ddlContactOutcome" name="counseled" class="w-100">
                                     <option value="" selected>select...</option>
                                     @foreach (var o in Model.outcomes)
                                     {
@@ -248,7 +262,8 @@
                                     <option selected value="False">No</option>
                                 </select>
                             </div>
-                        </div>                        
+                        </div>       
+                        </div>
                     </div>
                 </div>
 
@@ -269,6 +284,16 @@
     document.getElementById("btnCompleteCOF").addEventListener("click", DoSubmit);
     document.getElementById("ddlAppType").addEventListener("change", ShowAppType);
     document.getElementById("chkAddAsNote").addEventListener("change", SetAddAsNote);
+    document.getElementById("txtBookedDate").addEventListener("change", SetContactDate);
+
+    function SetContactDate()
+    {
+        //window.alert(document.getElementById("ddlAppType").value);
+        if(document.getElementById("ddlAppType").value != "")
+        {
+            ShowAppType();
+        }
+    }
 
     function DoSubmit()
     { //because we can't do the email and redirect back to the normal page, oh no! That would be far too helpful.
@@ -276,26 +301,42 @@
         document.getElementById("ContactDetails").hidden = true;
         document.getElementById("TelAdmin").hidden = true;
         document.getElementById("SavedMessage").hidden = false;
-        document.getElementById("btnCompleteCOF").disabled=true;
-        document.getElementById("ddlRefID").disabled=true;
-        document.getElementById("ddlAppType").disabled=true;
-        document.getElementById("txtBookedDate").disabled=true;
-        document.getElementById("txtBookedTime").disabled=true;
+        document.getElementById("btnCompleteCOF").disabled=true;        
         document.getElementById("ContactOutcome").submit();
     }
 
     function ShowAppType()
     {
+        var today = new Date();
+        var clinicDate = document.getElementById("txtBookedDate");
+
         if(document.getElementById("ddlAppType").value == "Tel. Admin")
-        {
+        {           
+            clinicDate.value = today.toISOString().slice(0,10);
             document.getElementById("ContactDetails").hidden = true;
             document.getElementById("TelAdmin").hidden = false;
             document.getElementById("ddlVenue").value = "Telephone";            
         }
         else
-        {
-            document.getElementById("ContactDetails").hidden = false;
-            document.getElementById("TelAdmin").hidden = true;
+        {            
+            if(clinicDate.value != "")
+            {
+                if(clinicDate.value > today.toISOString()) //future appointment
+                {
+                    document.getElementById("ContactDetails").hidden = false;
+                    document.getElementById("OutcomeDetails").hidden = true;
+                    document.getElementById("ddlToBeSeenBy").hidden = false;
+                    document.getElementById("TelAdmin").hidden = true;
+                }
+                else
+                {
+                    document.getElementById("OutcomeDetails").hidden = false;
+                    document.getElementById("ContactDetails").hidden = false;
+                    document.getElementById("ddlToBeSeenBy").hidden = true; //we don't want the Seen By and the Staff Code both showing
+                    document.getElementById("TelAdmin").hidden = true;
+                }
+            }
+            
         }
         
     }

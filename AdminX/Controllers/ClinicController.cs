@@ -151,12 +151,11 @@ namespace AdminX.Controllers
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-
-                new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
-                new BreadcrumbItem { Text = "Details"}
-            };
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
+                    new BreadcrumbItem { Text = "Details"}
+                };
                
 
                 return View(_cvm);
@@ -232,11 +231,6 @@ namespace AdminX.Controllers
                     letterRequired = "No";
                 }
 
-                //if (ethnicity == null)
-                //{
-                //    ethnicity = "";
-                // }
-
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
                     letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
 
@@ -270,14 +264,13 @@ namespace AdminX.Controllers
 
             return View(_cvm);
         }
-
+        
         [HttpPost]
         public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string? outcome, string? venue, string? clinician1, 
             string? clinician2, string? clinician3, int? timeSpent, int? noPatientsSeen, string? letterReq, string? counseled, string? callersName, string? callersOrg, string? callersTelNo, 
             string? message, string? urgency, bool? isAddAsNote = false, bool? isClockStop = false)
         {
             int refID = 0;
-           
 
             if (venue == null) { venue = ""; }
             if (clinician1 == null) { clinician1 = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE; }
@@ -291,7 +284,6 @@ namespace AdminX.Controllers
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
 
             List<ActivityItem> appts = _activityData.GetActivityList(mpi).Where(a => a.BOOKED_DATE == bookedDate).OrderByDescending(a => a.RefID).ToList();
-
 
             refID = appts.First().RefID;
 
@@ -318,14 +310,10 @@ namespace AdminX.Controllers
 
                 emailBodyText = emailBodyText + emailMessage;
 
-                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
-                
-            }            
-            
+                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");                
+            }
+
             return RedirectToAction("ApptDetails", new { id = refID });
         }
-
-
-        
     }
 }
