@@ -14,6 +14,7 @@ namespace AdminX.ViewModels
         public List<Gender> genderList { get; set; }
         public int MPI { get; set; }
         public int WMFACSID { get; set; }
+        public StaffMember staffMember { get; set; }
 
     }
 }

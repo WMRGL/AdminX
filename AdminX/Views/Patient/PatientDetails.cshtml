@@ -2,28 +2,61 @@
 @{
     ViewData["Title"] = "Admin-X - Patient Details";
     ViewData["Page"] = "/ Patient / Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
 @{
     ViewBag.HomeButton = new[]
     {
-        Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
-        Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),
-        Html.ActionLink("Create New Contact", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
-        Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
-        Html.ActionLink("Change CGU Number", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        @*Html.ActionLink("Edit Patient Details", "EditPatientDetails", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Create New Referral", "AddNew", "Referral", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewReferral" }),*@
+        Html.ActionLink("Create New Contact", "AddNew", "Clinic", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewContact" }),
+        @*Html.ActionLink("Create New Diary Entry", "AddNew", "Diary", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Create New Alert", "Create", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewAlert" }),*@
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
-        Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>")
-
+        Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPhenotips", target="_blank" }),
+        Html.ActionLink("Upload Files to EDMS", "Upload", "EDMSMover", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMSUpload" }),
+        Html.ActionLink("Print Standard Letter", "Index", "LetterMenu", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        Html.ActionLink("Change CGU Number (file merge)", "ChangeCGUNumber", "Patient", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnNewDiary" }),
+        @*Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>"),*@
+        Html.ActionLink("Patient Merge", "MergePatient", "PatientMerge", new { mpiFrom = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
+        Html.ActionLink("Synch with Phenotips", "SynchronisePhenotips", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id="btnPhenotipsSynch"  }),
     };
 }
 
-
-@if (Model.staffMember.BILL_ID == "Technical")
+@if (Model.isPhenotipsAvailable)
 {
-    <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+    if (Model.isPatientInPhenotips)
+    {
+        if (Model.isCancerPPQComplete)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert-success text-center">
+                        <h3>A Cancer PPQ has been submitted by the patient</h3>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Model.isGeneralPPQComplete)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="alert-success text-center">
+                        <h3>A General PPQ has been submitted by the patient</h3>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+        <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
+    }
+
 }
+
 
 @if (Model.message != null)
 {
@@ -55,7 +88,46 @@
     </div>
 }
 
+@if (Model.alerts.Count > 0)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>There are active alerts for this patient</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (Model.patient.DCTM_Folder_ID == null)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
+                    <a id="btnMakeElectronic" class="btn btn-primary mb-1" asp-controller="Patient" asp-action="MakePatientElectronic" asp-route-mpi=@Model.patient.MPI>Click to Make File Electronic</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+
+
+
 <div class="row">
+
     <div class="col-md-3 col-xl-2">
 
         <div class="card">
@@ -64,14 +136,14 @@
             </div>
 
             <div class="list-group list-group-flush" role="tablist">
-                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#pathway-indicator" role="tab" aria-selected="true">
                     Pathway Indicator
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
                     Patient Details
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
-                    Alert
+                    Active Alerts
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#diary" role="tab" aria-selected="false" tabindex="-1">
                     Diary
@@ -94,40 +166,63 @@
 
     <div class="col-md-9 col-xl-10">
         <div class="tab-content">
-            <h1>@Model.patient.CGU_No - @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
-            <div class="tab-pane fade active show" id="pathway-indicator" role="tabpanel">
-                @if (Model.alerts.Count > 0)
-                {
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                                <div class="alert-icon">
-                                    <i class="far fa-fw fa-bell"></i>
-                                </div>
-                                <div class="alert-message">
-                                    <h3>There are active alerts for this patient</h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+            <div class="row">
+                <div class="col-md-2">
+                    @if(Model.previousPatient != null)
+                    {
+                        <a asp-action="PatientDetails" asp-route-id=@Model.previousPatient.MPI>
+                            <h4>
+                                @*Arrow comes from www.iconpacks.net*@
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                                <path d="M 0.053 44.915 l 33.782 -19.553 v 13.353 h 56.029 c 0.075 0 0.136 0.061 0.136 0.136 v 12.298 c 0 0.075 -0.061 0.136 -0.136 0.136 H 33.835 v 13.353 L 0.053 45.085 C -0.018 45.05 -0.018 44.95 0.053 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    </g>
+                                </svg>
+                                @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
+                            </h4>
+                        </a>
+                    }
+                </div>
+                <div class="col-md-8">
+                    <h1 class="text-center">@Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null){ <span>"</span>@Model.patient.PtAKA<span>"</span>} @Model.patient.LASTNAME</h1>
+                    @if(Model.patientsList.Count() > 1)
+                    {
+                        <form asp-action="JumpToPatient">
+                            <h4 class="text-center">
+                                <select name="id">
+                                @foreach(var item in Model.patientsList)
+                                {
+                                    <option value=@item.MPI>@item.CGU_No - @item.FIRSTNAME @item.LASTNAME</option>
+                                }
+                                </select>
+                                <button type="submit" class="btn btn-default btn-outline-primary">Go</button>
+                            </h4>
+                        </form>
+                    }
+                </div>
+                <div class="col-md-2">
+                    @if (Model.nextPatient != null)
+                    {
+                        <a asp-action="PatientDetails" asp-route-id=@Model.nextPatient.MPI>
+                            <h4>
+                                @Model.nextPatient.FIRSTNAME @Model.nextPatient.LASTNAME
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="50" height="50" viewBox="0 0 256 256" xml:space="preserve"><defs></defs>
+                                <g style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;" transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)">
+                                <path d="M 89.947 44.915 L 56.165 25.362 v 13.353 H 0.136 C 0.061 38.715 0 38.776 0 38.851 v 12.298 c 0 0.075 0.061 0.136 0.136 0.136 h 56.029 v 13.353 l 33.782 -19.553 C 90.018 45.05 90.018 44.95 89.947 44.915 z" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" matrix(1 0 0 1 0 0) " stroke-linecap="round" />
+                                    </g>
+                                </svg>
+                            </h4>
+                        </a>
+                    }
+                </div>
+            </div>
 
-                @if (Model.patient.DCTM_Folder_ID == null)
-                {
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="alert alert-primary alert-outline-coloured alert-dismissible" role="alert">
-                                <div class="alert-icon">
-                                    <i class="far fa-fw fa-bell"></i>
-                                </div>
-                                <div class="alert-message">
-                                    <h3>Patient not yet made electronic - no EDMS record exists</h3>
-                                    <a id="btnMakeElectronic" class="btn btn-primary mb-1" asp-controller="Patient" asp-action="MakePatientElectronic" asp-route-mpi=@Model.patient.MPI>Click to Make File Electronic</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
+            
+
+            <div class="tab-pane fade" id="pathway-indicator" role="tabpanel">
+                
+
+                
                 @if (Model.patientPathway != null)
                 {
                     <div class="card">
@@ -371,7 +466,7 @@
                 }
 
             </div>
-            <div class="tab-pane fade" id="patient-details" role="tabpanel">
+            <div class="tab-pane fade active show" id="patient-details" role="tabpanel">
                 @if (Model.patient.DECEASED == -1)
                 {
                     <div class="card">
@@ -388,9 +483,12 @@
                     </div>
                 }
                 <div class="card">
+                    
                     <div class="card-header">
+                        <div class="col-auto ms-auto text-end mt-n1">
+                            <a asp-controller="Patient" asp-action="EditPatientDetails" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Edit Details</a>
+                        </div>
                         <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
-
                     </div>
                     <div class="card-body">
                         <table class="table table-borderless my-0">
@@ -513,7 +611,6 @@
                                                         {
                                                             @Model.currentage
                                                         }
-
                                                     </div>
                                                 }
 
@@ -750,6 +847,16 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Strategy District:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.PtAreaCode) - @Html.DisplayFor(model => model.patient.PtAreaName)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
 
 
@@ -772,7 +879,7 @@
                             </div>
 
                             <div class="mb-3 row">
-                                <label class="col-form-label col-sm-2  pt-sm-0">Date of Dead</label>
+                                <label class="col-form-label col-sm-2  pt-sm-0">Date of Death</label>
                                 <div class="col-sm-8">
                                     <input type="date" name="DECEASED_DATE" class="form-control mb-2 " id="dod">
                                 </div>
@@ -828,6 +935,9 @@
             <div class="tab-pane fade" id="alert" role="tabpanel">
                 <div class="card">
                     <div class="card-header">
+                        <div class="col-auto ms-auto text-end mt-n1">
+                            <a asp-controller="Alert" asp-action="Create" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">New Alert</a>
+                        </div>
                         <h5 class="card-title mb-0">Active Alerts</h5>
                     </div>
                     <div class="card-body">
@@ -837,6 +947,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
+                                            <th></th>
                                             <th scope="col">Type</th>
                                             <th scope="col">Protected Address</th>
                                             <th scope="col">Effective From</th>
@@ -848,6 +959,7 @@
                                         @foreach (var a in Model.alerts)
                                         {
                                             <tr>
+                                                <td><a type="button" class="btn btn-default btn-outline-primary" asp-controller="Alert" asp-action="AlertDetails" asp-route-alertID=@a.AlertID>Details</a></td>
                                                 <td>@a.AlertType</td>
                                                 @if (@a.ProtectedAddress)
                                                 {
@@ -1003,6 +1115,7 @@
                         @if (Model.activeReferrals.Count > 0)
                         {
                             <div class="table-responsive">
+                                @**@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
@@ -1183,44 +1296,66 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     window.addEventListener("load", LoadEDMSLink);
 
-    function LoadEDMSLink() {
-        //only load EDMS link if there actually is one
-        if ("@(Model.patient.DCTM_Folder_ID)" != "") {
-            document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+    function LoadEDMSLink()
+    {
+            //only load EDMS link if there actually is one
+        if ("@(Model.patient.DCTM_Folder_ID)" != "")
+        {
+            document.getElementById("btnEDMS").href = "@Model.edmsLink"  + "@(Model.patient.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else {
+        else
+        {
+            document.getElementById("btnEDMSUpload").hidden = true;
             document.getElementById("btnEDMS").hidden = true;
+        }
+        if("@(Model.isPatientInPhenotips)" == "True" && "@(Model.isPhenotipsAvailable)" == "True")
+        {
+            document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
+        }
+        else
+        {
+            document.getElementById("btnPhenotips").hidden = true;
+            document.getElementById("btnPhenotipsSynch").hidden = true;
         }
     }
 
-    function GoBack() {
+    function GoBack() 
+    {
         window.history.back();
         //window.close();
     }
 
 </script>
 
-@section Scripts {
+@section Scripts 
+{
     <script>
-        $(document).ready(function () {
-            $("#createReviewBtn").click(function () {
-        @if (Model.reviewList.Count() > 0)
+       
+        $(document).ready(function () 
         {
-            <text>
-                            if (confirm("This patient already has a review. Do you want to add a new one?")) {
-                                window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
-                                                  } else {
-                                $("#reviewAlertCard").hide();
-                                                             }
-            </text>
-        }
-        else
-        {
-            <text>
-                            window.location.href = '@Html.Raw(Url.Action("Create", "Review", new { id = Model.patient.MPI }))';
-            </text>
-        }
-                                     });
+            $("#createReviewBtn").click(function () 
+            {
+                @if (Model.reviewList.Count() > 0)
+                {
+                    <text>
+                        if (confirm("This patient already has a review. Do you want to add a new one?")) 
+                        {
+                            window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                        } 
+                        else 
+                        {
+                            $("#reviewAlertCard").hide();
+                        }
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                    </text>
+                }
+            });
         });
+    
     </script>
 }

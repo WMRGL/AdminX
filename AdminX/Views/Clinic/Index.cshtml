@@ -1,6 +1,7 @@
 ﻿@model AdminX.ViewModels.ClinicVM
 @{
     ViewData["Title"] = "Admin-X - Clinics";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
 <div class="card">

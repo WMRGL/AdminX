@@ -1,0 +1,111 @@
+﻿@model AdminX.ViewModels.PatientMergeVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Merge";
+    ViewData["Page"] = "/ PatientMerge / MergePatient";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patientFrom.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),        
+    };
+}
+
+<div class="container">
+    <form asp-action="MergePatient">
+        <div class="row">
+            <div class="col-md-6">
+                <input name="mpiFrom" asp-for=@Model.patientFrom.MPI hidden />
+                <h2>Patient to be Merged From</h2>
+                <h3>(this patient will be deleted)</h3>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Patient Name:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientFrom.FIRSTNAME @Model.patientFrom.LASTNAME</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Date of Birth:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientFrom.DOB.Value.ToString("dd/MM/yyyy")</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Postcode:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientFrom.POSTCODE</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>NHS Number:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientFrom.SOCIAL_SECURITY</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+            @if (Model.patientTo != null)
+            {
+                <h2>Patient to be Merged To</h2>
+                <h3>(this patient will remain)</h3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Patient Name:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientTo.FIRSTNAME @Model.patientFrom.LASTNAME</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Date of Birth:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientTo.DOB.Value.ToString("dd/MM/yyyy")</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Postcode:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientTo.POSTCODE</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>NHS Number:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientTo.SOCIAL_SECURITY</label>
+                    </div>
+                </div>
+                <div class="row mb-5 g-5">                
+                    <input name="mpiTo" asp-for=@Model.patientTo.MPI hidden />
+                    <button type="submit" class="btn btn-primary">Merge Patients</button>
+                </div>            
+            }
+            else
+            {
+                <h2>Search Patient:</h2>
+                <h3>(CGU number - including point no)</h3>
+                <input name="cguNumberToMerge" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            }
+            </div>
+        </div>
+        
+    </form>
+
+
+</div>

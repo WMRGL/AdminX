@@ -1,7 +1,9 @@
 ﻿@model AdminX.ViewModels.ICPVM
 @{
     ViewData["Title"] = "Admin-X - Triages";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
 
 
 <div class="card">
@@ -27,6 +29,7 @@
                     <th>Type</th>
                     <th>Name</th>
                     <th>Referral Date</th>
+                    <th>To be triaged by</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +42,7 @@
                         <td>@item.RefType</td>
                         <td>@item.Name</td>
                         <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Clinician</td>
                     </tr>
                 }
             </tbody>

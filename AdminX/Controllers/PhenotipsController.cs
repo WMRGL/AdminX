@@ -1,21 +1,16 @@
-﻿using ClinicalXPDataConnections.Data;
-using APIControllers.Controllers;
+﻿using APIControllers.Controllers;
 using APIControllers.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
 {
     public class PhenotipsController : Controller
-    {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
+    {        
         private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
 
-        public PhenotipsController(ClinicalContext clinContext, DocumentContext docContext, APIContext apiContext, IConfiguration config)
-        {
-            _clinContext = clinContext;
-            _docContext = docContext;
+        public PhenotipsController(APIContext apiContext, IConfiguration config)
+        {            
             _apiContext = apiContext;
             _config = config;
         }

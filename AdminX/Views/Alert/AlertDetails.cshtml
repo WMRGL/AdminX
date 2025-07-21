@@ -1,0 +1,67 @@
+﻿@model AdminX.ViewModels.AlertVM
+
+@{
+    ViewData["Title"] = "Admin-X - Alert";
+    ViewData["Page"] = "/ Alert / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Alerts List", "Index", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAlertIndex" }),
+    };
+}
+
+
+
+
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-head">
+            <h1>Alert details for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</a></h1>
+        </div>
+        <div class="card-body">
+            <div class="row mb-5 mt-2">
+                <dt class="col-sm-2">Alert Type:</dt>
+                <dd class="col-sm-10">@Model.alert.AlertType</dd>
+                <dt class="col-sm-2">Effective:</dt>
+                <dd class="col-sm-10">
+                    @Model.alert.EffectiveFromDate.ToString("dd/MM/yyyy") <span> - </span>
+                    @if(Model.alert.EffectiveToDate != null)
+                    {                        
+                        @Model.alert.EffectiveToDate.Value.ToString("dd/MM/yyyy")
+                    }
+                    else
+                    {
+                        <span>Current</span>
+                    }
+                </dd>
+                <dt class="col-sm-2">Protected Address</dt>
+                @if(Model.alert.ProtectedAddress)
+                {
+                    <dd class="col-sm-10">Yes</dd>
+                }
+                else
+                {
+                    <dd class="col-sm-10">No</dd>
+                }
+                <dt class="col-sm-2">Comments:</dt>
+                <dd class="col-sm-10">@Model.alert.Comments</dd>
+            </div>
+
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-default btn-outline-primary" asp-action="Edit" asp-route-alertID=@Model.alert.AlertID>Edit Details</a>
+                </div>
+
+                <div class="col-md-2">
+                    <a type="button" class="btn btn-default btn-outline-primary" asp-action="StandDown" asp-route-alertID=@Model.alert.AlertID>Stand Down</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

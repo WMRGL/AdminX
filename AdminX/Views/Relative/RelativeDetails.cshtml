@@ -1,19 +1,20 @@
-﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+﻿@model AdminX.ViewModels.RelativeVM
 @{
     ViewData["Title"] = "Admin-X - Relative Details";
+    ViewData["Page"] = "/ Relative / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back to Patient</button>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Record Diagnoses</a>
-        </div>
-        <div class="col-md-6"></div>       
-    </div>
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Record Diagnoses", "Index", "RelativeDiagnosis", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" })
+    };
+}
+
+<div class="container">   
 
     <div class="row mb-5">
         <hr />
@@ -30,6 +31,10 @@
             </dt>
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+                @if (Model.relativeDetails.RelSurnameBirth != null)
+                {
+                    <span>(was </span> @Model.relativeDetails.RelSurnameBirth<span>)</span>
+                }
             </dd>
             <dt class="col-sm-2">
                 Relation to Proband:
@@ -54,7 +59,7 @@
             {
                 <dt class="col-sm-2">DOD:</dt>
                 <dd class="col-sm-4">
-                    @if (Model.relativeDetails.DOD != null)
+                    @if (Model.relativeDetails.DOD != null && Model.relativeDetails.DOD != DateTime.Parse("1900-01-01"))
                     {
                         @Html.DisplayFor(model => model.relativeDetails.DOD)
                     }
@@ -85,7 +90,10 @@
 
     <div class="row mb-5 g-5">
         <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-success" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+            <a type="button" class="btn btn-default btn-primary" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+        </div>
+        <div class="col-md-2">
+            <a type="button" class="btn btn-default btn-primary" asp-controller="LetterMenu" asp-action="Index" asp-route-id="@Model.relativeDetails.relsid" asp-route-isRelative="true">Send Letter</a>
         </div>
     </div>
 </div>

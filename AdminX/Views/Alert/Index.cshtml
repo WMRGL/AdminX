@@ -1,0 +1,62 @@
+﻿@model AdminX.ViewModels.AlertVM
+
+@{
+    ViewData["Title"] = "Admin-X - Alert";
+    ViewData["Page"] = "/ Alert / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Create New Alert", "Create", "Alert", new { mpi = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnAddAlert" }),
+    };
+}
+
+<h1>Alerts for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</a></h1>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table mb-0 table-hover">
+            <thead class="">
+                <tr>
+                    <th></th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Protected Address</th>
+                    <th scope="col">Effective From</th>
+                    <th scope="col">Details</th>
+                    <th scope="col">Currently in Effect</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.alertList)
+                {
+                    <tr>
+                        <td><a type="button" class="btn btn-default btn-outline-primary" asp-controller="Alert" asp-action="AlertDetails" asp-route-alertID=@a.AlertID>Details</a></td>
+                        <td>@a.AlertType</td>
+                        @if (@a.ProtectedAddress)
+                        {
+
+                            <td class="text-danger"><strong>Yes</strong></td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                        <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
+                        <td>@a.Comments</td>
+                        @if(a.EffectiveToDate == null)
+                        {
+                            <td>Yes</td>
+                        }
+                        else
+                        {
+                            <td>No</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

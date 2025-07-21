@@ -1,24 +1,30 @@
 ﻿@model AdminX.ViewModels.RelativeDiagnosisVM
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
-    ViewData["Title"] = "Clinic-X - Add New Relatives' Diagnosis";
+    ViewData["Title"] = "Admin-X - Add New Relatives' Diagnoses";
+    ViewData["Page"] = "/ Relative / Diagnoses / New";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Diagnosis List", "Index", "RelativeDiagnosis", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
+
 <div class="container">    
-    <div class="row g-5 mb-5">
-        <div class="col-md-2">
-            @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativeDetails.relsid>Back to Diagnosis List</a>
-        </div>
-    </div>
 
     <div class="row g-5 mb-5">
         <h1>Add new diagnosis</h1>
     </div>
     <div class="row g-5 mb-5">
         <form id="frmAddNew" asp-action="AddNew">
+            <div hidden><input name="id" asp-for=@Model.relativeDetails.relsid /></div>
             <div class="row g-5 mb-5">
                 <h2>Diagnosis Details:</h2>
             </div>
@@ -130,14 +136,14 @@
             </div>*@
 
 
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="relID" value="@Html.DisplayFor(model => model.relativeDetails.relsid)" />
             </div>
         </form>
 
         <div class="row g-5 mb-5">
             <div class="col-md-2">
-                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+                <input type="button" class="btn btn-primary" value="Save" id="btnSave" />
             </div>
         </div>
     </div>
@@ -147,9 +153,10 @@
     <script type="text/javascript">
 
         document.getElementById("btnSave").addEventListener("click", AddDiag);
-        document.getElementById("btnBack").addEventListener("click", GoBack);
+        //document.getElementById("btnBack").addEventListener("click", GoBack);
 
-        function GoBack() {
+        function GoBack() 
+        {
             window.history.back();
             //window.close();
         }
@@ -157,27 +164,22 @@
         function AddDiag() 
         {
 
-            if (CheckFormValid() == 1) {
+            if (CheckFormValid() == 1) 
+            {
                 document.getElementById("frmAddNew").submit();
             }
         }
 
-        function CheckFormValid() { //validation to ensure all required data is entered
+        function CheckFormValid() 
+        { //validation to ensure all required data is entered
 
-            if (document.getElementById("ddlDiag").value == null || document.getElementById("ddlDiag").value == "") {
-                window.alert("Please select a diagnosis.");
-                return 0;
-            }
-
-            if (document.getElementById("ddlStatus").value == null || document.getElementById("ddlStatus").value == "") {
-                window.alert("Please select a disease status.");
-                return 0;
-            }
-
-            if (document.getElementById("txtComments").value.match(/};.*/)) {
-                window.alert("Oi! Stop trying to inject SQL code into my form!");
-                return 0;
-            }
+                       
+            
+            //if (document.getElementById("txtComments").value.match(/};.*/)) 
+            //{
+            //    window.alert("Oi! Stop trying to inject SQL code into my form!");
+            //    return 0;
+            //}
             return 1;
         }
 

@@ -14,7 +14,6 @@ namespace AdminX.Controllers
         
         private readonly ClinicalContext _clinContext;        
         private readonly APIContext _apiContext;        
-        private readonly RelativeDiagnosisVM _rdvm;
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;        
@@ -33,8 +32,7 @@ namespace AdminX.Controllers
             _crud = new CRUD(_config);
             _staffUser = new StaffUserData(_clinContext);
             _patientData = new PatientData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);
-            _rdvm = new RelativeDiagnosisVM();
+            _relativeData = new RelativeData(_clinContext);            
             _rvm = new RelativeVM();
             _audit = new AuditService(_config);
             _api = new APIController(_apiContext, _config);
@@ -47,12 +45,15 @@ namespace AdminX.Controllers
         {
             try
             {
+                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - View Relative", "ID=" + id.ToString());
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
+                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
+                _rvm.MPI = _rvm.patient.MPI;
 
-                return View(_rdvm);
+                return View(_rvm);
             }
             catch (Exception ex)
             {
@@ -66,14 +67,15 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Edit Relative", "ID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Relative", "ID=" + id.ToString());
 
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID).MPI;
-                _rdvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rdvm.genderList = _relativeData.GetGenderList();
+                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
+                _rvm.MPI = _rvm.patient.MPI;
+                _rvm.relationsList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
+                _rvm.genderList = _relativeData.GetGenderList();
 
-                return View(_rdvm);
+                return View(_rvm);
             }
             catch (Exception ex)
             {
@@ -82,13 +84,12 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string title, string forename1,
-            string forename2, string surname, string relation, string dob, string dod,
-            int isAffected, string sex)
+        public async Task<IActionResult> Edit(int id, string? title, string forename1, string? forename2, string surname, string relation, string dob, string dod,
+            int isAffected, string sex, string? prevSurname)
         {
             try
             {
-                _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
 
                 //making sure all the nulls have values
 
@@ -101,7 +102,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    birthDate = DateTime.Parse("1/1/1900");
+                    birthDate = DateTime.Parse("1900-01-01");
                 }
 
                 if (dod != null)
@@ -110,7 +111,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    deathDate = DateTime.Parse("1/1/1900");
+                    deathDate = DateTime.Parse("1900-01-01");
                 }
 
                 if (title == null)
@@ -124,7 +125,7 @@ namespace AdminX.Controllers
                 }
 
                 int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
-                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
+                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, prevSurname);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-edit(SQL)" }); }
 
@@ -164,7 +165,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _rdvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                _rvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
@@ -198,7 +199,7 @@ namespace AdminX.Controllers
 
                 var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
 
-                return RedirectToAction("PatientDetails", "Patient", new { id = _rdvm.MPI });
+                return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.MPI });
             }
             catch (Exception ex)
             {

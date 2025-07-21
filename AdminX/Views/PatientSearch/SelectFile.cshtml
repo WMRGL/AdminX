@@ -12,7 +12,7 @@
 
     <div class="row mb-5 g-5">
         <form asp-action="SelectFile">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="firstname" asp-for=@Model.forenameSearch />
                 <input name="lastname" asp-for=@Model.surnameSearch />
                 <input name="dob" asp-for=@Model.dobSearch />
@@ -62,7 +62,7 @@
 
             <form asp-controller="Patient" asp-action="AddNew">
                 <div class="row mb-5 g-5">
-                    <div id="metadata2" hidden="true">
+                    <div id="metadata2" hidden>
                         <input name="firstname" asp-for=@Model.forenameSearch />
                         <input name="lastname" asp-for=@Model.surnameSearch />
                         <input name="dob" asp-for=@Model.dobSearch />

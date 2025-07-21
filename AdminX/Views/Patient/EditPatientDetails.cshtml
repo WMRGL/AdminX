@@ -3,7 +3,18 @@
 @{
     ViewData["Title"] = "Admin-X - Add New Patient";
     ViewData["Page"] = "/ Add New Patient ";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        
+    };
+}
+
+
 
 <div class="">
     @if (Model.message != null)
@@ -21,7 +32,6 @@
                             <h3>@Model.message</h3>
                         </div>
                     </div>
-
                 }
                 else
                 {
@@ -41,19 +51,19 @@
 
     <div class="card">
         <div class="card-body">
-            <form method="post" asp-action="EditPatientDetails">
+            <form method="post" id="frmEdit" asp-action="EditPatientDetails">
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label">CGU Number</label>
                         <input name="cguNumber" asp-for=@Model.patient.CGU_No readonly />
-                        <input name="mpi" asp-for=@Model.patient.MPI hidden="true" />                        
+                        <input name="mpi" asp-for=@Model.patient.MPI hidden />                        
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label">Title</label>
-                        <select class="form-select" name="title" asp-for=@Model.patient.Title>
+                        <select class="form-select" id="ddlTitle" name="title" asp-for=@Model.patient.Title>
                             <option value="" selected></option>
                             @foreach (var item in Model.titles)
                             {
@@ -197,17 +207,17 @@
 
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <select name="AreaCode" class="form-control" id="AreaCode" asp-for=@Model.patient.PtAreaCode>
+                        <select name="AreaCode" class="form-control" id="AreaCode" name="areaCode" >
                             <option value="">Select Area Code</option>
                             @foreach (var item in Model.areaNamesList)
                             {
-                                <option value=@item.AreaCode>@item.AreaCode - @item.AreaName</option>
+                                <option value=@item.AreaID>@item.AreaCode - @item.AreaName</option>
                             }
                         </select>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg">Save Patient</button>
+                <button type="button" id="btnSubmit" class="btn btn-primary btn-lg">Save Patient</button>
             </form>
         </div>
     </div>    
@@ -217,11 +227,97 @@
 <script>
 
     document.getElementById("ADDRESS3").addEventListener("change", GetCountyFromCity);
-    window.addEventListener("load", SetConsentBox);
+    window.addEventListener("load", LoadPatient);
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
 
-    function SetConsentBox()
+    function DoSubmit()
     {
-        
+        if (CheckFormValid() == 1)
+        {
+            document.getElementById("frmEdit").submit();
+        }
+    }
+
+    function CheckFormValid() { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlTitle").value == null || document.getElementById("ddlTitle").value == "")
+        {
+            window.alert("Please select a title.");
+            return 0;
+        }
+
+        if (document.getElementById("firstName").value == null || document.getElementById("lastName").value == "")
+        {
+            window.alert("Please enter a name.");
+            return 0;
+        }
+
+        if (document.getElementById("dob").value == null || document.getElementById("dob").value == "")
+        {
+            window.alert("Please enter a date of birth.");
+            return 0;
+        }
+
+        if (document.getElementById("nhsno").value == null || document.getElementById("nhsno").value == "")
+        {
+            window.alert("Please enter a NHS number (if one isn't available, use 0000000000).");
+            return 0;
+        }
+
+        if (document.getElementById("ddlGP").value == null || document.getElementById("ddlGP").value == "")
+        {
+            window.alert("Please choose a GP.");
+            return 0;
+        }
+
+        if (document.getElementById("POSTCODE").value == null || document.getElementById("POSTCODE").value == "")
+        {
+            window.alert("Please enter a postcode.");
+            return 0;
+        }
+
+        if (document.getElementById("ADDRESS3").value == null || document.getElementById("ADDRESS3").value == "")
+        {
+            window.alert("Please enter a city.");
+            return 0;
+        }
+
+        if (document.getElementById("ADDRESS1").value == null || document.getElementById("ADDRESS1").value == "")
+        {
+            window.alert("Please enter at least one line of address.");
+            return 0;
+        }
+
+        if (document.getElementById("AreaCode").value == null || document.getElementById("AreaCode").value == "")
+        {
+            window.alert("Please choose an area code.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+
+
+    function LoadPatient()
+    {    
+        var areaIDArray = []; //all this is necessary because the MPT only stores the code and the name, not the ID. 
+                                //but the code is not a unique key, so there's no way to bind it with asp-for!
+                                //we need to ID, and the only way to get the ID and insert it is like this.
+
+        @foreach(var item in Model.areaNamesList)
+        {
+            if(Model.patient.PtAreaCode == item.AreaCode && Model.patient.PtAreaName == item.AreaName)
+            {
+                @:areaIDArray.push("@item.AreaID");
+            }
+        }
+
+        if(areaIDArray.length != 0)
+        {
+            document.getElementById("AreaCode").value = areaIDArray[0];
+        }
+
         if("@Model.patient.EmailCommsConsent" == "Yes")
         {           
             document.getElementById("IsConsentToEmail").value = "true";

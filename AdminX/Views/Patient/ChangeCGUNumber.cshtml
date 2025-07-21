@@ -5,6 +5,13 @@
     ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
+    };
+}
+
 <div class="container">
     <div class="row mb-5 g-5">
         <h1>Enter the family file the patient is to be added to</h1>
@@ -14,7 +21,7 @@
 
     <div class="row mb-5 g-5">
         <form asp-action="ChangeCGUNumber">
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="mpi" asp-for=@Model.patient.MPI />                
             </div>
             @*Delete this line because Isaiah says so*@
@@ -62,7 +69,7 @@
 
             <form asp-controller="Patient" asp-action="UpdateCGUNumber">
                 <div class="row mb-5 g-5">
-                    <div id="metadata2" hidden="true">
+                    <div id="metadata2" hidden>
                         <input name="mpi" asp-for=@Model.patient.MPI />
                         <input name="newFileNumber" asp-for=@Model.cguNumber />
                     </div>

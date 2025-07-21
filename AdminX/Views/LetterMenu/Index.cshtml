@@ -1,0 +1,321 @@
+﻿@model AdminX.ViewModels.LettersMenuVM
+
+@{
+    ViewData["Title"] = "ClinicX - Letters Menu";
+    ViewData["Page"] = "/ LettersMenu / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-light bg-white me-2 m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+<div class="container">
+    @if(!Model.isRelative)
+    {
+        <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
+    }
+    else
+    {
+        <h1>Letters for @Model.relative.RelForename1 @Model.relative.RelSurname (relative of @Model.patient.CGU_No)</h1>
+    }
+
+    
+
+    
+    <form id="frmDoLetter" asp-action="DoLetter">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Referral:</label>
+            </div>
+            <div class="col-md-6">
+                <select name="refID" id="ddlRefID">
+                    <option value="">Select</option>
+                    @foreach(var item in Model.referralList)
+                    {
+                        <option value=@item.refid>@item.refid - @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.ReferringClinician at @item.ReferringFacility</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <input name="docCode" id="txtDocCode" hidden />
+                <input name="isPreview" id="txtIsPreview" hidden />
+                @if(Model.isRelative)
+                {
+                    <input name="relID" asp-for=@Model.relative.relsid hidden />
+                }
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-4">
+                <select id="letterGroups">
+                    <option value="">Select Group</option>
+                    <option value="Standard">Standard</option>
+                    <option value="MEDREC">Medical Records Requests</option>
+                    <option value="DNATS">DNA</option>
+                    <option value="Outcome">Outcome</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-8">
+                <select class="w-100" name="docID" id="docGroupStandard" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListStandard)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select class="w-100" name="docID" id="docGroupMedRec" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListMedRec)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select class="w-100" name="docID" id="docGroupDNA" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListDNA)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+                <select class="w-100" name="docID" id="docGroupOutcome" hidden>
+                    <option value="" selected>Select</option>
+                    @foreach (var item in Model.docsListOutcome)
+                    {
+                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>To clinician (if applicable):</label>
+            </div>
+            <div class="col-md-2">
+                <select class="w-100" name="clinicianCode">
+                    <option value="">Select</option>
+                    @foreach(var item in Model.clinicianList)
+                    {
+                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>From:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="letterFrom" rows="5" cols="30" id="txtLetterFrom"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label>To:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="letterTo" rows="5" cols="30" id="txtLetterTo" asp-for=@Model.patientAddress></textarea>
+            </div>
+        </div>
+
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Free text:</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="additionalText"></textarea>
+            </div>
+            <div class="col-md-2">
+                <label>Enclosures</label>
+            </div>
+            <div class="col-md-4">
+                <textarea name="enclosures"></textarea>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Leaflets:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="leafletID">
+                    <option value="0" selected>Select...</option>
+                    @foreach (var l in Model.leaflets)
+                    {
+                        <option value=@l.ID>@l.Code - @l.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-outline-primary" id="btnPreview">Preview</button>
+            </div>        
+            <div class="col-md-2">
+                <button type="button" class="btn btn-default btn-outline-primary" id="btnPrint">Print and Send</button>
+            </div>
+        </div>
+
+    </form>
+
+    
+</div>
+
+<script>
+
+    document.getElementById("letterGroups").addEventListener("change", ShowLetterMenu);
+    document.getElementById("docGroupStandard").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupMedRec").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupDNA").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
+    document.getElementById("btnPreview").addEventListener("click", DoPreview);
+    document.getElementById("btnPrint").addEventListener("click", DoPrint);
+    document.getElementById("ddlRefID").addEventListener("change", SetLetterFromTo);
+    window.addEventListener("load", ShowLetterMenu);
+    
+    function ShowLetterMenu()
+    {
+        
+        var groupMenu = document.getElementById("letterGroups");
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+                
+
+        standardLetters.value = "";
+        standardLetters.hidden = true;
+        medrecLetters.value = "";
+        medrecLetters.hidden = true;
+        dnaLetters.value = "";
+        dnaLetters.hidden = true;
+        outcomeLetters.value = "";
+        outcomeLetters.hidden = true;
+
+        
+        if (groupMenu.value == "Standard")
+        {
+            standardLetters.hidden = false;            
+        }
+
+        if (groupMenu.value == "MEDREC")
+        {
+            
+            medrecLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "DNATS")
+        {            
+            dnaLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "Outcome")
+        {
+            outcomeLetters.hidden = false;
+        }
+        
+    }
+
+    function SetDoccode()
+    {
+        var docCode = "";
+        var docGroup = "";
+
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+
+        if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
+        {
+            docCode = standardLetters.value;
+        }
+
+        if(!medrecLetters.hidden)
+        {
+            docCode = medrecLetters.value;
+        }
+
+        if(!dnaLetters.hidden)
+        {
+            docCode = dnaLetters.value;
+        }
+
+        if(!outcomeLetters.hidden)
+        {
+            docCode = outcomeLetters.value;
+        }
+
+        document.getElementById("txtDocCode").value = docCode;
+    }
+
+    function SetLetterFromTo()
+    {
+        var refID = document.getElementById("ddlRefID").value;
+
+        var referralArray = [];
+        var staffCodeArray = [];
+        var staffCodeArray2 = [];
+        var staffNameArray = []; //using Javascript to get C# data is so annoying!!!
+        var staffPositionArray = [];
+        var staffName = "";
+        var staffCode = "";
+        
+
+        @foreach (var item in Model.referralList)
+        {
+            @:referralArray.push("@item.refid");
+            @:staffCodeArray.push("@item.PATIENT_TYPE_CODE");
+            @:staffNameArray.push("@item.LeadClinician");
+        }
+
+        for (var i in referralArray)
+        {
+            if(referralArray[i] == refID)
+            {
+                staffName = staffNameArray[i];
+                staffCode = staffCodeArray[i];
+            }
+        }
+
+        @foreach (var item in Model.staffMemberList)
+        {
+            @:staffCodeArray2.push("@item.STAFF_CODE");
+            @:staffPositionArray.push("@item.POSITION"); //so fucking annoying!!!
+        }
+
+        for (var j in staffPositionArray)
+        {
+            if(staffCodeArray2[j] == staffCode)
+            {
+                staffName = staffName + "\n" + staffPositionArray[j];
+            }
+        }
+
+        document.getElementById("txtLetterFrom").value = staffName;
+    }
+
+    function DoPreview()
+    {
+        document.getElementById("txtIsPreview").value = "true";
+        
+        document.getElementById("frmDoLetter").submit();
+    }
+
+    function DoPrint()
+    {
+        document.getElementById("txtIsPreview").value = "false";
+
+        document.getElementById("frmDoLetter").submit();
+    }
+
+
+</script>

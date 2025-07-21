@@ -131,7 +131,7 @@
                                     <option value="True">Yes</option>
                                     <option value="False">No</option>
                                 </select>
-                                <input asp-for=@Model.activityItem.RefID id="txtRefID" name="refID" hidden="true" />
+                                <input asp-for=@Model.activityItem.RefID id="txtRefID" name="refID" hidden />
                             </div>
                             <div class="col-md-2">
                                 <label for="ddlCloseRef" id="lblCloseRef">Close Referral:</label>
@@ -248,8 +248,10 @@
         }
     }
 
-    function DoOutcome() {
-        if (CheckFormValid() == 1) {
+    function DoOutcome() 
+    {
+        if (CheckFormValid() == 1) 
+        {
             //window.alert("Submitted!");
             document.getElementById("ContactOutcome").submit();
         }

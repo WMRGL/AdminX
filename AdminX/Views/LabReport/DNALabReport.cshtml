@@ -1,0 +1,47 @@
+﻿@model AdminX.ViewModels.LabReportVM
+@{
+    ViewData["Title"] = "Admin-X - DNA Lab Report";
+}
+
+<div class="container">
+    
+    <h1>Report details for @Model.dnaReportDetails.LABNO</h1>
+    
+    @if (@Model.dnaReportDetails.REPORT_STATUS == "Final")
+    {
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Summary:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.dnaReportDetails.SUMMARY</p>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Interpretation:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.dnaReportDetails.REPORT</p>
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Basis of Test:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.dnaReportDetails.DIAGNOSIS_REPORT</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h1 class="redtext">This report is not finalised.</h1>
+    }
+
+    <div class="row mb-5 g-5">
+        <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
+    </div>
+
+</div>

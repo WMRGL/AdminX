@@ -9,12 +9,15 @@ namespace AdminX.ViewModels
     {
         public Patient patient { get; set; }
         public List<Patient> patientsList { get; set; }
+        public Patient nextPatient { get; set; }
+        public Patient previousPatient { get; set; }
         public List<Relative> relatives { get; set; }
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
         public List<YesNo> yesno { get; set; }         
         public List<Referral> activeReferrals { get; set; }
         public List<Referral> inactiveReferrals { get; set; }
+        public List<Referral> tempReges { get; set; }
         public List<Appointment> appointments { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
@@ -43,5 +46,14 @@ namespace AdminX.ViewModels
         public List<ListCity> cityList { get; set; }
         public List<AreaNames> areaNamesList { get; set; }
         public List<Gender> genders { get; set; }
+        public string edmsLink { get; set; }
+        public string phenotipsLink { get; set; }
+        public bool isPhenotipsAvailable { get; set; }
+        public bool isCancerPPQScheduled { get; set; }
+        public bool isCancerPPQComplete { get; set; }
+        public bool isGeneralPPQScheduled { get; set; }
+        public bool isGeneralPPQComplete { get; set; }
+        public bool isPatientInPhenotips { get; set; }
+        public PhenotipsPatient ptPatient { get; set; }
     }
 }

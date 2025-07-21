@@ -1,0 +1,125 @@
+﻿@model AdminX.ViewModels.LabReportVM
+
+@{
+    ViewData["Title"] = "Admin-X - Lab Report List";
+}
+
+<div class="container">
+
+    
+    
+    @if(Model.cytoReportsList.Count > 0)
+    {
+        <div class="row">
+            <h2>Cytogenetic reports:</h2>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Lab number</th>
+                    <th>Date Obtained</th>
+                    <th>Date Received</th>
+                    <th>Report Date</th>
+                    <th>Report Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.cytoReportsList)
+                {
+                    <tr>
+                        <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
+                        @if (@item.DATE_OBTAINED != null)
+                        {
+                            <td>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>                            
+                        }
+                        @if (@item.DATE_RECEIVED != null)
+                        {
+                            <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        @if (@item.REPORT_DATE != null)
+                        {
+                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        @if (@item.REPORT_STATUS != "Final")
+                        {
+                            <td class="redtext">NOT TO BE GIVEN OUT</td>
+                        }
+                        else
+                        {
+                            <td><a asp-controller="LabReport" asp-action="CytoLabReport" asp-route-labno=@item.LABNO>@item.REPORT_STATUS</a></td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }    
+
+    @if(Model.labDNALabDataList.Count > 0)
+    {
+        <div class="row">
+            <h2>Molecular/DNA reports:</h2>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Lab number</th>
+                    <th>Date Requested</th>
+                    <th>Report Date</th>
+                    <th>Report Status</th>
+                    <th>Indication</th>
+                    <th>Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.labDNALabDataList)
+                {
+                    <tr>
+                        <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
+                        @if (@item.DATEREQUESTED != null)
+                        {
+                            <td>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        @if (@item.REPORT_DATE != null)
+                        {
+                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                        }
+                        else
+                        {
+                            <td>N/A</td>
+                        }
+                        @if(@item.REPORT_STATUS != "Final")
+                        {
+                            <td class="redtext">NOT TO BE GIVEN OUT</td>
+                        }
+                        else
+                        {
+                            <td><a asp-controller="LabReport" asp-action="DNALabReport" asp-route-labno=@item.LABNO asp-route-indication=@item.INDICATION asp-route-reason=@item.REASON>@item.REPORT_STATUS</a></td>
+                        }
+                        <td>@item.INDICATION</td>
+                        <td>@item.REASON</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabPatientSearch">Back to search</a>
+
+</div>

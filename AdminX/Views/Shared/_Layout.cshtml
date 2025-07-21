@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </head>
-<body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-layout="default">
+<body class="bodyStyle" data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-layout="default">
     <div class="main">
 
         <nav class="navbar navbar-expand navbar-light navbar-bg">
@@ -36,6 +36,7 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="Index">Search</a></li>
                         <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearch">Add New</a></li>                       
+                        @*<li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearchAPI">Add New (API)</a></li>*@
                     </ul>
                 </li>
                 <li class="vr"></li>
@@ -52,11 +53,19 @@
                 </li>
                 <li class="vr"></li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="DictatedLetter" asp-action="Index">Letters</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="DictatedLetter" asp-action="Index">Dictated Letters</a>
                 </li>
                 <li class="vr"></li>
                 <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="" asp-controller="OtherCaseload" asp-action="Index">Clinician Caseloads</a>
+                </li>
+                <li class="vr"></li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="LabReport" asp-action="LabPatientSearch">Lab Report Search</a>
+                </li>
+                <li class="vr"></li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="MergeHistory" asp-action="Index">Merge History</a>
                 </li>
                 <li class="vr"></li>
                 <li class="nav-item">
@@ -109,6 +118,10 @@
                     <div class="col-6 text-start">
                         <p class="mb-0 text-muted"><strong>AdminX</strong> &copy;</p>
                     </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-dark" id="btnLargeFont">Large Fonts</button>
+                        <input type="checkbox" id="chkLargeFont" hidden />
+                    </div>
                 </div>
             </div>
         </footer>
@@ -132,6 +145,31 @@
 
 
     <script>
+        document.getElementById("btnLargeFont").addEventListener("click", ChangeFont);
+
+        function ChangeFont()
+        {           
+            const box = document.getElementById("chkLargeFont");
+            box.checked = !box.checked;
+            window.sessionStorage.setItem("isBoxChecked", box.checked);
+            SetFont();
+        }
+
+        function SetFont()
+        {
+            const box = document.getElementById("chkLargeFont");
+            const bodyTag = document.querySelector(".bodyStyle");
+
+            if(box.checked)
+            {
+                bodyTag.style.fontSize = "20px";
+            }
+            else
+            {
+                bodyTag.style.fontSize = "14px";
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             $('.defaultTable').DataTable({
                 info: true,

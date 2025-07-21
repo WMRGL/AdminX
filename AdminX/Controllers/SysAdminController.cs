@@ -341,7 +341,7 @@ namespace AdminX.Controllers
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
-                
+                _savm.clinician = _clinicianData.GetClinicianDetails(clinCode);
 
                 return View(_savm);
             }
@@ -435,7 +435,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Facilities(string? nameSearch)
+        public async Task<IActionResult> Facilities(string? nameSearch, string? citySearch, string? codeSearch, bool? isOnlyCurrent = false, bool? isOnlyGP = false, bool? isOnlyNonGP = false)
         {            
             try
             {
@@ -446,8 +446,35 @@ namespace AdminX.Controllers
                 if (nameSearch != null)
                 {
                     _savm.facilities = _facilityData.GetFacilityListAll().Where(s => s.NAME != null).ToList();
-                    _savm.facilities = _savm.facilities.Where(s => s.NAME.Contains(nameSearch)).ToList();
+                    _savm.facilities = _savm.facilities.Where(s => s.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
                 }
+
+                if (citySearch != null)
+                {
+                    _savm.facilities = _facilityData.GetFacilityListAll().Where(s => s.CITY != null).ToList();
+                    _savm.facilities = _savm.facilities.Where(s => s.CITY.ToUpper().Contains(citySearch.ToUpper())).ToList();
+                }
+
+                if (codeSearch != null)
+                {                    
+                    _savm.facilities = _savm.facilities.Where(s => s.MasterFacilityCode.ToUpper().Contains(codeSearch.ToUpper())).ToList();
+                }
+
+                if (isOnlyCurrent.GetValueOrDefault())
+                {
+                    _savm.facilities = _savm.facilities.Where(s => s.NONACTIVE == 0).ToList();
+                }
+
+                if (isOnlyGP.GetValueOrDefault())
+                {
+                    _savm.facilities = _savm.facilities.Where(s => s.IS_GP_SURGERY == -1).ToList();
+                }
+
+                if (isOnlyNonGP.GetValueOrDefault())
+                {
+                    _savm.facilities = _savm.facilities.Where(s => s.IS_GP_SURGERY == 0).ToList();
+                }
+
 
                 return View(_savm);
             }
@@ -466,7 +493,7 @@ namespace AdminX.Controllers
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
 
-
+                _savm.facility = _facilityData.GetFacilityDetails(facCode);
 
                 return View(_savm);
             }
@@ -566,7 +593,7 @@ namespace AdminX.Controllers
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
 
-
+                _savm.venue = _venueData.GetVenueDetails(clinCode);
 
                 return View(_savm);
             }

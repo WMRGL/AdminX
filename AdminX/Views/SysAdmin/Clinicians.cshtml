@@ -81,21 +81,21 @@
             </div>
             <div class="col-md-1">
                 <input type="checkbox" id="chkOnlyCurrent" />
-                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden="true" />
+                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
             </div>            
             <div class="col-md-1">
                 <label>Show Only GPs</label>
             </div>
             <div class="col-md-1">
                 <input type="checkbox" id="chkOnlyGP" />
-                <input name="isOnlyGP" id="txtOnlyGP" hidden="true" />
+                <input name="isOnlyGP" id="txtOnlyGP" hidden />
             </div>
             <div class="col-md-1">
                 <label>Show Only Non-GPs</label>
             </div>
             <div class="col-md-1">
                 <input type="checkbox" id="chkOnlyNonGP" />
-                <input name="isOnlyNonGP" id="txtOnlyNonGP" hidden="true" />
+                <input name="isOnlyNonGP" id="txtOnlyNonGP" hidden />
             </div>
             <div class="col-md-4"></div>
             <div class="col-md-2">            
@@ -125,7 +125,7 @@
                 @foreach(var item in Model.clinicians)
                 {
                     <tr>
-                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinicianCode=@item.MasterClinicianCode>Details</a></td>
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinCode=@item.MasterClinicianCode>Details</a></td>
                         <td>@item.MasterClinicianCode</td>
                         <td>@item.TITLE @item.FIRST_NAME @item.NAME</td>
                         <td>@item.POSITION</td>
@@ -133,11 +133,11 @@
                         <td>@item.FACILITY</td>
                         @if (item.Is_Gp == 0)
                         {
-                            <td>Yes</td>
+                            <td>No</td>
                         }
                         else
                         {
-                            <td>No</td>
+                            <td>Yes</td>
                         }
                         @if(item.NON_ACTIVE == 0)
                         {

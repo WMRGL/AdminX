@@ -1,0 +1,73 @@
+﻿@model AdminX.ViewModels.RelativeDiaryVM
+
+@{
+    ViewData["Title"] = "Admin-X - Relative Diary";
+    ViewData["Page"] = "/ Relative / Diary";    
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Create New", "AddNew", "RelativeDiary", new { relID = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relative.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" })
+    };
+}
+
+<div class="container">
+    <h1>Relative diary for @Model.relative.RelForename1 @Model.relative.RelSurname</h1>
+    <h2>(relative of @Model.patient.FIRSTNAME @Model.patient.LASTNAME)</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Diary Date</th>
+                <th>Action</th>
+                <th>Letter Code</th>
+                <th>Received</th>
+                <th>Return Expected</th>
+                <th>Diary Text</th>
+                <th>Extra Text for Letter</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.relativeDiaryList)
+            {
+                <tr>
+                    <td><a type="button" class="btn btn-default btn-primary" asp-action="Edit" asp-route-diaryID=@item.DiaryID>Edit</a></td>
+                    @if(item.DiaryDate != null)
+                    {
+                        <td>@item.DiaryDate.ToString("dd/MM/yyyy")</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>@item.DiaryAction</td>
+                    <td>@item.DocCode</td>
+                    @if (@item.DiaryRec != null)
+                    {
+                        <td>@item.DiaryRec.Value.ToString("dd/MM/yyyy")</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    @if(@item.NotReturned)
+                    {
+                        <td>No</td>
+                    }
+                    else
+                    {
+                        <td>Yes</td>
+                    }       
+                    <td>@item.DiaryText</td>
+                    <td>@item.LetterExtra</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

@@ -1,8 +1,15 @@
 ﻿@model AdminX.ViewModels.ReviewVM
 @{
-    ViewData["Title"] = "Clinic-X - Review Details";
-    ViewData["HomeBtn"] = Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-primary m-1" });
+    ViewData["Title"] = "Admin-X - Review Details";    
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
 
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Patient Review List", "ReviewsForPatient", "Review", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),        
+    };
 }
 
 <div class="card">
@@ -106,8 +113,9 @@
     </div>
     <div class="card-body">
         <form method="post"  id="ReviewForm">
+            
             <div class="row">
-                <input type="hidden" value="@Model.review.MPI" name="MPI">
+                <input value="@Model.review.ReviewID" name="id" hidden>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Linked Appointment</label>
                     <input type="text" class="form-control" id="linkedApptInput" name="Parent_RefID" value="@Model.review.Parent_RefID" readonly>
@@ -123,12 +131,14 @@
                     }
 
                 </div>
+                
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="pathway">Pathway</label>
                     <input type="text" class="form-control" id="pathway" name="pathway" value="@Model.activityDetail.PATHWAY" readonly>
                 </div>
                 
             </div>
+            
             <div class="row">
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Review Status</label>
@@ -140,12 +150,12 @@
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="inputEmail4">Owner</label>
-                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.STAFF_CODE" readonly>
+                    <input type="text" class="form-control" name="Owner" id="inputEmail4" value="@Model.staffMember.NAME" readonly>
                 </div>
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="linnkedAppt">Review By</label>
                     <select class="form-select js-choice" id="linnkedAppt" name="Review_Recipient">
-                        <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.STAFF_CODE</option>
+                        <option value="@Model.staffMember.STAFF_CODE" selected>@Model.staffMember.NAME</option>
                         @foreach (var item in Model.staffMembers)
                         {
                             <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -154,7 +164,9 @@
                 </div>
               
             </div>
+            
             <div class="row">
+                
                   <div class="mb-3 col-md-4">
                     <label class="form-label" for="reftype">Category</label>
                     <select class="form-select" name="category" id="">
@@ -163,17 +175,16 @@
                         <option value="Non-Standard">Non-Standard</option>
                     </select>
                 </div>
+                
                 <div class="mb-3 col-md-4">
-                    <label class="form-label" for="pathway">Booked Date</label>
+                    <label class="form-label" for="pathway">Planned Date</label>
                     @if (Model.review.Planned_Date != null)
                     {
-                        <input type="date" class="form-control" value=@Model.review.Planned_Date.Value.ToString("yyyy-MM-dd") id="Planned_Date" name="Planned_Date" />
-
+                        <input type="date" class="form-control" asp-for=@Model.review.Planned_Date id="Planned_Date" name="Planned_Date" />
                     }
                     else
                     {
                         <input type="date" class="form-control" id="Planned_Date" name="Planned_Date" />
-
                     }
                 </div>
                 <div class="mb-3 col-md-4">
@@ -181,6 +192,7 @@
                     <input type="text" class="form-control" name="Review_Recipient" id="[Review_Recipient]" value="@Html.DisplayFor(model => model.review.Recipient)" readonly>
                 </div>
             </div>
+
             <div class="mb-3">
                 <label class="form-label" for="inputAddress2">Comment</label>
                 <textarea class="form-control" name="Comments" id="" cols="30" rows="5">@Model.review.Comments</textarea>

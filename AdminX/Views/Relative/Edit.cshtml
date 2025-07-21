@@ -1,23 +1,20 @@
 ﻿@model AdminX.ViewModels.RelativeDiagnosisVM
 @{
     ViewData["Title"] = "Clinic-X - Relative Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative", "RelativeDetails", "Relative", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
 <div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>
-        <div class="col-md-1">
-            <a id="btnDiagnosis" class="btn btn-default btn-success" asp-controller="RelativesDiagnosis" asp-action="Index" asp-route-relID =" @Model.relativeDetails.relsid">Record Diagnoses</a>
-        </div>       
-        <div class="col-md-8"></div>
-        @*
-        <div class="col-md-1">
-            <a id="btnEDMS" class="btn btn-default btn-success" href="" target="_blank">EDMS (GEMR)</a>
-        </div>
-        *@
-    </div>
+    
 
     <div class="row mb-5">
         <hr />
@@ -30,7 +27,7 @@
     <div class="row mb-5 g-5">
         <form id="frmEdit" asp-action="Edit">
             <div class="row" id="MetaData">
-                <input asp-for=@Model.relativeDetails.relsid name="id" hidden="true" />
+                <input asp-for=@Model.relativeDetails.relsid name="id" hidden />
             </div>
             <dl class="row">        
                 <dt class="col-sm-2">
@@ -50,6 +47,13 @@
                 </dd>
             </dl>
             <dl class="row">
+                <dt class="col-sm-2">
+                    Previous Name (if known):
+                </dt>
+                <dd class="col-sm-2">
+                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurnameBirth name="prevSurname" />
+                </dd>
+                
                 <dt class="col-sm-2">
                     Relation to Proband:
                 </dt>
@@ -82,7 +86,7 @@
                 </dt>
                 <dd class="col-sm-2">
                     @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                    <select class="w-100" asp-for=@Model.relativeDetails.RelSex name="sex">
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
                         {
@@ -106,10 +110,10 @@
 
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
         </div>
         <div class="col-md-2">
-            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Cancel</button>
+            <button type="button" value="Back" id="btnBack" class="btn btn-default btn-primary">Cancel</button>
         </div>
     </div>
 </div>

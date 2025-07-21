@@ -17,6 +17,9 @@ namespace AdminX.ViewModels
         public Referral referral { get; set; }
         public List<ActivityItem> referrals { get; set; }
         public List<string> pathways { get; set; }
+        public List<SubPathway> subPathways { get; set; }
+        public List<string> pregnancy { get; set; }
+        public List<Priority> priorityList { get; set; }
         public List<ListStatusAdmin> admin_status { get; set; }
         public List<ListDisease> diseases { get; set; }
         public Appointment Clinic { get; set; }
@@ -28,5 +31,7 @@ namespace AdminX.ViewModels
         public StaffMember staffMember { get; set; }
         public ActivityItem activity { get; set; }
         public Review review { get; set; }
+        public List<Disease> indicationList { get; set; }
+        public List<ReferralReason> referralReasonsList { get; set; }
     }
 }
