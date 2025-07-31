@@ -42,7 +42,7 @@ namespace AdminX.Controllers
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
             _outcomeData = new OutcomeData(_clinContext);
-            _activityTypeData = new ActivityTypeData(_clinContext, _adminContext);
+            _activityTypeData = new ActivityTypeData(_clinContext);
             _venueData = new ClinicVenueData(_clinContext);
         }
 

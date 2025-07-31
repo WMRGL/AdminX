@@ -40,7 +40,7 @@ namespace AdminX.Controllers
             _adminContext = adminContext;
             _config = config;
             _patientData = new PatientData(context);
-            _activityTypeData = new ActivityTypeData(context, adminContext);
+            _activityTypeData = new ActivityTypeData(context);
             _externalClinicianData = new ExternalClinicianData(context);
             _staffUserData = new StaffUserData(context);
             _activityData = new ActivityData(context);
