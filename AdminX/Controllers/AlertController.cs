@@ -1,5 +1,6 @@
 ﻿using AdminX.Data;
 using AdminX.Meta;
+using AdminX.Models;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
@@ -35,6 +36,13 @@ namespace AdminX.Controllers
             _avm.patient = _patientData.GetPatientDetails(mpi);
             _avm.alertList = _alertData.GetAlertsListAll(mpi);
 
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                    new BreadcrumbItem { Text = "Alert" }
+                };
+
             return View(_avm);
         }
 
@@ -42,6 +50,19 @@ namespace AdminX.Controllers
         {
             _avm.alert = _alertData.GetAlertDetails(alertID);
             _avm.patient = _patientData.GetPatientDetails(_avm.alert.MPI);
+
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Alert",
+                    Controller = "Alert",
+                    Action = "Index",
+                    RouteValues = new Dictionary<string, string> { { "mpi", _avm.patient.MPI.ToString() } }
+                },
+                new BreadcrumbItem { Text = "Patient" }
+            };
 
             return View(_avm);
         }

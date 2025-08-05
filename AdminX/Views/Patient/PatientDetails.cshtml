@@ -991,13 +991,13 @@
                                                     <textarea name="comments" class="form-control" rows="3" spellcheck="false"></textarea>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-default btn-outline-primary">Save</button>
-                                        </div>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-default btn-outline-primary">Save</button>
+                                            </div>
                                         </form>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -1051,7 +1051,91 @@
                     <div class="card-header">
                         <h5 class="card-title mb-0">Diary</h5>
                         <div class="col-auto ms-auto text-end mt-n1">
-                            <a asp-controller="Diary" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Add Diary Entry</a>
+                            @*   <a asp-controller="Diary" asp-action="AddNew" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Add Diary Entry</a>*@
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#centeredModalDiary">
+                                Add Diary Entry
+                            </button>
+                            <div class="modal fade" id="centeredModalDiary" tabindex="-1" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content p-5">
+                                        @if (Model.referralsList.Count != 0)
+                                        {
+                                            <form asp-action="AddNew" asp-controller="Diary">
+                                                <div class="mb-3 row">
+                                                    <label class="col-form-label col-sm-3 text-sm-end">Diary Date:</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" type="date" name="diaryDate" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row">
+                                                    <label class="col-form-label col-sm-3 text-sm-end">Action Code:</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="diaryAction" class="form-select js-choice">
+                                                            <option value="">Select</option>
+                                                            @foreach (var item in Model.diaryActionsList)
+                                                            {
+                                                                @if (item.Action != null)
+                                                                {
+                                                                    <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <option value=@item.ActionCode>@item.ActionCode</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3 row">
+                                                    <label class="col-form-label col-sm-3 text-sm-end">DocCode:</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="docCode" class="form-select js-choice">
+                                                            <option value="">Select</option>
+                                                            @foreach (var item in Model.documentsList)
+                                                            {
+                                                                <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3 row">
+                                                    <label class="col-form-label col-sm-3 text-sm-end">Referral:</label>
+                                                    <div class="col-sm-9">
+                                                        <select name="refID" class="form-select" asp-for=@Model.defaultRef.refid>
+                                                          
+                                                            @foreach (var item in Model.referralsList)
+                                                            {
+                                                                <option value=@item.refid>@item.refid - @item.RefType, @item.RefDate</option>
+                                                            }
+                                                        </select>
+
+                                                        
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3 row">
+                                                    <label class="col-form-label col-sm-3 text-sm-end">DiaryText:</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" name="diaryText" />
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-5 g-5">
+                                                    <div class="col-md-2">
+                                                        <button type="submit" class="btn btn-default btn-primary">Save</button>
+                                                    </div>
+                                                </div>
+
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <label>There are no active referrals, you will not be able to save this diary entry!</label>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">

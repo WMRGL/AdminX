@@ -50,6 +50,8 @@ namespace AdminX.Controllers
         private readonly APIController _api;
         private readonly IPhenotipsMirrorData _phenotipsMirrorData;
         private readonly IAlertTypeData _alertTypeData;
+        private readonly IDiaryActionData _diaryActionData;
+        private readonly IDocumentsData _docsData;
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext, APIContext apiContext)
         {
@@ -86,6 +88,8 @@ namespace AdminX.Controllers
             _api = new APIController(_apiContext, _config);
             _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
             _alertTypeData = new AlertTypeData(_adminContext);
+            _diaryActionData = new DiaryActionData(_adminContext);
+            _docsData = new DocumentsData(_documentContext);
         }
 
         [Authorize]
@@ -148,6 +152,10 @@ namespace AdminX.Controllers
                 _pvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
                 _pvm.alertTypes = _alertTypeData.GetAlertTypes();
+                Console.WriteLine("Patient Details: " + _pvm.patient.MPI);
+                _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
+                _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
+                _pvm.documentsList = _docsData.GetDocumentsList();
                 //_pvm.alert =
 
                 if (_pvm.patient.DECEASED == -1)

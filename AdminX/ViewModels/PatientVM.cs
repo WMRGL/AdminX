@@ -57,5 +57,9 @@ namespace AdminX.ViewModels
         public PhenotipsPatient ptPatient { get; set; }
         public List<AlertTypes> alertTypes { get; set; }
         public Alert alert { get; set; }
+        public List<Referral> referralsList { get; set; }
+        public List<DiaryAction> diaryActionsList { get; set; }
+        public List<Document> documentsList { get; set; }
+        public Referral defaultRef { get; set; }
     }
 }
