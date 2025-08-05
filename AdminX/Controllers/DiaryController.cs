@@ -66,17 +66,17 @@ namespace AdminX.Controllers
                 _dvm.defaultAction = _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
                 {
-                    Text = "Patient Details",
-                    Controller = "Patient",
-                    Action = "PatientDetails",
-                    RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
-                },
-                new BreadcrumbItem { Text = "Diary Details" }
-            };
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "Diary Details" }
+                };  
                 return View(_dvm);
             }
             catch (Exception ex)
@@ -114,13 +114,20 @@ namespace AdminX.Controllers
                 _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _dvm.documentsList = _docsData.GetDocumentsList();
 
+          
+
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-
-                    new BreadcrumbItem { Text = "New Diary Entry" }
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "New Diary" }
                 };
-
                 return View(_dvm);
                 //return RedirectToAction("Index", "AddNew");
             }
@@ -183,6 +190,19 @@ namespace AdminX.Controllers
                 _dvm.documents = _docsData.GetDocumentsList();
                 _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _dvm.documentsList = _docsData.GetDocumentsList();
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "Edit Diary " }
+                };
 
                 return View(_dvm);
             }
