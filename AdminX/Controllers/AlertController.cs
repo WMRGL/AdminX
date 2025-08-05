@@ -61,7 +61,7 @@ namespace AdminX.Controllers
                     Action = "Index",
                     RouteValues = new Dictionary<string, string> { { "mpi", _avm.patient.MPI.ToString() } }
                 },
-                new BreadcrumbItem { Text = "Patient" }
+                new BreadcrumbItem { Text = "Details" }
             };
 
             return View(_avm);

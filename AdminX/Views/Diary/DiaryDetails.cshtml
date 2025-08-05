@@ -44,64 +44,101 @@
 }
 
 <div class="row">
-    <div class="col-md-3 col-xl-2">
+	<div class="col-12 col-lg-812 col-xxl-912 d-flex">
+		<div class="card flex-fill">
+			<div class="card-header">
+				<h3 class="card-title mb-0 text-dark">Diary Details</h3>
+			</div>
+			<table class="table table-borderless my-0">
+				<tbody>
+					<tr>
+						<td>
+							<div class="d-flex">
+								<div class="flex-grow-1 ms-3">
+                                    <strong>Diary Date</strong>
+									<div class="text-muted">
+                                        @if (Model.diary.DiaryDate.HasValue)
+                                        {
+                                            @Model.diary.DiaryDate.Value.ToString("dd/MM/yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger">No date provided</span>
+                                        }
+                                        
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Diary With</strong>
+							<div class="text-muted">
+                                @Model.diary.DiaryWithName
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>Consultant</strong>
+							<div class="text-muted">
+                                @Model.diary.DiaryConsName
+							</div>
+						</td>
+						<td>
+                            <div class=" d-none d-xxl-table-cell">
+                                <strong>Action</strong>
+                                <div class="text-muted">
+                                    @Model.diary.DiaryAction - @Model.defaultAction.Action
+                                </div>
+                                
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+                                    <strong>Referral</strong>
+									<div class="text-muted">
+                                        @if (Model.linkedRef != null && Model.linkedRef.DATE_SCHEDULED.HasValue)
+                                        {
+                                            <span>@Model.linkedRef.RefID - @Model.linkedRef.TYPE on @Model.linkedRef.DATE_SCHEDULED.Value.ToString("dd/MM/yyyy")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger">No linked referral found.</span>
+                                        }
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Doccode</strong>
+							<div class="text-muted">
+                                @if (Model.diary.DocCode != null)
+                                {
+                                    @Model.diary.DocCode
+                                }
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>Diary Text</strong>
+							<div class="text-muted">
+                                @if(Model.diary.DiaryText != null)
+                                {
+                                    @Model.diary.DiaryText
+                                }
+                                else
+                                {
+                                    <span class="text-danger">No diary text provided.</span>
+                                }
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Diary Details</h5>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <div class="col-md-1">
-            <label><b>Diary Date:</b></label>
-        </div>
-        <div class="col-md-2">
-            @Model.diary.DiaryDate.Value.ToString("dd/MM/yyyy")
-        </div>
-        <div class="col-md-1">
-            <label><b>Diary With:</b></label>
-        </div>
-        <div class="col-md-2">
-            @Model.diary.DiaryWithName
-        </div>
-        <div class="col-md-1">
-            <label><b>Consultant:</b></label>
-        </div>
-        <div class="col-md-2">
-            @Model.diary.DiaryConsName
-        </div>
-        <div class="col-md-1">
-            <label><b>Action:</b></label>
-        </div>
-        <div class="col-md-2">
-            @Model.diary.DiaryAction - @Model.defaultAction.Action
-        </div>
-    </div>
-    <div class="row mb-5 g-5">
-        <div class="col-md-1">
-            <label><b>Referral:</b></label>
-        </div>
-        <div class="col-md-5">
-            @Model.linkedRef.RefID - @Model.linkedRef.TYPE on @Model.linkedRef.DATE_SCHEDULED.Value.ToString("dd/MM/yyyy")
-        </div>
-        @if (Model.diary.DocCode != null)
-        {
-            <div class="col-md-1">
-                <label><b>Doccode:</b></label>
-            </div>
-            <div class="col-md-5">
-                @Model.diary.DocCode
-            </div>
-        }
-    </div>
-    <div class="row mb-5 g-5">
-        <div class="col-md-1">
-            <label><b>Diary Text:</b></label>
-        </div>
-        <div class="col-md-9">
-            @Model.diary.DiaryText
-        </div>
-    </div>
+							</div>
+						</td>
+						
+					</tr>
+					
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
