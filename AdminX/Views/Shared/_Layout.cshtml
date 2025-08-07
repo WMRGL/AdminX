@@ -73,6 +73,17 @@
                 </li>
                 <li class="vr"></li>
 
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        DQ Report
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-area="" asp-controller="AppointmentDQ" asp-action="Index">Appointment</a></li>
+                        <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearch">Add New</a></li>
+                        @*<li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearchAPI">Add New (API)</a></li>*@
+                    </ul>
+                </li>
+
                 <li class="vr"></li>
                 <li class="nav-item">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Logout">Sign Out</a>
