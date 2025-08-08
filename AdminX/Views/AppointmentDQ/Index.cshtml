@@ -7,112 +7,153 @@
 <p>This page shows appointment discrepancies between the CGUDB and EPIC systems.</p>
 <hr />
 
-<form asp-action="Index" method="post" class="form-inline mb-4">
-    <div class="form-group mr-2">
-        <label for="startDate" class="mr-2">Start Date:</label>
-        <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control" />
-    </div>
-    <div class="form-group mr-2">
-        <label for="endDate" class="mr-2">End Date:</label>
-        <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Filter Reports</button>
-</form>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Select Date Range</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="post" class="row row-cols-md-auto align-items-center">
+					<div class="col-12">
+                        <label class="visually-hidden" for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control  mb-2 me-sm-2" />
 
-<!-- Report 1: CGUDB Not In EPIC -->
-<div class="mt-5">
-    <h3>CGUDB Not In EPIC Report</h3>
-    <p>Appointments in CGUDB that are missing from EPIC.</p>
+                    </div>
 
-    @if (Model.CgudbResults.Any())
-    {
-        <table class="table table-sm table-striped table-bordered dataTable">
-            <thead class="thead-dark">
-                <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>NHS No.</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Type</th>
-                    <th>Clinic Code</th>
-                    <th>Location</th>
-                    <th>Clinician's Name</th>
-                    <th>Duration</th>
-                    <th>Attendance</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.CgudbResults)
-                {
-                    <tr>
-                        <td>@item.FirstName</td>
-                        <td>@item.LastName</td>
-                        <td>@item.SocialSecurity</td>
-                        <td>@item.BookedDate.ToShortDateString()</td>
-                        <td>@item.BookedTime.ToString("t")</td>
-                        <td>@item.Type</td>
-                        <td>@item.Facility</td>
-                        <td>@item.Location</td>
-                        <td>@item.CliniciansName</td>
-                        <td>@item.EstDurationMins</td>
-                        <td>@item.Attendance</td>
+					<div class="col-12">
+						<label class="visually-hidden" for="inlineFormInputGroupUsername2">Username</label>
+						<div class="input-group mb-2 me-sm-2">
+							<div class="visually-hidden">End Date</div>
+                            <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control  mb-2 me-sm-2" />
+						</div>
+					</div>
 
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            No discrepancies found in CGUDB for the selected date range.
+					<div class="col-12">
+						<button type="submit" class="btn btn-primary mb-2">Submit</button>
+					</div>
+				</form>
+
+            </div>
         </div>
-    }
+    </div>
+
 </div>
 
 
-<!-- Report 2: EPIC Not In CGUDB -->
-<div class="mt-5">
-    <h3>EPIC Not In CGUDB Report</h3>
-    <p>Appointments in EPIC that are missing from CGUDB.</p>
 
-    @if (Model.EpicResults.Any())
-    {
-        <table class="table table-sm table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Forename</th>
-                    <th>Surname</th>
-                    <th>NHS Number</th>
-                    <th>Appointment Date</th>
-                    <th>Appointment Time</th>
-                    <th>Location</th>
-                    <th>Clinic Name</th>
-                    <th>Attendance</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.EpicResults)
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-dark">CGUDB Not In EPIC Report</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.CgudbResults.Any())
                 {
-                    <tr>
-                        <td>@item.Forename</td>
-                        <td>@item.Surname</td>
-                        <td>@item.NHSNo</td>
-                        <td>@item.AppointmentDate.ToShortDateString()</td>
-                        <td>@item.AppointmentTime.ToString("t")</td>
-                        <td>@item.AppointmentLocation</td>
-                        <td>@item.ClinicName</td>
-                        <td>@item.AppointmentAttendance</td>
-                    </tr>
+                    <table class="table table-sm table-striped table-bordered defaultTable">
+                        <thead class="thead-dark table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>NHS No.</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Clin Code</th>
+                                <th>Location</th>
+                                <th>Clinician</th>
+                                <th>Duration</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CgudbResults)
+                            {
+                                <tr>
+                                    <td>@item.FirstName @item.LastName</td>
+                                    <td>@item.SocialSecurity</td>
+                                    <td>@item.BookedDate.ToShortDateString()</td>
+                                    <td>@item.BookedTime.ToString("t")</td>
+                                    <td>@item.Type</td>
+                                    <td>@item.Facility</td>
+                                    <td>@item.Location</td>
+                                    <td>@item.CliniciansName</td>
+                                    <td>@item.EstDurationMins</td>
+                                    <td>@item.Attendance</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            No discrepancies found in EPIC for the selected date range.
+                else
+                {
+                  <div class="alert alert-danger alert-outline-coloured alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        No discrepancies found in CGUDB for the selected date range.
+                    </div>
+                </div>
+                   
+                }
+            </div>
         </div>
-    }
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-dark">EPIC Not In CGUDB Report</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.EpicResults.Any())
+                {
+                    <table class="table table-sm table-striped table-bordered defaultTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>NHS Number</th>
+                                <th>Appointment Date</th>
+                                <th>Appointment Time</th>
+                                @* <th>Location</th> *@
+                                <th>Clinic Name</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.EpicResults)
+                            {
+                                <tr>
+                                    <td>@item.Forename @item.Surname</td>
+                                    <td>@item.NHSNo</td>
+                                    <td>@item.AppointmentDate.ToShortDateString()</td>
+                                    <td>@item.AppointmentTime.ToString("t")</td>
+                                    @* <td>@item.AppointmentLocation</td> *@
+                                    <td>@item.ClinicName</td>
+                                    <td>@item.AppointmentAttendance</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-outline-coloured alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            No discrepancies found in EPIC for the selected date range.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
