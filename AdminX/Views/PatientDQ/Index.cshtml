@@ -119,6 +119,7 @@
                                 <th>Reffered To</th>
                                 <th>Refferred By</th>
                                 <th>Referral Date</th>
+                                <th> Add to CGUDB </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -133,6 +134,202 @@
                                     <td>@item.ReferredTo</td>
                                     <td>@item.ReferredBy</td>
                                     <td>@item.ReferralReceivedDate.ToString("dd/MM/yyyy")</td>
+                                    <td><button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#@item.localmrn">
+										Add to CGUDB
+									</button>
+                                    
+                                    <div class="modal fade" id="@item.localmrn" tabindex="-1" aria-hidden="true" style="display: none;">
+										<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title">Centered modal</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+												</div>
+												<div class="modal-body m-3">
+													            <form id="frmAddNew" method="post" asp-action="AddNew">
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="inputEmail">CGU Number</label>
+                        <input name="cguNumber" value="@Model.cguNumber" asp-for="@Model.cguNumber" readonly />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="inputEmail">Title</label>
+                        <select id="ddlTitle" class="form-select" name="title">
+                            <option value="" selected></option>                            
+                            @foreach(var item in Model.titles)
+                            {
+                                <option value=@item.Title>@item.Title</option>
+                            }                            
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="firstName">Forename</label>
+                        <input type="text" name="firstName" class="form-control" id="firstName" placeholder="Firstname" asp-for=@Model.firstName>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="secondName">Middle name</label>
+                        <input type="text" name="middleName" class="form-control" id="secondName" placeholder="Secondname">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="lastName">Surname</label>
+                        <input type="text" name="lastName" class="form-control" id="lastName" placeholder="LastName" asp-for=@Model.lastName>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="preferredName">Preferred Name</label>
+                        <input type="text" name="preferredName" class="form-control" id="preferredName" placeholder="Preferred Name">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="maidenName">Maiden Name</label>
+                        <input type="text" name="maidenName" class="form-control" id="maidenName" placeholder="Maiden Name">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="previousName">Other Previous Name</label>
+                        <input type="text" name="prevName" class="form-control" id="previousName" placeholder="Other Previous Name">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.dob>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Date of death (if applicable)</label>
+                        <input type="date" name="dod" class="form-control" id="dob" placeholder="Date of death (if applicable)">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="nhsno">NHS Number</label>
+                        <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number" asp-for=@Model.nhs>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="language">Primary Language (if not English)</label>
+                        <input type="text" name="language" class="form-control" id="language" placeholder="Primary Language">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="dob">Interpreter required</label>
+                        <select class="form-select" name="isInterpreterReqd">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>                        
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ethnic">Ethnicity</label>
+                        <select class="form-select" name="ethnic" asp-for=@Model.ethnicCode>
+                            <option value="" selected>Select...</option>
+
+                            @foreach (var item in Model.ethnicities)
+                            {
+                                <option value=@item.EthnicCode>@item.Ethnic</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
+                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
+                            <option value="" selected>Select...</option>                            
+                            @foreach (var item in Model.GPPracticeList)
+                            {
+                                <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
+                            }                            
+                        </select>
+                    </div>
+                </div>
+                <div class="row">                   
+                    <div class="mb-3 col-md-3">                        
+                        <select class="form-select" id="ddlGP" name="gpCode" hidden>
+                            
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1" tabindex="1">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="TEL">Contact Number</label>
+                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number" tabindex="6">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2" tabindex="2">
+                    </div> <div class="mb-3 col-md-6">
+                        <label class="form-label" for="Mobile">Mobile</label>
+                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="Mobile Number" tabindex="7">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">                        
+                        <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" placeholder="CITY">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="EmailAddress">Email Address</label>
+                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address" tabindex="8">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4" placeholder="COUNTY">
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label">Consent to Electronic Communication</label>
+                        <select class="form-select" name="isConsentToEmail">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE" asp-for=@Model.postCode tabindex="5">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <select name="AreaCode" class="form-control" id="AreaCode">
+                            <option value="">Select Area Code</option>
+                            @foreach(var item in Model.areaNamesList)
+                            {
+                                <option value=@item.AreaID>@item.AreaCode - @item.AreaName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="button" id="btnSubmit" class="btn btn-primary btn-lg">Save Patient</button>
+            </form>
+
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+													<button type="button" class="btn btn-primary">Save changes</button>
+												</div>
+											</div>
+										</div>
+									</div>
+                                </td>
                                 </tr>
                             }
                         </tbody>
@@ -212,4 +409,153 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+
+    document.getElementById("ADDRESS3").addEventListener("change", GetCountyFromCity);
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+
+    function DoSubmit()
+    {
+        if (CheckFormValid() == 1) 
+        {
+            document.getElementById("frmAddNew").submit();
+        }
+    }
+
+    function CheckFormValid() { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlTitle").value == null || document.getElementById("ddlTitle").value == "") 
+        {
+            window.alert("Please select a title.");
+            return 0;
+        }
+
+        if (document.getElementById("firstName").value == null || document.getElementById("lastName").value == "") 
+        {
+            window.alert("Please enter a name.");
+            return 0;
+        }
+
+        if (document.getElementById("dob").value == null || document.getElementById("dob").value == "") 
+        {
+            window.alert("Please enter a date of birth.");
+            return 0;
+        }
+
+        if (document.getElementById("nhsno").value == null || document.getElementById("nhsno").value == "") 
+        {
+            window.alert("Please enter a NHS number (if one isn't available, use 0000000000).");
+            return 0;
+        }
+
+        if (document.getElementById("ddlGP").value == null || document.getElementById("ddlGP").value == "") 
+        {
+            window.alert("Please choose a GP.");
+            return 0;
+        }
+
+        if (document.getElementById("POSTCODE").value == null || document.getElementById("POSTCODE").value == "") 
+        {
+            window.alert("Please enter a postcode.");
+            return 0;
+        }
+
+        if (document.getElementById("ADDRESS3").value == null || document.getElementById("ADDRESS3").value == "") 
+        {
+            window.alert("Please enter a city.");
+            return 0;
+        }
+       
+        if (document.getElementById("ADDRESS1").value == null || document.getElementById("ADDRESS1").value == "") 
+        {
+            window.alert("Please enter at least one line of address.");
+            return 0;
+        }
+
+        if (document.getElementById("AreaCode").value == null || document.getElementById("AreaCode").value == "") 
+        {
+            window.alert("Please choose an area code.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+
+
+    function ShowGPList() 
+    {    
+            var _practice = document.getElementById("ddlGPPractice");
+            var _gp = document.getElementById("ddlGP");
+            var options = _gp.options.length - 1;
+
+            for (i = options; i >= 0; i--)
+            {
+            _gp.remove(i);
+            }
+
+            var clinCodeArray = [];
+            var clinArray = [];
+            var facilityCodeArray = [];
+            
+            @foreach (var item in Model.GPList)
+            {
+            @:clinCodeArray.push("@item.MasterClinicianCode");
+            @:clinArray.push("@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)");
+            @:facilityCodeArray.push("@item.FACILITY");
+            }
+
+            for (var i = 0; i < facilityCodeArray.length; i++)
+            {
+            if(facilityCodeArray[i] != _practice.value)
+            {
+            delete clinCodeArray[i];
+            delete clinArray[i];
+            }
+            }
+
+            for (var i in clinCodeArray)
+            {
+            var opt = document.createElement('option');
+            opt.value = clinCodeArray[i];
+            opt.innerHTML = clinArray[i]
+            _gp.appendChild(opt);
+            }
+
+            _gp.hidden = false;
+    }
+
+    function GetCountyFromCity()
+    {        
+        var city = document.getElementById("ADDRESS3");
+        var county = document.getElementById("ADDRESS4");
+        var areaCode = document.getElementById("AreaCode");
+        var cityUpper = city.value.toUpperCase();
+        city.value = cityUpper;
+        var cityArray = [];
+        var countyArray = [];
+        var areaCodeArray = [];
+        
+        @foreach (var item in Model.cityList)
+        {
+            @:cityArray.push("@item.TownCity");
+            @:countyArray.push("@item.County");
+            @:areaCodeArray.push("@item.AreaCode");
+        }        
+        
+        for (var i in cityArray)
+        {            
+            if(cityArray[i] == cityUpper)
+            {                
+                county.value = countyArray[i];
+                areaCode.value = areaCodeArray[i];                
+            }
+        }
+    }
+
+
+</script>
 
