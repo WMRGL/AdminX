@@ -13,5 +13,7 @@ namespace AdminX.Data
         public DbSet<ClinFacility> ClinFacilities { get; set; }
         public DbSet<EpicAppointmentDetail> EpicAppointmentDetails { get; set; }
         public DbSet<EpicPatient> EpicPatients { get; set; }
+        public DbSet<MasterPatientTable> MasterPatientTables { get; set; }
+        public DbSet<EpicReferrals> EpicReferrals { get; set; }
     }
 }

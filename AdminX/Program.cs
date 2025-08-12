@@ -26,6 +26,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
    });
 
 builder.Services.AddScoped<IAppointmentDQData, AppointmentDQData>();
+builder.Services.AddScoped<IPatientDQData, PatientDQData>();
 
 builder.Services.AddMvc();
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("secrets.json");

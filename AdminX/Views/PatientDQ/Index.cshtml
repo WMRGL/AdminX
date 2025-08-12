@@ -1,0 +1,155 @@
+﻿@model AdminX.ViewModels.DiscrepancyReportVM
+@{
+    ViewData["Title"] = "Discrepancy Reports";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>This page shows Patients discrepancies between the CGUDB and EPIC systems.</p>
+<hr />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Select Date Range</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Index" method="post" class="row row-cols-md-auto align-items-center">
+                    <div class="col-12">
+                        <label class="visually-hidden" for="startDate">Start Date</label>
+                        <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" class="form-control  mb-2 me-sm-2" />
+
+                    </div>
+
+                    <div class="col-12">
+                        <label class="visually-hidden" for="inlineFormInputGroupUsername2">Username</label>
+                        <div class="input-group mb-2 me-sm-2">
+                            <div class="visually-hidden">End Date</div>
+                            <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" class="form-control  mb-2 me-sm-2" />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-dark">CGUDB Not In EPIC Report</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.CgundbPatients.Any())
+                {
+                    <table class="table table-sm table-striped table-bordered defaultTable">
+                        <thead class="thead-dark table-dark">
+                            <tr>
+                                <th>CGU No.</th>
+                                <th>Ref ID</th>
+                                <th>Name</th>
+                                <th>NHS No.</th>
+                                <th>DOB</th>
+                                <th>Type</th>
+                                <th>Ref Date</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.CgundbPatients)
+                            {
+                                <tr>
+                                    <td>@item.CGU_No</td>
+                                    <td>@item.RefID</td>
+                                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.SOCIAL_SECURITY</td>
+                                    <td>@item.DOB.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.type</td>
+                                    <td>@item.REFERRAL_DATE.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-outline-coloured alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            No discrepancies found in CGUDB for the selected date range.
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-dark">EPIC Not In CGUDB Report</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.EpicPatients.Any())
+                {
+                    <table class="table table-sm table-striped table-bordered defaultTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>LocalMRN</th>
+                                <th>Name</th>
+                                <th>NHS Number</th>
+                                <th>DOB</th>
+                                <th>Refferal ID</th>
+                                <th>Reffered To</th>
+                                <th>Refferred By</th>
+                                <th>Referral Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.EpicPatients)
+                            {
+                                <tr>
+                                    <td>@item.localmrn</td>
+                                    <td>@item.Forename @item.Surname</td>
+                                    <td>@item.NHSNo</td>
+                                    <td>@item.DOB.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.ReferralID</td>
+                                    <td>@item.ReferredTo</td>
+                                    <td>@item.ReferredBy</td>
+                                    <td>@item.ReferralReceivedDate.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-outline-coloured alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="far fa-fw fa-bell"></i>
+                        </div>
+                        <div class="alert-message">
+                            No discrepancies found in EPIC for the selected date range.
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

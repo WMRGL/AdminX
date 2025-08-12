@@ -4,11 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdminX.Models
 {
-    [Table("MasterActivityTable", Schema = "dbo")]
+    [Table("Clinical_XP_MasterActivityTable", Schema = "dbo")]
     [Keyless]
     public class CgudbAppointmentDetails
     {
-        public string MPI { get; set; }
+        public int MPI { get; set; }
         public string STAFF_CODE_1 { get; set; }
         public string FACILITY { get; set; }
         [Column("type")]
@@ -17,21 +17,32 @@ namespace AdminX.Models
         public DateTime BOOKED_TIME { get; set; }
         public string COUNSELED { get; set; }
         public DateTime? REFERRAL_DATE { get; set; }
+        public int RefID { get; set; }
         public short? EST_DURATION_MINS { get; set; }
+        public string? complete { get; set; }
+        public int LogicalDelete { get; set; }
+        public string? ClockStartDate { get; set; }
+        public string? ClockStopDate { get; set; }
     }
 
- 
-  //  [Table("MasterPatientTable", Schema = "dbo")]
+
+    [Table("Clinical_XP_MasterPatientTable", Schema = "dbo")]
     public class MasterPatientTable
     {
         [Key] 
-        public string MPI { get; set; }
+        public int MPI { get; set; }
         public string FIRSTNAME { get; set; }
         public string LASTNAME { get; set; }
         public string SOCIAL_SECURITY { get; set; }
+        public string CGU_No { get; set; }
+        public DateTime DOB { get; set; }
+        public DateTime REFERRAL_DATE { get; set; }
+        public int RefID { get; set; }
+        public string type { get; set; }
+
     }
 
-    [Table("STAFF", Schema = "dbo")]
+    [Table("Clinical_XP_Staff", Schema = "dbo")]
     [Keyless]
     public class Staff
     {
@@ -39,7 +50,7 @@ namespace AdminX.Models
         public string NAME { get; set; }
     }
 
-    [Table("CLIN_FACILITIES", Schema = "dbo")]
+    [Table("Clinical_XP_CLIN_FACILITIES", Schema = "dbo")]
     [Keyless]
     public class ClinFacility
     {
@@ -72,6 +83,24 @@ namespace AdminX.Models
         public string localmrn { get; set; }
         public string Forename { get; set; }
         public string Surname { get; set; }
+        public DateTime DOB { get; set; }
         public string NHSNo { get; set; }
+        public string ReferralID { get; set; }
+        public DateTime ReferralReceivedDate { get; set; }
+        public string ReferredBy { get; set; }
+        public string ReferredTo { get; set; }
+
+    }
+
+    [Table("ViewEpicReferrals", Schema = "dbo")]
+    [Keyless]
+    public class EpicReferrals
+    {
+        public string localmrn { get; set; }
+        public string ReferralID { get; set; }
+        public DateTime ReferralReceivedDate { get; set; }
+        public string ReferredBy { get; set; }
+        public string ReferredTo { get; set; }
+        public string ReferredToSpecialty { get; set; }
     }
 }
