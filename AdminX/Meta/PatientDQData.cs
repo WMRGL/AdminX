@@ -8,6 +8,7 @@ namespace AdminX.Meta
     {
         Task<List<MasterPatientTable>> GetPatientsCGUDBNotInEPICAsync(DateTime startDate, DateTime endDate);
         Task<List<EpicPatient>> GetPatientsEPICNotInCGUDBAsync(DateTime startDate, DateTime endDate);
+        Task<List<PatientMismatch>> GetPatientMismatchesAsync(DateTime startDate, DateTime endDate);
 
     }
 
@@ -75,6 +76,51 @@ namespace AdminX.Meta
                             ReferredTo = EpicReferrals.ReferredTo,
                             ReferredBy = EpicReferrals.ReferredBy
                         };
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<PatientMismatch>> GetPatientMismatchesAsync(DateTime startDate, DateTime endDate)
+        {
+            var query =
+                from cab_ref in _dQContext.EpicReferrals
+                join cab_pat in _dQContext.EpicPatients on cab_ref.localmrn equals cab_pat.localmrn
+                join cg_pat in _dQContext.MasterPatientTable on
+                    EF.Functions.Collate(cab_pat.NHSNo, "SQL_Latin1_General_CP1_CI_AS") equals cg_pat.SOCIAL_SECURITY
+                join cg_ref in _dQContext.CgudbAppointmentsDetails on cg_pat.MPI equals cg_ref.MPI
+
+                where
+                    cab_ref.ReferredToSpecialty.Contains("genetics")
+                    && cg_ref.type.Contains("ref")
+                    && cg_ref.complete == "Active"
+                    && cg_ref.LogicalDelete == 0
+                    && cg_ref.ClockStartDate != null
+                    && cg_ref.ClockStopDate == null
+                    && cab_ref.ReferralReceivedDate >= startDate && cab_ref.ReferralReceivedDate < endDate
+                    && cg_ref.REFERRAL_DATE >= startDate && cg_ref.REFERRAL_DATE < endDate
+
+                    && (
+                        EF.Functions.Collate((cab_pat.NHSNo ?? ""), "SQL_Latin1_General_CP1_CI_AS") != (cg_pat.SOCIAL_SECURITY ?? "")
+                        || EF.Functions.Collate((cab_pat.Forename ?? ""), "SQL_Latin1_General_CP1_CI_AS") != (cg_pat.FIRSTNAME ?? "")
+                        || EF.Functions.Collate((cab_pat.Surname ?? ""), "SQL_Latin1_General_CP1_CI_AS") != (cg_pat.LASTNAME ?? "")
+                        || cab_pat.DOB != cg_pat.DOB
+                    )
+
+                select new PatientMismatch
+                {
+                    LocalMRN = cab_pat.localmrn,
+                    Caboodle_ReferralID = cab_ref.ReferralID,
+                    Caboodle_NHSNo = cab_pat.NHSNo,
+                    Caboodle_Forename = cab_pat.Forename,
+                    Caboodle_Surname = cab_pat.Surname,
+                    Caboodle_DOB = cab_pat.DOB,
+                    CGU_No = cg_pat.CGU_No,
+                    CGUDB_RefID = cg_ref.RefID.ToString(),
+                    CGUDB_NHSNo = cg_pat.SOCIAL_SECURITY,
+                    CGUDB_Forename = cg_pat.FIRSTNAME,
+                    CGUDB_Surname = cg_pat.LASTNAME,
+                    CGUDB_DOB = cg_pat.DOB,
+                };
+
             return await query.ToListAsync();
         }
     }

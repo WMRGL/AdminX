@@ -9,6 +9,7 @@ namespace AdminX.ViewModels
         public List<EpicNotInCgudb> EpicResults { get; set; }
         public List<MasterPatientTable> CgundbPatients { get; set; }
         public List<EpicPatient> EpicPatients { get; set; }
+        public List<PatientMismatch> PatientMismatches { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
@@ -19,6 +20,7 @@ namespace AdminX.ViewModels
             EpicResults = new List<EpicNotInCgudb>();
             CgundbPatients = new List<MasterPatientTable>();
             EpicPatients = new List<EpicPatient>();
+            PatientMismatches = new List<PatientMismatch>();
         }
        
     }

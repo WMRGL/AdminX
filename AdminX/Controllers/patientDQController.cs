@@ -60,6 +60,7 @@ namespace AdminX.Controllers
             {
                 viewModel.CgundbPatients = await _patientDQData.GetPatientsCGUDBNotInEPICAsync(startDate, inclusiveEndDate);
                 viewModel.EpicPatients = await _patientDQData.GetPatientsEPICNotInCGUDBAsync(startDate, inclusiveEndDate);
+                viewModel.PatientMismatches = await _patientDQData.GetPatientMismatchesAsync(startDate, inclusiveEndDate);
             }
 
             catch (Exception ex)
