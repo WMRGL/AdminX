@@ -324,6 +324,7 @@ namespace AdminX.Controllers
                 _pvm.genders = _genderData.GetGenderList();
                 _pvm.patient = new Patient();
 
+
                 if (sex != null)
                 {
                     
@@ -382,7 +383,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
             string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode, string address1, string address2, string address3, string address4, string areaCode,
             string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex,
-            string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate)
+            string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate, string? SALUTATION)
         {
             try
             {
@@ -418,7 +419,7 @@ namespace AdminX.Controllers
 
 
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, cguNumber);
+                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, cguNumber, SALUTATION);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }
@@ -482,7 +483,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
             string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile,
-            bool isInterpreterRequired, bool isConsentToEmail)
+            bool isInterpreterRequired, bool isConsentToEmail, string SALUTATION)
         {
             try
             {
@@ -493,7 +494,7 @@ namespace AdminX.Controllers
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode);
+                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION);
 
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
