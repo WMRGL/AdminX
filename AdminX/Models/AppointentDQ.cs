@@ -85,6 +85,15 @@ namespace AdminX.Models
         public string Surname { get; set; }
         public DateTime DOB { get; set; }
         public string NHSNo { get; set; }
+        public string Address { get; set; }
+        public string Postcode { get; set; }
+        public string GenderIdentity { get; set; }
+        public string Sex { get; set; }
+        public string SexAssignedAtBirth { get; set; }
+        public string Ethnicity { get; set; }
+        public string TelephoneNumber { get; set; }
+        public string CurrentGPPracticeCode { get; set; }
+        public string CurrentGPPracticeName { get; set; }
         public string ReferralID { get; set; }
         public DateTime ReferralReceivedDate { get; set; }
         public string ReferredBy { get; set; }

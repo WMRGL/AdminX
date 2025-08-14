@@ -61,5 +61,8 @@ namespace AdminX.ViewModels
         public List<DiaryAction> diaryActionsList { get; set; }
         public List<Document> documentsList { get; set; }
         public Referral defaultRef { get; set; }
+        public string? gpPracticeCode { get; set; }
+        public DateTime? startDate { get; set; }
+        public DateTime? endDate { get; set; }
     }
 }

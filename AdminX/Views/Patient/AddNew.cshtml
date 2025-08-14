@@ -42,6 +42,8 @@
     <div class="card">
         <div class="card-body">
             <form id="frmAddNew" method="post" asp-action="AddNew">
+                <input type="hidden"  asp-for=@Model.startDate name="startDate" />
+                <input type="hidden"  asp-for=@Model.endDate name="endDate" />
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="inputEmail">CGU Number</label>
@@ -140,13 +142,15 @@
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
                         <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
-                            <option value="" selected>Select...</option>                            
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.gpPracticeCode) ? "selected" : null)">Select...</option>
                             @foreach (var item in Model.GPPracticeList)
                             {
                                 <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
                             }                            
                         </select>
+                        
                     </div>
+            
                 </div>
                 <div class="row">                   
                     <div class="mb-3 col-md-3">                        
@@ -159,7 +163,7 @@
                 <div class="row">
                     <div class="mb-3 col-md-6">
                         <label class="form-label">Address</label>
-                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1" tabindex="1">
+                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1" tabindex="1" asp-for="@Model.patient.ADDRESS1">
                     </div>
                     <div class="mb-3 col-md-6">
                         <label class="form-label" for="TEL">Contact Number</label>

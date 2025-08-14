@@ -134,7 +134,8 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> NewPatientSearch(string? message, bool? success)
+        public async Task<IActionResult> NewPatientSearch(string? message, bool? success, 
+            string? firstname, string? lastname, string? dobToSearch, string? postcode, string? nhs)
         {
             try
             {
@@ -147,6 +148,39 @@ namespace AdminX.Controllers
                 _pvm.patientSearchResultsList = new List<PatientSearchResults>();
                 _pvm.relativeSearchResultsList = new List<PatientSearchResults>();
                 _pvm.pedigreeSearchResultsList = new List<PatientSearchResults>();
+                Patient patient = new Patient();
+                if (firstname != null)
+                {
+                    _pvm.forenameSearch = firstname;
+                }
+                if (lastname != null)
+                {
+                    _pvm.surnameSearch = lastname;
+                }
+                if (dobToSearch != null && dobToSearch != "0001-01-01")
+                {
+                    _pvm.dobSearch = DateTime.Parse(dobToSearch);
+                }
+                else
+                {
+                    _pvm.dobSearch = DateTime.Parse("0001-01-01");
+                }
+                if (postcode != null)
+                {
+                    _pvm.postcodeSearch = postcode;
+                }
+                else
+                {
+                    _pvm.postcodeSearch = "";
+                }
+                if (nhs != null)
+                {
+                    _pvm.nhsNoSearch = nhs;
+                }
+                else
+                {
+                    _pvm.nhsNoSearch = "";
+                }
 
                 if (message != null)
                 {

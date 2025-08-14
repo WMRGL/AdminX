@@ -281,7 +281,7 @@ namespace AdminX.Controllers
 
         [HttpGet]
         public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber,
-            string? message, bool? success)
+            string? message, bool? success, string? sex, string? ADDRESS1, string? gpPracticeCode, DateTime? startDate, DateTime? endDate)
         {
             try
             {
@@ -322,6 +322,30 @@ namespace AdminX.Controllers
                 _pvm.cityList = _cityData.GetAllCities();
                 _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = _genderData.GetGenderList();
+                _pvm.patient = new Patient();
+
+                if (sex != null)
+                {
+                    
+                    _pvm.patient.SEX = sex;
+                }
+
+                if (ADDRESS1 != null)
+                {
+                    _pvm.patient.ADDRESS1 = ADDRESS1;
+                }
+                
+
+                if ( gpPracticeCode != null)
+                {
+                    _pvm.gpPracticeCode = gpPracticeCode; 
+                }
+
+                if (startDate != null || endDate != null)
+                {
+                    _pvm.startDate = startDate;
+                    _pvm.endDate = endDate;
+                }
 
                 if (success.HasValue)
                 {
@@ -358,7 +382,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
             string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode, string address1, string address2, string address3, string address4, string areaCode,
             string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex,
-            string middleName, string tel, string workTel, string mobile, string cguNumber)
+            string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate)
         {
             try
             {
@@ -401,6 +425,12 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
 
+                if(startDate != null && endDate != null)
+                { 
+                    
+                    return RedirectToAction("PatientDQReport", "PatientDQ", new { startDate=startDate, endDate=endDate });
+
+                }
                 return RedirectToAction("PatientDetails", "Patient", new { id = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
             }
             catch (Exception ex)
