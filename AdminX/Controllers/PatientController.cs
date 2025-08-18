@@ -52,8 +52,10 @@ namespace AdminX.Controllers
         private readonly IAlertTypeData _alertTypeData;
         private readonly IDiaryActionData _diaryActionData;
         private readonly IDocumentsData _docsData;
+        private readonly IGenderIdentityData _genderIdentityData;
 
-        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext, APIContext apiContext)
+        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext,
+            APIContext apiContext, IGenderIdentityData genderIdentityData)
         {
             _clinContext = context;
             _adminContext = adminContext;
@@ -90,6 +92,7 @@ namespace AdminX.Controllers
             _alertTypeData = new AlertTypeData(_adminContext);
             _diaryActionData = new DiaryActionData(_adminContext);
             _docsData = new DocumentsData(_documentContext);
+            _genderIdentityData = genderIdentityData;
         }
 
         [Authorize]
@@ -322,31 +325,33 @@ namespace AdminX.Controllers
                 _pvm.cityList = _cityData.GetAllCities();
                 _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = _genderData.GetGenderList();
-                _pvm.patient = new Patient();
+                _pvm.genderAtBirth = _genderData.GetGenderList();
+               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
+                //_pvm.patient = new Patient();
 
 
-                if (sex != null)
-                {
+                //if (sex != null)
+                //{
                     
-                    _pvm.patient.SEX = sex;
-                }
+                //    _pvm.patient.SEX = sex;
+                //}
 
-                if (ADDRESS1 != null)
-                {
-                    _pvm.patient.ADDRESS1 = ADDRESS1;
-                }
+                //if (ADDRESS1 != null)
+                //{
+                //    _pvm.patient.ADDRESS1 = ADDRESS1;
+                //}
                 
 
-                if ( gpPracticeCode != null)
-                {
-                    _pvm.gpPracticeCode = gpPracticeCode; 
-                }
+                //if ( gpPracticeCode != null)
+                //{
+                //    _pvm.gpPracticeCode = gpPracticeCode; 
+                //}
 
-                if (startDate != null || endDate != null)
-                {
-                    _pvm.startDate = startDate;
-                    _pvm.endDate = endDate;
-                }
+                //if (startDate != null || endDate != null)
+                //{
+                //    _pvm.startDate = startDate;
+                //    _pvm.endDate = endDate;
+                //}
 
                 if (success.HasValue)
                 {
@@ -383,7 +388,8 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNew(string title, string firstname, string lastname, string nhsno, DateTime dob,
             string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode, string address1, string address2, string address3, string address4, string areaCode,
             string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex,
-            string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate, string? SALUTATION)
+            string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate, string? SALUTATION,
+            string GenderIdentity)
         {
             try
             {
@@ -418,8 +424,10 @@ namespace AdminX.Controllers
                     if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
 
 
-                    int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, cguNumber, SALUTATION);
+                    int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
+                        lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
+                        null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
+                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }
@@ -432,6 +440,7 @@ namespace AdminX.Controllers
                     return RedirectToAction("PatientDQReport", "PatientDQ", new { startDate=startDate, endDate=endDate });
 
                 }
+                TempData["SuccessMessage"] = "Patient created successfully";
                 return RedirectToAction("PatientDetails", "Patient", new { id = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
             }
             catch (Exception ex)
@@ -460,6 +469,7 @@ namespace AdminX.Controllers
                 _pvm.cityList = _cityData.GetAllCities();
                 _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = _genderData.GetGenderList();
+                _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
 
                 if (success.HasValue)
                 {
@@ -483,7 +493,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
             string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile,
-            bool isInterpreterRequired, bool isConsentToEmail, string SALUTATION)
+            bool isInterpreterRequired, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
         {
             try
             {
@@ -493,13 +503,16 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
 
-                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno, postcode, gpCode, address1, address2, address3,
-                    address4, email, prevName, dob, null, maidenName, isInterpreterRequired, isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION);
+                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno,
+                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
+                    isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
+                    GenderIdentity
+                    );
 
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
-
+                TempData["SuccessMessage"] = "Patient updated successfully";
                 return RedirectToAction("PatientDetails", new { id = mpi });
             }
             catch (Exception ex)

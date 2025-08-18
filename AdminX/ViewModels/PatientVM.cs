@@ -64,5 +64,8 @@ namespace AdminX.ViewModels
         public string? gpPracticeCode { get; set; }
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
+        public List<Gender>? genderAtBirth { get; set; }
+        public List<GenderIdentity> genderIdentities { get; set; }
+        public string? GenderIdentity { get; set; }
     }
 }

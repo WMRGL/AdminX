@@ -152,6 +152,17 @@
                         <label class="form-label" for="ddlGPPractice">Salutation</label>
                         <input type="text" name="SALUTATION" class="form-control" id="SALUTATION" placeholder="Salutation" asp-for=@Model.patient.SALUTATION>
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ethnic">Gender Identity</label>
+                        <select class="form-select" name="GenderIdentity" asp-for=@Model.patient.GenderIdentity>
+                            <option value="" selected>Select...</option>
+
+                            @foreach (var item in Model.genderIdentities)
+                            {
+                                <option value=@item.Gender>@item.Gender</option>
+                            }
+                        </select>
+                    </div>
                 </div>
                 <div class="row">                    
                     <div class="mb-3 col-md-3">

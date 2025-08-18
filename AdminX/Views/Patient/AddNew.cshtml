@@ -106,6 +106,18 @@
                         <label class="form-label" for="nhsno">NHS Number</label>
                         <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number" asp-for=@Model.nhs>
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
+                    </div>
+                   
+   
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
@@ -130,13 +142,16 @@
                             }
                         </select>
                     </div>
+                   
+
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="sex">Sex</label>
-                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                        <label class="form-label" for="ethnic">Gender Identity</label>
+                        <select class="form-select" name="GenderIdentity">
                             <option value="" selected>Select...</option>
-                            @foreach (var item in Model.genders)
+
+                            @foreach (var item in Model.genderIdentities)
                             {
-                                <option value=@item.Sex>@item.Sex</option>
+                                <option value=@item.Gender>@item.Gender</option>
                             }
                         </select>
                     </div>
