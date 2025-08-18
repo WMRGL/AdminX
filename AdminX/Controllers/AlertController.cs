@@ -85,8 +85,12 @@ namespace AdminX.Controllers
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-edit(SQL)" }); }
 
             int alertID = _alertData.GetAlertsList(mpi).OrderByDescending(a => a.AlertID).FirstOrDefault().AlertID;
-
-            return RedirectToAction("AlertDetails", "Alert", new { alertID = alertID });
+           
+            _avm.patient = _patientData.GetPatientDetails(mpi);
+            _avm.success = true;
+            _avm.message = "New alert added.";
+            TempData["SuccessMessage"] = "New alert added";
+            return RedirectToAction("PatientDetails", "Patient", new { id = _avm.patient.MPI });
         }
 
         [HttpGet]

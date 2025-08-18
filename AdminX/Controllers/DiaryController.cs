@@ -158,9 +158,12 @@ namespace AdminX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diary-create(SQL)" }); }
 
-                int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+                //int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+                _dvm.success = true;
+                _dvm.message = "New diary added.";
+                TempData["SuccessMessage"] = "New diary added";
 
-                return RedirectToAction("DiaryDetails", "Diary", new { id = diaryid });
+                return RedirectToAction("PatientDetails", "Patient", new { id = _dvm.patient.MPI });
             }
             catch (Exception ex)
             {
