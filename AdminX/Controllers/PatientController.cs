@@ -333,31 +333,7 @@ namespace AdminX.Controllers
                 _pvm.genders = _genderData.GetGenderList();
                 _pvm.genderAtBirth = _genderData.GetGenderList();
                _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
-                //_pvm.patient = new Patient();
-
-
-                //if (sex != null)
-                //{
-                    
-                //    _pvm.patient.SEX = sex;
-                //}
-
-                //if (ADDRESS1 != null)
-                //{
-                //    _pvm.patient.ADDRESS1 = ADDRESS1;
-                //}
-                
-
-                //if ( gpPracticeCode != null)
-                //{
-                //    _pvm.gpPracticeCode = gpPracticeCode; 
-                //}
-
-                //if (startDate != null || endDate != null)
-                //{
-                //    _pvm.startDate = startDate;
-                //    _pvm.endDate = endDate;
-                //}
+              
 
                 if (success.HasValue)
                 {

@@ -4,122 +4,130 @@
     ViewData["Title"] = "Admin-X - Lab Report List";
 }
 
-<div class="container">
 
-    
-    
-    @if(Model.cytoReportsList.Count > 0)
-    {
-        <div class="row">
-            <h2>Cytogenetic reports:</h2>
+@if (Model.cytoReportsList.Count > 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title text-dark">Cytogenetic reports</h5>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Lab number</th>
-                    <th>Date Obtained</th>
-                    <th>Date Received</th>
-                    <th>Report Date</th>
-                    <th>Report Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.cytoReportsList)
-                {
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-responsive defaultTable">
+                <thead class="table-dark">
                     <tr>
-                        <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
-                        @if (@item.DATE_OBTAINED != null)
-                        {
-                            <td>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>                            
-                        }
-                        @if (@item.DATE_RECEIVED != null)
-                        {
-                            <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        @if (@item.REPORT_DATE != null)
-                        {
-                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        @if (@item.REPORT_STATUS != "Final")
-                        {
-                            <td class="redtext">NOT TO BE GIVEN OUT</td>
-                        }
-                        else
-                        {
-                            <td><a asp-controller="LabReport" asp-action="CytoLabReport" asp-route-labno=@item.LABNO>@item.REPORT_STATUS</a></td>
-                        }
+                        <th>Lab number</th>
+                        <th>Date Obtained</th>
+                        <th>Date Received</th>
+                        <th>Report Date</th>
+                        <th>Report Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }    
-
-    @if(Model.labDNALabDataList.Count > 0)
-    {
-        <div class="row">
-            <h2>Molecular/DNA reports:</h2>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.cytoReportsList)
+                    {
+                        <tr>
+                            <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
+                            @if (@item.DATE_OBTAINED != null)
+                            {
+                                <td>@item.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            @if (@item.DATE_RECEIVED != null)
+                            {
+                                <td>@item.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            @if (@item.REPORT_DATE != null)
+                            {
+                                <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            @if (@item.REPORT_STATUS != "Final")
+                            {
+                                <td class="redtext">NOT TO BE GIVEN OUT</td>
+                            }
+                            else
+                            {
+                                <td><a asp-controller="LabReport" asp-action="CytoLabReport" asp-route-labno=@item.LABNO>@item.REPORT_STATUS</a></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
+    </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Lab number</th>
-                    <th>Date Requested</th>
-                    <th>Report Date</th>
-                    <th>Report Status</th>
-                    <th>Indication</th>
-                    <th>Reason</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.labDNALabDataList)
-                {
+}
+
+@if (Model.labDNALabDataList.Count > 0)
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title text-dark">
+                <h5>Molecular/DNA reports</h5>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped table-responsive defaultTable">
+                <thead>
                     <tr>
-                        <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
-                        @if (@item.DATEREQUESTED != null)
-                        {
-                            <td>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        @if (@item.REPORT_DATE != null)
-                        {
-                            <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
-                        }
-                        else
-                        {
-                            <td>N/A</td>
-                        }
-                        @if(@item.REPORT_STATUS != "Final")
-                        {
-                            <td class="redtext">NOT TO BE GIVEN OUT</td>
-                        }
-                        else
-                        {
-                            <td><a asp-controller="LabReport" asp-action="DNALabReport" asp-route-labno=@item.LABNO asp-route-indication=@item.INDICATION asp-route-reason=@item.REASON>@item.REPORT_STATUS</a></td>
-                        }
-                        <td>@item.INDICATION</td>
-                        <td>@item.REASON</td>
+                        <th>Lab number</th>
+                        <th>Date Requested</th>
+                        <th>Report Date</th>
+                        <th>Report Status</th>
+                        <th>Indication</th>
+                        <th>Reason</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.labDNALabDataList)
+                    {
+                        <tr>
+                            <td><a asp-controller="LabReport" asp-action="SampleDetails" asp-route-labno=@item.LABNO>@item.LABNO</a></td>
+                            @if (@item.DATEREQUESTED != null)
+                            {
+                                <td>@item.DATEREQUESTED.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            @if (@item.REPORT_DATE != null)
+                            {
+                                <td>@item.REPORT_DATE.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            @if (@item.REPORT_STATUS != "Final")
+                            {
+                                <td class="redtext">NOT TO BE GIVEN OUT</td>
+                            }
+                            else
+                            {
+                                <td><a asp-controller="LabReport" asp-action="DNALabReport" asp-route-labno=@item.LABNO asp-route-indication=@item.INDICATION asp-route-reason=@item.REASON>@item.REPORT_STATUS</a></td>
+                            }
+                            <td>@item.INDICATION</td>
+                            <td>@item.REASON</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-    <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabPatientSearch">Back to search</a>
+        </div>
+    </div>
 
-</div>
+}
+
+<a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabPatientSearch">Back to search</a>
+

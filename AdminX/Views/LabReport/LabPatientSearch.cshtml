@@ -4,86 +4,105 @@
     ViewData["Title"] = "Admin-X - Lab Patient Search";
 }
 
-<div class="container">
-    <form method="get" asp-action="LabPatientSearch">
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Name:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="firstname" />
-            </div>
-            <div class="col-md-2">
-                <input name="lastname" />
-            </div>
-        </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Date of Birth:</label>
-            </div>
-        
-            <div class="col-md-2">
-                <input type="date" name="dob" />
-            </div>
-            <div class="col-md-2">
-                <label>Postcode:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="postcode" />
-            </div>
-        </div>
-        <div class="row mb-5 g-5">            
-            <div class="col-md-2">
-                <label>NHS No:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="nhsno" />
-            </div>
-        </div>
-
-
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </div>
-    </form>
-
-
-    @if (Model.patientsList.Count() > 0)
-    {
-        @foreach(var item in Model.patientsList)
-        {
-            <div class="row">
-                <div class="col-md-2">
-                    <a asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a>
+<div class="card">
+    <div class="card-header">
+        <div class="card-title text-dark"></div>
+    </div>
+    <div class="card-body">
+        <form method="get" asp-action="LabPatientSearch">
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Firstname</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" name="firstname" placeholder="Firstname">
                 </div>
-                <div class="col-md-2">
-                    @item.FIRSTNAME @item.LASTNAME
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Surname</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" name="lastname" placeholder="Surname">
                 </div>
-                <div class="col-md-2">
-                    @if (@item.DOB != null)
+            </div>
+
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Date of Birth</label>
+                <div class="col-sm-2">
+                    <input type="date" class="form-control" name="dob">
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Postcode</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" name="postcode">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">NhS Number</label>
+                <div class="col-sm-2">
+                    <input type="text" class="form-control" name="nhsno">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end ">&nbsp;</label>
+                <div class="col-sm-2">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+@if (Model.patientsList.Count() > 0)
+{
+
+<div class="card">
+    <div class="card-body">
+        <table class="table  table-bordered defaultTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">View</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Date of Birth</th>
+                        <th scope="col">Postcode</th>
+                        <th scope="col">NHS Number</th>
+                    </tr>
+                </thead>
+            <tbody>
+                    @foreach (var item in Model.patientsList)
                     {
-                        @item.DOB.Value.ToString("dd/MM/yyyy")
-                    }
-                </div>
-                <div class="col-md-2">
-                    @item.ZIP
-                </div>
-                <div class="col-md-2">
-                    @item.SOCIAL_SECURITY
-                </div>
-            </div>
+                <tr>
+                    <td><a asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@item.INTID>View Reports</a></td>
+                    <td> @item.FIRSTNAME @item.LASTNAME</td>
+                    <td>
+                        @if (@item.DOB != null)
+                        {
+                            @item.DOB.Value.ToString("dd/MM/yyyy")
+                        }
+                    </td>
+                    <td>  @item.ZIP</td>
+                            <td>
+                                @item.SOCIAL_SECURITY
+                            </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        }
-    }
-    else
+}
+else
+{
+    if (Model.searchTerms != null)
     {
-        if(Model.searchTerms != null)
-        {
-            <h2>No results found.</h2>
-        }
+        <h2>No results found.</h2>
     }
+}
+       
+          
+   
 </div>
