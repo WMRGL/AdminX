@@ -155,7 +155,6 @@ namespace AdminX.Controllers
                 _pvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
                 _pvm.alertTypes = _alertTypeData.GetAlertTypes();
-                Console.WriteLine("Patient Details: " + _pvm.patient.MPI);
                 _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = _docsData.GetDocumentsList();
