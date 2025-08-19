@@ -174,6 +174,13 @@ namespace AdminX.Controllers
                     _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
                 }
 
+                string gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+
+                if (gpPractice != _pvm.patient.GP_Facility_Code)
+                {
+                    _pvm.message = "This patient's GP is no longer at this practice. Please check and select a new GP if necessary.";
+                }
+
                 if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
                 {
                     if (_api.GetPhenotipsPatientID(id).Result != "")
