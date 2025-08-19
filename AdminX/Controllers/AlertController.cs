@@ -1,5 +1,6 @@
 ﻿using AdminX.Data;
 using AdminX.Meta;
+using AdminX.Models;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
@@ -35,6 +36,13 @@ namespace AdminX.Controllers
             _avm.patient = _patientData.GetPatientDetails(mpi);
             _avm.alertList = _alertData.GetAlertsListAll(mpi);
 
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                    new BreadcrumbItem { Text = "Alert" }
+                };
+
             return View(_avm);
         }
 
@@ -42,6 +50,19 @@ namespace AdminX.Controllers
         {
             _avm.alert = _alertData.GetAlertDetails(alertID);
             _avm.patient = _patientData.GetPatientDetails(_avm.alert.MPI);
+
+            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            {
+                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                new BreadcrumbItem
+                {
+                    Text = "Alert",
+                    Controller = "Alert",
+                    Action = "Index",
+                    RouteValues = new Dictionary<string, string> { { "mpi", _avm.patient.MPI.ToString() } }
+                },
+                new BreadcrumbItem { Text = "Details" }
+            };
 
             return View(_avm);
         }
@@ -64,8 +85,12 @@ namespace AdminX.Controllers
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-edit(SQL)" }); }
 
             int alertID = _alertData.GetAlertsList(mpi).OrderByDescending(a => a.AlertID).FirstOrDefault().AlertID;
-
-            return RedirectToAction("AlertDetails", "Alert", new { alertID = alertID });
+           
+            _avm.patient = _patientData.GetPatientDetails(mpi);
+            _avm.success = true;
+            _avm.message = "New alert added.";
+            TempData["SuccessMessage"] = "New alert added";
+            return RedirectToAction("PatientDetails", "Patient", new { id = _avm.patient.MPI });
         }
 
         [HttpGet]

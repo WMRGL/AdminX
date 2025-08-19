@@ -153,8 +153,8 @@ namespace AdminX.Controllers
             {
                 return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
-
-            return RedirectToAction("Index", new { refID = refID });
+            TempData["SuccessMessage"] = "Letter has been sent to EDMS ";
+            return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
         }
     }
 }

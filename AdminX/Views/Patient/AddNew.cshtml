@@ -42,6 +42,8 @@
     <div class="card">
         <div class="card-body">
             <form id="frmAddNew" method="post" asp-action="AddNew">
+                <input type="hidden"  asp-for=@Model.startDate name="startDate" />
+                <input type="hidden"  asp-for=@Model.endDate name="endDate" />
                 <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="inputEmail">CGU Number</label>
@@ -86,6 +88,10 @@
                         <label class="form-label" for="previousName">Other Previous Name</label>
                         <input type="text" name="prevName" class="form-control" id="previousName" placeholder="Other Previous Name">
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="SALUTATION">Salutation</label>
+                        <input type="text" name="SALUTATION" class="form-control" id="SALUTATION" placeholder="Salutation">
+                    </div>
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
@@ -100,6 +106,18 @@
                         <label class="form-label" for="nhsno">NHS Number</label>
                         <input type="text" name="nhsno" class="form-control" id="nhsno" placeholder="NHS Number" asp-for=@Model.nhs>
                     </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
+                    </div>
+                   
+   
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
@@ -124,13 +142,16 @@
                             }
                         </select>
                     </div>
+                   
+
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="sex">Sex</label>
-                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                        <label class="form-label" for="ethnic">Gender Identity</label>
+                        <select class="form-select" name="GenderIdentity">
                             <option value="" selected>Select...</option>
-                            @foreach (var item in Model.genders)
+
+                            @foreach (var item in Model.genderIdentities)
                             {
-                                <option value=@item.Sex>@item.Sex</option>
+                                <option value=@item.Gender>@item.Gender</option>
                             }
                         </select>
                     </div>
@@ -140,13 +161,15 @@
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
                         <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
-                            <option value="" selected>Select...</option>                            
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.gpPracticeCode) ? "selected" : null)">Select...</option>
                             @foreach (var item in Model.GPPracticeList)
                             {
                                 <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME</option>
                             }                            
                         </select>
+                        
                     </div>
+            
                 </div>
                 <div class="row">                   
                     <div class="mb-3 col-md-3">                        
@@ -158,20 +181,20 @@
 
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <label class="form-label" >Address</label>
-                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" placeholder="ADDRESS1" tabindex="1" asp-for="@Model.patient.ADDRESS1">
                     </div>
                     <div class="mb-3 col-md-6">
                         <label class="form-label" for="TEL">Contact Number</label>
-                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number">
+                        <input type="text" name="TEL" class="form-control" id="TEL" placeholder="Contact Number" tabindex="6">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-md-6">                        
-                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2">
-                    </div> <div class="mb-3 col-md-6">                        
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" placeholder="ADDRESS2" tabindex="2">
+                    </div> <div class="mb-3 col-md-6">
                         <label class="form-label" for="Mobile">Mobile</label>
-                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="Mobile Number">
+                        <input type="text" name="PtTelMobile" class="form-control" id="Mobile" placeholder="Mobile Number" tabindex="7">
                     </div>
                 </div>
                 <div class="row">
@@ -179,8 +202,8 @@
                         <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" placeholder="CITY">
                     </div>
                     <div class="mb-3 col-md-6">
-                         <label class="form-label" for="EmailAddress">Email Address</label>
-                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address">
+                        <label class="form-label" for="EmailAddress">Email Address</label>
+                        <input type="text" name="EmailAddress" class="form-control" id="EmailAddress" placeholder="Email Address" tabindex="8">
                     </div>
                 </div>
                 <div class="row">
@@ -196,8 +219,8 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="mb-3 col-md-6">                        
-                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE" asp-for=@Model.postCode>
+                    <div class="mb-3 col-md-6">
+                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" placeholder="POSTCODE" asp-for=@Model.postCode tabindex="5">
                     </div>
                 </div>
 

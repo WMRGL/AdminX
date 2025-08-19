@@ -162,6 +162,14 @@ namespace AdminX.Controllers
                 _lvm.specialities = _externalClinicianData.GetClinicianTypeList();
                 _lvm.edmsLink = _constantsData.GetConstant("GEMRLink", 1);
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem { Text = "Letters", Controller = "DictatedLetter", Action = "Index"  },
+
+                    new BreadcrumbItem { Text = "Update" }
+                };
+
                 return View(_lvm);
             }
             catch (Exception ex)

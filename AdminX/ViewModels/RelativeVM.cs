@@ -15,6 +15,7 @@ namespace AdminX.ViewModels
         public int MPI { get; set; }
         public int WMFACSID { get; set; }
         public StaffMember staffMember { get; set; }
+        public List<Relation> relationList { get; set; }
 
     }
 }

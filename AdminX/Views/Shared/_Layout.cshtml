@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Admin-X</title>
 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
           integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <link href="https://cdn.datatables.net/v/dt/dt-2.1.8/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.bootstrap5.css" />
 
     <link rel="stylesheet" href="~/css/light.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -72,6 +72,17 @@
                     <a class="nav-link text-dark" asp-area="" asp-controller="SysAdmin" asp-action="Index">System Administration</a>
                 </li>
                 <li class="vr"></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link  text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        DQ Report
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-area="" asp-controller="AppointmentDQ" asp-action="Index">Appointment</a></li>
+                        <li><a class="dropdown-item" asp-area="" asp-controller="PatientDQ" asp-action="Index">Patient</a></li>
+                        @*<li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearchAPI">Add New (API)</a></li>*@
+                    </ul>
+                </li>
 
                 <li class="vr"></li>
                 <li class="nav-item">
@@ -139,8 +150,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/app.js" asp-append-version="true"></script>
+    <script src="~/js/datatables.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-    <script src="https://cdn.datatables.net/v/dt/dt-2.1.8/datatables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
@@ -173,10 +184,11 @@
         document.addEventListener('DOMContentLoaded', function () {
             $('.defaultTable').DataTable({
                 info: true,
-                order: false,
-                paging: true,
+                ordering: true,
+                // paging: true,
                 autoWidth: false,
-                width: "100%"
+                width: "100%",
+                dom: 'lBfrtip'
 
             });
 
@@ -195,7 +207,7 @@
                 "positionClass": "toast-top-right",
                 "preventDuplicates": false,
                 "onclick": null,
-                "showDuration": "300",
+                
                 "hideDuration": "1000",
                 "timeOut": "10000",
                 "extendedTimeOut": "1000",

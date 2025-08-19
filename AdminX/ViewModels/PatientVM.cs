@@ -55,5 +55,17 @@ namespace AdminX.ViewModels
         public bool isGeneralPPQComplete { get; set; }
         public bool isPatientInPhenotips { get; set; }
         public PhenotipsPatient ptPatient { get; set; }
+        public List<AlertTypes> alertTypes { get; set; }
+        public Alert alert { get; set; }
+        public List<Referral> referralsList { get; set; }
+        public List<DiaryAction> diaryActionsList { get; set; }
+        public List<Document> documentsList { get; set; }
+        public Referral defaultRef { get; set; }
+        public string? gpPracticeCode { get; set; }
+        public DateTime? startDate { get; set; }
+        public DateTime? endDate { get; set; }
+        public List<Gender>? genderAtBirth { get; set; }
+        public List<GenderIdentity> genderIdentities { get; set; }
+        public string? GenderIdentity { get; set; }
     }
 }

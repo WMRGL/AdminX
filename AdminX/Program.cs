@@ -1,9 +1,10 @@
-using ClinicalXPDataConnections.Data;
 using AdminX.Data;
-using Microsoft.EntityFrameworkCore;
+using AdminX.Meta;
+using APIControllers.Data;
+using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-using APIControllers.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false)
@@ -16,12 +17,18 @@ builder.Services.AddDbContext<AdminContext>(options => options.UseSqlServer(conf
 builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
+builder.Services.AddDbContext<DQContext>(options => options.UseSqlServer(config.GetConnectionString("DQLab")));
+
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
    .AddCookie(options =>
    {
        options.LoginPath = "/Login/UserLogin";
    });
 
+builder.Services.AddScoped<IAppointmentDQData, AppointmentDQData>();
+builder.Services.AddScoped<IPatientDQData, PatientDQData>();
+builder.Services.AddScoped<IGenderIdentityData, GenderIdentityData>();
 
 builder.Services.AddMvc();
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("secrets.json");

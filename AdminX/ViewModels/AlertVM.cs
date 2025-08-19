@@ -9,5 +9,7 @@ namespace AdminX.ViewModels
         public Alert alert { get; set; }
         public List<Alert> alertList {  get; set; }
         public List<AlertTypes> alertTypes { get; set; }
+        public bool success { get; set; }
+        public string? message { get; set; }
     }
 }

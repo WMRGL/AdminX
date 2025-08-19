@@ -16,12 +16,20 @@
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-head">
-            <h1>New Alert for <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</a></h1>
+        <div class="card-header">
+            <h3 class="card-title text-dark mb-0">
+                New Alert for
+                <a asp-controller="Patient"
+                   asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>
+                    @Model.patient.FIRSTNAME
+                    @Model.patient.LASTNAME (@Model.patient.CGU_No)
+                </a>
+            </h3>
+          
         </div>
         <div class="card-body">
             <div class="row mb-5 mt-2">
-                <form asp-action="Create">
+                <form asp-action="Create" asp-controller="Alert">
                     <input name="mpi" asp-for=@Model.patient.MPI hidden />
                     <dt class="col-sm-2">Alert Type:</dt>
                     <dd class="col-sm-10">

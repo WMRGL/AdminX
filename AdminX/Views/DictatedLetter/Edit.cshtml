@@ -3,743 +3,742 @@
     ViewData["Title"] = "Admin-X - Edit Dictated Letter";
 }
 
-<div class="container card">    
-    <div class="row mb-2 mt-2 g-2">
-        <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSaveLetter" />
-        </div>            
-        <div class="col-md-2">
-            <form id="DictatedLetterDelete" asp-action="Delete">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input type="button" class="btn btn-default btn-primary" value="Delete" id="btnReqDelete" />
-                <div class="row mb-1 g-1" id="ConfDelete" hidden>
-                    <h6>Are you sure? You won't be able to undo this.</h6>
-                    <input type="button" class="btn btn-default btn-primary" value="Yes" id="btnDelete" />
-                    <input type="button" class="btn btn-default btn-primary" value="No" id="btnNoDelete" />
-                </div>
-            </form>
-        </div>
-    </div>    
-    <hr />
-
-    @{
-        ViewBag.HomeButton = new[]
-        {
+@{
+    ViewBag.HomeButton = new[]
+    {
             Html.ActionLink("Back to Dictated Letters Index", "Index", "DictatedLetter", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnIndex" }),
             Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.dictatedLetters.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPatientDetails" }),
             Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
         };
-    }
+}
 
-    <h1>Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME), 
-        <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
-    </h1>
-
-    <h2>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h2>
-
-    <div class="container mb-5">
-        <form id="Preview" asp-action="PreviewDOT">
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-primary" id="btnPreview">Preview</button>
+<div class="container-fluid card">
+    <div class="row mb-2 mt-2 g-2">
+        <div class="col-md-2">
+            <input type="button" class="btn btn-primary" value="Save" id="btnSaveLetter" />
+        </div>
+        <div class="col-md-2">
+            <form id="DictatedLetterDelete" asp-action="Delete">
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                <input type="button" class="btn btn-default btn-danger" value="Delete" id="btnReqDelete" />
+                <div class="row mb-1 g-1" id="ConfDelete" hidden>
+                    <h6>Are you sure? You won't be able to undo this.</h6>
+                    <input type="button" class="btn btn-default btn-danger" value="Yes" id="btnDelete" />
+                    <input type="button" class="btn btn-default btn-primary" value="No" id="btnNoDelete" />
                 </div>
-                <div class="col-md-8">
-                    @*<label class="redtext">Note: the preview may not accurately reflect the formatting of the letter when printed, only the content.</label>*@
-                </div>
-            </div>
-            <div hidden>
-                <input asp-for="dictatedLetters.DoTID" name="dID" />
-            </div>
-        </form>
-
-        @if (Model.dictatedLetters.Status == "For Printing")
-        {
-            <form id="Print" asp-action="PrintDOT">
-                <div class="row mb-5 g-5">
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-primary" id="btnPrint">Print and File in EDMS</button>
-                    </div>                
-                </div>
+            </form>
+        </div>
+        <div class="col-md-2">
+            <form id="Preview" asp-action="PreviewDOT">
+                <button type="button" class="btn btn-primary" id="btnPreview">Preview</button>
                 <div hidden>
                     <input asp-for="dictatedLetters.DoTID" name="dID" />
                 </div>
+             
             </form>
-        }
+        </div>
+    </div>
+    <hr />
 
-        <form id="DictatedLetter" asp-action="Edit">
-            <div id="metadata" hidden>
-                <input asp-for="dictatedLetters.DoTID" name="dID" />
-                <input id="txtisAddressChanged" name="isAddresseeChanged" />
-                <input id="txtLetterToCode" name="letterToCode" />
-            </div>
 
-            <div class="row mb-5 g-5">
-                <div class="row">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-1">
-                        <label>To:</label>
-                    </div>
-                    <div class="col-md-4"></div>
-                    <div class="col-md-1">
-                        <label>From:</label>
-                    </div>
-                </div>
+    <div class="card">
 
-                <div class="row">
-                    <div class="col-md-2">                    
-                        <select class="w-100" id="ddlLetterTo">
-                            <option value="" selected>Select...</option>
-                            <option value="Patient">Patient</option>
-                            <option value="Relative">Relative</option>
-                            @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
-                            {
-                                <option value="Referrer">Referrer</option>                            
-                            }
-                            <option value="GP">GP</option>
-                            <option value="Other">Other</option>
-                        </select>                    
-                    
-                        <select class="w-100" id="ddlLetterToType" hidden>                            
-                            <option value="">Select...</option>
-                            @foreach (var item in Model.specialities)
-                            {
-                                <option value=@item>@item</option>
-                            }
-                        </select>
-                    
-                    
-                        <select class="w-100" id="ddlLetterToClinician" hidden>
-                            
-                        </select>                    
-                    </div>
-                    <div class="col-md-4">
-                        <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
-                    </div>
+        <div class="card-body">
+
+            <h4 class="text-dark">
+                Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME),
+                <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
+            </h4>
+
+            <h5>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h5>
+
+            <div class="mb-5">
                
-                    <div class="col-md-2">
-                        <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
-                            <option value="">Select...</option>                    
-                            @foreach(var item in Model.staffMemberList)
-                            {
-                                <option value=@item.STAFF_CODE>@item.NAME</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">
-                    Letter Status:
-                </div>
-                <div class="col-md-4">
-                    <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="status">
-                        <option value="" selected></option>
-                        <option value="Draft">Draft</option>
-                        <option value="For Approval">For Approval</option>
-                        <option value="For Corrections">For Corrections</option>
-                        <option id="optPrint" value="For Printing">For Printing</option>
-                        <option id="optICP" value="ICP Draft">ICP Draft</option>
-                    </select>
-                </div>
-                <div class="col-md-6"></div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2" class="text-right">Summary:</div>
-                <div class="col-md-10">
-                    <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
-                </div>
-                <div class="col-md-2"></div>
-            </div>
 
-            <div class="row mb-5">
-                <div class="col-md-1" class="text-right">Secreterial Team:</div>
-                <div class="col-md-2">
-                    <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
-                        <option value="">Select...</option>
-                        @foreach (var item in Model.secteams)
-                        {
-                            <option value=@item>@item</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-1" class="text-right">Consultant:</div>
-                <div class="col-md-2">
-                    <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
-                        @foreach(var item in Model.consultants)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-1" class="text-right">Genetic Counsellor:</div>
-                <div class="col-md-2">
-                    <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
-                        @foreach (var item in Model.gcs)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-md-1" class="text-right">Date Dictated:</div>
-                <div class="col-md-2">
-                    <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
-                </div>
-            </div>
-            <hr />
-            <div class="row mb-5">
-                <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
-                <div class="col-md-11">
-                    <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden></textarea>
-                    <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
-                        @Html.Raw(@Model.dictatedLetters.LetterContent)
-                    </div>
-                </div>
-            </div>
-            <hr />
-            <div class="row mb-5">
-                <div class="col-md-2" class="text-right">Enclosures:</div>
-                <div class="col-md-10">
-                    <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
-                </div>
-            </div>
-            <div class="row mb-5">
-                <div class="col-md-2" class="text-right">Comments:</div>
-                <div class="col-md-10">
-                    <textarea id="txtComments" rows="4" cols="80" asp-for="dictatedLetters.Comments" name="comments"></textarea>
-                </div>
-            </div>
+                @if (Model.dictatedLetters.Status == "For Printing")
+                {
+                    <form id="Print" asp-action="PrintDOT">
+                        <div class="row mb-5 g-5">
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" id="btnPrint">Print and File in EDMS</button>
+                            </div>
+                        </div>
+                        <div hidden>
+                            <input asp-for="dictatedLetters.DoTID" name="dID" />
+                        </div>
+                    </form>
+                }
 
-        </form>
-        @*<div class="row mb-5 g-5">*@
-        <div class="d-grid mb-5">
-            <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
+                <form id="DictatedLetter" asp-action="Edit">
+                    <div id="metadata" hidden>
+                        <input asp-for="dictatedLetters.DoTID" name="dID" />
+                        <input id="txtisAddressChanged" name="isAddresseeChanged" />
+                        <input id="txtLetterToCode" name="letterToCode" />
+                    </div>
+
+                    <div class="row mb-5 g-5">
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-1">
+                                <label>To:</label>
+                            </div>
+                            <div class="col-md-4"></div>
+                            <div class="col-md-1">
+                                <label>From:</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <select class="w-100" id="ddlLetterTo">
+                                    <option value="" selected>Select...</option>
+                                    <option value="Patient">Patient</option>
+                                    <option value="Relative">Relative</option>
+                                    @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
+                                    {
+                                        <option value="Referrer">Referrer</option>
+                                    }
+                                    <option value="GP">GP</option>
+                                    <option value="Other">Other</option>
+                                </select>
+
+                                <select class="w-100" id="ddlLetterToType" hidden>
+                                    <option value="">Select...</option>
+                                    @foreach (var item in Model.specialities)
+                                    {
+                                        <option value=@item>@item</option>
+                                    }
+                                </select>
+
+
+                                <select class="w-100" id="ddlLetterToClinician" hidden>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
+                            </div>
+
+                            <div class="col-md-2">
+                                <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
+                                    <option value="">Select...</option>
+                                    @foreach (var item in Model.staffMemberList)
+                                    {
+                                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-5 g-5">
+                        <div class="col-md-2" class="text-right">
+                            Letter Status:
+                        </div>
+                        <div class="col-md-4">
+                            <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="status">
+                                <option value="" selected></option>
+                                <option value="Draft">Draft</option>
+                                <option value="For Approval">For Approval</option>
+                                <option value="For Corrections">For Corrections</option>
+                                <option id="optPrint" value="For Printing">For Printing</option>
+                                <option id="optICP" value="ICP Draft">ICP Draft</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                    <div class="row mb-5 g-5">
+                        <div class="col-md-2" class="text-right">Summary:</div>
+                        <div class="col-md-10">
+                            <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+
+                    <div class="row mb-5">
+                        <div class="col-md-1" class="text-right">Secreterial Team:</div>
+                        <div class="col-md-2">
+                            <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
+                                <option value="">Select...</option>
+                                @foreach (var item in Model.secteams)
+                                {
+                                    <option value=@item>@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1" class="text-right">Consultant:</div>
+                        <div class="col-md-2">
+                            <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
+                                @foreach (var item in Model.consultants)
+                                {
+                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1" class="text-right">Genetic Counsellor:</div>
+                        <div class="col-md-2">
+                            <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
+                                @foreach (var item in Model.gcs)
+                                {
+                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-1" class="text-right">Date Dictated:</div>
+                        <div class="col-md-2">
+                            <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-5">
+                        <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
+                        <div class="col-md-11">
+                            <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden></textarea>
+                            <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
+                                @Html.Raw(@Model.dictatedLetters.LetterContent)
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row mb-5">
+                        <div class="col-md-2" class="text-right">Enclosures:</div>
+                        <div class="col-md-10">
+                            <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mb-5">
+                        <div class="col-md-2" class="text-right">Comments:</div>
+                        <div class="col-md-10">
+                            <textarea id="txtComments" rows="4" cols="80" asp-for="dictatedLetters.Comments" name="comments"></textarea>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
 
-        <div class="collapse" id="collapsePatientsTable">
-            <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
-                <input id="txtPID" name="pID" hidden />
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>CGU Number</th>
-                            <th>Name</th>
-                            <th>DOB</th>
-                            <th>NHS Number</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.patients)
-                        {
-                            <tr>
-                                <td><input type="submit" ID=@item.MPI value="Add Patient" class="btn btn-default btn-sm btn-primary" onclick="AddToDOT(@item.MPI)" /></td>
-                                <td>@item.CGU_No</td>
-                                <td>@item.FIRSTNAME @item.LASTNAME</td>
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                                <td>@item.SOCIAL_SECURITY</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </form>
-        </div>
-    
-        <div class="d-grid mb-5">
-            <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
-        </div>
+    </div>
+    <div class="tab-pane fade" id="password" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Password</h5>
 
-        <div class="collapse" id="collapseCopiesTable">
-            <h3>CCs currently added to letter:</h3>
-            <div class="row mb-5 g-5">
-                <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">                
-                    <input id="txtCCID" name="id" hidden />
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputPasswordCurrent">Current password</label>
+                        <input type="password" class="form-control" id="inputPasswordCurrent">
+                        <small><a href="#">Forgot your password?</a></small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputPasswordNew">New password</label>
+                        <input type="password" class="form-control" id="inputPasswordNew">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="inputPasswordNew2">Verify password</label>
+                        <input type="password" class="form-control" id="inputPasswordNew2">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+
+        <div class=" mb-5">
+
+            @*<div class="row mb-5 g-5">*@
+            <div class="d-grid mb-5">
+                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
+            </div>
+
+            <div class="collapse" id="collapsePatientsTable">
+                <form id="frmAddPatientToDOT" asp-action="AddPatientToDOT">
+                    <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                    <input id="txtPID" name="pID" hidden />
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>CC Address</th>   
                                 <th></th>
+                                <th>CGU Number</th>
+                                <th>Name</th>
+                                <th>DOB</th>
+                                <th>NHS Number</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in Model.dictatedLettersCopies)
-                            {                        
+                            @foreach (var item in Model.patients)
+                            {
                                 <tr>
-                                    <td>@item.CC</td>
-                                    <td>
-                                        <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-primary" onclick="DeleteCC(@item.CCID)" />
-                                    </td>
-                                </tr>                        
+                                    <td><input type="submit" ID=@item.MPI value="Add Patient" class="btn btn-default btn-sm btn-primary" onclick="AddToDOT(@item.MPI)" /></td>
+                                    <td>@item.CGU_No</td>
+                                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.SOCIAL_SECURITY</td>
+                                </tr>
                             }
                         </tbody>
                     </table>
                 </form>
             </div>
-            <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
-                <input asp-for="dictatedLetters.DoTID" name="dID" hidden/>
-                <div class="row">
-                    <div class="col-md-8">
-                        <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
-                    </div>
-                </div>
-                <div class="row mb-5 g-5">            
-                    <div class="col-md-2">
-                        <input type="button" id="btnAddCC" class="btn btn-default btn-primary" value="Add CC" />
-                    </div>
-                    <div class="col-md-6">
-                        <div class="row">
-                            <select class="w-100" id="ddlCCType">
-                                <option value="" selected>Select...</option>
-                                <option value="Patient">Patient</option>
-                                <option value="Relative">Relative</option>
-                                @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
-                                {
-                                    <option value="Referrer">Referrer</option>
-                                }
-                                <option value="GP">GP</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <select class="w-100" id="ddlCCType2" hidden>
-                                <option value="" selected>Select...</option>
-                                @foreach (var item in Model.specialities)
-                                {
-                                    <option value=@item>@item</option>
-                                }
-                            </select>
 
-                            
-                            <select id="ddlCC" hidden>
-                                
-                            </select>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-10">
-                                <textarea rows="8" cols="40" id="txtCC"></textarea>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="text" id="txtCCCode" name="cc" hidden/>
-                            </div>
-                        </div>
-                    </div>            
+            <div class="d-grid mb-5">
+                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapseCopiesTable" aria-expanded="false" aria-controls="collapseExample">CCs</button>
+            </div>
+
+            <div class="collapse" id="collapseCopiesTable">
+                <h3>CCs currently added to letter:</h3>
+                <div class="row mb-5 g-5">
+                    <form id="frmDeleteCC" asp-action="DeleteCCFromDOT">
+                        <input id="txtCCID" name="id" hidden />
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>CC Address</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.dictatedLettersCopies)
+                                {
+                                    <tr>
+                                        <td>@item.CC</td>
+                                        <td>
+                                            <input type="button" id=@item.CC value="Delete" class="btn btn-default btn-sm btn-primary" onclick="DeleteCC(@item.CCID)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
-                
-            </form>
+                <form id="frmAddCCToDOT" asp-action="AddCCToDOT">
+                    <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label class="redtext">Note: adding a CC will cause the page to refresh, please be sure to save any changes first!</label>
+                        </div>
+                    </div>
+                    <div class="row mb-5 g-5">
+                        <div class="col-md-2">
+                            <input type="button" id="btnAddCC" class="btn btn-default btn-primary" value="Add CC" />
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <select class="w-100" id="ddlCCType">
+                                    <option value="" selected>Select...</option>
+                                    <option value="Patient">Patient</option>
+                                    <option value="Relative">Relative</option>
+                                    @if (Model.activityDetails.REF_FAC != Model.patientDetails.GP_Code)
+                                    {
+                                        <option value="Referrer">Referrer</option>
+                                    }
+                                    <option value="GP">GP</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <select class="w-100" id="ddlCCType2" hidden>
+                                    <option value="" selected>Select...</option>
+                                    @foreach (var item in Model.specialities)
+                                    {
+                                        <option value=@item>@item</option>
+                                    }
+                                </select>
+
+
+                                <select id="ddlCC" hidden>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <textarea rows="8" cols="40" id="txtCC"></textarea>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" id="txtCCCode" name="cc" hidden />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 
-<script type="text/javascript">
-    
-    document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
-    document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
-    document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
-    document.getElementById("btnNoDelete").addEventListener("click", CancelDelete);
-    document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
-    document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
-    document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
-    document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
-    document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
-    document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
-    document.getElementById("btnAddCC").addEventListener("click", AddCC);
-    document.getElementById("btnPreview").addEventListener("click", DoPreview);
-    document.getElementById("btnPrint").addEventListener("click", DoPrint);
-    window.addEventListener("load", LoadLetter);
-    window.addEventListener("load", LoadEDMSLink);
+    <script type="text/javascript">
 
-    function LoadEDMSLink() 
-    {
-        //document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
-        document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
-    }
+        document.getElementById("btnSaveLetter").addEventListener("click", SaveLetter);
+        document.getElementById("btnDelete").addEventListener("click", DeleteLetter);
+        document.getElementById("btnReqDelete").addEventListener("click", ShowDelete);
+        document.getElementById("btnNoDelete").addEventListener("click", CancelDelete);
+        document.getElementById("ddlLetterTo").addEventListener("change", SetLetterTo);
+        document.getElementById("ddlLetterFrom").addEventListener("change", SetLetterFrom);
+        document.getElementById("ddlLetterToClinician").addEventListener("change", SetLetterToClinician);
+        document.getElementById("ddlLetterToType").addEventListener("change", ShowLetterToClinician);
+        document.getElementById("ddlCCType").addEventListener("change", ShowCCClinician);
+        document.getElementById("ddlCCType2").addEventListener("change", ShowCCTypes);
+        document.getElementById("btnAddCC").addEventListener("click", AddCC);
+        document.getElementById("btnPreview").addEventListener("click", DoPreview);
+        document.getElementById("btnPrint").addEventListener("click", DoPrint);
+        window.addEventListener("load", LoadLetter);
+        window.addEventListener("load", LoadEDMSLink);
 
-    function LoadLetter() 
-    {         
-        if (document.getElementById("ddlLetterStatus").value == "For Approval") 
+        function LoadEDMSLink()
         {
-           //document.getElementById("btnApprove").hidden = false;            
-            document.getElementById("ddlLetterStatus").disabled = true;                        
+            //document.getElementById("btnEDMS").href = "http://cg-live-164/Clinical_Genetics/#cg_pedigree_folder/folders%2Fcg_pedigree_folder%2F" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
+            document.getElementById("btnEDMS").href = "@Model.edmsLink" + "@(Model.patientDetails.DCTM_Folder_ID)" + "/cg_view_pedigree_patie";
         }
-        else if (document.getElementById("ddlLetterStatus").value == "For Printing") 
-        {            
-            document.getElementById("ddlLetterStatus").disabled = true;            
-            document.getElementById("txtLetterTo").disabled = true;
-            document.getElementById("txtLetterFrom").disabled = true;
-            document.getElementById("txtLetterContentBold").disabled = true;
-            document.getElementById("ddlLetterTo").disabled = true;
-            document.getElementById("ddlLetterFrom").disabled = true;
-            document.getElementById("letterText").contentEditable = false;
-        }
-        else
-        {
-            document.getElementById("optPrint").hidden = true;
-            if (document.getElementById("ddlLetterStatus").value == "ICP Draft") 
-            { 
-                document.getElementById("ddlLetterStatus").value = "Draft";
-                document.getElementById("optICP").hidden = true;
+
+        function LoadLetter() {
+            if (document.getElementById("ddlLetterStatus").value == "For Approval") {
+                //document.getElementById("btnApprove").hidden = false;
+                document.getElementById("ddlLetterStatus").disabled = true;
             }
-        }    
-        document.getElementById("txtisAddressChanged").value = "false";        
-    }
-
-    function SaveLetter() 
-    {        
-        document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
-        //we have to enable them or it won't pass the parameters to the function
-        document.getElementById("ddlLetterStatus").disabled = false;     
-        if (CheckFormValid())
-        {
-            document.getElementById("DictatedLetter").submit();
+            else if (document.getElementById("ddlLetterStatus").value == "For Printing") {
+                document.getElementById("ddlLetterStatus").disabled = true;
+                document.getElementById("txtLetterTo").disabled = true;
+                document.getElementById("txtLetterFrom").disabled = true;
+                document.getElementById("txtLetterContentBold").disabled = true;
+                document.getElementById("ddlLetterTo").disabled = true;
+                document.getElementById("ddlLetterFrom").disabled = true;
+                document.getElementById("letterText").contentEditable = false;
+            }
+            else {
+                document.getElementById("optPrint").hidden = true;
+                if (document.getElementById("ddlLetterStatus").value == "ICP Draft") {
+                    document.getElementById("ddlLetterStatus").value = "Draft";
+                    document.getElementById("optICP").hidden = true;
+                }
+            }
+            document.getElementById("txtisAddressChanged").value = "false";
         }
-        //we can't do C# validation because there's simply no way to display the message,
-        //because the only way to refresh the page wipes everything!!
-    }
 
-    function CloseReferralShow()
-    {
-        document.getElementById("CloseReferralBox").hidden = false;
-    }
-
-    
-
-    function ShowDelete()
-    {
-        //window.alert("bleh");
-        document.getElementById("ConfDelete").hidden = false;
-        document.getElementById("btnReqDelete").hidden = true;
-    }
-
-    function DeleteLetter()
-    {       
-        document.getElementById("DictatedLetterDelete").submit();
-    }
-
-    function CancelDelete()
-    {
-        document.getElementById("ConfDelete").hidden = true;
-        document.getElementById("btnReqDelete").hidden = false;
-    }
-
-    function SetLetterTo() 
-    {         
-        const sLetterTo = document.getElementById("ddlLetterTo").value;
-        var letterToCode = document.getElementById("txtLetterToCode");
-                
-        var sName = "";
-        var sFacility = "";
-        var sAddress = "";        
-
-        if (sLetterTo == "Patient") 
-        {   
-            sName = "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
-            sAddress = "@Model.patientDetails.ADDRESS1" + "\n" + 
-                        "@Model.patientDetails.ADDRESS2" + "\n" +
-                        "@Model.patientDetails.ADDRESS3" + "\n" +
-                        "@Model.patientDetails.ADDRESS4" + "\n" +
-                        "@Model.patientDetails.POSTCODE";
-            letterToCode.value = "PT";
+        function SaveLetter() {
+            document.getElementById("txtLetterContent").value = document.getElementById("letterText").innerHTML.trim();
+            //we have to enable them or it won't pass the parameters to the function
+            document.getElementById("ddlLetterStatus").disabled = false;
+            if (CheckFormValid()) {
+                document.getElementById("DictatedLetter").submit();
+            }
+            //we can't do C# validation because there's simply no way to display the message,
+            //because the only way to refresh the page wipes everything!!
         }
-        if (sLetterTo == "GP")
-        {
-            sName = "@Model.patientDetails.GP";
-            sAddress = "@Model.GPFacility.NAME" + "\n" +
-                        "@Model.GPFacility.ADDRESS" + "\n" +
-                        "@Model.GPFacility.CITY" + "\n" +
-                        "@Model.GPFacility.STATE" + "\n" +
-                        "@Model.GPFacility.ZIP";
-            letterToCode.value = "GP";
-        }
-        if (sLetterTo == "Referrer")
-        {
-            sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
-            sAddress = "@Model.referrerFacility.NAME" + "\n" +
-                        "@Model.referrerFacility.ADDRESS" + "\n" +
-                        "@Model.referrerFacility.CITY" + "\n" +
-                        "@Model.referrerFacility.STATE" + "\n" +
-                        "@Model.referrerFacility.ZIP";
-            letterToCode.value = "Referrer";
-        }
-        
-        if (sLetterTo == "Other") 
-        {            
-            document.getElementById("ddlLetterToType").hidden = false;
-            letterToCode.value = "Other";
-        }
-        else
-        {
-            document.getElementById("ddlLetterToClinician").hidden = true;
-            document.getElementById("ddlLetterToType").hidden = true;
-            document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
-            document.getElementById("txtisAddressChanged").value = "true";
-        }        
-    }
 
-    function ShowLetterToClinician()
-    {
-        document.getElementById("ddlLetterToClinician").hidden = false;
-    }
-
-    function ShowCCClinician() 
-    {
-        if (document.getElementById("ddlCCType").value != "Other")
-        {
-            SetCCAddress(document.getElementById("ddlCCType").value);
+        function CloseReferralShow() {
+            document.getElementById("CloseReferralBox").hidden = false;
         }
-        else
-        {
-            document.getElementById("ddlCCType2").hidden = false;
-        }        
-    }
 
-    function ShowCCTypes() 
-    {
-        const ccType = document.getElementById("ddlCCType2");
-        const ccList = document.getElementById("ddlCC");
 
-        ccList.innerHTML = "";
-        
-        var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinPositionArray = [];
-        var clinSpecArray = [];
-        var clinFacilityArray = [];
-        
+
+        function ShowDelete() {
+            //window.alert("bleh");
+            document.getElementById("ConfDelete").hidden = false;
+            document.getElementById("btnReqDelete").hidden = true;
+        }
+
+        function DeleteLetter() {
+            document.getElementById("DictatedLetterDelete").submit();
+        }
+
+        function CancelDelete() {
+            document.getElementById("ConfDelete").hidden = true;
+            document.getElementById("btnReqDelete").hidden = false;
+        }
+
+        function SetLetterTo() {
+            const sLetterTo = document.getElementById("ddlLetterTo").value;
+            var letterToCode = document.getElementById("txtLetterToCode");
+
+            var sName = "";
+            var sFacility = "";
+            var sAddress = "";
+
+            if (sLetterTo == "Patient") {
+                sName = "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
+                sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
+                    "@Model.patientDetails.ADDRESS2" + "\n" +
+                    "@Model.patientDetails.ADDRESS3" + "\n" +
+                    "@Model.patientDetails.ADDRESS4" + "\n" +
+                    "@Model.patientDetails.POSTCODE";
+                letterToCode.value = "PT";
+            }
+            if (sLetterTo == "GP") {
+                sName = "@Model.patientDetails.GP";
+                sAddress = "@Model.GPFacility.NAME" + "\n" +
+                    "@Model.GPFacility.ADDRESS" + "\n" +
+                    "@Model.GPFacility.CITY" + "\n" +
+                    "@Model.GPFacility.STATE" + "\n" +
+                    "@Model.GPFacility.ZIP";
+                letterToCode.value = "GP";
+            }
+            if (sLetterTo == "Referrer") {
+                sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
+                sAddress = "@Model.referrerFacility.NAME" + "\n" +
+                    "@Model.referrerFacility.ADDRESS" + "\n" +
+                    "@Model.referrerFacility.CITY" + "\n" +
+                    "@Model.referrerFacility.STATE" + "\n" +
+                    "@Model.referrerFacility.ZIP";
+                letterToCode.value = "Referrer";
+            }
+
+            if (sLetterTo == "Other") {
+                document.getElementById("ddlLetterToType").hidden = false;
+                letterToCode.value = "Other";
+            }
+            else {
+                document.getElementById("ddlLetterToClinician").hidden = true;
+                document.getElementById("ddlLetterToType").hidden = true;
+                document.getElementById("txtLetterTo").value = sName.replace(/&#x27;/g, "'") + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+                document.getElementById("txtisAddressChanged").value = "true";
+            }
+        }
+
+        function ShowLetterToClinician() {
+            document.getElementById("ddlLetterToClinician").hidden = false;
+        }
+
+        function ShowCCClinician() {
+            if (document.getElementById("ddlCCType").value != "Other") {
+                SetCCAddress(document.getElementById("ddlCCType").value);
+            }
+            else {
+                document.getElementById("ddlCCType2").hidden = false;
+            }
+        }
+
+        function ShowCCTypes() {
+            const ccType = document.getElementById("ddlCCType2");
+            const ccList = document.getElementById("ddlCC");
+
+            ccList.innerHTML = "";
+
+            var clinCodeArray = [];
+            var clinNameArray = [];
+            var clinPositionArray = [];
+            var clinSpecArray = [];
+            var clinFacilityArray = [];
+
         @foreach (var item in Model.clinicians)
         {
-        @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null) 
-            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                @:clinPositionArray.push("@item.POSITION");
-                @:clinSpecArray.push("@item.SPECIALITY");       
-                @:clinFacilityArray.push("@item.FACILITY");
-                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
-            }
-        }
-                
-        for (var i in clinSpecArray)
-        {            
-            if(clinSpecArray[i] != ccType.value)
-            {                
-                delete clinSpecArray[i];
-                delete clinCodeArray[i];
-                delete clinNameArray[i];
-                delete clinPositionArray[i];
-                delete clinFacilityArray[i];
-            }            
-        }
-        
-        var def = document.createElement('option');
-        def.value = "";
-        def.innerHTML = "Select...";
-        ccList.appendChild(def);
-
-        for (var i in clinSpecArray)
-        {
-            if (ccList.length < 1000) //because it can't handle more than 1000 items, so this is a safeguard
-            {
-                var opt = document.createElement('option');
-                opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
-                ccList.appendChild(opt);
-            }
+                    @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+                    { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                                @:clinCodeArray.push("@item.MasterClinicianCode");
+                                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                                @:clinPositionArray.push("@item.POSITION");
+                                @:clinSpecArray.push("@item.SPECIALITY");
+                                @:clinFacilityArray.push("@item.FACILITY");
+                                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+                    }
         }
 
-        ccList.hidden = false;
-    }
-        
-    function ShowLetterToClinician()
-    {        
-        const ccType = document.getElementById("ddlLetterToType");
-        const ccList = document.getElementById("ddlLetterToClinician");
-
-        ccList.innerHTML = "";
-
-        var clinCodeArray = [];
-        var clinNameArray = [];
-        var clinPositionArray = [];
-        var clinSpecArray = [];
-        var clinFacilityArray = [];
-
-       @foreach (var item in Model.clinicians)
-        {
-            @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
-            { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                @:clinCodeArray.push("@item.MasterClinicianCode");
-                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                @:clinPositionArray.push("@item.POSITION");
-                @:clinSpecArray.push("@item.SPECIALITY");
-                @:clinFacilityArray.push("@item.FACILITY");
-                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+                        for (var i in clinSpecArray) {
+                if (clinSpecArray[i] != ccType.value) {
+                    delete clinSpecArray[i];
+                    delete clinCodeArray[i];
+                    delete clinNameArray[i];
+                    delete clinPositionArray[i];
+                    delete clinFacilityArray[i];
+                }
             }
+
+            var def = document.createElement('option');
+            def.value = "";
+            def.innerHTML = "Select...";
+            ccList.appendChild(def);
+
+            for (var i in clinSpecArray) {
+                if (ccList.length < 1000) //because it can't handle more than 1000 items, so this is a safeguard
+                {
+                    var opt = document.createElement('option');
+                    opt.value = clinCodeArray[i];
+                    opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
+                    ccList.appendChild(opt);
+                }
+            }
+
+            ccList.hidden = false;
         }
 
-        for (var i in clinSpecArray)
-        {
-            if (clinSpecArray[i] != ccType.value)
-            {
-                delete clinSpecArray[i];
-                delete clinCodeArray[i];
-                delete clinNameArray[i];
-                delete clinPositionArray[i];
-                delete clinFacilityArray[i];
-            }
-        }        
+        function ShowLetterToClinician() {
+            const ccType = document.getElementById("ddlLetterToType");
+            const ccList = document.getElementById("ddlLetterToClinician");
 
-        var def = document.createElement('option');
-        def.value = "";
-        def.innerHTML = "Select...";
-        ccList.appendChild(def);
+            ccList.innerHTML = "";
 
-        for (var i in clinSpecArray)
-        {
-            if (ccList.length < 1000)
-            {
-                var opt = document.createElement('option');
-                opt.value = clinCodeArray[i];
-                opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
-                ccList.appendChild(opt);
-            }
-        }
-        
-        ccList.hidden = false;
-    }
+            var clinCodeArray = [];
+            var clinNameArray = [];
+            var clinPositionArray = [];
+            var clinSpecArray = [];
+            var clinFacilityArray = [];
 
-
-    function SetLetterToClinician() 
-    { 
-        const sClinCode = document.getElementById("ddlLetterToClinician").value;
-        
-        var sClinCodeArray = [];
-        var sNameArray = [];
-        var sFacCodeArray = [];
-        var sFacilityArray = [];
-        var sAddressArray = [];
-        var sName = "Nobody";
-        var sFacility = "Nothing";
-        var sAddress = "Nowhere";
         @foreach (var item in Model.clinicians)
         {
-            @:sClinCodeArray.push("@item.MasterClinicianCode");
-            @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
-            @:sFacilityArray.push("@item.FACILITY");
+                    @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+                    { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                                @:clinCodeArray.push("@item.MasterClinicianCode");
+                                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                                @:clinPositionArray.push("@item.POSITION");
+                                @:clinSpecArray.push("@item.SPECIALITY");
+                                @:clinFacilityArray.push("@item.FACILITY");
+                                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+                    }
+        }
+
+                        for (var i in clinSpecArray) {
+                if (clinSpecArray[i] != ccType.value) {
+                    delete clinSpecArray[i];
+                    delete clinCodeArray[i];
+                    delete clinNameArray[i];
+                    delete clinPositionArray[i];
+                    delete clinFacilityArray[i];
+                }
+            }
+
+            var def = document.createElement('option');
+            def.value = "";
+            def.innerHTML = "Select...";
+            ccList.appendChild(def);
+
+            for (var i in clinSpecArray) {
+                if (ccList.length < 1000) {
+                    var opt = document.createElement('option');
+                    opt.value = clinCodeArray[i];
+                    opt.innerHTML = clinNameArray[i] + ", " + clinPositionArray[i] + " - " + clinFacilityArray[i];
+                    ccList.appendChild(opt);
+                }
+            }
+
+            ccList.hidden = false;
+        }
+
+
+        function SetLetterToClinician() {
+            const sClinCode = document.getElementById("ddlLetterToClinician").value;
+
+            var sClinCodeArray = [];
+            var sNameArray = [];
+            var sFacCodeArray = [];
+            var sFacilityArray = [];
+            var sAddressArray = [];
+            var sName = "Nobody";
+            var sFacility = "Nothing";
+            var sAddress = "Nowhere";
+        @foreach (var item in Model.clinicians)
+        {
+                    @:sClinCodeArray.push("@item.MasterClinicianCode");
+                    @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
+                    @:sFacilityArray.push("@item.FACILITY");
         }
 
         @foreach (var item in Model.facilities)
         {
-            @:sFacCodeArray.push("@item.MasterFacilityCode");
-            @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
+                    @:sFacCodeArray.push("@item.MasterFacilityCode");
+                    @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
         }
 
-        for (i in sNameArray) 
-        {            
-            if (sClinCodeArray[i] == sClinCode) {
-                sName = sNameArray[i];
-                sFacility = sFacilityArray[i];                
-            }
-        }
-
-        for (i in sFacilityArray) 
-        {
-            if (sFacCodeArray[i] == sFacility) 
-            {
-                sAddress = sAddressArray[i];
-            }
-        }
-        document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
-        document.getElementById("txtisAddressChanged").value = "true";
-    }
-
-    function SetLetterFrom() 
-    {
-        const staffCode = document.getElementById("ddlLetterFrom").value;
-        var staffCodeArray = [];
-        var sStaffNameArray = [];
-        var sStaffPositionArray = [];
-        var sStaffName = "";
-        var sStaffPosition = "";
-        //we can't simply get the data directly from the model and use it in a Where, 
-        // so we have to use this dumb method!
-        @foreach (var item in Model.staffMemberList)
-        {
-            @:staffCodeArray.push("@item.STAFF_CODE");
-            @:sStaffNameArray.push("@item.NAME");
-            @:sStaffPositionArray.push("@item.POSITION");
-        }
-
-        for(i in staffCodeArray)
-        {
-             if(staffCodeArray[i] == staffCode)
-             {
-                 sStaffName = sStaffNameArray[i];
-                 sStaffPosition = sStaffPositionArray[i];
-             }
-        }
-        
-        document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
-        document.getElementById("txtisAddressChanged").value = "true";
-    }
-
-    function SetCCAddress(ccCode)
-    { 
-        var sName = "Nobody";
-        var sFacility = "Nothing";
-        var sAddress = "Nowhere";
-        
-        if (ccCode == "Referrer") {
-            sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
-            sAddress = "@Model.referrerFacility.NAME" + "\n" +
-                "@Model.referrerFacility.ADDRESS" + "\n" +
-                "@Model.referrerFacility.CITY" + "\n" +
-                "@Model.referrerFacility.STATE" + "\n" +
-                "@Model.referrerFacility.ZIP";
-
-            document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";
-        }
-        else if (ccCode == "Patient") {
-            sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
-            sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
-                "@Model.patientDetails.ADDRESS2" + "\n" +
-                "@Model.patientDetails.ADDRESS3" + "\n" +
-                "@Model.patientDetails.ADDRESS4" + "\n" +
-                "@Model.patientDetails.POSTCODE";
-
-            document.getElementById("txtCCCode").value = "Patient";
-        }
-        else if (ccCode == "GP") {
-            sName = "@Model.patientDetails.GP"
-            sAddress = "@Model.GPFacility.NAME" + "\n" +
-                "@Model.GPFacility.ADDRESS" + "\n" +
-                "@Model.GPFacility.CITY" + "\n" +
-                "@Model.GPFacility.STATE" + "\n" +
-                "@Model.GPFacility.ZIP";
-
-            document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";
-        }
-        else 
-        { 
-            var clinicianArray = [];
-            var titleArray = [];
-            var firstnameArray = [];
-            var lastnameArray = [];
-            var facilityArray = [];
-            var facilityCode;
-            var _ccCode;
-                                          
-                
-            for (var k = 0; k < clinicianArray.length; k++) 
-            {
-                var nameToTest = clinicianArray[k];
-                if (nameToTest == _ccCode) 
-                {
-                    sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
-                    facilityCode = facilityArray[k];
-                    document.getElementById("txtCCCode").value = _ccCode;
+                        for (i in sNameArray) {
+                if (sClinCodeArray[i] == sClinCode) {
+                    sName = sNameArray[i];
+                    sFacility = sFacilityArray[i];
                 }
             }
+
+            for (i in sFacilityArray) {
+                if (sFacCodeArray[i] == sFacility) {
+                    sAddress = sAddressArray[i];
+                }
+            }
+            document.getElementById("txtLetterTo").value = sName + "\n" + sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+            document.getElementById("txtisAddressChanged").value = "true";
+        }
+
+        function SetLetterFrom() {
+            const staffCode = document.getElementById("ddlLetterFrom").value;
+            var staffCodeArray = [];
+            var sStaffNameArray = [];
+            var sStaffPositionArray = [];
+            var sStaffName = "";
+            var sStaffPosition = "";
+            //we can't simply get the data directly from the model and use it in a Where,
+            // so we have to use this dumb method!
+        @foreach (var item in Model.staffMemberList)
+        {
+                    @:staffCodeArray.push("@item.STAFF_CODE");
+                    @:sStaffNameArray.push("@item.NAME");
+                    @:sStaffPositionArray.push("@item.POSITION");
+        }
+
+                        for (i in staffCodeArray) {
+                if (staffCodeArray[i] == staffCode) {
+                    sStaffName = sStaffNameArray[i];
+                    sStaffPosition = sStaffPositionArray[i];
+                }
+            }
+
+            document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
+            document.getElementById("txtisAddressChanged").value = "true";
+        }
+
+        function SetCCAddress(ccCode) {
+            var sName = "Nobody";
+            var sFacility = "Nothing";
+            var sAddress = "Nowhere";
+
+            if (ccCode == "Referrer") {
+                sName = "@Model.referrer.TITLE" + " " + "@Model.referrer.FIRST_NAME" + " " + "@Model.referrer.NAME";
+                sAddress = "@Model.referrerFacility.NAME" + "\n" +
+                    "@Model.referrerFacility.ADDRESS" + "\n" +
+                    "@Model.referrerFacility.CITY" + "\n" +
+                    "@Model.referrerFacility.STATE" + "\n" +
+                    "@Model.referrerFacility.ZIP";
+
+                document.getElementById("txtCCCode").value = "@Model.referrer.MasterClinicianCode";
+            }
+            else if (ccCode == "Patient") {
+                sName = "@Model.patientDetails.Title" + " " + "@Model.patientDetails.FIRSTNAME" + " " + "@Model.patientDetails.LASTNAME";
+                sAddress = "@Model.patientDetails.ADDRESS1" + "\n" +
+                    "@Model.patientDetails.ADDRESS2" + "\n" +
+                    "@Model.patientDetails.ADDRESS3" + "\n" +
+                    "@Model.patientDetails.ADDRESS4" + "\n" +
+                    "@Model.patientDetails.POSTCODE";
+
+                document.getElementById("txtCCCode").value = "Patient";
+            }
+            else if (ccCode == "GP") {
+                sName = "@Model.patientDetails.GP"
+                sAddress = "@Model.GPFacility.NAME" + "\n" +
+                    "@Model.GPFacility.ADDRESS" + "\n" +
+                    "@Model.GPFacility.CITY" + "\n" +
+                    "@Model.GPFacility.STATE" + "\n" +
+                    "@Model.GPFacility.ZIP";
+
+                document.getElementById("txtCCCode").value = "@Model.patientDetails.GP_Code";
+            }
+            else {
+                var clinicianArray = [];
+                var titleArray = [];
+                var firstnameArray = [];
+                var lastnameArray = [];
+                var facilityArray = [];
+                var facilityCode;
+                var _ccCode;
+
+
+                for (var k = 0; k < clinicianArray.length; k++) {
+                    var nameToTest = clinicianArray[k];
+                    if (nameToTest == _ccCode) {
+                        sName = titleArray[k] + " " + firstnameArray[k] + " " + lastnameArray[k];
+                        facilityCode = facilityArray[k];
+                        document.getElementById("txtCCCode").value = _ccCode;
+                    }
+                }
 
                 //and now we have to do the address... which is going to be even more fun!!!
 
@@ -750,119 +749,102 @@
                 var facilityStateArray = [];
                 var facilityPostcodeArray = [];
 
-                @foreach (var item in Model.facilities)
-                {
+        @foreach (var item in Model.facilities)
+        {
                     @:facilityCodeArray.push("@item.MasterFacilityCode");
                     @:facilityNameArray.push("@item.NAME");
                     @:facilityAddressArray.push("@item.ADDRESS");
                     @:facilityCityArray.push("@item.CITY");
                     @:facilityStateArray.push("@item.STATE");
                     @:facilityPostcodeArray.push("@item.ZIP");
-                }
+        }
 
-                for (var j = 0; j < facilityCodeArray.length; j++) 
-                {
+                                for (var j = 0; j < facilityCodeArray.length; j++) {
                     var nameToTest = facilityCodeArray[j];
-                    if (nameToTest == facilityCode) 
-                    {
+                    if (nameToTest == facilityCode) {
                         sAddress = facilityNameArray[j] + "\n" +
                             facilityAddressArray[j] + "\n" +
                             facilityCityArray[j] + "\n" +
                             facilityStateArray[j] + "\n" +
                             facilityPostcodeArray[j];
-                        
+
                     }
                 }
-            
-        }        
 
-        document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
-    }
+            }
 
-    function AddToDOT(id) 
-    {        
-        document.getElementById("txtPID").value = id;        
-        document.getElementById("frmAddPatientToDOT").submit();
-    }
-
-    function AddCC()
-    {   
-        document.getElementById("frmAddCCToDOT").submit();
-    }
-
-    function DeleteCC(id) 
-    {
-        document.getElementById("txtCCID").value = id;
-        document.getElementById("frmDeleteCC").submit();
-    }
-
-    function CheckFormValid() 
-    {
-        //gotta protect against those SQL injections!
-        if (document.getElementById("txtLetterContent").value.match(/};.*/)) 
-        {
-            window.alert("Oi! Stop trying to inject SQL code into my form!");
-            return 0;
+            document.getElementById("txtCC").value = sName + "\n" + sAddress.replace("&#x27;", "'").replace("&#xD;&#xA;", " ");
         }
-        if (document.getElementById("txtLetterContentBold").value == "") 
-        {
-            window.alert("Please enter a summary.")        
-            return 0;
-        }
-        if (document.getElementById("txtLetterContent").value == "") 
-        { 
-            window.alert("Please enter some text.")
-            return 0;
-        }
-        if (document.getElementById("ddlSecTeam").value == "") 
-        {
-            window.alert("Please select a secreterial team.")
-            return 0;
-        }
-        if (document.getElementById("ddlConsultant").value == "") 
-        {
-            window.alert("Please select a consultant.")
-            return 0;
-        }        
-        if (document.getElementById("ddlGC").value == "") 
-        {
-            window.alert("Please select a GC.")
-            return 0;
-        }
-        if (document.getElementById("txtLetterTo").value == "") 
-        {
-            window.alert("Please choose a recipient.")
-            return 0;
-        }
-        if (document.getElementById("txtLetterFrom").value == "") 
-        {
-            window.alert("Please choose a sender.")
-            return 0;
-        }
-        if (document.getElementById("txtDateDictated").value == "") 
-        {
-            window.alert("Please specify a dictated date.")
-            return 0;
-        }
-        return 1;
-    }
 
-    function DoPreview()
-    {        
-        document.getElementById("Preview").submit();
-    }
+        function AddToDOT(id) {
+            document.getElementById("txtPID").value = id;
+            document.getElementById("frmAddPatientToDOT").submit();
+        }
 
-    function DoPrint()
-    {
-        document.getElementById("Print").submit();
-    }
+        function AddCC() {
+            document.getElementById("frmAddCCToDOT").submit();
+        }
+
+        function DeleteCC(id) {
+            document.getElementById("txtCCID").value = id;
+            document.getElementById("frmDeleteCC").submit();
+        }
+
+        function CheckFormValid() {
+            //gotta protect against those SQL injections!
+            if (document.getElementById("txtLetterContent").value.match(/};.*/)) {
+                window.alert("Oi! Stop trying to inject SQL code into my form!");
+                return 0;
+            }
+            if (document.getElementById("txtLetterContentBold").value == "") {
+                window.alert("Please enter a summary.")
+                return 0;
+            }
+            if (document.getElementById("txtLetterContent").value == "") {
+                window.alert("Please enter some text.")
+                return 0;
+            }
+            if (document.getElementById("ddlSecTeam").value == "") {
+                window.alert("Please select a secreterial team.")
+                return 0;
+            }
+            if (document.getElementById("ddlConsultant").value == "") {
+                window.alert("Please select a consultant.")
+                return 0;
+            }
+            if (document.getElementById("ddlGC").value == "") {
+                window.alert("Please select a GC.")
+                return 0;
+            }
+            if (document.getElementById("txtLetterTo").value == "") {
+                window.alert("Please choose a recipient.")
+                return 0;
+            }
+            if (document.getElementById("txtLetterFrom").value == "") {
+                window.alert("Please choose a sender.")
+                return 0;
+            }
+            if (document.getElementById("txtDateDictated").value == "") {
+                window.alert("Please specify a dictated date.")
+                return 0;
+            }
+            return 1;
+        }
+
+        function DoPreview() {
+            document.getElementById("Preview").submit();
+        }
+
+        function DoPrint() {
+            document.getElementById("Print").submit();
+        }
 
 
-</script>
+    </script>
 
 
-@section Scripts{
+@section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-            }
+}

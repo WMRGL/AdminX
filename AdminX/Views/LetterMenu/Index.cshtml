@@ -13,160 +13,153 @@
     };
 }
 
-<div class="container">
-    @if(!Model.isRelative)
-    {
-        <h1>Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)</h1>
-    }
-    else
-    {
-        <h1>Letters for @Model.relative.RelForename1 @Model.relative.RelSurname (relative of @Model.patient.CGU_No)</h1>
-    }
 
-    
-
-    
-    <form id="frmDoLetter" asp-action="DoLetter">
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Referral:</label>
-            </div>
-            <div class="col-md-6">
-                <select name="refID" id="ddlRefID">
-                    <option value="">Select</option>
-                    @foreach(var item in Model.referralList)
-                    {
-                        <option value=@item.refid>@item.refid - @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.ReferringClinician at @item.ReferringFacility</option>
-                    }
-                </select>
-            </div>
+<div class="card">
+    <div class="card-header">
+            
+            @if (!Model.isRelative)
+            {
+            <h5 class="card-title text-dark">
+                Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)
+            </h5>
+            }
+            else
+            {
+                <h5 class="card-title text-dark">Letters for @Model.relative.RelForename1 @Model.relative.RelSurname (relative of @Model.patient.CGU_No)</h5>
+            }
+        
+    </div>
+    <div class="card-body">
+        <form method="post" id="frmDoLetter" asp-action="DoLetter">
             <div class="col-md-2">
                 <input name="docCode" id="txtDocCode" hidden />
                 <input name="isPreview" id="txtIsPreview" hidden />
-                @if(Model.isRelative)
+                @if (Model.isRelative)
                 {
                     <input name="relID" asp-for=@Model.relative.relsid hidden />
                 }
             </div>
-        </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Referral</label>
+                <div class="col-sm-10">
+                    <select class="form-select js-choice" name="refID" id="ddlRefID">
+                        <option value="">Select</option>
+                        @foreach (var item in Model.referralList)
+                        {
+                            <option value=@item.refid>@item.refid - @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.ReferringClinician at @item.ReferringFacility</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Select Group</label>
+                <div class="col-sm-10 mb-2">
+                    <select id="letterGroups" class="form-select">
+                        <option value="">Select Group</option>
+                        <option value="Standard">Standard</option>
+                        <option value="MEDREC">Medical Records Requests</option>
+                        <option value="DNATS">DNA</option>
+                        <option value="Outcome">Outcome</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-sm-10 offset-sm-2">
+                    <select class="form-select" name="docID" id="docGroupStandard" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListStandard)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupMedRec" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListMedRec)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupDNA" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListDNA)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupOutcome" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListOutcome)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">To clinician (if applicable)</label>
+                <div class="col-sm-10">
+                <select class="form-select js-choice" name="clinicianCode">
+                        <option value="">Select</option>
+                        @foreach (var item in Model.clinicianList)
+                        {
+                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">From</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="txtLetterFrom" rows="3" name="letterFrom" spellcheck="false"></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">To</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="letterTo" id="txtLetterTo" rows="3" 
+                    spellcheck="false" asp-for=@Model.patientAddress></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Free text</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="additionalText"  rows="3" spellcheck="false" ></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Enclosures</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="enclosures" rows="3" spellcheck="false"></textarea>
+                </div>
+            </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-4">
-                <select id="letterGroups">
-                    <option value="">Select Group</option>
-                    <option value="Standard">Standard</option>
-                    <option value="MEDREC">Medical Records Requests</option>
-                    <option value="DNATS">DNA</option>
-                    <option value="Outcome">Outcome</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-        </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-8">
-                <select class="w-100" name="docID" id="docGroupStandard" hidden>
-                    <option value="" selected>Select</option>
-                    @foreach (var item in Model.docsListStandard)
-                    {
-                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
-                    }
-                </select>
-                <select class="w-100" name="docID" id="docGroupMedRec" hidden>
-                    <option value="" selected>Select</option>
-                    @foreach (var item in Model.docsListMedRec)
-                    {
-                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
-                    }
-                </select>
-                <select class="w-100" name="docID" id="docGroupDNA" hidden>
-                    <option value="" selected>Select</option>
-                    @foreach (var item in Model.docsListDNA)
-                    {
-                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
-                    }
-                </select>
-                <select class="w-100" name="docID" id="docGroupOutcome" hidden>
-                    <option value="" selected>Select</option>
-                    @foreach (var item in Model.docsListOutcome)
-                    {
-                        <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>To clinician (if applicable):</label>
-            </div>
-            <div class="col-md-2">
-                <select class="w-100" name="clinicianCode">
-                    <option value="">Select</option>
-                    @foreach(var item in Model.clinicianList)
-                    {
-                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
-                    }
-                </select>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Leaflets</label>
+                <div class="col-sm-10">
+                    <select class="form-select js-choice" name="clinicianCode">
+                        <option value="0">Select</option>
+                        @foreach (var l in Model.leaflets)
+                        {
+                            <option value=@l.ID>@l.Code - @l.Name</option>
+                        }
+                    </select>
+                </div>
             </div>
 
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>From:</label>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end"></label>
+                <div class=" float-sm-2 col-sm-1 ms-1">
+                    <button type="button" class="btn btn-primary" id="btnPreview"> Preview </button>
+                </div>
+                <div class="col-sm-1 ms-1">
+                    <button type="button" class="btn btn-default btn-outline-primary" id="btnPrint">Print and Send</button>
+                </div>
             </div>
-            <div class="col-md-4">
-                <textarea name="letterFrom" rows="5" cols="30" id="txtLetterFrom"></textarea>
-            </div>
-            <div class="col-md-2">
-                <label>To:</label>
-            </div>
-            <div class="col-md-4">
-                <textarea name="letterTo" rows="5" cols="30" id="txtLetterTo" asp-for=@Model.patientAddress></textarea>
-            </div>
-        </div>
-
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Free text:</label>
-            </div>
-            <div class="col-md-4">
-                <textarea name="additionalText"></textarea>
-            </div>
-            <div class="col-md-2">
-                <label>Enclosures</label>
-            </div>
-            <div class="col-md-4">
-                <textarea name="enclosures"></textarea>
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Leaflets:</label>
-            </div>
-            <div class="col-md-4">
-                <select name="leafletID">
-                    <option value="0" selected>Select...</option>
-                    @foreach (var l in Model.leaflets)
-                    {
-                        <option value=@l.ID>@l.Code - @l.Name</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="button" class="btn btn-default btn-outline-primary" id="btnPreview">Preview</button>
-            </div>        
-            <div class="col-md-2">
-                <button type="button" class="btn btn-default btn-outline-primary" id="btnPrint">Print and Send</button>
-            </div>
-        </div>
-
-    </form>
-
-    
+        </form>
+    </div>
 </div>
 
 <script>

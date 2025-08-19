@@ -41,7 +41,7 @@ namespace AdminX.Models
         public int SearchID { get; set; }
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
-        public DateTime? DOB  { get; set; }
+        public DateTime? DOB { get; set; }
         public string? NHSNo { get; set; }
         public string? PostCode { get; set; }
         public string? CGUNo { get; set; }
@@ -119,7 +119,7 @@ namespace AdminX.Models
         public string? OldestForPrinting { get; set; }
     }
 
-    [Table("ListDiaryAction", Schema = "dbo" )]
+    [Table("ListDiaryAction", Schema = "dbo")]
     public class DiaryAction
     {
         [Key]
@@ -138,7 +138,7 @@ namespace AdminX.Models
 
     [Keyless]
     [Table("ViewMergeHistory", Schema = "dbo")]
-    public class  MergeHistory
+    public class MergeHistory
     {
         public int MPI { get; set; }
         public int? OldMPI { get; set; }
@@ -148,4 +148,12 @@ namespace AdminX.Models
         public string Type { get; set; }
         public string MergedBy { get; set; }
     }
+
+    [Keyless]
+   // [Table("GenderIdentity")]
+    public class GenderIdentity
+    {
+        public string Gender { get; set; }
+    }
+
 }

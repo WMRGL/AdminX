@@ -14,10 +14,10 @@ namespace AdminX.Meta
                 
             private readonly ClinicalContext _context;
 
-            public GenderData(ClinicalContext context)
+        public GenderData(ClinicalContext context)
             {
             _context = context;
-            }
+        }
 
            public List<Gender> GetGenderList()
             {
@@ -26,5 +26,5 @@ namespace AdminX.Meta
                 return genders.ToList();
             }
 
-    }
+        }
 }

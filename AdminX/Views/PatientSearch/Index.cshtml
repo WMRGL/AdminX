@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="mb-3 col-md-6">
                     <label class="form-label">Date of Birth</label>
-                    <input class="form-control flatpickr flatpickr-input active" placeholder="Select date.." name="dob" id="dobSearch" tabindex="0" type="text" readonly="readonly">
+                    <input class="form-control" name="dob" id="dobSearch" tabindex="0" type="date" >
                 </div>
                 <div class="mb-3 col-md-6">
                     <label class="form-label" for="nhsSearch">NHS Number (without spaces):</label>
@@ -204,13 +204,3 @@
 
 </script>
 
-@section Scripts
-{
-    <script>
-        flatpickr("#dobSearch", {
-            altInput: true,
-            altFormat: "F j, Y",
-            dateFormat: "Y-m-d",
-        });
-    </script>
-}

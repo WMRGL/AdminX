@@ -36,14 +36,14 @@ namespace AdminX.Controllers
             _dvm = new DiaryVM();
             _patientData = new PatientData(_clinContext);
             _diaryData = new DiaryData(_clinContext);
-            _referralData = new ReferralData(_clinContext);            
+            _referralData = new ReferralData(_clinContext);
             _activityData = new ActivityData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);    
+            _staffUser = new StaffUserData(_clinContext);
             _docsData = new DocumentsData(_docContext);
             _diaryActionData = new DiaryActionData(_adminContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
-        }        
+        }
 
         [HttpGet]
         [Authorize]
@@ -61,10 +61,22 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);                
+                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 _dvm.linkedRef = _activityData.GetActivityDetails(_dvm.diary.RefID.GetValueOrDefault());
                 _dvm.defaultAction = _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
 
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "Diary Details" }
+                };  
                 return View(_dvm);
             }
             catch (Exception ex)
@@ -102,13 +114,20 @@ namespace AdminX.Controllers
                 _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _dvm.documentsList = _docsData.GetDocumentsList();
 
+          
+
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-
-                    new BreadcrumbItem { Text = "New Diary Entry" }
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "New Diary" }
                 };
-
                 return View(_dvm);
                 //return RedirectToAction("Index", "AddNew");
             }
@@ -129,7 +148,7 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
                 _dvm.patient = _patientData.GetPatientDetails(_referralData.GetReferralDetails(refID).MPI);
                 //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
@@ -139,9 +158,12 @@ namespace AdminX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diary-create(SQL)" }); }
 
-                int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+                //int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+                _dvm.success = true;
+                _dvm.message = "New diary added.";
+                TempData["SuccessMessage"] = "New diary added";
 
-                return RedirectToAction("DiaryDetails", "Diary", new { id = diaryid });
+                return RedirectToAction("PatientDetails", "Patient", new { id = _dvm.patient.MPI });
             }
             catch (Exception ex)
             {
@@ -171,7 +193,20 @@ namespace AdminX.Controllers
                 _dvm.documents = _docsData.GetDocumentsList();
                 _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _dvm.documentsList = _docsData.GetDocumentsList();
-                
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Patient Details",
+                        Controller = "Patient",
+                        Action = "PatientDetails",
+                        RouteValues = new Dictionary<string, string> { { "id", _dvm.patient.MPI.ToString() } }
+                    },
+                    new BreadcrumbItem { Text = "Edit Diary " }
+                };
+
                 return View(_dvm);
             }
             catch (Exception ex)
@@ -190,7 +225,7 @@ namespace AdminX.Controllers
                 {
                     return NotFound();
                 }
-                                
+
 
                 int success = _crud.CallStoredProcedure("Diary", "Update", diaryID, refID, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 
