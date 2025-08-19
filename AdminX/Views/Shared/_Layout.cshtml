@@ -184,17 +184,12 @@
         document.addEventListener('DOMContentLoaded', function () {
             $('.defaultTable').DataTable({
                 info: true,
-                order: [[0, 'asc']], 
-                paging: true,
+                ordering: true,
+                // paging: true,
                 autoWidth: false,
                 width: "100%",
-                dom: 'lBfrtip',
-                columnDefs: [
-                    { 
-                        targets: '_all',
-                        orderable: true 
-                    }
-                ]
+                dom: 'lBfrtip'
+
             });
 
             // choice js

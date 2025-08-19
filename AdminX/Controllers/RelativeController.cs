@@ -72,7 +72,7 @@ namespace AdminX.Controllers
                 _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
                 _rvm.MPI = _rvm.patient.MPI;
-                _rvm.relationsList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
+                _rvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
                 _rvm.genderList = _relativeData.GetGenderList();
 
                 return View(_rvm);

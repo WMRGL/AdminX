@@ -14,89 +14,91 @@
     };
 }
 
-<div class="container">   
 
-    <div class="row mb-5">
-        <hr />
+
+
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">
+            Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+        </h5>
     </div>
-
-    <div class="row mb-5 g-5">
-        <h1>Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)</h1>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <dl class="row">        
-            <dt class="col-sm-2">
-                Full Name:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
-                @if (Model.relativeDetails.RelSurnameBirth != null)
-                {
-                    <span>(was </span> @Model.relativeDetails.RelSurnameBirth<span>)</span>
-                }
-            </dd>
-            <dt class="col-sm-2">
-                Relation to Proband:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.relativeDetails.Relation)
-            </dd>
-            <dt class="col-sm-2">
-                DOB:
-            </dt>
-            <dd class="col-sm-4">
-                @if (Model.relativeDetails.DOB != null)
-                {
-                    @Html.DisplayFor(model => model.relativeDetails.DOB)
-                }
-                else
-                {
-                    <span>Not known</span>
-                }
-            </dd>       
-            @if (Model.relativeDetails.RelAlive == "No")
-            {
-                <dt class="col-sm-2">DOD:</dt>
-                <dd class="col-sm-4">
-                    @if (Model.relativeDetails.DOD != null && Model.relativeDetails.DOD != DateTime.Parse("1900-01-01"))
+    <div class="card-body">
+        <ul class="timeline mt-2 mb-0">
+            <li class="timeline-item">
+                <strong>FullName:</strong>
+                <p>
+                    @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+                    @if (Model.relativeDetails.RelSurnameBirth != null)
                     {
-                        @Html.DisplayFor(model => model.relativeDetails.DOD)
+                        <span>(was </span> 
+                        @Model.relativeDetails.RelSurnameBirth
+                    
+                        <span>)</span>
+                    }
+                </p>
+            </li>
+            <li class="timeline-item">
+                <strong> Relation to Proband</strong>
+                <p>
+                    @Html.DisplayFor(model => model.relativeDetails.Relation)
+                </p>
+            </li>
+            <li class="timeline-item">
+                <strong>DOB</strong>
+                <p>
+                    @if (Model.relativeDetails.DOB != null)
+                    {
+                        @Html.DisplayFor(model => model.relativeDetails.DOB)
                     }
                     else
                     {
                         <span>Not known</span>
                     }
-                </dd>
-            }
-            else
-            {
-                <dt class="col-sm-6"></dt>
-            }
-            <dt class="col-sm-2">
-                Sex:
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.relativeDetails.Sex)
-            </dd>
-            <dt class="col-sm-2">
-                Affected
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.relativeDetails.RelAffected)
-            </dd>
-        </dl>
-    </div>
+                </p>
+            </li>
+            <li class="timeline-item">
+                @if (Model.relativeDetails.RelAlive == "No")
+                {
+                    <strong>Signed in</strong>
+            <p>
+                @if (Model.relativeDetails.DOD != null && Model.relativeDetails.DOD != DateTime.Parse("1900-01-01"))
+                {
+                    @Html.DisplayFor(model => model.relativeDetails.DOD)
+                }
+                else
+                {
+                    <span>Not known</span>
+                }
+            </p>
+        }
+        else
+        {
+          <p></p>
+        }
+                
+            </li>
+            <li class="timeline-item">
+                <strong>Sex</strong>
+                <p>
+                    @Html.DisplayFor(model => model.relativeDetails.Sex)
+                </p>
+            </li>
+            <li class="timeline-item">
+                <strong>Affected</strong>
+                <p>
+                    @Html.DisplayFor(model => model.relativeDetails.RelAffected)
+                </p>
+            </li>
+        </ul>
+        <a type="button" class="btn btn-default btn-primary" asp-controller="Relative" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+        <a type="button" class="btn btn-default btn-outline-primary ms-7" asp-controller="LetterMenu" asp-action="Index" asp-route-id="@Model.relativeDetails.relsid" asp-route-isRelative="true">Send Letter</a>
 
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-primary" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
-        </div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-default btn-primary" asp-controller="LetterMenu" asp-action="Index" asp-route-id="@Model.relativeDetails.relsid" asp-route-isRelative="true">Send Letter</a>
-        </div>
     </div>
 </div>
+
 
 <script>
     document.getElementById("btnBack").addEventListener("click", GoBack);
