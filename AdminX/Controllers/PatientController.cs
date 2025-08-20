@@ -247,6 +247,7 @@ namespace AdminX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
 
+            TempData["SuccessMessage"] = "Patient details updated successfully";
             return RedirectToAction("PatientDetails", new { id = mpi });
         }
 
@@ -539,6 +540,7 @@ namespace AdminX.Controllers
                 //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
+                TempData["SuccessMessage"] = "CGU number changed successfully";
 
                 return View(_pvm);
             }
