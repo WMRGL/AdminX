@@ -1,90 +1,81 @@
 ﻿@model AdminX.ViewModels.MergeHistoryVM
 
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h1 class="text-center">Merge history</h1>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Merge history</h5>
     </div>
-    <div class="row mb-5 g-5">
+    <div class="card-body">
         <form asp-action="Search">
-            <div class="row mb-5 g-5">
-                <div class="col-md-2 text-end">
-                    <label>Old file number:</label>
+            <div class="row">
+                <div class="col-md-2">
+                    <label class="form-label"> Old file number </label>
+                    <input type="text" value="" class="form-control" name="oldFileNo" />
                 </div>
                 <div class="col-md-2">
-                    <input name="oldFileNo" /> 
-                </div>
-                <div class="col-md-2 text-end">
-                    <label>New file number:</label>
+                    <label class="form-label"> New file number </label>
+                    <input type="text" value="" class="form-control" name="newCGUNo" />
                 </div>
                 <div class="col-md-2">
-                    <input name="newCGUNo" />
-                </div>
-                <div class="col-md-2 text-end">
-                    <label>NHS No:</label>
+                    <label class="form-label"> NHS No </label>
+                    <input type="text" value="" class="form-control" name="nhsNo" />
                 </div>
                 <div class="col-md-2">
-                    <input name="nhsNo" />
+                    <label class="form-label"> Firstname </label>
+                    <input type="text" value="" class="form-control" name="firstName" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label"> Lastname </label>
+                    <input type="text" value="" class="form-control" name="lastName" />
+                </div>
+                <div class="col-md-2 mb-4">
+                    <label class="form-label"> Date of birth </label>
+                    <input type="date" value="" class="form-control" name="dob" />
                 </div>
             </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-2 text-end">
-                    <label>First name:</label>
-                </div>
-                <div class="col-md-2">
-                    <input name="firstName" />
-                </div>
-                <div class="col-md-2 text-end">
-                    <label>Last name:</label>
-                </div>
-                <div class="col-md-2">
-                    <input name="lastName" />
-                </div>
-                <div class="col-md-2 text-end">
-                    <label>Date of birth:</label>
-                </div>
-                <div class="col-md-2">
-                    <input type="date" name="dob" />
-                </div>
-
-            </div>
-
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-default btn-primary">Search</button>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-default btn-outline-primary">Search</button>
         </form>
     </div>
-    @if(Model.message != null && Model.message != "")
-    {
-        <h2>@Model.message</h2>
-    }
-    else
-    {
-        @if(Model.mergeHistory != null)
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Old pedigree</th>
-                        <th>New pedigree</th>
-                        <th>Patient</th>
-                        <th>Merge type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.mergeHistory)
-                    {
-                        <tr>
-                            <td>@item.OldPedigreeNumber</td>
-                            <td>@item.NewPedigreeNumber</td>
-                            <td>@item.PatientName</td>
-                            <td>@item.Type</td>
-                        </tr>
-                    }
-                </tbody>            
-            </table>
-        }
-    }
 </div>
+
+@if (Model.message != null && Model.message != "")
+{
+    <div>
+        <div class="card-body">
+            <h4 class="text-dark">@Model.message</h4>
+        </div>
+    </div>
+
+}
+else
+{
+
+    @if (Model.mergeHistory != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Old pedigree</th>
+                            <th>New pedigree</th>
+                            <th>Patient</th>
+                            <th>Merge type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.mergeHistory)
+                        {
+                            <tr>
+                                <td>@item.OldPedigreeNumber</td>
+                                <td>@item.NewPedigreeNumber</td>
+                                <td>@item.PatientName</td>
+                                <td>@item.Type</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
