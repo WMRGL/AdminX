@@ -244,6 +244,8 @@ namespace AdminX.Controllers
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
                 }
 
+                TempData["SuccessMessage"] = "Clinic details updated successfully.";
+
                 return RedirectToAction("ApptDetails", new { id = refID });
             }
             catch (Exception ex)
@@ -309,6 +311,8 @@ namespace AdminX.Controllers
                 _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
 
                 emailBodyText = emailBodyText + emailMessage;
+
+                TempData["SuccessMessage"] = "Created successfully.";
 
                 return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");                
             }

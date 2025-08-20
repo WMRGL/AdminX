@@ -3,10 +3,10 @@
     ViewData["Title"] = "Admin-X Home Page";
 }
 
-    <div class="p-4  card"> 
-        
-        @if(!Model.isLive)
-        {
+<div class="p-4  card">
+
+    @if (!Model.isLive)
+    {
         <div class="alert alert-danger alert-dismissible" role="alert">
             <div class="alert-icon">
                 <i class="far fa-fw fa-bell"></i>
@@ -15,136 +15,110 @@
                 <strong>NOTE:</strong> This is a test system. Work completed here will not be reflected in production.
             </div>
         </div>
-        }
-        
-        @if (Model.notificationMessage != null && Model.notificationMessage != "")
-        {
-            <h1 class="text-center redtext">@Model.notificationMessage</h1>
-        }
+    }
 
-        
-            <h2 class="text-center">Welcome, @Model.name!</h2>
-            <br />
+    @if (Model.notificationMessage != null && Model.notificationMessage != "")
+    {
+        <h1 class="text-center redtext">@Model.notificationMessage</h1>
+    }
 
-            <p class="text-center"><img src="~/images/admin-x-logo-2.png" width="500" height="200" /></p>
-            <br />
 
-            <h3 class="text-center">The new system for admin team members to manage the database.</h3>
-           
-        
-        <div class="row">
-            <div class="col-md-10"></div>
-            <div class="col-md-2"><label>Application version: @Model.appVersion</label></div>
-        </div>
-        <div class="row">
-            <div class="col-md-10"></div>
-            <div class="col-md-2"><label>Data library version: @Model.dllVersion</label></div>
-        </div>
-        
+    <h2 class="text-center">Welcome, @Model.name!</h2>
+    <br />
+
+    <p class="text-center"><img src="~/images/admin-x-logo-2.png" width="500" height="200" /></p>
+    <br />
+
+    <h3 class="text-center">The new system for admin team members to manage the database.</h3>
+
+
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2"><label>Application version: @Model.appVersion</label></div>
     </div>
+    <div class="row">
+        <div class="col-md-10"></div>
+        <div class="col-md-2"><label>Data library version: @Model.dllVersion</label></div>
+    </div>
+
+</div>
+
 
 
 <div class="row">
-	<div class="col-xl-6 col-xxl-5 d-flex">
-		<div class="w-100">
-			<div class="row">
-				<div class="col-sm-6">
-					<div class="card">
-						<div class="card-body">
-							<div class="row">
-								<div class="col mt-0">
-									<h5 class="card-title">Contact Outcomes:</h5>
-								</div>
-								<div class="col-auto mt-0">
-									<h1>@Model.contactOutcomes</h1>
-								</div>
-							</div>
-							<div class="mb-0">
-								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Contact Outcomes</a></span>
-							</div>
-						</div>
-					</div>
-					<div class="card">
-						<div class="card-body">
-							<div class="row">
-								<div class="col mt-0">
-									<h5 class="card-title">Patient Review:</h5>
-								</div>
-								<div class="col-auto mt-0">
-									<h1>@Model.reviewOutcomes</h1>
-								</div>
-							</div>
-							<div class="mb-0">
-								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Patient Reviews</a></span>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-6">
-					<div class="card">
-						<div class="card-body">
-							<div class="row">
-								<div class="col mt-0">
-									<h5 class="card-title">Awaiting Triage:</h5>
-								</div>
-								<div class="col-auto mt-0">
-									<h1>@Model.triageOutcomes</h1>
-								</div>
-							</div>
-							<div class="mb-0">
-								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a></span>
-							</div>
-						</div>
-					</div>
-					<div class="card">
-						<div class="card-body">
-							<div class="row">
-								<div class="col mt-0">
-									<h5 class="card-title">Dictated Letters:</h5>
-								</div>
-								<div class="col-auto mt-0">
-									<h1>@Model.dictatedLetters</h1>
-								</div>
-							</div>
-							<div class="mb-0">
-								<span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Dictated Letters</a></span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="col-sm-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col mt-0">
+                        <h5 class="card-title">Contact Outcomes:</h5>
+                    </div>
+                    <div class="col-auto mt-0">
+                        <h1>@Model.contactOutcomes</h1>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Clinic" asp-action="Index">Contact Outcomes</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col mt-0">
+                        <h5 class="card-title">Patient Review:</h5>
+                    </div>
+                    <div class="col-auto mt-0">
+                        <h1>@Model.reviewOutcomes</h1>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Review">Patient Reviews</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col mt-0">
+                        <h5 class="card-title">Awaiting Triage:</h5>
+                    </div>
+                    <div class="col-auto mt-0">
+                        <h1>@Model.triageOutcomes</h1>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a></span>
+                </div>
+            </div>
+        </div>
 
-	<div class="col-xl-6 col-xxl-7">
-		<div class="card flex-fill w-100">
-			<div class="card-header">
-				<div class="float-end">
-					<form class="row g-2">
-						<div class="col-auto">
-							<select class="form-select form-select-sm bg-light border-0">
-								<option>Jan</option>
-								<option value="1">Feb</option>
-								<option value="2">Mar</option>
-								<option value="3">Apr</option>
-							</select>
-						</div>
-						<div class="col-auto">
-							<input type="text" class="form-control form-control-sm bg-light rounded-2 border-0" style="width: 100px;" placeholder="Search..">
-						</div>
-					</form>
-				</div>
-				<h5 class="card-title mb-0">Recent Movement</h5>
-			</div>
-			<div class="card-body pt-2 pb-3">
-				<div class="chart chart-sm">
-					<div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-					<canvas id="chartjs-dashboard-line" width="850" height="250" style="display: block; width: 850px; height: 250px;" class="chartjs-render-monitor"></canvas>
-				</div>
-			</div>
-		</div>
-	</div>
+    </div>
+    <div class="col-sm-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col mt-0">
+                        <h5 class="card-title">Dictated Letters:</h5>
+                    </div>
+                    <div class="col-auto mt-0">
+                        <h1>@Model.dictatedLetters</h1>
+                    </div>
+                </div>
+                <div class="mb-0">
+                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="DictatedLetter">Dictated Letters</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
+
+
+
+
 
 

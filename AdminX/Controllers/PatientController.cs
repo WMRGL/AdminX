@@ -247,6 +247,7 @@ namespace AdminX.Controllers
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
 
+            TempData["SuccessMessage"] = "Patient details updated successfully";
             return RedirectToAction("PatientDetails", new { id = mpi });
         }
 
@@ -333,31 +334,7 @@ namespace AdminX.Controllers
                 _pvm.genders = _genderData.GetGenderList();
                 _pvm.genderAtBirth = _genderData.GetGenderList();
                _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
-                //_pvm.patient = new Patient();
-
-
-                //if (sex != null)
-                //{
-                    
-                //    _pvm.patient.SEX = sex;
-                //}
-
-                //if (ADDRESS1 != null)
-                //{
-                //    _pvm.patient.ADDRESS1 = ADDRESS1;
-                //}
-                
-
-                //if ( gpPracticeCode != null)
-                //{
-                //    _pvm.gpPracticeCode = gpPracticeCode; 
-                //}
-
-                //if (startDate != null || endDate != null)
-                //{
-                //    _pvm.startDate = startDate;
-                //    _pvm.endDate = endDate;
-                //}
+              
 
                 if (success.HasValue)
                 {
@@ -563,6 +540,7 @@ namespace AdminX.Controllers
                 //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
+                TempData["SuccessMessage"] = "CGU number changed successfully";
 
                 return View(_pvm);
             }
