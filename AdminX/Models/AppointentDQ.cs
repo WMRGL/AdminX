@@ -33,7 +33,7 @@ namespace AdminX.Models
         public int MPI { get; set; }
         public string FIRSTNAME { get; set; }
         public string LASTNAME { get; set; }
-        public string SOCIAL_SECURITY { get; set; }
+        public string? SOCIAL_SECURITY { get; set; }
         public string CGU_No { get; set; }
         public DateTime DOB { get; set; }
         public DateTime REFERRAL_DATE { get; set; }
@@ -54,8 +54,8 @@ namespace AdminX.Models
     [Keyless]
     public class ClinFacility
     {
-        public string FACILITY { get; set; }
-        public string LOCATION { get; set; }
+        public string? FACILITY { get; set; }
+        public string? LOCATION { get; set; }
     }
 
     [Table("ViewEpicOutpatients", Schema = "dbo")]
