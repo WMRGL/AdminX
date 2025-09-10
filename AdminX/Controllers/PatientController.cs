@@ -303,6 +303,7 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";
+                
 
                 if (fileNumber == null || fileNumber == "")
                 {
