@@ -60,7 +60,7 @@ namespace AdminX.Controllers
 
             try
             {
-                viewModel.CgudbResults = await _appointmentDQData.GetAppointmentsNotInEpicAsync(startDate, inclusiveEndDate);
+               viewModel.CgudbResults = await _appointmentDQData.GetAppointmentsNotInEpicAsync(startDate, inclusiveEndDate);
                 viewModel.EpicResults = await _appointmentDQData.GetAppointmentsNotInCgudbAsync(startDate, inclusiveEndDate);
             }
 

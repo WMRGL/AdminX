@@ -290,6 +290,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> AddNew(string firstname, string lastname, DateTime DOB, string postcode, string nhs, string? fileNumber,
             string? message, bool? success, string? sex, string? ADDRESS1, string? gpPracticeCode, DateTime? startDate, DateTime? endDate)
         {
@@ -302,6 +303,7 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";
+                
 
                 if (fileNumber == null || fileNumber == "")
                 {
