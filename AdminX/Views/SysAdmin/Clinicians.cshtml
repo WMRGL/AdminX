@@ -15,101 +15,99 @@
     };
 }
 
-<div class="container">
 
-    @if (Model.message != null)
-    {
-        <div class="card">
-            <div class="card-body">
-                @if (Model.success)
-                {
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
                     </div>
-                }
-                else
-                {
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
                     </div>
-                }
-            </div>
-        </div>
-    }
-
-
-    <div class="row mb-5 g-5">
-        <h1>External Clinician Administration</h1>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <div class="col-md-10"></div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-outline-primary" asp-controller="WIP" asp-action="Index">Add New External Clinician</a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
         </div>
     </div>
+}
 
-    <form asp-action="Clinicians">
-        <div class="row mb-5">
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">External Clinicians</h5>
+    </div>
+    <div class="card-body">
+       
+        <div class="row ">
+            <div class="col-md-10"></div>
             <div class="col-md-2">
-                <label>FirstName</label>
+                
             </div>
-            <div class="col-md-2">
-                <input name="firstNameSearch" />
-            </div>
-            <div class="col-md-2">
-                <label>Surname</label>
-            </div>
-            <div class="col-md-2">
-                <input name="lastNameSearch" />
-            </div>            
         </div>
 
-        <div class="row mb-5">
-            <div class="col-md-1">
-                <label>Show Only Current</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyCurrent" />
-                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
-            </div>            
-            <div class="col-md-1">
-                <label>Show Only GPs</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyGP" />
-                <input name="isOnlyGP" id="txtOnlyGP" hidden />
-            </div>
-            <div class="col-md-1">
-                <label>Show Only Non-GPs</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyNonGP" />
-                <input name="isOnlyNonGP" id="txtOnlyNonGP" hidden />
-            </div>
-            <div class="col-md-4"></div>
-            <div class="col-md-2">            
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </div>
-    </form>
+        <form asp-action="Clinicians" class="row row-cols-md-auto align-items-center">
+			<div class="col-12">
+                <label class="form-label" for="inlineFormInputName2">FirstName</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="firstNameSearch">
+			</div>
+			<div class="col-12">
+                <label class="form-label" for="inlineFormInputName1">Surname</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName1" name="lastNameSearch">
+			</div>
 
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyCurrent">
+                    <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
+                    <label class="form-check-label" for="customControlInline" id="chkOnlyCurrent">Show Only Current</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyGP">
+                    <input name="isOnlyGP" id="txtOnlyGP" hidden />
+                    <label class="form-check-label" for="customControlInline" id="chkOnlyGP">Show Only GPs</label>
+                </div>
+            </div>
 
+			<div class="col-12">
+				<div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyNonGP">
+                    <input name="isOnlyNonGP" id="txtOnlyNonGP" hidden />
+                    <label class="form-check-label" for="customControlInline">Show Only Non-GPs</label>
+				</div>
+			</div>
 
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary mb-2">Submit</button>
+			</div>
+            <div class="col-12 ms-auto">
+                <a type="button" class="btn btn-outline-primary float-end" asp-controller="WIP" asp-action="Index">Add New External Clinician</a>
+            </div>
+		</form>
 
-    <div class="row  mb-5 g-5">
-        <table class="table">
-            <thead>
+ 
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover defaultTable">
+            <thead class="table-dark">
                 <tr>
                     <th></th>
                     <th>Clinician Code</th>
@@ -122,7 +120,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(var item in Model.clinicians)
+                @foreach (var item in Model.clinicians)
                 {
                     <tr>
                         <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicianDetails" asp-route-clinCode=@item.MasterClinicianCode>Details</a></td>
@@ -139,7 +137,7 @@
                         {
                             <td>Yes</td>
                         }
-                        @if(item.NON_ACTIVE == 0)
+                        @if (item.NON_ACTIVE == 0)
                         {
                             <td>Yes</td>
                         }
@@ -152,8 +150,7 @@
             </tbody>
         </table>
     </div>
-
-</div>
+  </div>
 
 
 <script>
