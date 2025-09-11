@@ -300,13 +300,13 @@ namespace AdminX.Controllers
                     if (firstNameSearch != null)
                     {
                         _savm.clinicians = _savm.clinicians.Where(s => s.FIRST_NAME != null).ToList();
-                        _savm.clinicians = _savm.clinicians.Where(s => s.FIRST_NAME.Contains(firstNameSearch)).ToList();
+                        _savm.clinicians = _savm.clinicians.Where(s => s.FIRST_NAME.ToUpper().Contains(firstNameSearch.ToUpper())).ToList();
                     }
 
                     if (lastNameSearch != null)
                     {
                         _savm.clinicians = _savm.clinicians.Where(s => s.NAME != null).ToList();
-                        _savm.clinicians = _savm.clinicians.Where(s => s.NAME.Contains(lastNameSearch)).ToList();
+                        _savm.clinicians = _savm.clinicians.Where(s => s.NAME.ToUpper().Contains(lastNameSearch.ToUpper())).ToList();
                     }
 
                     if (isOnlyCurrent.GetValueOrDefault())
@@ -342,6 +342,8 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
                 _savm.clinician = _clinicianData.GetClinicianDetails(clinCode);
+                _savm.titles = _titleData.GetTitlesList();
+                _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
 
                 return View(_savm);
             }
@@ -352,14 +354,14 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClinicianDetails(string clinCode, string name)
+        public async Task<IActionResult> ClinicianDetails(string clinCode, string title, string firstName, string lastName, string facility, string speciality, string position, int isGP, int isNonActive)
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Clinician", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
-                false, false, 0, 0, 0, "", "", "");
+            int iSuccess = _crud.CallStoredProcedure("Clinician", "Edit", isGP, isNonActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, facility, speciality, position);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
 
@@ -374,6 +376,7 @@ namespace AdminX.Controllers
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
 
+                _savm.titles = _titleData.GetTitlesList();
                 _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
                 
                 return View(_savm);
@@ -385,7 +388,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality)
+        public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
@@ -406,7 +409,7 @@ namespace AdminX.Controllers
                 clinCode = clinCode + i.ToString();
             }
 
-            int iSuccess = _crud.CallStoredProcedure("Clinician", "Add", 0, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+            int iSuccess = _crud.CallStoredProcedure("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
                 false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
@@ -504,14 +507,14 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FacilityDetails(string facCode, string name)
+        public async Task<IActionResult> FacilityDetails(string facCode, string name, string address, string district, string city, string state, string zip, int nonActive, int isGP)
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Facility", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
-                false, false, 0, 0, 0, "", "", "");
+            int iSuccess = _crud.CallStoredProcedure("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, city, state, zip);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-edit(SQL)" }); }
 
@@ -537,13 +540,13 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewFacility(string name)
+        public async Task<IActionResult> AddNewFacility(string facCode, string name, string address, string district, string city, string state, string postCode, int nonActive, int isGP)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
 
-            int iSuccess = _crud.CallStoredProcedure("Facility", "Add", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
-                false, false, 0, 0, 0, "", "", "");
+            int iSuccess = _crud.CallStoredProcedure("Facility", "Create", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, city, state, postCode);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-add(SQL)" }); }
 
