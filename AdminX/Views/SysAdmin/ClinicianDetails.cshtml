@@ -15,9 +15,94 @@
     };
 }
 
+<div class="card flex-fill">
+	<div class="card-header">
+		<h5 class="card-title text-dark mb-0">Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h5>
+	</div>
+	<table class="table table-borderless my-0">
+
+		<tbody>
+			<tr>
+				<td>
+					<div class="d-flex">
+					
+						<div class="flex-grow-1 ms-3">
+							<strong>Clinician Code</strong>
+							<div class="text-muted">
+								@Model.clinician.MasterClinicianCode
+							</div>
+						</div>
+					</div>
+				</td>
+				<td class="d-none d-xxl-table-cell">
+					<strong>Name</strong>
+					<div class="text-muted">
+                        @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME
+					</div>
+				</td>
+				<td class="d-none d-xl-table-cell">
+					<strong>Speciality</strong>
+					<div class="text-muted">
+                        @Model.clinician.SPECIALITY
+					</div>
+				</td>
+				<td class="d-none d-xl-table-cell">
+					<strong>Position</strong>
+					<div class="text-muted">
+                        @Model.clinician.POSITION
+					</div>
+				</td>
+				
+			</tr>
+			<tr>
+				<td>
+					<div class="d-flex">
+					
+						<div class="flex-grow-1 ms-3">
+							<strong>Facility</strong>
+							<div class="text-muted">
+								@Model.clinician.FACILITY
+							</div>
+						</div>
+					</div>
+				</td>
+				<td class="d-none d-xxl-table-cell">
+					<strong>Active</strong>
+					<div class="text-muted">
+                        @if (Model.clinician.NON_ACTIVE == 0)
+                        {
+                           <p>Yes</p> 
+                        }
+                        else
+                        {
+                            <p>No</p>
+                        }
+
+					</div>
+				</td>
+				<td class="d-none d-xl-table-cell">
+					<strong>Is GP</strong>
+					<div class="text-muted">
+                        @if (Model.clinician.Is_Gp == 0)
+                        {
+                            <p>Yes</p>
+                        }
+                        else
+                        {
+                            <p>No</p>
+                        }
+					</div>
+				</td>
+								
+			</tr>
+			
+		</tbody>
+	</table>
+</div>
+
 <div class="container">
     <div class="row mb-5 g-5">
-        <h1>Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h1>
+        <h1></h1>
     </div>
     @*
     <form asp-action="StaffMemberDetails">
