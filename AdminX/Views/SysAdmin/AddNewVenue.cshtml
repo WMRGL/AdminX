@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.SysAdminVM
 @{
-    ViewData["Title"] = "Admin-X - System Administration - Clinic Venue Details";
+    ViewData["Title"] = "Admin-X - System Administration - New Clinic Venue";
 }
 
 @{
@@ -17,23 +17,23 @@
 
 <div class="container">
     <div class="row mb-5 g-5">
-        <h1>Details for @Model.venue.NAME (@Model.venue.FACILITY)</h1>
+        <h5>New Clinic Venue</h5>
     </div>
-    
+
     <form asp-action="VenueDetails">
 
         <div class="flex-grow-1 ms-3">
             <div class="col-md-2">
                 <label>Code:</label>
-            </div>            
+            </div>
             <div class="col-md-2">
-                <input name="clinCode" asp-for=@Model.venue.FACILITY readonly />
+                <input name="clinCode"  />
             </div>
             <div class="col-md-2">
                 <label>Name:</label>
             </div>
             <div class="col-md-2">
-                <input name="name" asp-for=@Model.venue.NAME />
+                <input name="name"  />
             </div>
         </div>
         <div class="flex-grow-1 ms-3">
@@ -41,7 +41,7 @@
                 <label>Location</label>
             </div>
             <div class="col-md-2">
-                <textarea cols="50" rows="10" name="location" asp-for=@Model.venue.LOCATION></textarea>
+                <textarea cols="50" rows="10" name="location" ></textarea>
             </div>
         </div>
 
@@ -50,17 +50,17 @@
                 <label>Special Instructions</label>
             </div>
             <div class="col-md-2">
-                <textarea cols="50" rows="10" name="notes" asp-for=@Model.venue.NOTES></textarea>
+                <textarea cols="50" rows="10" name="notes" ></textarea>
             </div>
         </div>
 
         @*location code*@
-                    
+
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Active</strong>
                 <div class="text-muted">
-                    <select name="isNonActive" asp-for=@Model.venue.NON_ACTIVE>
+                    <select name="isNonActive" >
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>

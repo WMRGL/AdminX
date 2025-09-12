@@ -4,6 +4,7 @@ using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
+using static Azure.Core.HttpHeader;
 
 
 namespace AdminX.Controllers
@@ -607,14 +608,14 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> VenueDetails(string clinCode, string name)
+        public async Task<IActionResult> VenueDetails(string clinCode, string name, string location, string notes, string locationCode, int isNonActive)
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Venue", "Edit", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
-                false, false, 0, 0, 0, "", "", "");
+            int iSuccess = _crud.CallStoredProcedure("Venue", "Edit", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, locationCode, "", "");
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-add(SQL)" }); }
 
@@ -640,13 +641,13 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewVenue(string name)
+        public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode, int isNonActive)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
 
-            int iSuccess = _crud.CallStoredProcedure("Venue", "Add", 0, 0, 0, "", "", "", "", User.Identity.Name, null, null,
-                false, false, 0, 0, 0, "", "", "");
+            int iSuccess = _crud.CallStoredProcedure("Venue", "Create", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
+                false, false, 0, 0, 0, locationCode, "", "");
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-edit(SQL)" }); }
 
