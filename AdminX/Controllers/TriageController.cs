@@ -132,14 +132,16 @@ namespace AdminX.Controllers
             try
             {
                 var icp = await _clinContext.Triages.FirstOrDefaultAsync(i => i.ICPID == icpID);
-                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == icp.RefID);
+                int refID = icp.RefID;
+                var referral = await _clinContext.Referrals.FirstOrDefaultAsync(r => r.refid == refID);
                 var staffmember = await _clinContext.StaffMembers.FirstOrDefaultAsync(s => s.EMPLOYEE_NUMBER == User.Identity.Name);
                 int mpi = icp.MPI;
-                int refID = icp.RefID;
+                
                 int tp2;
                 string referrer = referral.ReferrerCode;
                 string sApptIntent = "";
                 string sStaffType = staffmember.CLINIC_SCHEDULER_GROUPS;
+                string sType = "ICP General";
 
                 if (comment == null) { comment = ""; }
 
@@ -148,9 +150,12 @@ namespace AdminX.Controllers
 
                 if (tp2 == 3) { sApptIntent = "CLICS"; }
 
+                if(referral.Pathway_Subset == "Haemoglobinopathy")
+                {
+                    sType = "Haemoglobinopathy";
+                }
                 
-                
-                int success = _crud.TriageDetail("ICP General", "Triage", icpID, tp1.GetValueOrDefault(), tp2, clinician, facility, comment, sApptIntent, User.Identity.Name, clinician2, facility2, comment2,
+                int success = _crud.TriageDetail(sType, "Triage", icpID, tp1.GetValueOrDefault(), tp2, clinician, facility, comment, sApptIntent, User.Identity.Name, clinician2, facility2, comment2,
                     duration, duration2, isSPR, isChild, isChild2);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genTriage" }); }

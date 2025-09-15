@@ -1,5 +1,6 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,7 @@ namespace AdminX.Controllers
         private readonly IPathwayData _pathwayData;
         private readonly IPriorityData _priorityData;
         private readonly IRefReasonData _refReasonData;
+        private readonly ITriageData _triageData;
 
 
         public ReferralController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
@@ -57,6 +59,7 @@ namespace AdminX.Controllers
             _pathwayData = new PathwayData(_clinContext);
             _priorityData = new PriorityData(_clinContext);
             _refReasonData = new RefReasonData(_clinContext);
+            _triageData = new TriageData(_clinContext);
         }
 
         [HttpGet]
@@ -71,6 +74,8 @@ namespace AdminX.Controllers
             _rvm.referral = _referralData.GetReferralDetails(refID);
             _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);            
             _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
+            ICP icp = _triageData.GetICPDetailsByRefID(refID);
+            _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
 
             if (_rvm.referral.ClockStartDate != null)
             {

@@ -36,7 +36,7 @@
                 @foreach (var item in Model.triages)
                 {
                     <tr>
-                        <td><a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.ICPID class="btn btn-outline-primary" target="_blank">Select</a></td>
+                        <td><a asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@item.ICPID class="btn btn-outline-primary">Select</a></td>
                         <td>@item.CGU_No</td>
                         <td>@item.ReferralPathway</td>
                         <td>@item.RefType</td>
@@ -48,6 +48,4 @@
             </tbody>
         </table>
     </div>
-
-
 </div>

@@ -33,5 +33,6 @@ namespace AdminX.ViewModels
         public Review review { get; set; }
         public List<Disease> indicationList { get; set; }
         public List<ReferralReason> referralReasonsList { get; set; }
+        public Triage relatedICP { get; set; }
     }
 }
