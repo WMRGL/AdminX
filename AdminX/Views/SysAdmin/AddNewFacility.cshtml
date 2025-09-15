@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.SysAdminVM
 @{
-    ViewData["Title"] = "Admin-X - System Administration - External Facility Details";
+    ViewData["Title"] = "Admin-X - System Administration - New Facility";
 }
 
 @{
@@ -17,15 +17,15 @@
 
 <div class="card flex-fill">
     <div class="card flex-fill">
-        <h5>Details for @Model.facility.NAME (@Model.facility.MasterFacilityCode)</h5>
+        <h5>New Clinical Facility</h5>
     </div>
-    
-    <form asp-action="FacilityDetails">
+
+    <form asp-action="AddNewFacility">
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
-                <strong>Clinician Code</strong>
+                <strong>Facility Code</strong>
                 <div class="text-muted">
-                    <input name="facCode" asp-for=@Model.facility.MasterFacilityCode readonly />
+                    <input name="facCode" />
                 </div>
             </div>
         </div>
@@ -33,8 +33,8 @@
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Name</strong>
-                <div class="text-muted">                    
-                    <input name="name" asp-for=@Model.facility.NAME />
+                <div class="text-muted">
+                    <input name="name" />
                 </div>
             </div>
         </div>
@@ -43,29 +43,30 @@
             <div class="flex-grow-1 ms-3">
                 <strong>Address</strong>
                 <div class="text-muted">
-                    <input name="address" asp-for=@Model.facility.ADDRESS />
+                    <input name="address" />
                 </div>
                 <div class="text-muted">
-                    <input name="district" asp-for=@Model.facility.DISTRICT />
+                    <input name="district" />
                 </div>
                 <div class="text-muted">
-                    <input name="city" asp-for=@Model.facility.CITY />
+                    <input name="city" />
                 </div>
                 <div class="text-muted">
-                    <input name="state" asp-for=@Model.facility.STATE />
+                    <input name="state" />
                 </div>
+                <strong>Postcode</strong>
                 <div class="text-muted">
-                    <input name="postcode" asp-for=@Model.facility.ZIP />
+                    <input name="postCode" />
                 </div>
             </div>
         </div>
-                        
+
 
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Active</strong>
                 <div class="text-muted">
-                    <select name="isActive" asp-for=@Model.facility.NONACTIVE>
+                    <select name="isActive">
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>
@@ -78,7 +79,7 @@
                 <strong>Is GP</strong>
                 <div class="text-muted">
                     <div class="text-muted">
-                        <select name="isGP" asp-for=@Model.facility.IS_GP_SURGERY>
+                        <select name="isGP">
                             <option value=0>No</option>
                             <option value=-1>Yes</option>
                         </select>

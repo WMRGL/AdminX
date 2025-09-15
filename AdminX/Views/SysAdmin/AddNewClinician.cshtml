@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.SysAdminVM
 @{
-    ViewData["Title"] = "Admin-X - System Administration - External Facility Details";
+    ViewData["Title"] = "Admin-X - System Administration - Add New Clinician";
 }
 
 @{
@@ -16,16 +16,16 @@
 }
 
 <div class="card flex-fill">
-    <div class="card flex-fill">
-        <h5>Details for @Model.facility.NAME (@Model.facility.MasterFacilityCode)</h5>
+    <div class="card-header">
+        <h5 class="card-title text-dark mb-0">New Clinician Creation</h5>
     </div>
-    
-    <form asp-action="FacilityDetails">
+    <form asp-action="AddNewClinician">
+
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Clinician Code</strong>
                 <div class="text-muted">
-                    <input name="facCode" asp-for=@Model.facility.MasterFacilityCode readonly />
+                    <input name="clinCode" />
                 </div>
             </div>
         </div>
@@ -33,52 +33,67 @@
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Name</strong>
-                <div class="text-muted">                    
-                    <input name="name" asp-for=@Model.facility.NAME />
+                <div class="text-muted">
+                    <select name="title">
+                        <option value="">Select ...</option>
+                        @foreach (var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                    <input name="firstName" />
+                    <input name="lastName" />
                 </div>
             </div>
         </div>
 
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
-                <strong>Address</strong>
+                <strong>Speciality</strong>
                 <div class="text-muted">
-                    <input name="address" asp-for=@Model.facility.ADDRESS />
+                    <input name="speciality" />
                 </div>
+                <strong>Position</strong>
                 <div class="text-muted">
-                    <input name="district" asp-for=@Model.facility.DISTRICT />
-                </div>
-                <div class="text-muted">
-                    <input name="city" asp-for=@Model.facility.CITY />
-                </div>
-                <div class="text-muted">
-                    <input name="state" asp-for=@Model.facility.STATE />
-                </div>
-                <div class="text-muted">
-                    <input name="postcode" asp-for=@Model.facility.ZIP />
+                    <input name="jobTitle" />
                 </div>
             </div>
         </div>
-                        
 
+
+        <div class="flex-grow-1 ms-3">
+            <strong>Facility</strong>
+            <div class="text-muted">
+                <select name="facilityCode">
+                    <option value="">Select ...</option>
+                    @foreach (var item in Model.facilities)
+                    {
+                        <option value=@item.MasterFacilityCode>@item.NAME</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        @*@
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Active</strong>
                 <div class="text-muted">
-                    <select name="isActive" asp-for=@Model.facility.NONACTIVE>
+                    <select name="isActive">
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>
                 </div>
             </div>
         </div>
+        *@
 
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Is GP</strong>
                 <div class="text-muted">
                     <div class="text-muted">
-                        <select name="isGP" asp-for=@Model.facility.IS_GP_SURGERY>
+                        <select name="isGP">
                             <option value=0>No</option>
                             <option value=-1>Yes</option>
                         </select>
@@ -89,9 +104,6 @@
 
 
         <button type="submit" class="btn btn-primary">Save</button>
-
     </form>
-
-
-
 </div>
+    

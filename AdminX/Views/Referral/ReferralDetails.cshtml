@@ -9,7 +9,7 @@
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
-        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
+        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1"  }),        
     };
 }
 
@@ -44,7 +44,12 @@
                             </div>
 
                             <div class="col-auto ms-auto text-end mt-n1">
-                                <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                                @*<a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>*@
+                                
+                                @if (Model.relatedICP != null)
+                                {                                    
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@Model.relatedICP.ICPID>Triage Referral</a>                                    
+                                }                                
                             </div>
                         </div>
                     </div>

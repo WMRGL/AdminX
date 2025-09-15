@@ -16,6 +16,7 @@ builder.Services.AddDbContext<ClinicalContext>(options => options.UseSqlServer(c
 builder.Services.AddDbContext<AdminContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
+builder.Services.AddDbContext<KlaxonContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringEpic")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DQContext>(options => options.UseSqlServer(config.GetConnectionString("DQLab")));
 

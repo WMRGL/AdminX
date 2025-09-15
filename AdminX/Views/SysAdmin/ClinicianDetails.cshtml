@@ -16,224 +16,91 @@
 }
 
 <div class="card flex-fill">
-	<div class="card-header">
+    <div class="card flex-fill">
 		<h5 class="card-title text-dark mb-0">Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h5>
 	</div>
-	<table class="table table-borderless my-0">
-
-		<tbody>
-			<tr>
-				<td>
-					<div class="d-flex">
-					
-						<div class="flex-grow-1 ms-3">
-							<strong>Clinician Code</strong>
-							<div class="text-muted">
-								@Model.clinician.MasterClinicianCode
-							</div>
-						</div>
-					</div>
-				</td>
-				<td class="d-none d-xxl-table-cell">
-					<strong>Name</strong>
-					<div class="text-muted">
-                        @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME
-					</div>
-				</td>
-				<td class="d-none d-xl-table-cell">
-					<strong>Speciality</strong>
-					<div class="text-muted">
-                        @Model.clinician.SPECIALITY
-					</div>
-				</td>
-				<td class="d-none d-xl-table-cell">
-					<strong>Position</strong>
-					<div class="text-muted">
-                        @Model.clinician.POSITION
-					</div>
-				</td>
-				
-			</tr>
-			<tr>
-				<td>
-					<div class="d-flex">
-					
-						<div class="flex-grow-1 ms-3">
-							<strong>Facility</strong>
-							<div class="text-muted">
-								@Model.clinician.FACILITY
-							</div>
-						</div>
-					</div>
-				</td>
-				<td class="d-none d-xxl-table-cell">
-					<strong>Active</strong>
-					<div class="text-muted">
-                        @if (Model.clinician.NON_ACTIVE == 0)
-                        {
-                           <p>Yes</p> 
-                        }
-                        else
-                        {
-                            <p>No</p>
-                        }
-
-					</div>
-				</td>
-				<td class="d-none d-xl-table-cell">
-					<strong>Is GP</strong>
-					<div class="text-muted">
-                        @if (Model.clinician.Is_Gp == 0)
-                        {
-                            <p>Yes</p>
-                        }
-                        else
-                        {
-                            <p>No</p>
-                        }
-					</div>
-				</td>
-								
-			</tr>
-			
-		</tbody>
-	</table>
-</div>
-
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h1></h1>
-    </div>
-    @*
-    <form asp-action="StaffMemberDetails">
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Name:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="title" asp-for=@Model.staffMember.StaffTitle>
-                    @foreach(var item in Model.titles)
-                    {
-                        <option value=@item.Title>@item.Title</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input name="firstname" asp-for=@Model.staffMember.StaffForename />
-            </div>
-            <div class="col-md-2">
-                <input name="lastname" asp-for=@Model.staffMember.StaffSurname />
-            </div>
-            <div class="col-md-2">
-                <label>Windows Login:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="loginName" asp-for=@Model.staffMember.EMPLOYEE_NUMBER />
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Role:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="role" asp-for=@Model.staffMember.POSITION />
-            </div>
-            <div class="col-md-2">
-                <label>Type:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="type" asp-for=@Model.staffMember.CLINIC_SCHEDULER_GROUPS>
-                    @foreach (var item in Model.types)
-                    {
-                        <option value=@item>@item</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>Team:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="type" asp-for=@Model.staffMember.BILL_ID>
-                    @foreach (var item in Model.teams)
-                    {
-                        <option value=@item>@item</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Start Date:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="startDate" asp-for=@Model.staffMember.EMPLOYMENT_START_DATE />
-            </div>
-            <div class="col-md-2">
-                <label>End Date:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="endDate" asp-for=@Model.staffMember.EMPLOYMENT_END_DATE id="txtEndDate" />
-            </div>
-            <div class="col-md-2">
-                <label>In Post:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="checkbox" id="chkInPost" asp-for=@Model.staffMember.InPost />
-                <input name="isInPost" id="txtInPost" hidden />
-            </div>
-        </div>
-
-        @if (Model.staffMember.CLINIC_SCHEDULER_GROUPS != "Admin")
-        {
-            <div class="row mb-5 g-5">
-                <div class="col-md-2">
-                    <label>GMC Number:</label>
-                </div>            
-                <div class="col-md-2">
-                    <input name="gmcNumber" asp-for=@Model.staffMember.GMCNumber />
+    <form asp-action="ClinicianDetails">
+    	
+        <div class="d-flex">
+		    <div class="flex-grow-1 ms-3">
+			    <strong>Clinician Code</strong>
+			    <div class="text-muted">
+                    <input name="clinCode" asp-for=@Model.clinician.MasterClinicianCode readonly />
                 </div>
             </div>
-        }
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Save Record</button>
+        </div>
+        
+        <div class="d-flex">
+            <div class="flex-grow-1 ms-3">
+                <strong>Name</strong>
+            	<div class="text-muted">
+                    <select name="title" asp-for=@Model.clinician.TITLE>
+                        <option value="">Select ...</option>
+                        @foreach(var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                    <input name="firstName" asp-for=@Model.clinician.FIRST_NAME />
+                    <input name="lastName" asp-for=@Model.clinician.NAME />                              
+    		    </div>
+            </div>
+        </div>
+        
+        <div class="d-flex">
+            <div class="flex-grow-1 ms-3">
+                <strong>Speciality</strong>
+            	<div class="text-muted">
+                    <input name="speciality" asp-for=@Model.clinician.SPECIALITY />
+                </div>
+                <strong>Position</strong>
+        	    <div class="text-muted">
+                    <input name="position" asp-for=@Model.clinician.POSITION />
+                </div>
+            </div>
+        </div>
+		
+        				    	
+        <div class="flex-grow-1 ms-3">
+			<strong>Facility</strong>
+			<div class="text-muted">
+			    <select name="facility" asp-for=@Model.clinician.FACILITY>
+                    <option value="">Select ...</option>
+                    @foreach(var item in Model.facilities)
+                    {
+                        <option value=@item.MasterFacilityCode>@item.NAME</option>
+                    }
+                </select>
             </div>
         </div>
 
-    </form>*@
+        <div class="d-flex">
+            <div class="flex-grow-1 ms-3">
+                <strong>Active</strong>
+                <div class="text-muted">
+                    <select name="isActive" asp-for=@Model.clinician.NON_ACTIVE>
+                        <option value=0>Yes</option>
+                        <option value=-1>No</option>
+                    </select>        
+                </div>
+            </div>
+        </div>
 
+        <div class="d-flex">
+            <div class="flex-grow-1 ms-3">
+                <strong>Is GP</strong>
+        		<div class="text-muted">
+                    <div class="text-muted">
+                        <select name="isGP" asp-for=@Model.clinician.Is_Gp>
+                            <option value=0>No</option>
+                            <option value=-1>Yes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+	        	
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
 </div>
-
-<script>
-    @*
-    document.getElementById("chkInPost").addEventListener("change", SetLeaver);
-    window.addEventListener("load", SetCheckBoxValues);
-
-    function SetLeaver()
-    {
-        if(!document.getElementById("chkInPost").checked)
-        {
-            if(document.getElementById("txtEndDate").value == "")
-            {
-                var date = new Date;
-                
-                document.getElementById("txtEndDate").value = date.toISOString().split('T')[0];
-            }
-        }
-        else
-        {
-            document.getElementById("txtEndDate").value = "";
-        }
-
-        SetCheckBoxValues();
-    }
-
-    function SetCheckBoxValues()
-    {
-        document.getElementById("txtInPost").value = document.getElementById("chkInPost").checked;
-    }
-    *@
-</script>

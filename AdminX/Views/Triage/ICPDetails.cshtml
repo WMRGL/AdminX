@@ -293,6 +293,13 @@
             {
                 document.getElementById("ddlTreatPath2-Clinic").hidden = false;
             }
+
+            if("@Model.referralDetails.Pathway_Subset".match("Haem*"))
+            {
+                document.getElementById("ddlTreatPath1").hidden = true;
+                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+                document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+            }
         }
         else 
         {
@@ -303,8 +310,8 @@
 
     function DoGeneralTriage() 
     {
-        var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
-        var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
+        //var _tp2c = document.getElementById("ddlTreatPath2-Clinic");
+        //var _tp2nc = document.getElementById("ddlTreatPath2-NoClinic");
         //var _facility = document.getElementById("ddlFacility");
 
         if (CheckFormValid() == 1) 
@@ -330,8 +337,8 @@
     function CheckFormValid() 
     { //validation to ensure all required data is entered
 
-        if (document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "" || 
-        (document.getElementById("ddlTreatPath2-NoClinic").value == "" && document.getElementById("ddlTreatPath2-Clinic").value == ""))
+        if ((document.getElementById("ddlTreatPath1").value == null || document.getElementById("ddlTreatPath1").value == "" || 
+        (document.getElementById("ddlTreatPath2-NoClinic").value == "" && document.getElementById("ddlTreatPath2-Clinic").value == "")) && !"@Model.referralDetails.Pathway_Subset".match("Haem*"))
         {
             window.alert("Please choose a treatment pathway.");
             return 0;
