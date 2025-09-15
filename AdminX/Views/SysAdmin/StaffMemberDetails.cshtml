@@ -15,36 +15,83 @@
     };
 }
 
+<div class="card">
+   <div class="card-header">
+        <h5 class="card-title text-dark">Details for @Model.staffMember.NAME (@Model.staffMember.STAFF_CODE)</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="StaffMemberDetails" id="frmSubmit">
+            <div class="row">
+                <div class="mb-3 col-md-2">
+                    <label class="form-label" for="txtStaffCode">Staff Code:</label>
+                    <input type="text" class="form-control" name="staffCode" asp-for=@Model.staffMember.STAFF_CODE id="txtStaffCode" readonly>
+                </div>
+                <div class="mb-3 col-md-2">
+                    <label class="form-label" for="txtStaffCode">Name:</label>
+                    <select name="title" class="form-select" asp-for=@Model.staffMember.StaffTitle>
+                        @foreach (var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="inputPassword4">Password</label>
+                    <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="inputAddress">Address</label>
+                <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="inputAddress2">Address 2</label>
+                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="inputCity">City</label>
+                    <input type="text" class="form-control" id="inputCity">
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="inputState">State</label>
+                    <select id="inputState" class="form-control">
+                        <option selected="">Choose...</option>
+                        <option>...</option>
+                    </select>
+                </div>
+                <div class="mb-3 col-md-2">
+                    <label class="form-label" for="inputZip">Zip</label>
+                    <input type="text" class="form-control" id="inputZip">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">
+                    <input type="checkbox" class="form-check-input">
+                    <span class="form-check-label">Check me out</span>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
 <div class="container">
     <div class="row mb-5 g-5">
-        <h1>Details for @Model.staffMember.NAME (@Model.staffMember.STAFF_CODE)</h1>
+        <h1></h1>
     </div>
 
-    <form asp-action="StaffMemberDetails" id="frmSubmit">
+    <form >
+
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <label>Staff Code:</label>
+                <label>:</label>
             </div>
             <div class="col-md-2">
-                <input name="staffCode" asp-for=@Model.staffMember.STAFF_CODE id="txtStaffCode" disabled="true" />
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Name:</label>
+              
             </div>
             <div class="col-md-2">
-                <select name="title" asp-for=@Model.staffMember.StaffTitle>
-                    @foreach(var item in Model.titles)
-                    {
-                        <option value=@item.Title>@item.Title</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input name="firstname" asp-for=@Model.staffMember.StaffForename />
             </div>
             <div class="col-md-2">
                 <input name="lastname" asp-for=@Model.staffMember.StaffSurname />
