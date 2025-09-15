@@ -641,15 +641,15 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode, int isNonActive)
+        public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
 
-            int iSuccess = _crud.CallStoredProcedure("Venue", "Create", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
+            int iSuccess = _crud.CallStoredProcedure("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
                 false, false, 0, 0, 0, locationCode, "", "");
 
-            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-edit(SQL)" }); }
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-add(SQL)" }); }
 
             return RedirectToAction("ClinicVenues", new { message = "New clinic venue added.", success = true });
 
