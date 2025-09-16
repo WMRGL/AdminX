@@ -34,7 +34,7 @@ namespace AdminX.Controllers
         private readonly IPriorityData _priorityData;
         private readonly IRefReasonData _refReasonData;
         private readonly ITriageData _triageData;
-
+        private readonly IAreaNamesData _areaNamesData;
 
         public ReferralController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
         {
@@ -60,6 +60,7 @@ namespace AdminX.Controllers
             _priorityData = new PriorityData(_clinContext);
             _refReasonData = new RefReasonData(_clinContext);
             _triageData = new TriageData(_clinContext);
+            _areaNamesData = new AreaNamesData(_clinContext);
         }
 
         [HttpGet]
@@ -76,6 +77,7 @@ namespace AdminX.Controllers
             _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
             ICP icp = _triageData.GetICPDetailsByRefID(refID);
             _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
+                      
 
             if (_rvm.referral.ClockStartDate != null)
             {
@@ -123,6 +125,8 @@ namespace AdminX.Controllers
             _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
             _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
             _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+
             if (_rvm.referral.ClockStartDate != null)
             {
                 if (_rvm.referral.ClockStopDate != null)
@@ -271,7 +275,8 @@ namespace AdminX.Controllers
             _rvm.subPathways = _pathwayData.GetSubPathwayList();
             _rvm.priorityList = _priorityData.GetPriorityList();
             _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
-            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();            
+            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
             return View(_rvm);
         }
