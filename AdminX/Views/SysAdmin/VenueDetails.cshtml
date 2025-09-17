@@ -15,67 +15,59 @@
     };
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h1>Details for @Model.venue.NAME (@Model.venue.FACILITY)</h1>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Details for @Model.venue.NAME (@Model.venue.FACILITY)</h5>
     </div>
-    
-    <form asp-action="VenueDetails">
 
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Code:</label>
-            </div>            
-            <div class="col-md-2">
-                <input name="clinCode" asp-for=@Model.venue.FACILITY readonly />
+    <div class="card-body">
+        <form asp-action="VenueDetails">
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Code</label>
+                </div>
+                <div class="col-md-11">
+                    <input class="form-control" name="clinCode" asp-for=@Model.venue.FACILITY readonly />
+                </div>
             </div>
-            <div class="col-md-2">
-                <label>Name:</label>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Name</label>
+                </div>
+                <div class="col-md-11">
+                    <input type="text" name="name" class="form-control" asp-for=@Model.venue.NAME />
+                </div>
             </div>
-            <div class="col-md-2">
-                <input name="name" asp-for=@Model.venue.NAME />
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Location</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="location" cols="50" rows="10" class="form-control" asp-for=@Model.venue.LOCATION></textarea>
+                </div>
             </div>
-        </div>
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Location</label>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Special Instructions</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="notes" class="form-control" cols="50" rows="10" asp-for=@Model.venue.NOTES></textarea>
+                </div>
             </div>
-            <div class="col-md-2">
-                <textarea cols="50" rows="10" name="location" asp-for=@Model.venue.LOCATION></textarea>
-            </div>
-        </div>
-
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Special Instructions</label>
-            </div>
-            <div class="col-md-2">
-                <textarea cols="50" rows="10" name="notes" asp-for=@Model.venue.NOTES></textarea>
-            </div>
-        </div>
-
-        @*location code*@
-                    
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Active</strong>
-                <div class="text-muted">
-                    <select name="isNonActive" asp-for=@Model.venue.NON_ACTIVE>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Name</label>
+                </div>
+                <div class="col-md-11">
+                    <select class="form-select" name="isNonActive" asp-for=@Model.venue.NON_ACTIVE>
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>
+                    <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
                 </div>
             </div>
-        </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Save Record</button>
-            </div>
-        </div>
-
-
-
-    </form>
+        </form>
+    </div>
 
 </div>
