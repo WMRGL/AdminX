@@ -15,83 +15,66 @@
     };
 }
 
-<div class="card flex-fill">
-    <div class="card flex-fill">
-        <h5>Details for @Model.facility.NAME (@Model.facility.MasterFacilityCode)</h5>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark"> Details for @Model.facility.NAME (@Model.facility.MasterFacilityCode)</h5>
     </div>
-    
-    <form asp-action="FacilityDetails">
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Clinician Code</strong>
-                <div class="text-muted">
-                    <input name="facCode" asp-for=@Model.facility.MasterFacilityCode readonly />
+    <div class="card-body">
+        <form asp-action="FacilityDetails">
+            <div class="mb-3 row ">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility Code</label>
+                <div class="col-sm-11">
+                    <input type="text" name="facCode" class="form-control" asp-for=@Model.facility.MasterFacilityCode readonly />
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Name</strong>
-                <div class="text-muted">                    
-                    <input name="name" asp-for=@Model.facility.NAME />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Name</label>
+                <div class="col-sm-11">
+                    <input type="text" name="name" class="form-control" asp-for=@Model.facility.NAME />
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Address</strong>
-                <div class="text-muted">
-                    <input name="address" asp-for=@Model.facility.ADDRESS />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Address</label>
+                <div class="col-sm-2">
+                    <input type="text" name="address" class="form-control" asp-for=@Model.facility.ADDRESS />
                 </div>
-                <div class="text-muted">
-                    <input name="district" asp-for=@Model.facility.DISTRICT />
+                <div class="col-sm-2">
+                    <input type="text" name="district" class="form-control" asp-for=@Model.facility.DISTRICT />
                 </div>
-                <div class="text-muted">
-                    <input name="city" asp-for=@Model.facility.CITY />
+                <div class="col-sm-2">
+                    <input type="text" name="city" class="form-control" asp-for=@Model.facility.CITY />
                 </div>
-                <div class="text-muted">
-                    <input name="state" asp-for=@Model.facility.STATE />
+                <div class="col-sm-2">
+                    <input type="text" name="state" class="form-control" asp-for=@Model.facility.STATE />
                 </div>
-                <div class="text-muted">
-                    <input name="postcode" asp-for=@Model.facility.ZIP />
+                <div class="col-sm-3">
+                    <input type="text" name="postCode" class="form-control" asp-for=@Model.facility.ZIP />
                 </div>
             </div>
-        </div>
-                        
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Active</strong>
-                <div class="text-muted">
-                    <select name="isActive" asp-for=@Model.facility.NONACTIVE>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive" asp-for=@Model.facility.NONACTIVE>
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>
                 </div>
-            </div>
-        </div>
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Is GP</strong>
-                <div class="text-muted">
-                    <div class="text-muted">
-                        <select name="isGP" asp-for=@Model.facility.IS_GP_SURGERY>
-                            <option value=0>No</option>
-                            <option value=-1>Yes</option>
-                        </select>
-                    </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP" asp-for=@Model.facility.IS_GP_SURGERY>
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
                 </div>
+
             </div>
-        </div>
-
-
-        <button type="submit" class="btn btn-primary">Save</button>
-
-    </form>
-
-
-
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
 </div>
+
+

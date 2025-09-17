@@ -15,84 +15,65 @@
     };
 }
 
-<div class="card flex-fill">
-    <div class="card flex-fill">
-        <h5>New Clinical Facility</h5>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark"> New Clinical Facility</h5>
     </div>
-
-    <form asp-action="AddNewFacility">
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Facility Code</strong>
-                <div class="text-muted">
-                    <input name="facCode" />
+    <div class="card-body">
+        <form asp-action="AddNewFacility">
+            <div class="mb-3 row ">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility Code</label>
+                <div class="col-sm-11">
+                    <input type="text" name="facCode" class="form-control" />
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Name</strong>
-                <div class="text-muted">
-                    <input name="name" />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Name</label>
+                <div class="col-sm-11">
+                    <input type="text" name="name" class="form-control" />
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Address</strong>
-                <div class="text-muted">
-                    <input name="address" />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Address</label>
+                <div class="col-sm-2">
+                    <input type="text" name="address" class="form-control" placeholder="Address" />
                 </div>
-                <div class="text-muted">
-                    <input name="district" />
+                <div class="col-sm-2">
+                    <input type="text" name="district" class="form-control" placeholder="District"/>
                 </div>
-                <div class="text-muted">
-                    <input name="city" />
+                <div class="col-sm-2">
+                    <input type="text" name="city" class="form-control" placeholder="City"/>
                 </div>
-                <div class="text-muted">
-                    <input name="state" />
+                <div class="col-sm-2">
+                    <input type="text" name="state" class="form-control" placeholder="County"/>
                 </div>
-                <strong>Postcode</strong>
-                <div class="text-muted">
-                    <input name="postCode" />
+                <div class="col-sm-3">
+                    <input type="text" name="postCode" class="form-control" placeholder="Postcode" />
                 </div>
             </div>
-        </div>
 
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Active</strong>
-                <div class="text-muted">
-                    <select name="isActive">
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive">
                         <option value=0>Yes</option>
                         <option value=-1>No</option>
                     </select>
                 </div>
+                
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Is GP</strong>
-                <div class="text-muted">
-                    <div class="text-muted">
-                        <select name="isGP">
-                            <option value=0>No</option>
-                            <option value=-1>Yes</option>
-                        </select>
-                    </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
                 </div>
+                
             </div>
-        </div>
-
-
-        <button type="submit" class="btn btn-primary">Save</button>
-
-    </form>
-
-
-
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
 </div>
+
