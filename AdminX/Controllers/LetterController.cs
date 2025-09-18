@@ -5,8 +5,9 @@ using ClinicalXPDataConnections.Meta;
 using System.Text.RegularExpressions;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
-using PdfSharpCore.Drawing;
-using PdfSharpCore.Drawing.Layout;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Pdf;
 using PdfSharpCore.Pdf;
 
 
@@ -1360,18 +1361,19 @@ namespace AdminX.Controllers
             var referral = _referralData.GetReferralDetails(refID);
             string docCode = _lvm.documentsContent.DocCode;
             //creates a new PDF document
-            PdfSharpCore.Pdf.PdfDocument document = new PdfSharpCore.Pdf.PdfDocument();
+            
+            PdfSharp.Pdf.PdfDocument document = new PdfSharp.Pdf.PdfDocument();
             document.Info.Title = "My PDF";
-            PdfPage page = document.AddPage();
+            PdfSharp.Pdf.PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             var tf = new XTextFormatter(gfx);
             //set the fonts used for the letters
-            XFont font = new XFont("Arial", 12, XFontStyle.Regular);
-            XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
-            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Italic);
-            XFont fontSmall = new XFont("Arial", 10, XFontStyle.Regular);
-            XFont fontSmallBold = new XFont("Arial", 10, XFontStyle.Bold);
-            XFont fontSmallItalic = new XFont("Arial", 10, XFontStyle.Italic);
+            XFont font = new XFont("Arial", 10, XFontStyleEx.Regular);
+            XFont fontBold = new XFont("Arial", 10, XFontStyleEx.Bold);
+            XFont fontItalic = new XFont("Arial", 10, XFontStyleEx.Italic);
+            XFont fontSmall = new XFont("Arial", 8, XFontStyleEx.Regular);
+            XFont fontSmallBold = new XFont("Arial", 8, XFontStyleEx.Bold);
+            XFont fontSmallItalic = new XFont("Arial", 8, XFontStyleEx.Italic);
             //Load the image for the letter head
             XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
             gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
