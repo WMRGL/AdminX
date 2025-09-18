@@ -19,62 +19,72 @@
     <div class="card-header">
         <h5 class="card-title text-dark mb-0">New Clinician Creation</h5>
     </div>
-    <form asp-action="AddNewClinician">
+    <div class="card-body">
+        <form asp-action="AddNewClinician">
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Clinician Code</strong>
-                <div class="text-muted">
-                    <input name="clinCode" />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Clinician Code</label>
+                <div class="col-sm-11">
+                    <input type="text" name="clinCode" class="form-control">
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Name</strong>
-                <div class="text-muted">
-                    <select name="title">
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Name</label>
+                <div class="col sm-1">
+                    <select name="title" class="form-select">
                         <option value="">Select ...</option>
                         @foreach (var item in Model.titles)
                         {
                             <option value=@item.Title>@item.Title</option>
                         }
                     </select>
-                    <input name="firstName" />
-                    <input name="lastName" />
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="firstName" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="lastName" class="form-control">
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Speciality</strong>
-                <div class="text-muted">
-                    <input name="speciality" />
-                </div>
-                <strong>Position</strong>
-                <div class="text-muted">
-                    <input name="jobTitle" />
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Speciality</label>
+                <div class="col-sm-11">
+                    <input type="text" name="speciality" class="form-control" />
                 </div>
             </div>
-        </div>
 
-
-        <div class="flex-grow-1 ms-3">
-            <strong>Facility</strong>
-            <div class="text-muted">
-                <select name="facilityCode">
-                    <option value="">Select ...</option>
-                    @foreach (var item in Model.facilities)
-                    {
-                        <option value=@item.MasterFacilityCode>@item.NAME</option>
-                    }
-                </select>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Position</label>
+                <div class="col-sm-11">
+                    <input type="text" name="jobTitle" class="form-control" />
+                </div>
             </div>
-        </div>
 
-        @*@
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="facilityCode">
+                        <option value="">Select ...</option>
+                        @foreach (var item in Model.facilities)
+                        {
+                            <option value=@item.MasterFacilityCode>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+            </div>
+           
+
+            @*@
         <div class="d-flex">
             <div class="flex-grow-1 ms-3">
                 <strong>Active</strong>
@@ -88,22 +98,9 @@
         </div>
         *@
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Is GP</strong>
-                <div class="text-muted">
-                    <div class="text-muted">
-                        <select name="isGP">
-                            <option value=0>No</option>
-                            <option value=-1>Yes</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
 
-
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+    </div>
 </div>
     

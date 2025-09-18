@@ -15,67 +15,46 @@
     };
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h5>New Clinic Venue</h5>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">New Clinic Venue</h5>
     </div>
-
-    <form asp-action="VenueDetails">
-
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Code:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="clinCode"  />
-            </div>
-            <div class="col-md-2">
-                <label>Name:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="name"  />
-            </div>
-        </div>
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Location</label>
-            </div>
-            <div class="col-md-2">
-                <textarea cols="50" rows="10" name="location" ></textarea>
-            </div>
-        </div>
-
-        <div class="flex-grow-1 ms-3">
-            <div class="col-md-2">
-                <label>Special Instructions</label>
-            </div>
-            <div class="col-md-2">
-                <textarea cols="50" rows="10" name="notes" ></textarea>
-            </div>
-        </div>
-
-        @*location code*@
-        @*
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Active</strong>
-                <div class="text-muted">
-                    <select name="isNonActive" >
-                        <option value=0>Yes</option>
-                        <option value=-1>No</option>
-                    </select>
+    <div class="card-body">
+        <form asp-action="AddNewVenue">
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Code</label>
+                </div>
+                <div class="col-md-11">
+                    <input class="form-control" name="clinCode"  />
                 </div>
             </div>
-        </div> //gonna default to active
-        *@
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-primary">Save Record</button>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Name</label>
+                </div>
+                <div class="col-md-11">
+                    <input type="text" name="name" class="form-control" />
+                </div>
             </div>
-        </div>
-
-
-
-    </form>
-
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Location</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="location" cols="50" rows="10" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Special Instructions</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="notes" class="form-control" cols="50" rows="10"></textarea>
+                    <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+

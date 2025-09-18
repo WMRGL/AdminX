@@ -15,80 +15,70 @@
     };
 }
 
-<div class="container">
-
-    @if (Model.message != null)
-    {
-        <div class="card">
-            <div class="card-body">
-                @if (Model.success)
-                {
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
                     </div>
-                }
-                else
-                {
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
                     </div>
-                }
-            </div>
-        </div>
-    }
-
-
-    <div class="row mb-5 g-5">
-        <h1>Clinic Venue Administration</h1>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <div class="col-md-10"></div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-outline-primary" asp-controller="SysAdmin" asp-action="AddNewVenue">Add New Clinic Venue</a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-
-    <form asp-action="Facilities">
-        <div class="row mb-5">
-            <div class="col-md-2">
-                <label>Name</label>
-            </div>
-            <div class="col-md-2">
-                <input name="nameSearch" />
-            </div>
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-md-1">
-                <label>Show Only Current</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyCurrent" />
-                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
-            </div>
-            <div class="col-md-8"></div>
-            <div class="col-md-2">            
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </div>
-    </form>
+}
 
 
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Clinic Venue Administration</h5>
+        <a type="button" class="btn btn-outline-primary float-end" asp-controller="SysAdmin" asp-action="AddNewVenue">Add New Clinic Venue</a>
+    </div>
 
+    <div class="card-body">
+ 
+        <form asp-action="ClinicVenues" class="row row-cols-md-auto align-items-center">
+			<div class="col-12">
+				<label class="form-label" for="inlineFormInputName2">Name</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="nameSearch">
+			</div>
 
-    <div class="row  mb-5 g-5">
-        <table class="table">
+			<div class="col-12">
+				<div class="form-check mb-1 me-sm-2">
+                    <label class="form-check-label" for="customControlInline">Show Only Current</label>
+                    <input type="checkbox" class="form-check-input" id="chkOnlyCurrent" />
+                    <input name="isOnlyCurrent" id="txtOnlyCurrent" class="form-check-input" hidden />
+				</div>
+			</div>
+
+			<div class="col-12">
+				<button type="submit" class="btn btn-primary mb-2">Search</button>
+			</div>
+		</form>
+    </div>
+</div>
+
+<div class="card">
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped table-hover defaultTable">
             <thead>
                 <tr>
                     <th></th>

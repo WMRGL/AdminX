@@ -3,146 +3,104 @@
     ViewData["Title"] = "Admin-X - System Administration - Staff Member Details";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h1>New Staff Member</h1>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">New Staff Member</h5>
     </div>
+    <div class="card-body">
+        <form asp-action="AddNewStaffMember" id="frmSubmit">
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Title</label>
+                    <select name="title" class="form-select" asp-for=@Model.staffMember.StaffTitle>
+                        @foreach (var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Firstname</label>
+                    <input type="text" name="firstname" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Lastname</label>
+                    <input type="text" name="lastname" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Windows Login</label>
+                    <input type="text" name="loginName" class="form-control" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="pw" name="email" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Role</label>
+                    <input type="text" name="role" class="form-control" />
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Type</label>
+                    <select name="type" class="form-select" id="ddlStaffTypes">
+                        @foreach (var item in Model.types)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Team</label>
+                    <select name="team" class="form-select" >
+                        @foreach (var item in Model.teams)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="startDate" class="form-control" />
+                </div>
+                <div class="mt-5 col-md-3">
+                    <label class="form-label">
+                        <input type="checkbox" class="form-check-input" id="chkSupervisor" />
+                        <input name="isSupervisor" id="txtSupervisor" hidden />
+                        <span class="form-check-label">Manager/supervisor</span>
+                    </label>
+                </div>
+                <div class="mt-5 col-md-3">
+                    <label class="form-label">
+                        <span class="form-check-label">System Administrator</span>
+                        <input type="checkbox" class="form-check-input" id="chkSystemAdministrator" />
+                        <input name="isSystemAdministrator" id="txtSystemAdministrator" hidden />
+                       
+                    </label>
+                </div>
+                <div class="mb-3 col-md-3" id="gmcNumberFields" hidden>
+                    <label class="form-label">GMC Number</label>
+                    <input type="date" name="gmcNumber" class="form-control" />
+                </div>
+            </div>
+            <button type="submit" id="btnSubmit" class="btn btn-outline-primary">Save Record</button>
 
-    <form asp-action="AddNewStaffMember" id="frmSubmit">
+        </form>
+    </div>
+</div>
 
-        @*<div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Staff Code:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="staffCode"  />
-            </div>
-            <div class="col-md-8">
-                <label>This should be a unique 4-letter code, and is not the same as their Windows login.</label>
-            </div>
-        </div>*@
+<div class="container">
+   
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Name:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="title" asp-for=@Model.staffMember.StaffTitle>
-                    @foreach (var item in Model.titles)
-                    {
-                        <option value=@item.Title>@item.Title</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input name="firstname"  />
-            </div>
-            <div class="col-md-2">
-                <input name="lastname"  />
-            </div>
-            <div class="col-md-2">
-                <label>Windows Login:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="loginName" />
-            </div>
-        </div>
+    <form  id="frmSubmit">
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>email address:</label>
-            </div>
-            <div class="col-md-2">
-                <input id="pw" name="email" />
-            </div>
-            @*
-            <div class="col-md-2">
-                <input type="password" id="pw" name="password" />
-            </div>
-            <div class="col-md-2">
-                <label>Confirm password:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="password" id="pwConfirm" />
-            </div>
-            *@
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Role:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="role"  />
-            </div>
-            <div class="col-md-2">
-                <label>Type:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="type" id="ddlStaffTypes">
-                    @foreach (var item in Model.types)
-                    {
-                        <option value=@item>@item</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>Team:</label>
-            </div>
-            <div class="col-md-2">
-                <select name="type">
-                    @foreach (var item in Model.teams)
-                    {
-                        <option value=@item>@item</option>
-                    }
-                </select>
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Start Date:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="startDate"  />
-            </div>
-            @*
-            <div class="col-md-2">
-                <label>End Date:</label>
-            </div>            
-            <div class="col-md-2">
-                <input type="date" name="endDate"  />
-            </div>
-            *@
-            <div class="col-md-2">
-                <label>Manager/supervisor:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="checkbox" id="chkSupervisor" />
-                <input name="isSupervisor" id="txtSupervisor" hidden />
-            </div>
-            <div class="col-md-2">
-                <label>System Administrator:</label>
-            </div>
-            <div class="col-md-2">
-                <input type="checkbox" id="chkSystemAdministrator" />
-                <input name="isSystemAdministrator" id="txtSystemAdministrator" hidden />
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5" id="gmcNumberFields" hidden>
-            <div class="col-md-2">
-                <label>GMC Number:</label>
-            </div>
-            <div class="col-md-2">
-                <input name="gmcNumber"  />
-            </div>
-        </div>
         
 
         <div class="row mb-5 g-5">
             <div class="col-md-2">
-                <button type="submit" id="btnSubmit" class="btn btn-outline-primary">Save Record</button>
             </div>
         </div>
 

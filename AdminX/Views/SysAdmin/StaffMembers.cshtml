@@ -15,120 +15,113 @@
     };
 }
 
-<div class="container">
-
-    @if (Model.message != null)
-    {
-        <div class="card">
-            <div class="card-body">
-                @if (Model.success)
-                {
-                    <div class="alert alert-success alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
                     </div>
-                }
-                else
-                {
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <div class="alert-icon">
-                            <i class="far fa-fw fa-bell"></i>
-                        </div>
-                        <div class="alert-message">
-                            <h3>@Model.message</h3>
-                        </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
                     </div>
-                }
-            </div>
-        </div>
-    }
-
-
-    <div class="row mb-5 g-5">
-        <h1>Staff Member Administration</h1>
-    </div>
-
-    <div class="row mb-5 g-5">
-        <div class="col-md-10"></div>
-        <div class="col-md-2">
-            <a type="button" class="btn btn-outline-primary" asp-action="AddNewStaffMember">Add New Staff Member</a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
         </div>
     </div>
+}
 
-    <form asp-action="StaffMembers">
-        <div class="row mb-5">
-            <div class="col-md-2">
-                <label>Staff Code</label>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Staff Member Administration</h5>
+    </div>
+    <div class="card-body">
+
+        <form asp-action="StaffMembers" class="row row-cols-md-auto align-items-center">
+            <div class="col-12">
+                <label class="form-label" for="inlineFormInputName2">Staff Code</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="staffCodeSearch">
             </div>
-            <div class="col-md-2">
-                <input name="staffCodeSearch" />
+            <div class="col-12">
+                <label class="form-label" for="inlineFormInputName2">Name</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="nameSearch">
             </div>
-            <div class="col-md-2">
-                <label>Name</label>
-            </div>
-            <div class="col-md-2">
-                <input name="nameSearch" />
-            </div>
-            <div class="col-md-2">
-                <label>Team</label>
-            </div>
-            <div class="col-md-2">
-                <select name="teamSearch">
+            <div class="col-12">
+                <label class="form-label" for="inlineFormInputName2">Team</label>
+                <select name="teamSearch" class="form-select">
                     <option value="" selected>Select...</option>
-                    @foreach(var item in Model.teams)
+                    @foreach (var item in Model.teams)
                     {
                         <option value=@item>@item</option>
                     }
                 </select>
             </div>
+
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyCurrent">
+                    <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
+                    <label class="form-check-label" for="customControlInline">Show Only Current</label>
+                </div>
+            </div>
+      
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkNotExternal">
+                    <input name="isNotExternal" id="txtNotExternal" hidden />
+                    <label class="form-check-label" for="customControlInline">Exclude External</label>
+                </div>
+            </div>
+      
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyAdmin">
+                    <input name="isOnlyAdmin" id="txtOnlyAdmin" hidden />
+                    <label class="form-check-label" for="customControlInline">Show Only Admin</label>
+                </div>
+            </div>
+      
+            <div class="col-12">
+                <div class="form-check mb-1 me-sm-2">
+                    <input type="checkbox" class="form-check-input" id="chkOnlyClinical">
+                    <input name="isOnlyClinical" id="txtOnlyClinical" hidden />
+                    <label class="form-check-label" for="customControlInline">Show Only Clinical</label>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+            <div class="col-12 ms-auto">
+                <a type="button" class="btn btn-dark" asp-action="AddNewStaffMember">Add New Staff Member</a>
+
+            </div>
+        </form>
+
         </div>
 
-        <div class="row mb-5">
-            <div class="col-md-1">
-                <label>Show Only Current</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyCurrent" />
-                <input name="isOnlyCurrent" id="txtOnlyCurrent" hidden />
-            </div>
-            <div class="col-md-1">
-                <label>Exclude External</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkNotExternal" />
-                <input name="isNotExternal" id="txtNotExternal" hidden />
-            </div>
-            <div class="col-md-1">
-                <label>Show Only Admin</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyAdmin" />
-                <input name="isOnlyAdmin" id="txtOnlyAdmin" hidden />
-            </div>
-            <div class="col-md-1">
-                <label>Show Only Clinical</label>
-            </div>
-            <div class="col-md-1">
-                <input type="checkbox" id="chkOnlyClinical" />
-                <input name="isOnlyClinical" id="txtOnlyClinical" hidden />
-            </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-2">            
-                <button type="submit" class="btn btn-outline-primary">Search</button>
-            </div>
-        </div>
-    </form>
+</div>
 
 
 
 
-    <div class="row  mb-5 g-5">
-        <table class="table">
-            <thead>
+<div class="card">
+
+      <div class="card-body">
+        <table class="table table-bordered table-hover table-striped defaultTable">
+            <thead class="table-dark">
                 <tr>
                     <th></th>
                     <th>Staff Code</th>
