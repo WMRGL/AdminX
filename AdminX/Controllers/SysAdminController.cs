@@ -573,16 +573,14 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClinicVenues(string nameSearch)
+        public async Task<IActionResult> ClinicVenues(string? nameSearch)
         {
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues");
 
-                
-                var venue = _venueData.GetVenueDetails(nameSearch);
-                _savm.venues = venue != null ? new List<ClinicVenue> { venue } : new List<ClinicVenue>();
+                _savm.venues = _venueData.GetVenueList();
                 return View(_savm);
             }
             catch (Exception ex)

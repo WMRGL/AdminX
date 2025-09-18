@@ -55,7 +55,7 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="refDate">Date</label>
-                            <input type="date" class="form-control" id="refDate" name="refDate" />
+                            <input type="date" class="form-control" id="refDate" name="refDate" required />
                         </div>
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="refPathway">Pathway</label>
@@ -207,7 +207,6 @@
                                 <div class="mb-3 col-md-2">
                                     <label class="form-label" for="inputZip">Symptomatic at referral?</label><br />
                                     <label class="form-check">
-                                    <label class="form-check">
                                         <input class="form-check-input" type="radio" value="1" name="symptomatic">                                        
                                         <span class="form-check-label">
                                             Yes
@@ -248,6 +247,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
+                                    <label class="form-label">Referral Reason Code</label>
                                     <select  class="form-select js-choice" name="refReason1">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)

@@ -542,7 +542,7 @@ namespace AdminX.Controllers
                 //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
-                TempData["SuccessMessage"] = "CGU number changed successfully";
+                //TempData["SuccessMessage"] = "CGU number changed successfully";
 
                 return View(_pvm);
             }
