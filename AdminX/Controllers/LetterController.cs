@@ -5,10 +5,10 @@ using ClinicalXPDataConnections.Meta;
 using System.Text.RegularExpressions;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.Rendering;
-using PdfSharp.Drawing;
-using PdfSharp.Drawing.Layout;
-using PdfSharp.Pdf;
+using PdfSharpCore.Drawing;
+using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
+using System.Drawing;
 
 
 namespace AdminX.Controllers
@@ -30,6 +30,7 @@ namespace AdminX.Controllers
         private readonly IConstantsData _constantsData;
         private readonly IAddressLookup _add;
         private readonly ILeafletData _leafletData;
+        private readonly IAlertData _alertData;
 
         public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext) //to be used for testing only
         {
@@ -47,6 +48,7 @@ namespace AdminX.Controllers
             _constantsData = new ConstantsData(_docContext);
             _add = new AddressLookup(_clinContext, _docContext);
             _leafletData = new LeafletData(_docContext);
+            _alertData = new AlertData(_clinContext);
         }
                
 
@@ -1361,19 +1363,18 @@ namespace AdminX.Controllers
             var referral = _referralData.GetReferralDetails(refID);
             string docCode = _lvm.documentsContent.DocCode;
             //creates a new PDF document
-            
-            PdfSharp.Pdf.PdfDocument document = new PdfSharp.Pdf.PdfDocument();
+            PdfSharpCore.Pdf.PdfDocument document = new PdfSharpCore.Pdf.PdfDocument();
             document.Info.Title = "My PDF";
-            PdfSharp.Pdf.PdfPage page = document.AddPage();
+            PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
             var tf = new XTextFormatter(gfx);
             //set the fonts used for the letters
-            XFont font = new XFont("Arial", 10, XFontStyleEx.Regular);
-            XFont fontBold = new XFont("Arial", 10, XFontStyleEx.Bold);
-            XFont fontItalic = new XFont("Arial", 10, XFontStyleEx.Italic);
-            XFont fontSmall = new XFont("Arial", 8, XFontStyleEx.Regular);
-            XFont fontSmallBold = new XFont("Arial", 8, XFontStyleEx.Bold);
-            XFont fontSmallItalic = new XFont("Arial", 8, XFontStyleEx.Italic);
+            XFont font = new XFont("Arial", 12, XFontStyle.Regular);
+            XFont fontBold = new XFont("Arial", 12, XFontStyle.Bold);
+            XFont fontItalic = new XFont("Arial", 12, XFontStyle.Italic);
+            XFont fontSmall = new XFont("Arial", 10, XFontStyle.Regular);
+            XFont fontSmallBold = new XFont("Arial", 10, XFontStyle.Bold);
+            XFont fontSmallItalic = new XFont("Arial", 10, XFontStyle.Italic);
             //Load the image for the letter head
             XImage image = XImage.FromFile(@"wwwroot\Letterhead.jpg");
             gfx.DrawImage(image, 350, 20, image.PixelWidth / 2, image.PixelHeight / 2);
@@ -1532,16 +1533,16 @@ namespace AdminX.Controllers
                 totalLength = totalLength + 20;
 
                 content1 = _lvm.documentsContent.Para1 + " " + siteText + " cancer.";
-                tf.DrawString(content1, font, XBrushes.Black, new XRect(40, totalLength, 500, content1.Length / 4));
+                tf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, content1.Length / 4));
                 totalLength = totalLength + content1.Length / 4;
 
                 content2 = _lvm.documentsContent.Para2;
-                tf.DrawString(content2, font, XBrushes.Black, new XRect(40, totalLength, 500, content2.Length / 4));
+                tf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
 
                 content3 = _lvm.documentsContent.Para4; ;
-                tf.DrawString(content3, font, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString("*Yes / No", font, XBrushes.Black, new XRect(400, totalLength, 500, 20));
+                tf.DrawString(content3, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("*Yes / No", fontSmall, XBrushes.Black, new XRect(400, totalLength, 500, 20));
                 totalLength = totalLength + 40;
 
                 content4 = _lvm.documentsContent.Para5;
@@ -1550,32 +1551,32 @@ namespace AdminX.Controllers
                 totalLength = totalLength + 40;
 
                 content5 = "*Please delete as appropriate";
-                tf.DrawString(content5, fontItalic, XBrushes.Blue, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(content5, fontSmallItalic, XBrushes.Blue, new XRect(40, totalLength, 500, 40));
                 totalLength = totalLength + 40;
 
-                tf.DrawString("Reference:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString(_lvm.patient.CGU_No, font, XBrushes.Black, new XRect(100, totalLength, 500, 40));
+                tf.DrawString("Reference:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(_lvm.patient.CGU_No, fontSmall, XBrushes.Black, new XRect(100, totalLength, 500, 40));
                 totalLength = totalLength + 20;
-                tf.DrawString("Date of birth:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("Date of birth:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
                 tf.DrawString(_lvm.patient.DOB.Value.ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect(100, totalLength, 500, 40));
                 totalLength = totalLength + 20;
-                tf.DrawString("Details:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString(patAddress, font, XBrushes.Black, new XRect(100, totalLength, 500, 80));
+                tf.DrawString("Details:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(patAddress, fontSmall, XBrushes.Black, new XRect(100, totalLength, 500, 80));
                 totalLength = totalLength + 80;
 
                 content6 = "Hospital where " + siteText + " surgery performed (please complete if known):";
-                tf.DrawString(content6, font, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(content6, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, 40));
                 totalLength = totalLength + 20;
-                tf.DrawString("_______________________________", font, XBrushes.Black, new XRect(400, totalLength, 500, 40));
+                tf.DrawString("_______________________________", fontSmall, XBrushes.Black, new XRect(400, totalLength, 500, 40));
                 totalLength = totalLength + 20;
 
-                tf.DrawString("Patient Signature:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString("___________________________________________", font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
-                tf.DrawString("Date:", fontBold, XBrushes.Black, new XRect(300, totalLength, 500, 40));
-                tf.DrawString("_______________________", font, XBrushes.Black, new XRect(350, totalLength, 500, 40));
+                tf.DrawString("Patient Signature:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("___________________________________________", fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Date:", fontSmallBold, XBrushes.Black, new XRect(300, totalLength, 500, 40));
+                tf.DrawString("_______________________", fontSmall, XBrushes.Black, new XRect(350, totalLength, 500, 40));
                 totalLength = totalLength + 40;
-                tf.DrawString("Please print your name:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString("_______________________________________________", font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Please print your name:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("_______________________________________________", fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
 
             }
 
@@ -1587,61 +1588,131 @@ namespace AdminX.Controllers
                 totalLength = totalLength + 20;
 
                 content1 = _lvm.documentsContent.Para1 + " " + siteText + " cancer.";
-                tf.DrawString(content1, font, XBrushes.Black, new XRect(40, totalLength, 500, content1.Length / 4));
+                tf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, content1.Length / 4));
                 totalLength = totalLength + content1.Length / 4;
 
                 content2 = _lvm.documentsContent.Para2;
-                tf.DrawString(content2, font, XBrushes.Black, new XRect(40, totalLength, 500, content2.Length / 4));
+                tf.DrawString(content2, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, content2.Length / 4));
                 totalLength = totalLength + content2.Length / 4;
 
                 content3 = _lvm.documentsContent.Para4; ;
-                tf.DrawString(content3, font, XBrushes.Black, new XRect(40, totalLength, 350, 40));
-                tf.DrawString("*Yes / No", font, XBrushes.Black, new XRect(400, totalLength, 100, 20));
+                tf.DrawString(content3, fontSmall, XBrushes.Black, new XRect(40, totalLength, 350, 40));
+                tf.DrawString("*Yes / No", fontSmall, XBrushes.Black, new XRect(400, totalLength, 100, 20));
                 totalLength = totalLength + 40;
 
                 content4 = _lvm.documentsContent.Para5;
-                tf.DrawString(content4, font, XBrushes.Black, new XRect(40, totalLength, 350, 40));
-                tf.DrawString("*Yes / No", font, XBrushes.Black, new XRect(400, totalLength, 100, 20));
+                tf.DrawString(content4, fontSmall, XBrushes.Black, new XRect(40, totalLength, 350, 40));
+                tf.DrawString("*Yes / No", fontSmall, XBrushes.Black, new XRect(400, totalLength, 100, 20));
                 totalLength = totalLength + 60;
 
                 content5 = _lvm.documentsContent.Para5;
-                tf.DrawString(content5, font, XBrushes.Black, new XRect(40, totalLength, 350, 40));
-                tf.DrawString("*Yes / No", font, XBrushes.Black, new XRect(400, totalLength, 100, 20));
+                tf.DrawString(content5, fontSmall, XBrushes.Black, new XRect(40, totalLength, 350, 40));
+                tf.DrawString("*Yes / No", fontSmall, XBrushes.Black, new XRect(400, totalLength, 100, 20));
                 totalLength = totalLength + 40;
 
                 content6 = "*Please delete as appropriate";
-                tf.DrawString(content6, fontItalic, XBrushes.Blue, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(content6, fontSmallItalic, XBrushes.Blue, new XRect(40, totalLength, 500, 40));
                 totalLength = totalLength + 40;
 
-                tf.DrawString("Reference:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString(_lvm.patient.CGU_No, font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Reference:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(_lvm.patient.CGU_No, fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
                 totalLength = totalLength + 20;
-                tf.DrawString("Name:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString(patName, font, XBrushes.Black, new XRect(150, totalLength, 500, 80));
+                tf.DrawString("Name:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(patName, fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 80));
                 totalLength = totalLength + 20;
-                tf.DrawString("Date of birth:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString(_lvm.patient.DOB.Value.ToString("dd/MM/yyyy"), font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Date of birth:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(_lvm.patient.DOB.Value.ToString("dd/MM/yyyy"), fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
 
 
                 totalLength = totalLength + 80;
 
                 content6 = "Hospital where " + siteText + " surgery performed (please complete if known):";
-                tf.DrawString(content6, font, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString(content6, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, 40));
                 totalLength = totalLength + 20;
-                tf.DrawString("_______________________________", font, XBrushes.Black, new XRect(400, totalLength, 500, 40));
+                tf.DrawString("_______________________________", fontSmall, XBrushes.Black, new XRect(400, totalLength, 500, 40));
                 totalLength = totalLength + 20;
 
-                tf.DrawString("Patient Signature:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString("___________________________________________", font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
-                tf.DrawString("Date:", fontBold, XBrushes.Black, new XRect(300, totalLength, 500, 40));
-                tf.DrawString("_______________________", font, XBrushes.Black, new XRect(350, totalLength, 500, 40));
+                tf.DrawString("Patient Signature:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("___________________________________________", fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Date:", fontSmallBold, XBrushes.Black, new XRect(300, totalLength, 500, 40));
+                tf.DrawString("_______________________", fontSmall, XBrushes.Black, new XRect(350, totalLength, 500, 40));
                 totalLength = totalLength + 40;
-                tf.DrawString("Please print your name:", fontBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
-                tf.DrawString("_______________________________________________", font, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+                tf.DrawString("Please print your name:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                tf.DrawString("_______________________________________________", fontSmall, XBrushes.Black, new XRect(150, totalLength, 500, 40));
+            }
+
+            if (docCode == "ClicsCF01")
+            {
+                totalLength = totalLength - 140;
+                tf.DrawString("Consent for Access to Medical Records", fontBold, XBrushes.Black, new XRect(200, totalLength, 500, 20));
+                totalLength = totalLength + 20;
+
+                content1 = "I understand that information obtained from my medical records will only be used to provide appropriate advice for me and/or " +
+                    "my relatives regarding the genetic condition which may exist in my family. No information other than that relating directly to the family " +
+                    "history will be disclosed."; //because of course it's hardcoded.
+                tf.DrawString(content1, fontSmall, XBrushes.Black, new XRect(40, totalLength, 500, content1.Length / 4));
+                totalLength = totalLength + content1.Length / 4;
+
+                tf.DrawString("I give my consent for the clinical genetics unit at Birmingham Women’s Hospital to obtain access to my " +
+                    "medical records.", fontSmall, XBrushes.Black, new XRect(40, totalLength, 380, 50));
+
+                tf.DrawString("Yes / No", fontSmall, XBrushes.Black, new XRect(450, totalLength, 100, 20));
+
+                totalLength += 40;
+
+                tf.DrawString("Fill in details for person whose records are to be accessed", fontSmallItalic, XBrushes.Black, new XRect(40, totalLength, 500, 40));
+                totalLength += 20;
+
+                tf.DrawString("Name:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 100, 40));
+                tf.DrawString(patName, fontSmall, XBrushes.Black, new XRect(120, totalLength, 400, 40));
+                tf.DrawString("Date of birth:", fontSmallBold, XBrushes.Black, new XRect(350, totalLength, 100, 40));
+                tf.DrawString(patDOB.ToString("dd/MM/yyyy"), fontSmall, XBrushes.Black, new XRect(480, totalLength, 400, 40));
+                totalLength += 20;
+
+                List<Alert> alerts = _alertData.GetAlertsList(mpi);
+
+                if (alerts.Where(a => a.ProtectedAddress == true).Count() > 1)
+                {
+                    patAddress = "[Protected Address]";
+                }
+                else
+                {
+                    patAddress = _add.GetAddress("PT", refID);
+                }
+
+                tf.DrawString("Address:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 100, 40));
+                tf.DrawString(patAddress, fontSmall, XBrushes.Black, new XRect(120, totalLength, 400, 120));
+                totalLength += 100;
+                tf.DrawString("Daytime telephone no:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 180, 40));
+                tf.DrawString("______________________________________", font, XBrushes.Black, new XRect(180, totalLength, 400, 40));
+                totalLength += 50;
+                tf.DrawString("Name of hospital holding records:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 250, 40));
+                tf.DrawString("_______________________________________", fontSmall, XBrushes.Black, new XRect(260, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("Address of hospital holding records:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 220, 40));
+                tf.DrawString("_______________________________________", fontSmall, XBrushes.Black, new XRect(260, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("________________________________________________________________________", fontSmall, XBrushes.Black, new XRect(40, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("________________________________________________________________________", fontSmall, XBrushes.Black, new XRect(40, totalLength, 400, 40));
+
+                totalLength += 50;
+                tf.DrawString("Name of GP:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 250, 40));
+                tf.DrawString("_______________________________________", fontSmall, XBrushes.Black, new XRect(260, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("Address of GP:", fontSmallBold, XBrushes.Black, new XRect(40, totalLength, 220, 40));
+                tf.DrawString("_______________________________________", fontSmall, XBrushes.Black, new XRect(260, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("________________________________________________________________________", fontSmall, XBrushes.Black, new XRect(40, totalLength, 400, 40));
+                totalLength += 20;
+                tf.DrawString("________________________________________________________________________", fontSmall, XBrushes.Black, new XRect(40, totalLength, 400, 40));
+
+
             }
 
 
-            tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
+
+            tf.DrawString("Letter code: " + docCode, fontSmall, XBrushes.Black, new XRect(400, 800, 500, 20));
 
             sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
 
@@ -1674,7 +1745,15 @@ namespace AdminX.Controllers
         }
 
 
-
+        void CreateQRImageFile(string qrCode, string user)
+        {
+            byte[] imageBytes = Convert.FromBase64String(qrCode);
+            using (MemoryStream ms = new MemoryStream(imageBytes))
+            {
+                Bitmap image = new Bitmap(ms);
+                image.Save($"wwwroot\\Images\\qrCode-{user}.jpg");
+            }
+        }
 
 
         string RemoveHTML(string text)

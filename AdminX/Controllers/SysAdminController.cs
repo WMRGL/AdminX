@@ -573,14 +573,24 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ClinicVenues(string? nameSearch)
+        public async Task<IActionResult> ClinicVenues(string? codeSearch, string? nameSearch, bool? isOnlyCurrent = false) //I only added that variable because it throws a fit otherwise
         {
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues");
 
-                _savm.venues = _venueData.GetVenueList();
+                if (nameSearch != null)
+                {
+                    _savm.venues = _venueData.GetVenueList().Where(v => v.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
+                }
+
+                if(isOnlyCurrent.GetValueOrDefault())
+                {
+                    _savm.venues = _venueData.GetVenueList().Where(v => v.NON_ACTIVE == 0).ToList();
+                }
+
+
                 return View(_savm);
             }
             catch (Exception ex)
