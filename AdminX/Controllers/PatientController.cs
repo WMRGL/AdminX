@@ -174,9 +174,18 @@ namespace AdminX.Controllers
                     _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
                 }
 
-                string gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                string gpPractice = "";
 
-                if (gpPractice != _pvm.patient.GP_Facility_Code)
+                if (_pvm.patient.GP_Code != null)
+                {
+                    gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                }
+
+                if(gpPractice == "")
+                {
+                    _pvm.message = "No GP is assigned to this patient.";
+                }
+                else if (gpPractice != _pvm.patient.GP_Facility_Code)
                 {
                     _pvm.message = "This patient's GP is no longer at this practice. Please check and select a new GP if necessary.";
                 }
@@ -609,8 +618,6 @@ namespace AdminX.Controllers
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
-
-
 
             int success = _crud.CallStoredProcedure("Patient", "MakeElectronic", mpi, 0, 0, "", "", "", "", User.Identity.Name);
 

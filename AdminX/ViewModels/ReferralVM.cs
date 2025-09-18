@@ -34,5 +34,6 @@ namespace AdminX.ViewModels
         public List<Disease> indicationList { get; set; }
         public List<ReferralReason> referralReasonsList { get; set; }
         public Triage relatedICP { get; set; }
+        public AreaNames areaName { get; set; }        
     }
 }
