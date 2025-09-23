@@ -297,8 +297,8 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
             }
-
-            return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
+            TempData["SuccessMessage"] = "Referral created successfully.";
+            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message= "Referral created successfully", success=true });
         }
     }
 }

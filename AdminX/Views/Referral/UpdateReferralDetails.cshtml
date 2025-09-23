@@ -381,7 +381,7 @@
                                     </div>                                    
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save changes</button>
-                                <a asp-controller=Referral asp-action=Review asp-route-mpi=@Model.referral.MPI asp-route-refID=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
+                                <a asp-controller=Review asp-action=Create asp-route-id=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
                             </form>
 
                         </div>
@@ -582,7 +582,7 @@
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Save changes</button>
-                                <a asp-controller=Review asp-action=Review asp-route-mpi=@Model.referral.MPI asp-route-refID=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
+                                <a asp-controller=Review asp-action=Create asp-route-id=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
 
                             </form>
 

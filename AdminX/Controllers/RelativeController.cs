@@ -22,6 +22,7 @@ namespace AdminX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly APIController _api;
+        private readonly ITitleData _titleData;
 
         public RelativeController(ClinicalContext context, APIContext apiContext, IConfiguration config)
         {
@@ -36,7 +37,8 @@ namespace AdminX.Controllers
             _rvm = new RelativeVM();
             _audit = new AuditService(_config);
             _api = new APIController(_apiContext, _config);
-            
+            _titleData = new TitleData(_clinContext);
+
         }
 
         [Authorize]
@@ -150,6 +152,8 @@ namespace AdminX.Controllers
                 _rvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
                 _rvm.relationsList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
                 _rvm.genderList = _relativeData.GetGenderList();
+                _rvm.titleList = _titleData.GetTitlesList();
+
                 return View(_rvm);
             }
             catch (Exception ex)
