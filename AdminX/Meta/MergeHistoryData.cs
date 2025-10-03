@@ -1,8 +1,5 @@
 ﻿using AdminX.Data;
 using AdminX.Models;
-using ClinicalXPDataConnections.Data;
-using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Meta
 {
@@ -15,12 +12,12 @@ namespace AdminX.Meta
     }
     public class MergeHistoryData : IMergeHistoryData
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly AdminContext _context;
 
-        public MergeHistoryData(ClinicalContext clinContext, AdminContext context)
+        public MergeHistoryData(AdminContext context)
         {
-            _clinContext = clinContext;
+            //_clinContext = clinContext;
             _context = context;
         }
 
