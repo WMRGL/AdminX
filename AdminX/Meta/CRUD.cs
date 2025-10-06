@@ -31,6 +31,12 @@ namespace AdminX.Meta
         public int TriageDetail(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
        string? string5 = "", string? string6 = "", string? string7 = "", int? int4 = 0, int? int5 = 0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false);
 
+        public int SysAdminCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? text, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string?
+            string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "",
+        string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "",
+        string? string19 = "", string? string20 = ""); //the Clinic Setup needs a ridiculous number of strings!!!
+
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username);
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
@@ -175,8 +181,6 @@ namespace AdminX.Meta
             conn.Close();
 
             return iReturnValue;
-
-
         }
 
         public int ReferralDetail(string sType, string sOperation, string sLogin, int int1, int? int2, int? int3, int? int4, int? int5, int? int6, int? int7,
@@ -238,8 +242,6 @@ namespace AdminX.Meta
             conn.Close();
 
             return iReturnValue;
-
-
         }
 
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
@@ -313,6 +315,61 @@ namespace AdminX.Meta
             return iReturnValue;
         }
 
+
+        public int SysAdminCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? text, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? 
+            string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", 
+        string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "", 
+        string? string19 = "", string? string20 = "")
+        {
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXSysAdminCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
+            cmd.Parameters.Add("@int3", SqlDbType.Int).Value = int3;
+            cmd.Parameters.Add("@int4", SqlDbType.Int).Value = int4;
+            cmd.Parameters.Add("@int5", SqlDbType.Int).Value = int5;
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
+            cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
+            cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
+            cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+            cmd.Parameters.Add("@bool1", SqlDbType.Bit).Value = bool1;
+            cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;
+            cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
+            cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;
+            cmd.Parameters.Add("@string10", SqlDbType.VarChar).Value = string10;
+            cmd.Parameters.Add("@string11", SqlDbType.VarChar).Value = string11;
+            cmd.Parameters.Add("@string12", SqlDbType.VarChar).Value = string12;
+            cmd.Parameters.Add("@string13", SqlDbType.VarChar).Value = string13;
+            cmd.Parameters.Add("@string14", SqlDbType.VarChar).Value = string14;
+            cmd.Parameters.Add("@string15", SqlDbType.VarChar).Value = string15;
+            cmd.Parameters.Add("@string16", SqlDbType.VarChar).Value = string16;
+            cmd.Parameters.Add("@string17", SqlDbType.VarChar).Value = string17;
+            cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
+            cmd.Parameters.Add("@string19", SqlDbType.VarChar).Value = string19;
+            cmd.Parameters.Add("@string20", SqlDbType.VarChar).Value = string20;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+        }
+
+
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username)
         {
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
@@ -332,7 +389,6 @@ namespace AdminX.Meta
             conn.Close();
 
             return iReturnValue;
-
         }
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode)
@@ -372,6 +428,5 @@ namespace AdminX.Meta
             cmd.ExecuteNonQuery();
             conn.Close();
         }
-
     }
 }

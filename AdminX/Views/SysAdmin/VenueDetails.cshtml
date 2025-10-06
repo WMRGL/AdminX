@@ -11,13 +11,17 @@
         Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
         Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
         Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
-
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
     };
 }
 
 <div class="card">
     <div class="card-header">
         <h5 class="card-title text-dark">Details for @Model.venue.NAME (@Model.venue.FACILITY)</h5>
+        @if (!Model.hasAssociatedClinicDetails)
+        {
+            <p><span class="text-danger">No details exist for this clinic venue -</span> <a type="button" class="btn btn-outline-primary" asp-controller="SysAdmin" asp-action="AddNewCliniciansClinic" asp-route-clinCodeToCreate=@Model.venue.FACILITY>Create clinic details</a></p>
+        }
     </div>
 
     <div class="card-body">
@@ -68,6 +72,9 @@
             </div>
 
         </form>
+
+        
+
     </div>
 
 </div>

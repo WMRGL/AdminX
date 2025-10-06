@@ -23,6 +23,7 @@ namespace AdminX.Data
         public DbSet<MergeHistory> MergeHistory { get; set; } 
         public DbSet<GenderIdentity> GenderIdentity { get; set; }
         public DbSet<HS> HS { get; set; }
+        public DbSet<CliniciansClinics> CliniciansClinics { get; set; }
 
     }
 }
