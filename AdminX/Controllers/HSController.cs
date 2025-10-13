@@ -44,9 +44,21 @@ namespace AdminX.Controllers
             MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
 
             Section section = document.AddSection();
+
+            Table tableHeader = section.AddTable();
+            Column colh1 = tableHeader.AddColumn();
+            colh1.Width = 400;
+            Column colh2 = tableHeader.AddColumn();
+            colh2.Width = 100;
+            Row rowh1 = tableHeader.AddRow();
+            rowh1.Cells[0].AddParagraph().AddFormattedText("West Midlands Family Cancer Strategy", TextFormat.Bold);
+
+            MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = rowh1.Cells[1].AddImage(@"wwwroot\Images\NHSlogo.png");
+            imgLogo.ScaleWidth = new Unit(0.75, UnitType.Point);
+            imgLogo.ScaleHeight = new Unit(0.75, UnitType.Point);
             
-            Paragraph title = section.AddParagraph();
-            title.AddFormattedText("West Midlands Family Cancer Strategy", TextFormat.Bold);
+            //Paragraph title = section.AddParagraph();
+            //title.AddFormattedText("West Midlands Family Cancer Strategy", TextFormat.Bold);
 
             Paragraph spacer = section.AddParagraph();
             Paragraph title2 = section.AddParagraph();
@@ -75,25 +87,25 @@ namespace AdminX.Controllers
 
             foreach (var item in hs)
             {
-                MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
-                MigraDoc.DocumentObjectModel.Tables.Column col1 = table.AddColumn();
+                Table table = section.AddTable();
+                Column col1 = table.AddColumn();
                 col1.Width = 100;
                 col1.Format.Alignment = ParagraphAlignment.Right;
-                MigraDoc.DocumentObjectModel.Tables.Column col2 = table.AddColumn();
+                Column col2 = table.AddColumn();
                 col2.Width = 200;
-                MigraDoc.DocumentObjectModel.Tables.Column col3 = table.AddColumn();
+                Column col3 = table.AddColumn();
                 col3.Width = 100;
                 col3.Format.Alignment = ParagraphAlignment.Right;
-                MigraDoc.DocumentObjectModel.Tables.Column col4 = table.AddColumn();
+                Column col4 = table.AddColumn();
                 col4.Width = 100;
-                MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row3 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row4 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row5 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row6 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row7 = table.AddRow();
-                MigraDoc.DocumentObjectModel.Tables.Row row8 = table.AddRow();
+                Row row1 = table.AddRow();
+                Row row2 = table.AddRow();
+                Row row3 = table.AddRow();
+                Row row4 = table.AddRow();
+                Row row5 = table.AddRow();
+                Row row6 = table.AddRow();
+                Row row7 = table.AddRow();
+                Row row8 = table.AddRow();
 
                 table.SetEdge(0, 0, table.Columns.Count, table.Rows.Count, Edge.Box, BorderStyle.Single, 1, Colors.Black);
                                 
@@ -151,7 +163,7 @@ namespace AdminX.Controllers
             if (!isPreview.GetValueOrDefault())
             {
                 string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
-                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{pat.CGU_No}-{docCode}-{pat.MPI.ToString()}-0-{refid.ToString()}-0-{DateTime.Now.ToString("yyyyMMddHHmmSS")}-{diaryID.ToString()}.pdf");
+                File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{pat.CGU_No}-{docCode}-{pat.MPI.ToString()}-0-{refid.ToString()}-0-{DateTime.Now.ToString("yyyyMMddHHmmSS")}-{diaryID.ToString()}.pdf");
 
             }           
         }

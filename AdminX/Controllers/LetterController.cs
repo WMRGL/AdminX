@@ -80,17 +80,17 @@ namespace AdminX.Controllers
 
             spacer = section.AddParagraph();
 
-            MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
-            MigraDoc.DocumentObjectModel.Tables.Column contactInfo = table.AddColumn();
+            Table table = section.AddTable();
+            Column contactInfo = table.AddColumn();
             contactInfo.Format.Alignment = ParagraphAlignment.Left;
-            MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
+            Column ourAddressInfo = table.AddColumn();
             ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
             table.Rows.Height = 50;
             table.Columns.Width = 250;
-            MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
-            row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
-            MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
-            row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+            Row row1 = table.AddRow();
+            row1.VerticalAlignment = VerticalAlignment.Top;
+            Row row2 = table.AddRow();
+            row2.VerticalAlignment = VerticalAlignment.Center;
 
             string clinicianHeader = $"Consultant: {_lvm.dictatedLetter.Consultant}" + System.Environment.NewLine + $"Genetic Counsellor: {_lvm.dictatedLetter.GeneticCounsellor}";
 
@@ -253,19 +253,19 @@ namespace AdminX.Controllers
                 MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
                 Section section = document.AddSection();
 
-                MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
-                MigraDoc.DocumentObjectModel.Tables.Column contactInfo = table.AddColumn();
-                MigraDoc.DocumentObjectModel.Tables.Column logo = table.AddColumn();
+                Table table = section.AddTable();
+                Column contactInfo = table.AddColumn();
+                Column logo = table.AddColumn();
                 contactInfo.Format.Alignment = ParagraphAlignment.Left;
                 logo.Format.Alignment = ParagraphAlignment.Right;
-                //MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
+                //Column ourAddressInfo = table.AddColumn();
                 //ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
-                MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
-                row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
-                MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
-                row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
-                MigraDoc.DocumentObjectModel.Tables.Row row3 = table.AddRow();
-                row3.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
+                Row row1 = table.AddRow();
+                row1.VerticalAlignment = VerticalAlignment.Top;
+                Row row2 = table.AddRow();
+                row2.VerticalAlignment = VerticalAlignment.Center;
+                Row row3 = table.AddRow();
+                row3.VerticalAlignment = VerticalAlignment.Center;
 
                 Paragraph spacer = section.AddParagraph();
 
@@ -613,15 +613,15 @@ namespace AdminX.Controllers
                 //OOR1
                 if (docCode == "OOR1")
                 {
-                    MigraDoc.DocumentObjectModel.Tables.Table table1 = section.AddTable();
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPatAddress = table.AddColumn();
+                    Table table1 = section.AddTable();
+                    Column contentPatAddress = table.AddColumn();
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPatDOB = table.AddColumn();
+                    Column contentPatDOB = table.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
                     table.Rows.Height = 50;
                     table.Columns.Width = 150;
-                    MigraDoc.DocumentObjectModel.Tables.Row row1_1 = table1.AddRow();
-                    row1_1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;
                     row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1_1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
@@ -638,15 +638,15 @@ namespace AdminX.Controllers
                 //OOR1
                 if (docCode == "OOR2")
                 {
-                    MigraDoc.DocumentObjectModel.Tables.Table table1 = section.AddTable();
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPatAddress = table.AddColumn();
+                    Table table1 = section.AddTable();
+                    Column contentPatAddress = table.AddColumn();
                     contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPatDOB = table.AddColumn();
+                    Column contentPatDOB = table.AddColumn();
                     contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
                     table.Rows.Height = 50;
                     table.Columns.Width = 100;
-                    MigraDoc.DocumentObjectModel.Tables.Row row1_1 = table.AddRow();
-                    row1_1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    Row row1_1 = table.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;
                     row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1_1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
@@ -999,16 +999,16 @@ namespace AdminX.Controllers
                     {
                         string riskText = item.SurvSite + " cancer risk category:";
 
-                        MigraDoc.DocumentObjectModel.Tables.Table riskTable = section.AddTable();
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol1 = riskTable.AddColumn();
+                        Table riskTable = section.AddTable();
+                        Column riskCol1 = riskTable.AddColumn();
                         riskCol1.Width = 180;
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol2 = riskTable.AddColumn();
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol3 = riskTable.AddColumn();
+                        Column riskCol2 = riskTable.AddColumn();
+                        Column riskCol3 = riskTable.AddColumn();
                         riskCol3.Width = 150;
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol4 = riskTable.AddColumn();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow1 = riskTable.AddRow();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow2 = riskTable.AddRow();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow3 = riskTable.AddRow();
+                        Column riskCol4 = riskTable.AddColumn();
+                        Row riskRow1 = riskTable.AddRow();
+                        Row riskRow2 = riskTable.AddRow();
+                        Row riskRow3 = riskTable.AddRow();
                         riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
                         riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
                         riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
@@ -1073,16 +1073,16 @@ namespace AdminX.Controllers
                     {
                         string riskText = item.SurvSite + " cancer risk category:";
 
-                        MigraDoc.DocumentObjectModel.Tables.Table riskTable = section.AddTable();
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol1 = riskTable.AddColumn();
+                        Table riskTable = section.AddTable();
+                        Column riskCol1 = riskTable.AddColumn();
                         riskCol1.Width = 180;
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol2 = riskTable.AddColumn();
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol3 = riskTable.AddColumn();
+                        Column riskCol2 = riskTable.AddColumn();
+                        Column riskCol3 = riskTable.AddColumn();
                         riskCol3.Width = 150;
-                        MigraDoc.DocumentObjectModel.Tables.Column riskCol4 = riskTable.AddColumn();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow1 = riskTable.AddRow();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow2 = riskTable.AddRow();
-                        MigraDoc.DocumentObjectModel.Tables.Row riskRow3 = riskTable.AddRow();
+                        Column riskCol4 = riskTable.AddColumn();
+                        Row riskRow1 = riskTable.AddRow();
+                        Row riskRow2 = riskTable.AddRow();
+                        Row riskRow3 = riskTable.AddRow();
                         riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
                         riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
                         riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
@@ -1178,17 +1178,17 @@ namespace AdminX.Controllers
 
                     ptDOB = ptDOB + "NHS Number: " + _lvm.patient.SOCIAL_SECURITY;
                     spacer = section.AddParagraph();
-                    MigraDoc.DocumentObjectModel.Tables.Table table1 = section.AddTable();
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPtName = table.AddColumn();
+                    Table table1 = section.AddTable();
+                    Column contentPtName = table.AddColumn();
                     contentPtName.Format.Alignment = ParagraphAlignment.Left;
-                    MigraDoc.DocumentObjectModel.Tables.Column contentPtDOB = table.AddColumn();
+                    Column contentPtDOB = table.AddColumn();
                     contentPtDOB.Format.Alignment = ParagraphAlignment.Left;
                     table.Rows.Height = 50;
                     table.Columns.Width = 250;
-                    MigraDoc.DocumentObjectModel.Tables.Row row1_1 = table.AddRow();
+                    Row row1_1 = table.AddRow();
                     row1_1[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1_1[1].AddParagraph(ptDOB);
-                    row1_1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
                     row1_1.Format.Font.Bold = true;
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para5);
@@ -1387,18 +1387,18 @@ namespace AdminX.Controllers
                     letterContent2.AddFormattedText(content2);
                     letterContent2.Format.LeftIndent = 5;
                     spacer = section.AddParagraph();
-                    MigraDoc.DocumentObjectModel.Tables.Table histoTable = section.AddTable();
-                    MigraDoc.DocumentObjectModel.Tables.Column col1 = histoTable.AddColumn();
+                    Table histoTable = section.AddTable();
+                    Column col1 = histoTable.AddColumn();
                     col1.Width = 250;                    
-                    MigraDoc.DocumentObjectModel.Tables.Column col2 = histoTable.AddColumn();
+                    Column col2 = histoTable.AddColumn();
                     col2.Width = 250;
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow1 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow3 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow4 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow5 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow6 = histoTable.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow7 = histoTable.AddRow();
+                    Row hRow1 = histoTable.AddRow();
+                    Row hRow2 = histoTable.AddRow();
+                    Row hRow3 = histoTable.AddRow();
+                    Row hRow4 = histoTable.AddRow();
+                    Row hRow5 = histoTable.AddRow();
+                    Row hRow6 = histoTable.AddRow();
+                    Row hRow7 = histoTable.AddRow();
                     histoTable.Rows.Height = 20;
 
                     histoTable.SetEdge(0, 0, histoTable.Columns.Count, histoTable.Rows.Count, Edge.Box, BorderStyle.Single, 1, Colors.Black);
@@ -1439,21 +1439,21 @@ namespace AdminX.Controllers
                     Paragraph letterContent8 = section.AddParagraph(content7);
                     spacer = section.AddParagraph();
 
-                    MigraDoc.DocumentObjectModel.Tables.Table histoTable2 = section.AddTable();
-                    MigraDoc.DocumentObjectModel.Tables.Column col2_1 = histoTable2.AddColumn();
+                    Table histoTable2 = section.AddTable();
+                    Column col2_1 = histoTable2.AddColumn();
                     col2_1.Width = 500;                                       
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_1 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_2 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_3 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_4 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_5 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_6 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_7 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_8 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_9 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_10 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_11 = histoTable2.AddRow();
-                    MigraDoc.DocumentObjectModel.Tables.Row hRow2_12 = histoTable2.AddRow();
+                    Row hRow2_1 = histoTable2.AddRow();
+                    Row hRow2_2 = histoTable2.AddRow();
+                    Row hRow2_3 = histoTable2.AddRow();
+                    Row hRow2_4 = histoTable2.AddRow();
+                    Row hRow2_5 = histoTable2.AddRow();
+                    Row hRow2_6 = histoTable2.AddRow();
+                    Row hRow2_7 = histoTable2.AddRow();
+                    Row hRow2_8 = histoTable2.AddRow();
+                    Row hRow2_9 = histoTable2.AddRow();
+                    Row hRow2_10 = histoTable2.AddRow();
+                    Row hRow2_11 = histoTable2.AddRow();
+                    Row hRow2_12 = histoTable2.AddRow();
                     histoTable2.Rows.Height = 20;
 
                     histoTable2.SetEdge(0, 0, histoTable2.Columns.Count, histoTable2.Rows.Count, Edge.Box, BorderStyle.Single, 1, Colors.Black);
@@ -1829,11 +1829,11 @@ namespace AdminX.Controllers
                             }
                             spacer = section.AddParagraph();
                             spacer = section.AddParagraph();
-                            MigraDoc.DocumentObjectModel.Tables.Table tableCC = section.AddTable();
+                            Table tableCC = section.AddTable();
 
-                            MigraDoc.DocumentObjectModel.Tables.Column colCC = tableCC.AddColumn();
-                            MigraDoc.DocumentObjectModel.Tables.Column colADDRESS = tableCC.AddColumn();
-                            MigraDoc.DocumentObjectModel.Tables.Row rowcc = tableCC.AddRow();
+                            Column colCC = tableCC.AddColumn();
+                            Column colADDRESS = tableCC.AddColumn();
+                            Row rowcc = tableCC.AddRow();
                             colCC.Width = 20;
                             colADDRESS.Width = 300;
 

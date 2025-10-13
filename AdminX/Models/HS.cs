@@ -38,7 +38,7 @@ namespace AdminX.Models
         public string? WhyNot { get; set; }
         public string? Confirmed { get; set; }
         public string? Conf { get; set; }
-        public float? ConfDiagAge { get; set; }
+        public double? ConfDiagAge { get; set; }
         public string? ConfDiagDate { get; set; }
         public string? Notes { get; set; }
         public string? RelSurname { get; set; }
