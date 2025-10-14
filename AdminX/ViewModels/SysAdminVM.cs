@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Models;
+using AdminX.Models;
 
 namespace AdminX.ViewModels
 {
@@ -17,8 +18,12 @@ namespace AdminX.ViewModels
         public ExternalFacility facility { get; set; }
         public ClinicVenue venue { get; set; }
         public List<PatientTitle> titles { get; set; }
+        public List<CliniciansClinics> cliniciansClinicList { get; set; }
+        public CliniciansClinics cliniciansClinic { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
         public bool isEditStaff { get; set; }
+        public bool hasAssociatedClinicDetails { get; set; }
+        public string clinCodeToCreate { get; set; }
     }
 }

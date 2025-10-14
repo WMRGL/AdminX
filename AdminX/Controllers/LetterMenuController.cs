@@ -4,6 +4,7 @@ using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using AdminX.Data;
 
 namespace AdminX.Controllers
 {
@@ -12,6 +13,7 @@ namespace AdminX.Controllers
         private readonly IConfiguration _config;
         private readonly ClinicalContext _context;
         private readonly DocumentContext _documentContext;
+        private readonly AdminContext _adminContext;
         private readonly IDocumentsData _documentsData;
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relData;
@@ -24,11 +26,12 @@ namespace AdminX.Controllers
         private readonly IExternalClinicianData _clinicianData;
         private readonly IStaffUserData _staffData;
 
-        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, IConfiguration config)
+        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, AdminContext adminContext, IConfiguration config)
         {
             _config = config;   
             _context = context;
             _documentContext = documentContext;
+            _adminContext = adminContext;
             _documentsData = new DocumentsData(_documentContext);
             _patientData = new PatientData(_context);
             _relData = new RelativeData(_context);
@@ -61,6 +64,7 @@ namespace AdminX.Controllers
             _lvm.docsListMedRec = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "MEDREC").ToList();
             _lvm.docsListDNA = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "DNATS").ToList();
             _lvm.docsListOutcome = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Outcome").ToList();
+            _lvm.docsListReport = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "REPORTS").ToList();
             _lvm.leaflets = new List<Leaflet>();
             _lvm.referralList = _referralData.GetActiveReferralsListForPatient(mpi);
             _lvm.clinicianList = _clinicianData.GetClinicianList().Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
@@ -113,7 +117,12 @@ namespace AdminX.Controllers
         public IActionResult DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? clinicianCode, string? letterFrom, string? letterTo,
             int? relID = 0, int? leafletID = 0, bool? isRelative = false)
         {
-            int docID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
+            int docID = 0;
+
+            if (docCode != "HS")
+            {
+                docID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
+            }
             _lvm.referral = _referralData.GetReferralDetails(refID);
             _lvm.patient = _patientData.GetPatientDetails(_lvm.referral.MPI);
 
@@ -143,16 +152,38 @@ namespace AdminX.Controllers
                 diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID; //get the diary ID of the entry just created to add to the letter's filename
             }
 
-            _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode, 
-                    "", null, isPreview, "", leafletID);
-            //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
-            //lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
-            //       "", null, isPreview, "", leafletID);
+            if (docCode == "HS")
+            {
+                HSController hs = new HSController(_context, _documentContext, _adminContext);
+                hs.PrintHSForm(refID, diaryID, User.Identity.Name, isPreview);
+            }
+            else
+            {
+                _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                        "", null, isPreview, "", leafletID);
+
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
+                //lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                //       "", null, isPreview, "", leafletID);
+            }          
+
+            
 
             if (isPreview)
             {
                 return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
+            /* //we've done the diary, do we need to do it again?
+            else
+            {
+                int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", additionalText, User.Identity.Name, DateTime.Now, null, false, false);
+
+                if (success == 0)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "LetterMenu-diaryentry(SQL)" });
+                }
+            }
+            */
             TempData["SuccessMessage"] = "Letter has been sent to EDMS ";
             return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
         }

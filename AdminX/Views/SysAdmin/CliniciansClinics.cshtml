@@ -1,6 +1,6 @@
 ﻿@model AdminX.ViewModels.SysAdminVM
 @{
-    ViewData["Title"] = "Admin-X - System Administration - Clinic Venues";
+    ViewData["Title"] = "Admin-X - System Administration - Clinic Setup";
 }
 
 @{
@@ -48,32 +48,28 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title text-dark">Clinic Venue Administration</h5>
-        <a type="button" class="btn btn-outline-primary float-end" asp-controller="SysAdmin" asp-action="AddNewVenue">Add New Clinic Venue</a>
+        <h5 class="card-title text-dark">Clinic Details Administration</h5>
+        <a type="button" class="btn btn-outline-primary float-end" asp-controller="SysAdmin" asp-action="AddNewCliniciansClinic">Add New Clinic Detail</a>
     </div>
 
     <div class="card-body">
- 
-        <form asp-action="ClinicVenues" class="row row-cols-md-auto align-items-center">
-			<div class="col-12">
-				<label class="form-label" for="inlineFormInputName2">Name</label>
-                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="nameSearch">
-			</div>
+        <div class="row">
+            <p>Use this screen to specify details for the clinics (address, location, contact details, etc</p>
+        </div>
 
-			<div class="col-12">
-				<div class="form-check mb-1 me-sm-2">
-                    <label class="form-check-label" for="customControlInline">Show Only Current</label>
-                    <input type="checkbox" class="form-check-input" id="chkOnlyCurrent" />
-                    <input name="isOnlyCurrent" id="txtOnlyCurrent" class="form-check-input" hidden />
-				</div>
-			</div>
-
-			<div class="col-12">
-				<button type="submit" class="btn btn-primary mb-2">Search</button>
-			</div>
-		</form>
+        <form asp-action="CliniciansClinics" class="row row-cols-md-auto align-items-center">
+            <div class="col-12">
+                <label class="form-label" for="inlineFormInputName2">Clinic Site</label>
+                <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="siteSearch">
+            </div>
+                        
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary mb-2">Search</button>
+            </div>
+        </form>
     </div>
 </div>
+
 
 <div class="card">
 
@@ -83,27 +79,20 @@
                 <tr>
                     <th></th>
                     <th>Facility Code</th>
-                    <th>Name</th>
-                    <th>City</th>                                        
-                    <th>Active?</th>
+                    <th>Main addressee</th>
+                    <th>Clinic site</th>
+                    <th>Contact email</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach(var item in Model.venues)
+                @foreach (var item in Model.cliniciansClinicList)
                 {
                     <tr>
-                        <td><a type="button" class="btn btn-outline-primary" asp-action="VenueDetails" asp-route-clinCode=@item.FACILITY>Details</a></td>
-                        <td>@item.FACILITY</td>
-                        <td>@item.NAME</td>
-                        <td>@item.LOCATION</td>                        
-                        @if(item.NON_ACTIVE == 0)
-                        {
-                            <td>Yes</td>
-                        }
-                        else
-                        {
-                            <td>No</td>
-                        }
+                        <td><a type="button" class="btn btn-outline-primary" asp-action="ClinicDetails" asp-route-clinCode=@item.Facility>Details</a></td>
+                        <td>@item.Facility</td>
+                        <td>@item.Addressee</td>                        
+                        <td>@item.ClinicSite</td>
+                        <td>@item.ClinicListEmail</td>
                     </tr>
                 }
             </tbody>
@@ -111,15 +100,3 @@
     </div>
 
 </div>
-
-
-<script>
-
-    document.getElementById("chkOnlyCurrent").addEventListener("change", SetCheckBoxValues)
-    
-    function SetCheckBoxValues()
-    {        
-        document.getElementById("txtOnlyCurrent").value = document.getElementById("chkOnlyCurrent").checked;
-    }
-
-</script>

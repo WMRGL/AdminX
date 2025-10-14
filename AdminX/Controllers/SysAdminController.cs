@@ -1,9 +1,12 @@
-﻿using AdminX.Meta;
+﻿using AdminX.Data;
+using AdminX.Meta;
+using AdminX.Models;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Metrics;
 using static Azure.Core.HttpHeader;
 
 
@@ -13,26 +16,30 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
+        private readonly AdminContext _adminContext;
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffData;
         private readonly IExternalClinicianData _clinicianData;
         private readonly IExternalFacilityData _facilityData;
         private readonly IClinicVenueData _venueData;
+        private readonly ICliniciansClinicData _clinicDetailsData;
         private readonly ITitleData _titleData;
         private readonly SysAdminVM _savm;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
         private readonly ICRUD _crud;        
 
-        public SysAdminController(ClinicalContext context, DocumentContext docContext, IConfiguration config)
+        public SysAdminController(ClinicalContext context, DocumentContext docContext, AdminContext adminContext, IConfiguration config)
         {
             _clinContext = context;
             _docContext = docContext;
+            _adminContext = adminContext;
             _config = config;
             _staffData = new StaffUserData(_clinContext);
             _clinicianData = new ExternalClinicianData(_clinContext);
             _facilityData = new ExternalFacilityData(_clinContext);
             _venueData = new ClinicVenueData(_clinContext);
+            _clinicDetailsData = new CliniciansClinicData(_adminContext);
             _titleData = new TitleData(_clinContext);
             _savm = new SysAdminVM();            
             _audit = new AuditService(_config);
@@ -207,8 +214,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
-            int iSuccess = _crud.CallStoredProcedure("StaffMember", "Edit", 0, 0, 0, staffCode, title, firstname, lastname, User.Identity.Name, startDate, endDate,
-                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), 0, 0, 0, role, team, type);
+            int iSuccess = _crud.SysAdminCRUD("StaffMember", "Edit", 0, 0, 0, staffCode, title, firstname, lastname, User.Identity.Name, startDate, endDate,
+                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
@@ -255,8 +262,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
 
-            int iSuccess = _crud.CallStoredProcedure("StaffMember", "Create", 0, 0, 0, loginName, title, firstname, lastname, User.Identity.Name, startDate, null,
-                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), 0, 0, 0, role, team, type, 0, 0, 0, 0, 0, gmcNumber, email);
+            int iSuccess = _crud.SysAdminCRUD("StaffMember", "Create", 0, 0, 0, loginName, title, firstname, lastname, User.Identity.Name, startDate, null,
+                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type, gmcNumber, email);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
@@ -268,13 +275,16 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Clinicians()
+        public async Task<IActionResult> Clinicians(string? message, bool? success)
         {
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians");
                 _savm.clinicians = new List<ExternalClinician>(); //because it can't load that many
+
+                _savm.message = message;
+                _savm.success = success.GetValueOrDefault();
 
                 return View(_savm);
             }
@@ -361,8 +371,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Clinician", "Edit", isGP, isNonActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, facility, speciality, position);
+            int iSuccess = _crud.SysAdminCRUD("Clinician", "Edit", isGP, isNonActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, facility, speciality, position);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
 
@@ -410,8 +420,8 @@ namespace AdminX.Controllers
                 clinCode = clinCode + i.ToString();
             }
 
-            int iSuccess = _crud.CallStoredProcedure("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
+            int iSuccess = _crud.SysAdminCRUD("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
 
@@ -429,6 +439,9 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities");
 
                 _savm.facilities = new List<ExternalFacility>(); //because it can't load that many
+
+                _savm.message = message;
+                _savm.success = success.GetValueOrDefault();
 
                 return View(_savm);
             }
@@ -514,8 +527,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, city, state, zip);
+            int iSuccess = _crud.SysAdminCRUD("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, city, state, zip);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-edit(SQL)" }); }
 
@@ -546,8 +559,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
 
-            int iSuccess = _crud.CallStoredProcedure("Facility", "Create", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, city, state, postCode);
+            int iSuccess = _crud.SysAdminCRUD("Facility", "Create", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, city, state, postCode);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-add(SQL)" }); }
 
@@ -564,6 +577,10 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues");
 
                 _savm.venues = _venueData.GetVenueList();
+
+                _savm.message = message;
+                _savm.success = success.GetValueOrDefault();
+
                 return View(_savm);
             }
             catch (Exception ex)
@@ -609,6 +626,13 @@ namespace AdminX.Controllers
 
                 _savm.venue = _venueData.GetVenueDetails(clinCode);
 
+                CliniciansClinics clin = _clinicDetailsData.GetCliniciansClinic(clinCode);
+
+                if (clin != null)
+                {
+                    _savm.hasAssociatedClinicDetails = true;
+                }
+
                 return View(_savm);
             }
             catch (Exception ex)
@@ -624,8 +648,8 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
 
-            int iSuccess = _crud.CallStoredProcedure("Venue", "Edit", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, locationCode, "", "");
+            int iSuccess = _crud.SysAdminCRUD("Venue", "Edit", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, locationCode, "", "");
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-add(SQL)" }); }
 
@@ -656,12 +680,126 @@ namespace AdminX.Controllers
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
 
-            int iSuccess = _crud.CallStoredProcedure("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
-                false, false, 0, 0, 0, locationCode, "", "");
+            int iSuccess = _crud.SysAdminCRUD("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
+                false, false, false, 0, 0, 0, locationCode, "", "");
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Venue-add(SQL)" }); }
 
             return RedirectToAction("ClinicVenues", new { message = "New clinic venue added.", success = true });
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CliniciansClinics(string? message, bool? success)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details");
+
+                _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
+
+                _savm.message = message;
+                _savm.success = success.GetValueOrDefault();
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "CliniciansClinics" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CliniciansClinics(string? siteSearch, string? message, bool? success)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details");
+
+                _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
+
+                if (siteSearch != null)
+                {
+                    _savm.cliniciansClinicList = _savm.cliniciansClinicList.Where(cd => cd.ClinicSite != null).ToList();
+                    _savm.cliniciansClinicList = _savm.cliniciansClinicList.Where(cd => cd.ClinicSite.ToUpper().Contains(siteSearch.ToUpper())).ToList();
+                }
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "CliniciansClinics" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ClinicDetails(string clinCode)
+        {
+            _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+            
+            _savm.venues = _venueData.GetVenueList();
+            _savm.staffMembers = _staffData.GetStaffMemberListByRole("Admin");
+
+            return View(_savm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClinicDetails(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site,
+            string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, int? showLocalRef = 0)
+        {
+            _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Edit Clinic Details");
+
+            int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Edit", 0, 0, 0, clinCode, addressee, salutation, preAmble, User.Identity.Name, null, null, callToBook, includeSPR,
+                showDate, showLocalRef, 0, 0, postLude, position, telephone, address, town, county, postCode, secretary);
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "ClinicSetup-edit(SQL)" }); }
+            
+            return RedirectToAction("CliniciansClinics", new { message = "Changes saved.", success = true });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AddNewCliniciansClinic(string? clinCodeToCreate)
+        {
+            try
+            {
+                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+
+                if(clinCodeToCreate != null) { _savm.clinCodeToCreate = clinCodeToCreate; }
+
+                _savm.venues = _venueData.GetVenueList();
+                _savm.staffMembers = _staffData.GetStaffMemberListByRole("Admin");
+
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "New Venue" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewCliniciansClinic(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site, 
+            string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, bool? showLocalRef = false)
+        {
+            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+
+            int iShowLocalRef = 0;
+            if(showLocalRef.GetValueOrDefault()) { iShowLocalRef = 1; }
+
+            int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Create", 0,0,0,clinCode, addressee, salutation, preAmble, User.Identity.Name, null,null, callToBook, includeSPR, 
+                showDate, iShowLocalRef,0,0,postLude, position, telephone, address, town, county, postCode, secretary);
+            
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "ClinicSetup-add(SQL)" }); }
+
+            return RedirectToAction("CliniciansClinics", new { message = "New clinic details added.", success = true });
 
         }
 

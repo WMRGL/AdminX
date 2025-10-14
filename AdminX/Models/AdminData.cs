@@ -156,4 +156,40 @@ namespace AdminX.Models
         public string Gender { get; set; }
     }
 
+    [Keyless]
+    [Table("Clinicians_Clinics", Schema = "dbo")]
+    public class CliniciansClinics
+    {
+        public string Facility { get; set; }
+        public string? Addressee { get; set; }
+        public string? Position { get; set; }
+        public string? A_Address { get; set; }
+        public string? A_Town { get; set; }
+        public string? A_County { get; set; }
+        public string? A_PostCode { get; set; }
+        public string? A_Salutation { get; set; }
+        public string? Preamble { get; set; }
+        public string? Postlude { get; set; }
+        public string? Copies_To { get; set; }
+        // DateOnRef
+        public string? ClinicSite { get; set; }
+        public int ShowLocalRef { get; set; }
+        public bool IncludeSpR { get; set; }
+        public string? TimeOfDay { get; set; }
+        public DateTime? StartTime { get; set; }
+        public int? ApptDuration { get; set; }
+        public string? DayOfWeek { get; set; }
+        public string? WeeksOfMonth { get; set; }
+        public string? MonthsOfYear { get; set; }
+        public string? TelNo { get; set; }
+        public string? Initials { get; set; }
+        public string? Secretary { get; set; }
+        public string? WaitingListKind { get; set; }
+        public string? PCT { get; set; }
+        public Int16 LookAheadMths { get; set; }
+        public string? ClinicListEmail { get; set; }
+        public string? EmailCCs { get; set; }
+        public bool IsCallToBookClinic { get; set; }
+        public bool DateOnRef { get; set; }        
+    }
 }

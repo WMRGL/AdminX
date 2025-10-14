@@ -1,0 +1,203 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Clinicians Clinic Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+    };
+}
+
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Details for @Model.cliniciansClinic.ClinicSite Clinic (@Model.cliniciansClinic.Facility)</h5>
+    </div>
+
+    <div class="card-body">
+        <form asp-action="ClinicDetails">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text "name="clinCode" asp-for=@Model.cliniciansClinic.Facility hidden />                       
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Addressee</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="addressee" asp-for=@Model.cliniciansClinic.Addressee />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Salutation</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="salutation" asp-for=@Model.cliniciansClinic.A_Salutation />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Position</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="position" asp-for=@Model.cliniciansClinic.Position />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Pre-amble</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="50" name="preAmble" asp-for=@Model.cliniciansClinic.Preamble></textarea>
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Postlude</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="50" name="postlude" asp-for=@Model.cliniciansClinic.Postlude></textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Copies To</label>
+                </div>
+                <div class="col-md-3"> 
+                    <input type="text" name="copiesTo" asp-for=@Model.cliniciansClinic.Copies_To />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Site</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="site" asp-for=@Model.cliniciansClinic.ClinicSite />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Telephone</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="telephone" asp-for=@Model.cliniciansClinic.TelNo />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Address</label>
+                </div>
+                <div class="col-md-5">
+                    <textarea cols="50" rows="6" name="address" asp-for=@Model.cliniciansClinic.A_Address></textarea>
+                </div>
+
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Town</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="town" asp-for=@Model.cliniciansClinic.A_Town />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>County</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="county" asp-for=@Model.cliniciansClinic.A_County />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Postcode</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="postCode" asp-for=@Model.cliniciansClinic.A_PostCode />
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Secretary</label>
+                </div>
+                <div class="col-md-5">
+                    <select name="secretary" asp-for=@Model.cliniciansClinic.Secretary>
+                        @foreach (var item in Model.staffMembers)
+                        {
+                            <option value=@item.NAME>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Call to Book</label>
+                    <input type="checkbox" id="chkcallToBook" onchange="SetCallToBook()" />
+                    <input type="text" id="txtcallToBook" name="callToBook" asp-for=@Model.cliniciansClinic.IsCallToBookClinic hidden /> @*because javascript can't pass a checkbox state to the C#!!*@
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Include SpR</label>
+                    <input type="checkbox" id="chkincludeSPR" onchange="SetIncludeSPR()" />
+                    <input type="text" id="txtincludeSPR" name="includeSPR" asp-for=@Model.cliniciansClinic.IncludeSpR hidden />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Show Date</label>
+                    <input type="checkbox" id="chkshowDate" onchange="SetShowDate()" />
+                    <input type="text" id="txtshowDate" name="showDate" asp-for=@Model.cliniciansClinic.DateOnRef hidden />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Show Local Ref</label>
+                    <input type="checkbox" id="chkshowLocalRef" onchange="SetShowLocalRef()" />
+                    <input type="text" id="txtshowLocalRef" name="showLocalRef" asp-for=@Model.cliniciansClinic.ShowLocalRef hidden />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    window.addEventListener("load", SetTickBoxes());
+
+    function SetTickBoxes()
+    {
+        if(document.getElementById("txtcallToBook").value == "True")
+        {
+            document.getElementById("chkcallToBook").checked = true; //because obviously it can't just take the value!! Why would it be able to do something so fucking simple???
+        }
+        if(document.getElementById("txtincludeSPR").value == "True")
+        {
+            document.getElementById("chkincludeSPR").checked = true;
+        }
+        if(document.getElementById("txtshowDate").value == "True")
+        {
+            document.getElementById("chkshowDate").checked = true;
+        }
+        if(document.getElementById("txtshowLocalRef").value == "1")
+        {
+            document.getElementById("chkshowLocalRef").checked = true;
+        }
+    }
+
+    function SetCallToBook()
+    {
+        document.getElementById("txtcallToBook").value = document.getElementById("chkcallToBook").checked;
+    }
+    function SetIncludeSPR()
+    {
+        document.getElementById("txtincludeSPR").value = document.getElementById("chkincludeSPR").checked;
+    }
+    function SetShowDate()
+    {
+        document.getElementById("txtshowDate").value = document.getElementById("chkshowDate").checked;
+    }
+    function SetShowLocalRef()
+    {
+        document.getElementById("txtshowLocalRef").value = document.getElementById("chkshowLocalRef").checked;
+    }
+</script>

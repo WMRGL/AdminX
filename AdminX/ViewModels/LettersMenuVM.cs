@@ -9,6 +9,7 @@ namespace AdminX.ViewModels
         public List<Document> docsListMedRec { get; set; }
         public List<Document> docsListDNA { get; set; }
         public List<Document> docsListOutcome { get; set; }
+        public List<Document> docsListReport { get; set; }
         public Patient patient {  get; set; }
         public Relative relative { get; set; }
         public Referral referral { get; set; }

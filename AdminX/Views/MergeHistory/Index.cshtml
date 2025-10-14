@@ -1,5 +1,11 @@
 ﻿@model AdminX.ViewModels.MergeHistoryVM
 
+@{
+    ViewData["Title"] = "Admin-X - Merge History";
+    ViewData["Page"] = "/ Merge History ";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
 
 <div class="card">
     <div class="card-header">

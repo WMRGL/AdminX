@@ -21,7 +21,7 @@ namespace AdminX.Controllers
         {
             _clinContext = clinContext;
             _context = context;
-            _mhData = new MergeHistoryData(_clinContext, _context);
+            _mhData = new MergeHistoryData(_context);
             _patientData = new PatientData(_clinContext);
             _mhvm = new MergeHistoryVM();
         }
@@ -31,12 +31,17 @@ namespace AdminX.Controllers
         public IActionResult Index(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob, bool? isPostback = false)
         {
            if(isPostback.GetValueOrDefault()) //obviously we can't get the list and send it to the calling form. That would be too easy.
-           {                    
+           {
+                _mhvm.mergeHistory = new List<MergeHistory>();
+
                 if (firstName != null || lastName != null || dob != null || nhsNo != null)
                 {
                     Patient patient = new Patient();
                     patient = _patientData.GetPatientDetailsByDemographicData(firstName, lastName, nhsNo, dob.GetValueOrDefault());
-                    _mhvm.mergeHistory = _mhData.GetMergeHistoryByMPI(patient.MPI);
+                    if (patient != null)
+                    {
+                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByMPI(patient.MPI);
+                    }
                 }
 
                 if (oldFileNo != null)
@@ -46,7 +51,7 @@ namespace AdminX.Controllers
 
                 if (newCGUNo != null)
                 {
-                    _mhvm.mergeHistory = _mhData.GetMergeHistoryByOldFileNo(newCGUNo);
+                    _mhvm.mergeHistory = _mhData.GetMergeHistoryByNewFileNo(newCGUNo);
                 }
 
                 if (_mhvm.mergeHistory.Count == 0)

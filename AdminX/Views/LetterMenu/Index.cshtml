@@ -1,7 +1,7 @@
 ﻿@model AdminX.ViewModels.LettersMenuVM
 
 @{
-    ViewData["Title"] = "ClinicX - Letters Menu";
+    ViewData["Title"] = "AdminX - Letters Menu";
     ViewData["Page"] = "/ LettersMenu / Index";
     ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-light bg-white me-2 m-1" });
 }
@@ -60,6 +60,7 @@
                         <option value="MEDREC">Medical Records Requests</option>
                         <option value="DNATS">DNA</option>
                         <option value="Outcome">Outcome</option>
+                        <option value="REPORTS">Reports</option>
                         <option value="Other">Other</option>
                     </select>
                 </div>
@@ -88,6 +89,13 @@
                     <select class="form-select" name="docID" id="docGroupOutcome" hidden>
                         <option value="" selected>Select</option>
                         @foreach (var item in Model.docsListOutcome)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupReport" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListReport)
                         {
                             <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
                         }
@@ -169,6 +177,7 @@
     document.getElementById("docGroupMedRec").addEventListener("change", SetDoccode);
     document.getElementById("docGroupDNA").addEventListener("change", SetDoccode);
     document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupReport").addEventListener("change", SetDoccode);
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPrint").addEventListener("click", DoPrint);
     document.getElementById("ddlRefID").addEventListener("change", SetLetterFromTo);
@@ -182,6 +191,7 @@
         var medrecLetters = document.getElementById("docGroupMedRec");
         var dnaLetters = document.getElementById("docGroupDNA");
         var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReport");
                 
 
         standardLetters.value = "";
@@ -192,6 +202,8 @@
         dnaLetters.hidden = true;
         outcomeLetters.value = "";
         outcomeLetters.hidden = true;
+        reports.hidden = true;
+        reports.value = "";
 
         
         if (groupMenu.value == "Standard")
@@ -214,6 +226,11 @@
         {
             outcomeLetters.hidden = false;
         }
+
+        if (groupMenu.value == "REPORTS")
+        {
+            reports.hidden = false;
+        }
         
     }
 
@@ -226,6 +243,7 @@
         var medrecLetters = document.getElementById("docGroupMedRec");
         var dnaLetters = document.getElementById("docGroupDNA");
         var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReport");
 
         if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
         {
@@ -245,6 +263,11 @@
         if(!outcomeLetters.hidden)
         {
             docCode = outcomeLetters.value;
+        }
+
+        if(!reports.hidden)
+        {
+            docCode = reports.value;
         }
 
         document.getElementById("txtDocCode").value = docCode;
