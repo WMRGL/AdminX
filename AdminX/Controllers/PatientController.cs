@@ -138,7 +138,11 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
-                _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
+                _pvm.relatives = new List<Relative>();
+                if (_pvm.patient.PEDNO != null)
+                {
+                    _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
+                }
                 List<Referral> referrals = _referralData.GetReferralsList(id);
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
