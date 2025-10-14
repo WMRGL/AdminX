@@ -152,7 +152,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputEmail4">Pregnancy</label>
-                                        <select id="inputState" name="PREGNANCY" class="form-select js-choice">
+                                        <select id="inputState" name="PREGNANCY" class="form-select">
                                             <option selected="">@Model.referral.PREGNANCY</option>
                                             <option value="No Pregnancy">No Pregnancy</option>
                                             <option value="Pregnant">Pregnant</option>
@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="indication">Indication</label>
-                                        <select class="form-control" name="indication" asp-for=@Model.referral.INDICATION>
+                                        <select class="form-control js-choice" name="indication" asp-for=@Model.referral.INDICATION>
                                             @foreach (var item in Model.indicationList)
                                             {
                                                 <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
