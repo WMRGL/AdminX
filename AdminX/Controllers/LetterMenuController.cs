@@ -162,7 +162,7 @@ namespace AdminX.Controllers
                 _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
                         "", null, isPreview, "", leafletID);
 
-                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext);
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
                 //lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
                 //       "", null, isPreview, "", leafletID);
             }          
@@ -173,17 +173,7 @@ namespace AdminX.Controllers
             {
                 return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
-            /* //we've done the diary, do we need to do it again?
-            else
-            {
-                int success = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", additionalText, User.Identity.Name, DateTime.Now, null, false, false);
-
-                if (success == 0)
-                {
-                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "LetterMenu-diaryentry(SQL)" });
-                }
-            }
-            */
+            
             TempData["SuccessMessage"] = "Letter has been sent to EDMS ";
             return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
         }

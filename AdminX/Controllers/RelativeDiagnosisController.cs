@@ -1,10 +1,8 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Intrinsics.Arm;
 
 namespace ClinicX.Controllers
 {

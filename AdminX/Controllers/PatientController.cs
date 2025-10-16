@@ -4,13 +4,11 @@ using AdminX.Models;
 using AdminX.ViewModels;
 using APIControllers.Controllers;
 using APIControllers.Data;
-using APIControllers.Meta;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Globalization;
 
 namespace AdminX.Controllers
@@ -41,7 +39,6 @@ namespace AdminX.Controllers
         private readonly IAuditService _audit;
         private readonly ILanguageData _languageData;
         private readonly IPatientAlertData _patientAlertData;
-        //private readonly ReviewVM _rvm;
         private readonly IReviewData _reviewData;
         private readonly ICityData _cityData;
         private readonly IAreaNamesData _areaNamesData;
@@ -81,7 +78,6 @@ namespace AdminX.Controllers
             _audit = new AuditService(_config);
             _languageData = new LanguageData(_adminContext);
             _patientAlertData = new PateintAlertData(_clinContext);
-            //_rvm = new ReviewVM();
             _reviewData = new ReviewData(_clinContext);
             _cityData = new CityData(_adminContext);
             _areaNamesData = new AreaNamesData(_clinContext);
@@ -114,9 +110,7 @@ namespace AdminX.Controllers
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
 
-                //List<Patient> patients = new List<Patient>();
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList();
-                //patients = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -155,14 +149,12 @@ namespace AdminX.Controllers
                 _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
                 _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                 _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
-                //_pvm.referral = _referralData.GetReferralDetails(id);
                 _pvm.reviewList = _reviewData.GetReviewsListForPatient(id);
                 _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
                 _pvm.alertTypes = _alertTypeData.GetAlertTypes();
                 _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = _docsData.GetDocumentsList();
-                //_pvm.alert =
 
                 if (_pvm.patient.DECEASED == -1)
                 {
@@ -433,10 +425,8 @@ namespace AdminX.Controllers
                 _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
 
                 if(startDate != null && endDate != null)
-                { 
-                    
+                {                     
                     return RedirectToAction("PatientDQReport", "PatientDQ", new { startDate=startDate, endDate=endDate });
-
                 }
                 TempData["SuccessMessage"] = "Patient created successfully";
                 return RedirectToAction("PatientDetails", "Patient", new { id = _pvm.patient.MPI, success = _pvm.success, message = _pvm.message });
@@ -552,10 +542,8 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
-                //_pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(newFileNo);
                 _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
-                //TempData["SuccessMessage"] = "CGU number changed successfully";
 
                 return View(_pvm);
             }

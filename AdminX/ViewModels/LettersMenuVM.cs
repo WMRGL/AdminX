@@ -1,5 +1,4 @@
 ﻿using ClinicalXPDataConnections.Models;
-using AdminX.Models;
 
 namespace AdminX.ViewModels
 {

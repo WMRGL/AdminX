@@ -2,8 +2,6 @@ using ClinicalXPDataConnections.Data;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
-using System.Diagnostics;
-using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authentication;
 
 namespace AdminX.Controllers
@@ -22,7 +20,6 @@ namespace AdminX.Controllers
 		private readonly IReviewData _reviewData;
         private readonly IDictatedLetterData _dictatedLetterData;
 
-
 		public HomeController(ClinicalContext context, IConfiguration config)
         {
             _clinContext = context;
@@ -36,7 +33,6 @@ namespace AdminX.Controllers
 			_triageData = new TriageData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
 			_dictatedLetterData = new DictatedLetterData(_clinContext);
-
 		}
 
         public IActionResult Index()
@@ -65,7 +61,6 @@ namespace AdminX.Controllers
                     _hvm.reviewOutcomes = _reviewData.GetReviewsListAll().Count();
                     _hvm.dictatedLetters = _dictatedLetterData.GetDictatedLettersListFull().Count();
 
-
 					return View(_hvm);
                 }
             }
@@ -86,7 +81,5 @@ namespace AdminX.Controllers
             await HttpContext.SignOutAsync();
             return RedirectToAction("UserLogin", "Login");
         }
-
-
     }
 }

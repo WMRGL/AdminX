@@ -1,7 +1,6 @@
 ﻿using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace AdminX.Controllers
 {
@@ -27,9 +26,7 @@ namespace AdminX.Controllers
                 EndDate = DateTime.Today
             };
 
-            return View(viewModel);
-
-         
+            return View(viewModel);         
         }
 
         [HttpPost]

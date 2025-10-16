@@ -55,10 +55,7 @@ namespace AdminX.Controllers
 
             MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = rowh1.Cells[1].AddImage(@"wwwroot\Images\NHSlogo.png");
             imgLogo.ScaleWidth = new Unit(0.75, UnitType.Point);
-            imgLogo.ScaleHeight = new Unit(0.75, UnitType.Point);
-            
-            //Paragraph title = section.AddParagraph();
-            //title.AddFormattedText("West Midlands Family Cancer Strategy", TextFormat.Bold);
+            imgLogo.ScaleHeight = new Unit(0.75, UnitType.Point);            
 
             Paragraph spacer = section.AddParagraph();
             Paragraph title2 = section.AddParagraph();

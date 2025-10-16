@@ -26,8 +26,7 @@ namespace AdminX.Controllers
             _staff = new StaffUserData(_clinContext);
             _audit = new AuditService(_config);
         }
-
-        
+               
 
         public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {

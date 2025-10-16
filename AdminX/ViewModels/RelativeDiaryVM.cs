@@ -1,6 +1,5 @@
 ﻿using AdminX.Models;
 using ClinicalXPDataConnections.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.ViewModels
 {
@@ -12,7 +11,6 @@ namespace AdminX.ViewModels
         public Patient patient { get; set; }
         public List<DiaryAction> diaryActionsList { get; set; }
         public List<Document> documentsList { get; set; }
-
         public StaffMember staffMember { get; set; }
     }
 }

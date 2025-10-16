@@ -100,17 +100,13 @@ namespace AdminX.Controllers
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                //_dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
                 _dvm.patient = _patientData.GetPatientDetails(mpi);
                 _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 if (_dvm.referralsList.Count > 0)
                 {
                     _dvm.defaultRef = _dvm.referralsList.OrderByDescending(r => r.refid).First();
                 }
-                //_dvm.staffList = _staffUser.GetStaffMemberListAll();
-                _dvm.documents = _docsData.GetDocumentsList();
-                //_dvm.clinicians = _staffUser.GetConsultantsList();
-                //_dvm.currentStaffUser = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _dvm.documents = _docsData.GetDocumentsList();                
                 _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _dvm.documentsList = _docsData.GetDocumentsList();
 
@@ -129,7 +125,6 @@ namespace AdminX.Controllers
                     new BreadcrumbItem { Text = "New Diary" }
                 };
                 return View(_dvm);
-                //return RedirectToAction("Index", "AddNew");
             }
             catch (Exception ex)
             {
@@ -150,15 +145,12 @@ namespace AdminX.Controllers
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                _dvm.patient = _patientData.GetPatientDetails(_referralData.GetReferralDetails(refID).MPI);
-                //_dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
-                //_dvm.documents = _docsData.GetDocumentsList();
+                _dvm.patient = _patientData.GetPatientDetails(_referralData.GetReferralDetails(refID).MPI);                
 
                 int success = _crud.CallStoredProcedure("Diary", "Create", refID, _dvm.patient.MPI, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Diary-create(SQL)" }); }
-
-                //int diaryid = _diaryData.GetLatestDiaryByRefID(refID).DiaryID;
+                                
                 _dvm.success = true;
                 _dvm.message = "New diary added.";
                 TempData["SuccessMessage"] = "New diary added";
@@ -225,7 +217,6 @@ namespace AdminX.Controllers
                 {
                     return NotFound();
                 }
-
 
                 int success = _crud.CallStoredProcedure("Diary", "Update", diaryID, refID, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 

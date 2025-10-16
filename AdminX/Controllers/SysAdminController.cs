@@ -6,8 +6,6 @@ using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.Metrics;
-using static Azure.Core.HttpHeader;
 
 
 namespace AdminX.Controllers
