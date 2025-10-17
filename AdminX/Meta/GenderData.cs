@@ -1,6 +1,4 @@
-﻿using AdminX.Data;
-using AdminX.Models;
-using ClinicalXPDataConnections.Data;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
 
 namespace AdminX.Meta
@@ -10,21 +8,19 @@ namespace AdminX.Meta
         public List<Gender> GetGenderList();
     }
     public class GenderData : IGenderData
-    {       
-                
-            private readonly ClinicalContext _context;
+    {                
+        private readonly ClinicalContext _context;
 
         public GenderData(ClinicalContext context)
-            {
+        {
             _context = context;
         }
 
-           public List<Gender> GetGenderList()
-            {
-                IQueryable<Gender> genders = _context.Genders;
+        public List<Gender> GetGenderList()
+        {
+            IQueryable<Gender> genders = _context.Genders;
 
-                return genders.ToList();
-            }
-
+            return genders.ToList();
         }
+    }
 }

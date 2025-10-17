@@ -44,6 +44,8 @@ namespace AdminX.Meta
         public int MergePatient(int mpiFrom, int mpiTo, string staffCode);
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo);
+
+        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
     }
 
 
@@ -126,11 +128,11 @@ namespace AdminX.Meta
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
        string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "",
         bool? bool1 = false, bool? bool2 = false, string? string14 = "", string? string15 = "", string? string16 = "", string string17 = "", string string18 = "",
-        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 =""
+        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 = ""
         )
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
-            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }                        
+            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -182,15 +184,15 @@ namespace AdminX.Meta
         }
 
         public int ReferralDetail(string sType, string sOperation, string sLogin, int int1, int? int2, int? int3, int? int4, int? int5, int? int6, int? int7,
-            int? int8, string string1, string string2, string text, string? string3 = "", string? string4 = "", string? string5 = "", string? string6 = "", 
-            string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", string? string12 = "", 
-            DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", 
+            int? int8, string string1, string string2, string text, string? string3 = "", string? string4 = "", string? string5 = "", string? string6 = "",
+            string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", string? string12 = "",
+            DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "",
             string? string17 = "", string? string18 = "", bool? bool1 = false, bool? bool2 = false)
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
-            
+
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -214,7 +216,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
             cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
             cmd.Parameters.Add("@bool1", SqlDbType.Bit).Value = bool1;
-            cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;            
+            cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
             cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
@@ -233,7 +235,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
 
             // cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
-            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); 
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
             var iReturnValue = (int)returnValue.Value;
@@ -247,7 +249,7 @@ namespace AdminX.Meta
         {
 
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
-           
+
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -277,8 +279,8 @@ namespace AdminX.Meta
         }
 
 
-        public int TriageDetail(string sType, string sOperation,  int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
-       string? string5 = "", string? string6 = "", string? string7 = "", int? int4=0, int? int5=0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false)
+        public int TriageDetail(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
+       string? string5 = "", string? string6 = "", string? string7 = "", int? int4 = 0, int? int5 = 0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false)
         {
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
@@ -303,7 +305,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@bool1", SqlDbType.Bit).Value = bool1;
             cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;
             cmd.Parameters.Add("@bool3", SqlDbType.Bit).Value = bool3;
-            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;            
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
@@ -315,9 +317,9 @@ namespace AdminX.Meta
 
 
         public int SysAdminCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? text, string sLogin,
-        DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? 
-            string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", 
-        string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "", 
+        DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false, int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string?
+            string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "",
+        string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "",
         string? string19 = "", string? string20 = "")
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
@@ -379,7 +381,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@ClinicID", SqlDbType.VarChar).Value = clinicID;
             cmd.Parameters.Add("@priorityLevel", SqlDbType.Int).Value = priorityLevel;
             cmd.Parameters.Add("@refID", SqlDbType.Int).Value = refID;
-            cmd.Parameters.Add("@Username", SqlDbType.VarChar).Value = username;            
+            cmd.Parameters.Add("@Username", SqlDbType.VarChar).Value = username;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
@@ -394,7 +396,7 @@ namespace AdminX.Meta
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PatientSearches (Firstname, Lastname, DOB, PostCode, NHSNo, SearchBy, SearchDate, SearchType) values ('"
-                + firstName + "', '" + lastName + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" + 
+                + firstName + "', '" + lastName + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" +
                 DateTime.Today.ToString("yyyy-MM-dd") + "', 'NewPatientSearch')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();
@@ -425,6 +427,29 @@ namespace AdminX.Meta
                 "', '" + nhsNo + "')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();
+        }
+
+        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin)
+        {
+            int success = 0;
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AxPatientCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = "Patient";
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = "AssignCGUNumber";
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = mpi;
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = cguno;
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;            
+            conn.Close();
+            success = iReturnValue;
+            return success;
         }
     }
 }

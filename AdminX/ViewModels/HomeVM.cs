@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ClinicalXPDataConnections.Models;
 
 namespace AdminX.ViewModels
 {

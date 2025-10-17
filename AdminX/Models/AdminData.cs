@@ -4,18 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.Models
 {
-    /* //had to move it to the data library
-    [Table("APPTYPE", Schema = "dbo")]
-    public class ActivityType
-    {
-        [Key]
-        public string APP_TYPE { get; set; }
-        public Int16 NON_ACTIVE { get; set; }
-        public bool ISREFERRAL { get; set; }
-        public bool ISAPPT { get; set; }
-        public bool ISSTUDY { get; set; }
-    }*/
-
     [Table("PatientSearches", Schema = "dbo")]
     public class PatientSearches
     {

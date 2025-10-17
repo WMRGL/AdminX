@@ -1,7 +1,6 @@
 ﻿
 using AdminX.Meta;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
@@ -117,7 +116,4 @@ namespace AdminX.Controllers
             return View("Index", viewModel);
         }
     }
-
-
-
 }

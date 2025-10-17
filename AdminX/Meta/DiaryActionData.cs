@@ -1,7 +1,5 @@
 ﻿using AdminX.Data;
 using AdminX.Models;
-using ClinicalXPDataConnections.Data;
-using System.Data;
 
 namespace AdminX.Meta
 {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ClinicalXPDataConnections.Data;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
@@ -49,4 +48,3 @@ namespace AdminX.Controllers
         }        
     }
 }
-

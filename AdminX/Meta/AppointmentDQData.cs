@@ -1,13 +1,12 @@
 ﻿using AdminX.Data;
 using AdminX.Models;
-using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 namespace AdminX.Meta
 {
     public interface IAppointmentDQData
     {
         Task<List<CgudbNotInEpic>> GetAppointmentsNotInEpicAsync(DateTime startDate, DateTime endDate);
-       Task<List<EpicNotInCgudb>> GetAppointmentsNotInCgudbAsync(DateTime startDate, DateTime endDate);
+        Task<List<EpicNotInCgudb>> GetAppointmentsNotInCgudbAsync(DateTime startDate, DateTime endDate);
     }
     
     public class AppointmentDQData : IAppointmentDQData

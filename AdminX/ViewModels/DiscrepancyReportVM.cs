@@ -1,5 +1,4 @@
 ﻿using AdminX.Models;
-using ClinicalXPDataConnections.Models;
 
 namespace AdminX.ViewModels
 {
@@ -23,8 +22,6 @@ namespace AdminX.ViewModels
             EpicPatients = new List<EpicPatient>();
             PatientMismatches = new List<PatientMismatch>();
 
-        }
-       
+        }       
     }
-
 }

@@ -6,7 +6,6 @@ using AdminX.Meta;
 using AdminX.ViewModels;
 using AdminX.Models;
 using ClinicalXPDataConnections.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdminX.Controllers
 {

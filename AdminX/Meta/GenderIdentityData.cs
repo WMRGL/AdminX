@@ -6,7 +6,6 @@ namespace AdminX.Meta
     public interface IGenderIdentityData
     {
         public List<GenderIdentity> GetGenderIdentities();
-
     }
 
     public class GenderIdentityData : IGenderIdentityData

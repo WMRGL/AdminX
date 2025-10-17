@@ -8,7 +8,6 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
-using APIControllers;
 using APIControllers.Data;
 
 namespace AdminX.Controllers
@@ -189,17 +188,17 @@ namespace AdminX.Controllers
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
                 {
-                    Text = "Search",
-                    Controller = "PatientSearch",
-                    Action = "Index",
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                    new BreadcrumbItem
+                    {
+                        Text = "Search",
+                        Controller = "PatientSearch",
+                        Action = "Index",
 
-                },
-                new BreadcrumbItem { Text = "New" }
-            };
+                    },
+                    new BreadcrumbItem { Text = "New" }
+                };
 
                 return View(_pvm);
             }
