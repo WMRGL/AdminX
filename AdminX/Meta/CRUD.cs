@@ -47,7 +47,7 @@ namespace AdminX.Meta
 
         public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string refBy, string refTo, string speciality);
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate);
     }
 
 
@@ -454,9 +454,12 @@ namespace AdminX.Meta
             return success;
         }
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality)
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate)
         {
             int success = 0;
+            if(refBy == null) { refBy = ""; }
+            if (refTo == null) { refTo = ""; }
+            if (speciality == null) { speciality = ""; }
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -468,6 +471,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@ReferralDate", SqlDbType.DateTime).Value = referralDate;
             cmd.Parameters.Add("@ReferredBy", SqlDbType.VarChar).Value = refBy;
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
+            cmd.Parameters.Add("@CreatedDate", SqlDbType.DateTime).Value = createdDate;
             cmd.Parameters.Add("@Speciality", SqlDbType.VarChar).Value = speciality;
             cmd.ExecuteNonQuery();            
             conn.Close();

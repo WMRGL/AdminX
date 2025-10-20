@@ -127,7 +127,7 @@ namespace AdminX.Controllers
                         {
                             foreach (var item in _pvm.epicReferralStaging)
                             {
-                                _crud.EpicReferralStaging(item.ID, item.FacilID, item.RefID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality);
+                                _crud.EpicReferralStaging(item.ID, item.FacilID, item.RefID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
                             }
                         }
 
