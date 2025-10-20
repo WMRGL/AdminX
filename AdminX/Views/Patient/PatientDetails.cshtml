@@ -48,13 +48,11 @@
                 </div>
             </div>
         }
-
     }
     else
     {
         <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
     }
-
 }
 
 
@@ -84,6 +82,24 @@
                     </div>
                 </div>
             }
+        </div>
+    </div>
+}
+
+
+@if(Model.isEpicChanged)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>There have been changes in Epic.</h3> 
+                    <a type="button" class="btn btn-outline-dark" asp-controller="Patient" asp-action="EpicPatientChanges" asp-route-id=@Model.patient.MPI>See Epic Changes</a>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -122,7 +138,6 @@
 }
 
 
-
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -139,20 +154,27 @@
             </div>
             <div class="col-md-8">
                 <div class="row">
+                    <div class="col-md-8"></div>
+                    @if(Model.patient.CGU_No == ".")
+                    {
+                        <div class="col-md-4">
+                            <a type="button" class="btn btn-primary" asp-controller="NewEpicPatient" asp-action="EpicPatientSearch" asp-route-id=@Model.patient.MPI>Assign CGU Number to Patient</a>
+                        </div>
+                    }
+                </div>
+                <div class="row">
                     <div class="col-md-6">
                         <h1 class="text-center">
-                            @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null){
-                            <span>"</span>
-                            @Model.patient.PtAKA
-                            <span>"</span>
-                                                        }
+                            @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null)
+                            {
+                                <span>"</span>@Model.patient.PtAKA<span>"</span>
+                            }
                             @Model.patient.LASTNAME
                         </h1>
                     </div>
                     <div class="col-md-6">
                         @if (Model.patientsList.Count() > 1)
                         {
-
                             <form asp-action="JumpToPatient" class="row row-cols-md-auto align-items-center text-center">
                                 <div class="col-12">
                                     <select name="id" class="form-control">
@@ -185,16 +207,12 @@
                 }
             </div>
         </div>
-
-
     </div>
 </div>
 
 
 <div class="row">
-
     <div class="col-md-3 col-xl-2">
-
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0"> Patient Details</h5>

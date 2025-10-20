@@ -50,6 +50,8 @@ namespace AdminX.Controllers
         private readonly IDiaryActionData _diaryActionData;
         private readonly IDocumentsData _docsData;
         private readonly IGenderIdentityData _genderIdentityData;
+        private readonly IReferralStagingData _referralStagingData;
+        private readonly IEpicPatientReferenceData _epicPatientReferenceData;
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext,
             APIContext apiContext, IGenderIdentityData genderIdentityData)
@@ -89,6 +91,8 @@ namespace AdminX.Controllers
             _diaryActionData = new DiaryActionData(_adminContext);
             _docsData = new DocumentsData(_documentContext);
             _genderIdentityData = genderIdentityData;
+            _referralStagingData = new ReferralStagingData(_adminContext);
+            _epicPatientReferenceData = new EpicPatientReferenceData(_adminContext);
         }
 
         [Authorize]
@@ -109,8 +113,34 @@ namespace AdminX.Controllers
                 }
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
+                _pvm.patientsList = new List<Patient>(); //because null
 
-                _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList();
+                if (_pvm.patient.CGU_No != ".")
+                {
+                    _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
+
+                    if (_pvm.epicPatient != null)
+                    {
+                        _pvm.epicReferralStaging = _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.IPMID); //check and process parked updates
+
+                        if (_pvm.epicReferralStaging.Count > 0)
+                        {
+                            foreach (var item in _pvm.epicReferralStaging)
+                            {
+                                _crud.EpicReferralStaging(item.ID, item.FacilID, item.RefID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality);
+                            }
+                        }
+
+
+                        if (_pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || _pvm.epicPatient.LastName != _pvm.patient.LASTNAME ||
+                            _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || _pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY)
+                        {
+                            _pvm.isEpicChanged = true;
+                        }
+                    }
+                
+                    _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
+                }
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -125,7 +155,6 @@ namespace AdminX.Controllers
                         _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
                         _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
                     }
-
                 }
 
                 if (_pvm.patient == null)
@@ -186,22 +215,25 @@ namespace AdminX.Controllers
                     _pvm.message = "This patient's GP is no longer at this practice. Please check and select a new GP if necessary.";
                 }
 
-                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
+                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
                 {
-                    if (_api.GetPhenotipsPatientID(id).Result != "")
+                    _pvm.isPhenotipsAvailable = true;
+                }
+
+                if (_pvm.isPhenotipsAvailable) 
+                {
+                    //if (_api.GetPhenotipsPatientID(id).Result != "")
+                    if(_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
                     {
                         _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
                         _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
 
                         _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
                         _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
                     }
-                    if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
-                    {
-                        _pvm.isPhenotipsAvailable = true;
-                    }
+                    
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -654,6 +686,15 @@ namespace AdminX.Controllers
                 _pvm.message = message;
                 _pvm.success = success.GetValueOrDefault();
             }
+
+            return View(_pvm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EpicPatientChanges(int id)
+        {
+            _pvm.patient = _patientData.GetPatientDetails(id);
+            _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
 
             return View(_pvm);
         }
