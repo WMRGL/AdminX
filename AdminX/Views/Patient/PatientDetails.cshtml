@@ -163,7 +163,7 @@
                     }
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                         <h1 class="text-center">
                             @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null)
                             {
@@ -172,7 +172,7 @@
                             @Model.patient.LASTNAME
                         </h1>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         @if (Model.patientsList.Count() > 1)
                         {
                             <form asp-action="JumpToPatient" class="row row-cols-md-auto align-items-center text-center">
