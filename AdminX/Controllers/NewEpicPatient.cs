@@ -63,7 +63,7 @@ namespace AdminX.Controllers
         }
 
         
-        public IActionResult AssignCGUNumber(int id, string? fileNumber)
+        public async Task<IActionResult> AssignCGUNumber(int id, string? fileNumber)
         {
             string cguNumber = "";
 
@@ -82,7 +82,7 @@ namespace AdminX.Controllers
                 }
             }
 
-            int success = _crud.PatientAssignCGUNumber(id, cguNumber, User.Identity.Name);
+            int success = await _crud.PatientAssignCGUNumber(id, cguNumber, User.Identity.Name);
 
             return RedirectToAction("PatientDetails", "Patient", new { id = id });
         }

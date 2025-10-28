@@ -4,14 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdminX.Models
 {
-    [Table("IPMReferenceTable", Schema = "dbo")]
+    [Table("DownstreamPatientReferenceTable", Schema = "dbo")]
     public class EpicPatientReference
-
     {
         [Key]
         public int ID { get; set; }
         public int MPI { get; set; }
-        public string? IPMID { get; set; }
+        public string? ExternalPatientID { get; set; }
         public string? Title { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -36,20 +35,20 @@ namespace AdminX.Models
         public string? PhoneWork { get; set; }
         public string? PhoneMobile { get; set; }
         public string? Email { get; set; }
-        public int IPMUpdateSts { get; set; }
-        public string? IPMRecordStatus { get; set; }
+        public int UpdateSts { get; set; }
+        public string? RecordStatus { get; set; }
         public string? LocalUpdateBy { get; set; }
         public DateTime? LocalUpdateDate { get; set; }
         public string? PrimaryLanguage { get; set; }
     }
 
-    [Table("IPMReferralStagingTable", Schema = "dbo")]
+    [Table("DownstreamReferralStagingTable", Schema = "dbo")]
     public class EpicReferralStaging
     {
         [Key]
         public int ID { get; set; }
-        public string FacilID { get; set; }
-        public int RefID { get; set; }
+        public string PatientID { get; set; }
+        public int ReferralID { get; set; }
         public DateTime ReferralDate { get; set; }
         public string? ReferredBy { get; set; }
         public string? ReferredTo { get; set; }
@@ -60,7 +59,7 @@ namespace AdminX.Models
         public string? Pregnancy { get; set; }
         public string? Indication { get; set; }
         public string? Speciality { get; set; }
-        public Int16? IPMUpdateSts { get; set; }
-        public string? IPMUpdateMessage { get; set; }
+        public Int16? UpdateSts { get; set; }
+        public string? UpdateMessage { get; set; }
     }
 }

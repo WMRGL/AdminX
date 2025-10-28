@@ -121,13 +121,13 @@ namespace AdminX.Controllers
 
                     if (_pvm.epicPatient != null)
                     {
-                        _pvm.epicReferralStaging = _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.IPMID); //check and process parked updates
+                        _pvm.epicReferralStaging = _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
 
                         if (_pvm.epicReferralStaging.Count > 0)
                         {
                             foreach (var item in _pvm.epicReferralStaging)
                             {
-                                _crud.EpicReferralStaging(item.ID, item.FacilID, item.RefID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
+                                _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
                             }
                         }
 
@@ -232,8 +232,7 @@ namespace AdminX.Controllers
                         _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
                         _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
-                    }
-                    
+                    }                    
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -336,11 +335,9 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
-                string cguNumber = "";
-                
+                string cguNumber = "";                
 
                 if (fileNumber == null || fileNumber == "")
                 {
@@ -372,8 +369,7 @@ namespace AdminX.Controllers
                 _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = _genderData.GetGenderList();
                 _pvm.genderAtBirth = _genderData.GetGenderList();
-               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
-              
+               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();              
 
                 if (success.HasValue)
                 {
@@ -391,8 +387,6 @@ namespace AdminX.Controllers
                     new BreadcrumbItem
                     {
                         Text = "Patient",
-
-
                     },
 
                     new BreadcrumbItem { Text = "New" }
@@ -427,7 +421,6 @@ namespace AdminX.Controllers
                 {
                     _pvm.success = false;
                     _pvm.message = "Patient already exists";
-
                 }
                 else
                 {
@@ -444,7 +437,6 @@ namespace AdminX.Controllers
                     if (maidenName != null) { maidenName = textInfo.ToTitleCase(maidenName); }
                     if (preferredName != null) { preferredName = textInfo.ToTitleCase(preferredName); }
                     if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
-
 
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
                         lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
@@ -526,9 +518,7 @@ namespace AdminX.Controllers
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno,
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
-                    GenderIdentity
-                    );
-
+                    GenderIdentity);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
@@ -556,7 +546,6 @@ namespace AdminX.Controllers
                 _pvm.patientsList = new List<Patient>();
 
                 return View(_pvm);
-
             }
             catch (Exception ex)
             {
@@ -615,7 +604,6 @@ namespace AdminX.Controllers
 
                 if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
                 {
-
                     int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }

@@ -9,11 +9,17 @@
             <div class="col-md-2">
                 <h3>Change in Name</h3>
             </div>
-            <div class="col-md-2">
-                <b>CGU record:</b> @Model.patient.FIRSTNAME @Model.patient.LASTNAME
+            <div class="col-md-1">
+                <b>CGU record:</b>
+                <div class="col-md-2">
+                    @Model.patient.FIRSTNAME @Model.patient.LASTNAME
+                </div>
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b> 
             </div>
             <div class="col-md-2">
-                <b>Epic record:</b> @Model.epicPatient.FirstName @Model.epicPatient.LastName
+                @Model.epicPatient.FirstName @Model.epicPatient.LastName
             </div>
         </div>
     }
@@ -27,11 +33,17 @@
             <div class="col-md-2">
                 <h3>Change in DOB</h3>
             </div>
-            <div class="col-md-2">
-                <b>CGU record:</b> @Model.patient.DOB.ToString("dd/MM/yyyy")
+            <div class="col-md-1">
+                <b>CGU record:</b> 
             </div>
             <div class="col-md-2">
-                <b>Epic record:</b> @Model.epicPatient.DOB.ToString("dd/MM/yyyy")
+                @Model.patient.DOB.ToString("dd/MM/yyyy")
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.epicPatient.DOB.ToString("dd/MM/yyyy")
             </div>
         </div>
     }
@@ -43,11 +55,17 @@
             <div class="col-md-2">
                 <h3>Change in NHS number</h3>
             </div>
-            <div class="col-md-2">
-                <b>CGU record:</b> @Model.patient.SOCIAL_SECURITY
+            <div class="col-md-1">
+                <b>CGU record:</b> 
             </div>
             <div class="col-md-2">
-                <b>Epic record:</b> @Model.epicPatient.NHSNo
+                @Model.patient.SOCIAL_SECURITY
+            </div>            
+            <div class="col-md-1">
+                <b>Epic record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.epicPatient.NHSNo
             </div>
         </div>
     }
@@ -81,6 +99,33 @@
             </div>
         </div>
     }
+    
+    @if (Model.patient.GP_Code != Model.epicPatient.GP || Model.patient.GP_Facility_Code != Model.epicPatient.GPPractice)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in GP</h3>
+            </div>
+            
+            <div class="col-md-1">
+                <b>CGU record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">GP Code: @Model.patient.GP_Code</div>
+                <div class="row">Facility Code: @Model.patient.GP_Facility_Code</div>
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row"> GP Code: @Model.epicPatient.GP</div>
+                <div class="row">Facility Code: @Model.epicPatient.GPPractice</div>
+            </div>            
+        </div>
+    }
+    
+
 
 
 </div>

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AdminX.Meta
 {
@@ -45,7 +46,7 @@ namespace AdminX.Meta
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo);
 
-        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
+        public Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
 
         public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate);
     }
@@ -431,7 +432,7 @@ namespace AdminX.Meta
             conn.Close();
         }
 
-        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin)
+        public async Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin)
         {
             int success = 0;
 
@@ -460,14 +461,16 @@ namespace AdminX.Meta
             if(refBy == null) { refBy = ""; }
             if (refTo == null) { refTo = ""; }
             if (speciality == null) { speciality = ""; }
+            if (createdDate == null || createdDate == DateTime.Parse("0001-01-01")) { createdDate = DateTime.Parse("1900-01-01"); }
+            if (referralDate == null || referralDate == DateTime.Parse("0001-01-01")) { referralDate = DateTime.Parse("1900-01-01"); }
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
-            SqlCommand cmd = new SqlCommand("dbo.sp_IPMRefStagingTableInsert", conn);
+            SqlCommand cmd = new SqlCommand("dbo.sp_DownstreamRefStagingTableInsert", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
-            cmd.Parameters.Add("@FacilID", SqlDbType.VarChar).Value = epicPatID;
-            cmd.Parameters.Add("@IPMRefID", SqlDbType.Int).Value = epicRefID;
+            cmd.Parameters.Add("@PatientID", SqlDbType.VarChar).Value = epicPatID;
+            cmd.Parameters.Add("@ReferralID", SqlDbType.Int).Value = epicRefID;
             cmd.Parameters.Add("@ReferralDate", SqlDbType.DateTime).Value = referralDate;
             cmd.Parameters.Add("@ReferredBy", SqlDbType.VarChar).Value = refBy;
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;

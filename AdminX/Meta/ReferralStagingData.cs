@@ -17,7 +17,7 @@ namespace AdminX.Meta
         }
         public List<EpicReferralStaging> GetParkedReferralUpdates(string epicID)
         {
-            IQueryable<EpicReferralStaging> stagedRefs = _context.EpicReferralStaging.Where(r => r.FacilID == epicID).OrderBy(r => r.CreatedDate);
+            IQueryable<EpicReferralStaging> stagedRefs = _context.EpicReferralStaging.Where(r => r.PatientID == epicID).OrderBy(r => r.CreatedDate);
 
             return stagedRefs.ToList();
         }
