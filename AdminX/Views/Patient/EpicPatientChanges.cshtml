@@ -1,4 +1,11 @@
-﻿
+﻿@model AdminX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+
 <div class="card">
     <h1 class="card-header text-center">Epic-CGU differences for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
 
@@ -21,11 +28,12 @@
             <div class="col-md-2">
                 @Model.epicPatient.FirstName @Model.epicPatient.LastName
             </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("Name")>Accept Name change</button>
+            </div>
         </div>
     }
-
     
-
     @if (Model.patient.DOB != Model.epicPatient.DOB)
     {
         <div class="row mb-2 g-2">
@@ -37,13 +45,16 @@
                 <b>CGU record:</b> 
             </div>
             <div class="col-md-2">
-                @Model.patient.DOB.ToString("dd/MM/yyyy")
+                @Model.patient.DOB.Value.ToString("dd/MM/yyyy")
             </div>
             <div class="col-md-1">
                 <b>Epic record:</b> 
             </div>
             <div class="col-md-2">
-                @Model.epicPatient.DOB.ToString("dd/MM/yyyy")
+                @Model.epicPatient.DOB.Value.ToString("dd/MM/yyyy")
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("dob")>Accept Date of Birth change</button>
             </div>
         </div>
     }
@@ -67,10 +78,13 @@
             <div class="col-md-2">
                 @Model.epicPatient.NHSNo
             </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("NhsNo")>Accept NHS No change</button>
+            </div>
         </div>
     }
 
-    @if (Model.patient.POSTCODE == Model.epicPatient.PostCode)
+    @if (Model.patient.POSTCODE != Model.epicPatient.PostCode)
     {
         <div class="row mb-2 g-2">
             <div class="col-md-1"></div>
@@ -96,8 +110,12 @@
                 <div class="row">@Model.epicPatient.Address3</div>
                 <div class="row">@Model.epicPatient.Address4</div>                
                 <div class="row">@Model.epicPatient.PostCode</div>
+            </div>           
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("Address")>Accept Address change</button>
             </div>
         </div>
+        
     }
     
     @if (Model.patient.GP_Code != Model.epicPatient.GP || Model.patient.GP_Facility_Code != Model.epicPatient.GPPractice)
@@ -121,11 +139,35 @@
             <div class="col-md-2">
                 <div class="row"> GP Code: @Model.epicPatient.GP</div>
                 <div class="row">Facility Code: @Model.epicPatient.GPPractice</div>
-            </div>            
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("GP")>Accept GP change</button>
+            </div>
         </div>
     }
-    
-
+        
+    <div class="row mb-2 g-2">
+        <form id="frmSubmit" asp-action="EpicPatientChanges">
+            <div class="col-md-2">
+                <button type="button"" class="btn btn-outline-primary" onclick=DoSubmit("All")>Accept all changes</button>
+            </div>
+            <div class="col-md-2">
+                <input name="mpi" asp-for=@Model.patient.MPI hidden />
+                <input name="epicID" asp-for=@Model.epicPatient.ExternalPatientID hidden />
+                <input id="txtType" name="changeType", value="All" hidden />
+            </div>
+        </form>
+    </div>
 
 
 </div>
+
+<script>
+
+    function DoSubmit(type)
+    {
+        document.getElementById("txtType").value=type;
+        document.getElementById("frmSubmit").submit();
+    }
+
+</script>

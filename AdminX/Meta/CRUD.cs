@@ -49,6 +49,8 @@ namespace AdminX.Meta
         public Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
 
         public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate);
+
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType);
     }
 
 
@@ -482,6 +484,28 @@ namespace AdminX.Meta
             success = 1;
 
             return success;
+        }
+
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType)
+        {
+            int success = 0;
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXAcceptEpicChange", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@mpi", SqlDbType.Int).Value = mpi;
+            cmd.Parameters.Add("@epicID", SqlDbType.VarChar).Value = epicID;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = itemType;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+            success = iReturnValue;
+            
+            return success;           
         }
     }
 }

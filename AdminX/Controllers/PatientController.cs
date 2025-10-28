@@ -686,5 +686,15 @@ namespace AdminX.Controllers
 
             return View(_pvm);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EpicPatientChanges(int mpi, string epicID, string changeType)
+        {
+            int success = _crud.EpicAcceptChanges(mpi, epicID, User.Identity.Name, changeType);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-AcceptEpicChange(SQL)" }); }
+
+            return RedirectToAction("PatientDetails", new { id = mpi, message = "Updated.", success = true });
+        }
     }
 }
