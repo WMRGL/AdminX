@@ -135,7 +135,8 @@ namespace AdminX.Controllers
 
 
                         if (_pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || _pvm.epicPatient.LastName != _pvm.patient.LASTNAME ||
-                            _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || _pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY)
+                            _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || _pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY ||
+                            _pvm.patient.GP != _pvm.epicPatient.GP)
                         {
                             _pvm.isEpicChanged = true;
                         }
@@ -203,14 +204,25 @@ namespace AdminX.Controllers
 
                 string gpPractice = "";
 
-                if (_pvm.patient.GP_Code != null)
+                if (_pvm.patient.GP != null)
                 {
-                    gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                    if (_gpData.GetClinicianDetails(_pvm.patient.GP_Code) != null)
+                    {
+                        gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                    }
                 }
 
                 if(gpPractice == "")
                 {
-                    _pvm.message = "No GP is assigned to this patient.";
+                    _pvm.success = false;
+                    if (_pvm.patient.GP_Code != null)
+                    {
+                        _pvm.message = "The assigned GP code does not match a known GP. Please check in System Administration and add if necessary.";
+                    }
+                    else
+                    {
+                        _pvm.message = "No GP is assigned to this patient.";
+                    }
                 }
                 else if (gpPractice != _pvm.patient.GP_Facility_Code)
                 {
