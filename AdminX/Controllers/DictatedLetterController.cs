@@ -29,6 +29,7 @@ namespace AdminX.Controllers
         private readonly IDictatedLettersReportData _dotReportData;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constantsData;
+        private readonly IPAddressFinder _ip;
 
         public DictatedLetterController(IConfiguration config, ClinicalContext clinContext, DocumentContext docContext, AdminContext adminContext)
         {
@@ -48,6 +49,7 @@ namespace AdminX.Controllers
             _lc = new LetterController(_clinContext, _docContext);
             _audit = new AuditService(_config);
             _constantsData = new ConstantsData(_docContext);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -62,7 +64,7 @@ namespace AdminX.Controllers
 
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
                 var letters = _dictatedLetterData.GetDictatedLettersListFull();
@@ -104,7 +106,7 @@ namespace AdminX.Controllers
 
                 var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Letters", "", _ip.GetIPAddress());
 
                 _lvm.patientDetails = _patientData.GetPatientDetailsByCGUNo(cguNo);
@@ -132,7 +134,7 @@ namespace AdminX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Letter", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _lvm.dictatedLetters = _dictatedLetterData.GetDictatedLetterDetails(id);
@@ -210,7 +212,9 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;                
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Letter", "New Letter", _ip.GetIPAddress());
+
                 int success = _crud.CallStoredProcedure("Letter", "Create", 0, id, 0, "", "", staffCode, "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
@@ -230,6 +234,9 @@ namespace AdminX.Controllers
         {
             try 
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Delete Letter", "ID=" + dID.ToString(), _ip.GetIPAddress());
+
                 int success = _crud.CallStoredProcedure("Letter", "Delete", dID, 0, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-create(SQL)" }); }
@@ -246,7 +253,10 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddPatientToDOT(int pID, int dID)
         {
             try
-            {                
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Patient to DOT", "ID=" + dID.ToString(), _ip.GetIPAddress());
+
                 int success = _crud.CallStoredProcedure("Letter", "AddFamilyMember", dID, pID, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addPt(SQL)" }); }
@@ -264,6 +274,9 @@ namespace AdminX.Controllers
         {
             try
             {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add CC to DOT", "ID=" + dID.ToString(), _ip.GetIPAddress());
+
                 int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
@@ -280,7 +293,10 @@ namespace AdminX.Controllers
         public async Task<IActionResult> DeleteCCFromDOT(int id)
         {
             try
-            {   
+            {
+                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Delete CC from DOT", "ID=" + id.ToString(), _ip.GetIPAddress());
+
                 var letter = _dictatedLetterData.GetDictatedLetterCopyDetails(id);
                 
                 int dID = letter.DotID;

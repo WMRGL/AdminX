@@ -13,34 +13,50 @@ namespace AdminX.Controllers
         private readonly IConstantsData _constantsData;
         private readonly IDocKindsData _docKindsData;
         private readonly EDMSVM _vm;
+        private readonly IStaffUserData _staffUserData;
+        private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
+        private readonly IConfiguration _config;
 
-        public EDMSMoverController(ClinicalContext clinicalContext, DocumentContext documentContext)
+        public EDMSMoverController(ClinicalContext clinicalContext, DocumentContext documentContext, IConfiguration configuration)
         {
+            _config = configuration;
             _clinicalContext = clinicalContext;
             _documentContext = documentContext;
             _patientData = new PatientData(_clinicalContext);
             _constantsData = new ConstantsData(_documentContext);
             _docKindsData = new DocKindsData(_documentContext);
             _vm = new EDMSVM();
+            _staffUserData = new StaffUserData(_clinicalContext);
+            _audit = new AuditService(_config);
         }
 
         [HttpGet]
         public async Task<IActionResult> Upload(int mpi, string? message, bool? success)
         {
-            _vm.patient = _patientData.GetPatientDetails(mpi);
-            _vm.docKinds = _docKindsData.GetDocumentKindsList();
+            try
+            {
+                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Upload to EDMS", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-            if(message != null) { _vm.Message = message; }
-            _vm.isSuccess = success.GetValueOrDefault();
+                _vm.patient = _patientData.GetPatientDetails(mpi);
+                _vm.docKinds = _docKindsData.GetDocumentKindsList();
 
-            return View(_vm);
+                if (message != null) { _vm.Message = message; }
+                _vm.isSuccess = success.GetValueOrDefault();
+
+                return View(_vm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EDMSUpload" });
+            }
         }
         [HttpPost]
         public async Task<IActionResult> Upload(int mpi, string docType, int taskRouting, IFormFile fileToUpload)        
         {
             try
             {
-
                 string destFilename = mpi.ToString() + "-" + docType + "-" + taskRouting.ToString() + "-" +
                     DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() +
                     DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() +
@@ -63,7 +79,7 @@ namespace AdminX.Controllers
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Patient" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EDMSUpload" });
             }
         }
     }

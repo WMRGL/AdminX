@@ -15,6 +15,7 @@ namespace AdminX.Controllers
         private readonly IPatientData _patientData;
         private readonly IDiseaseData _diseaseData;
         private readonly IAuditService _audit; 
+        private readonly IPAddressFinder _ip;
 
         public DiagnosisController(ClinicalContext context, IConfiguration config)
         {
@@ -25,6 +26,7 @@ namespace AdminX.Controllers
             _patientData = new PatientData(_clinContext);
             _diseaseData = new DiseaseData(_clinContext);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
 
@@ -34,7 +36,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diagnosis", "", _ip.GetIPAddress());
                 _dvm.diagnosisList = _diseaseData.GetDiseaseListByPatient(id);
                 _dvm.patient = _patientData.GetPatientDetails(id);

@@ -17,28 +17,35 @@ namespace AdminX.Controllers
 
         public async Task<IActionResult> Confirm(int mpi)
         {
-            string sMessage = "";
-            bool isSuccess = false;
-
-            APIController api = new APIController(_apiContext, _config);
-
-            Int16 result = await api.PushPtToPhenotips(mpi);
-
-            if(result==1)
+            try
             {
-                isSuccess = true;
-                sMessage = "Push to Phenotips successful";
-            }
-            else if (result == 0)
-            {
-                sMessage = "Patient already exists in Phenotips!";
-            }
-            else
-            {
-                sMessage = "Push to Phenotips failed :(";
-            }
+                string sMessage = "";
+                bool isSuccess = false;
 
-            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+                APIController api = new APIController(_apiContext, _config);
+
+                Int16 result = await api.PushPtToPhenotips(mpi);
+
+                if (result == 1)
+                {
+                    isSuccess = true;
+                    sMessage = "Push to Phenotips successful";
+                }
+                else if (result == 0)
+                {
+                    sMessage = "Patient already exists in Phenotips!";
+                }
+                else
+                {
+                    sMessage = "Push to Phenotips failed :(";
+                }
+
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, success = isSuccess, message = sMessage });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "PhenotipsConfirm" });
+            }
         }
     }
 }

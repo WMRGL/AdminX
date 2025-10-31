@@ -15,6 +15,7 @@ namespace AdminX.Controllers
         private readonly LabReportVM _lvm;
         private readonly StaffUserData _staff;
         private readonly AuditService _audit;
+        private readonly IPAddressFinder _ip;
 
         public LabReportController(LabContext context, ClinicalContext clinContext, IConfiguration config)
         {
@@ -25,61 +26,108 @@ namespace AdminX.Controllers
             _lvm = new LabReportVM();
             _staff = new StaffUserData(_clinContext);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
                
 
         public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
-            string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "ClinicX - LabReports", "", _ip.GetIPAddress());
-
-            _lvm.patientsList = new List<LabPatient>();
-
-            if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
+            try
             {
-                _lvm.patientsList = _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
-                _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
-                if(dob != null)
-                {
-                    _lvm.searchTerms = _lvm.searchTerms + dob.Value.ToString("yyyy-MM-dd");
-                }
-            }
+                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "", _ip.GetIPAddress());
 
-            return View(_lvm);
+                _lvm.patientsList = new List<LabPatient>();
+
+                if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
+                {
+                    _lvm.patientsList = _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
+                    _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
+                    if (dob != null)
+                    {
+                        _lvm.searchTerms = _lvm.searchTerms + dob.Value.ToString("yyyy-MM-dd");
+                    }
+                }
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "LabPatientSearch" });
+            }
         }
 
         public IActionResult LabReports(int intID)
         {
-            _lvm.patient = _labData.GetPatientDetails(intID);
-            _lvm.cytoReportsList = _labData.GetCytoReportsList(intID);
-            //_lvm.dnaReportsList = _labData.GetDNAReportsList(intID);
-            _lvm.labDNALabDataList = _labData.GetDNALabDataList(intID);
+            try
+            {
+                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "PatientID=" + intID.ToString(), _ip.GetIPAddress());
 
-            return View(_lvm);
+                _lvm.patient = _labData.GetPatientDetails(intID);
+                _lvm.cytoReportsList = _labData.GetCytoReportsList(intID);
+                //_lvm.dnaReportsList = _labData.GetDNAReportsList(intID);
+                _lvm.labDNALabDataList = _labData.GetDNALabDataList(intID);
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "LabReports" });
+            }
         }
 
         public IActionResult SampleDetails(string labno)
         {
-            _lvm.cytoReport = _labData.GetCytoReport(labno);
-            _lvm.dnaReport = _labData.GetDNAReport(labno);            
+            try
+            {
+                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
 
-            return View(_lvm);
+                _lvm.cytoReport = _labData.GetCytoReport(labno);
+                _lvm.dnaReport = _labData.GetDNAReport(labno);
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "SampleDetails" });
+            }
         }
 
         public IActionResult DNALabReport(string labno, string indication, string reason)
-        {            
-            _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
-            _lvm.dnaReport = _labData.GetDNAReport(labno);            
-    
-            return View(_lvm);
+        {
+            try
+            {
+                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
+
+                _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
+                _lvm.dnaReport = _labData.GetDNAReport(labno);
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DNAReport" });
+            }
         }
 
         public IActionResult CytoLabReport(string labno)
         {
-            _lvm.cytoReport = _labData.GetCytoReport(labno);            
+            try
+            {
+                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
 
-            return View(_lvm);
+                _lvm.cytoReport = _labData.GetCytoReport(labno);
+
+                return View(_lvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "CytoReport" });
+            }
         }
     }
 }

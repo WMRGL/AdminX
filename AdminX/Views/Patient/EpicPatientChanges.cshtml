@@ -145,11 +145,11 @@
             </div>
         </div>
     }
-        
+
     <div class="row mb-2 g-2">
         <form id="frmSubmit" asp-action="EpicPatientChanges">
             <div class="col-md-2">
-                <button type="button"" class="btn btn-outline-primary" onclick=DoSubmit("All")>Accept all changes</button>
+                <button type="button" class="btn btn-outline-primary" onclick=DoSubmit("All")>Accept all changes</button>
             </div>
             <div class="col-md-2">
                 <input name="mpi" asp-for=@Model.patient.MPI hidden />

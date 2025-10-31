@@ -52,6 +52,7 @@ namespace AdminX.Controllers
         private readonly IGenderIdentityData _genderIdentityData;
         private readonly IReferralStagingData _referralStagingData;
         private readonly IEpicPatientReferenceData _epicPatientReferenceData;
+        private readonly IPAddressFinder _ip;
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext,
             APIContext apiContext, IGenderIdentityData genderIdentityData)
@@ -93,6 +94,7 @@ namespace AdminX.Controllers
             _genderIdentityData = genderIdentityData;
             _referralStagingData = new ReferralStagingData(_adminContext);
             _epicPatientReferenceData = new EpicPatientReferenceData(_adminContext);
+            _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
         }
 
         [Authorize]
@@ -103,8 +105,8 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress()); 
 
                 if (message != null && message != "")
                 {
@@ -335,7 +337,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";                
 
@@ -469,7 +471,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
@@ -539,7 +541,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
@@ -629,7 +631,7 @@ namespace AdminX.Controllers
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update", _ip.GetIPAddress());
 
             int success = _crud.CallStoredProcedure("Patient", "MakeElectronic", mpi, 0, 0, "", "", "", "", User.Identity.Name);
 
@@ -665,6 +667,10 @@ namespace AdminX.Controllers
 
         public async Task<IActionResult> PhenotipsPatientRecord(int id, string? message, bool? success)
         {
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Phenotips Record", _ip.GetIPAddress());
+
             _pvm.patient = _patientData.GetPatientDetails(id);
             _pvm.ptPatient = _phenotipsMirrorData.GetPhenotipsPatientByID(id);
             _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
@@ -681,6 +687,11 @@ namespace AdminX.Controllers
         [HttpGet]
         public async Task<IActionResult> EpicPatientChanges(int id)
         {
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Epic Changes", _ip.GetIPAddress());
+
             _pvm.patient = _patientData.GetPatientDetails(id);
             _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
 

@@ -19,6 +19,7 @@ namespace AdminX.Controllers
 		private readonly ITriageData _triageData;
 		private readonly IReviewData _reviewData;
         private readonly IDictatedLetterData _dictatedLetterData;
+        private readonly IPAddressFinder _ip;
 
 		public HomeController(ClinicalContext context, IConfiguration config)
         {
@@ -33,6 +34,7 @@ namespace AdminX.Controllers
 			_triageData = new TriageData(_clinContext);
             _reviewData = new ReviewData(_clinContext);
 			_dictatedLetterData = new DictatedLetterData(_clinContext);
+            _ip = new IPAddressFinder(HttpContext);
 		}
 
         public IActionResult Index()
@@ -48,7 +50,7 @@ namespace AdminX.Controllers
                     _hvm.notificationMessage = _notificationData.GetMessage("AdminXOutage");
                     var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
-                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home", "", _ip.GetIPAddress());
 
                     _hvm.name = user.NAME;

@@ -22,6 +22,7 @@ namespace AdminX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly APIController _api;
+        private readonly IPAddressFinder _ip;
 
         public RelativeController(ClinicalContext context, APIContext apiContext, IConfiguration config)
         {
@@ -36,7 +37,7 @@ namespace AdminX.Controllers
             _rvm = new RelativeVM();
             _audit = new AuditService(_config);
             _api = new APIController(_apiContext, _config);
-            
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -47,7 +48,7 @@ namespace AdminX.Controllers
             {
                 _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
                 _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
@@ -143,7 +144,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
                 _rvm.WMFACSID = wmfacsid;
@@ -213,7 +214,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Import Revatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);

@@ -26,6 +26,7 @@ namespace AdminX.Controllers
         private readonly IICPActionData _icpActionData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
 
         public TriageController(ClinicalContext clinContext, DocumentContext docContext, IConfiguration config)
         {
@@ -43,6 +44,7 @@ namespace AdminX.Controllers
             _icpActionData = new ICPActionData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -52,7 +54,7 @@ namespace AdminX.Controllers
             {       
                 _ivm.staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(_ivm.staffCode, "AdminX - Triage","",_ip.GetIPAddress());
 
                 _ivm.triages = _triageData.GetTriageListFull();
@@ -80,7 +82,7 @@ namespace AdminX.Controllers
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - ICP Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = _triageData.GetTriageDetails(id);

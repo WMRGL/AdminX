@@ -22,6 +22,7 @@ namespace AdminX.Controllers
         private readonly IDocumentsData _docsData;
         private readonly IDiaryActionData _diaryActionData;        
         private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
         public RelativeDiaryController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
         {
             _context = context;
@@ -39,75 +40,111 @@ namespace AdminX.Controllers
             _diaryActionData = new DiaryActionData(_adminContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
         public IActionResult Index(int relID)
         {
-            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rdvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
+            try
+            {
+                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rdvm.staffMember.STAFF_CODE;
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
 
-            _rdvm.relative = _relData.GetRelativeDetails(relID);
-            _rdvm.relativeDiaryList = _relDiaryData.GetRelativeDiaryList(relID);
-            _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.relative = _relData.GetRelativeDetails(relID);
+                _rdvm.relativeDiaryList = _relDiaryData.GetRelativeDiaryList(relID);
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
 
-            return View(_rdvm);
+                return View(_rdvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "RelativeDiary" });
+            }
         }
 
 
         [HttpGet]
         public IActionResult AddNew(int relID)
         {
-            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rdvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
+            try
+            {
+                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rdvm.staffMember.STAFF_CODE;
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
 
-            _rdvm.relative = _relData.GetRelativeDetails(relID);
-            _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
-            _rdvm.documentsList = _docsData.GetDocumentsList();
-            _rdvm.diaryActionsList = _diaryActionData.GetDiaryActions();
+                _rdvm.relative = _relData.GetRelativeDetails(relID);
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.documentsList = _docsData.GetDocumentsList();
+                _rdvm.diaryActionsList = _diaryActionData.GetDiaryActions();
 
-            return View(_rdvm);
+                return View(_rdvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddNewRelativeDiary" });
+            }
         }
 
         [HttpPost]
         public IActionResult AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText)
         {
-            int success = _crud.CallStoredProcedure("RelativeDiary", "Create", relID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
-                null, false, false, 0,0,0,diaryText,letterText);
+            try
+            {
+                int success = _crud.CallStoredProcedure("RelativeDiary", "Create", relID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                    null, false, false, 0, 0, 0, diaryText, letterText);
 
-            if(success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
 
-            return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
+                return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddNewRelativeDiary" });
+            }
         }
 
         [HttpGet]
         public IActionResult Edit(int diaryID)
         {
-            _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rdvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Relative Diary", "DiaryID=" + diaryID.ToString(), _ip.GetIPAddress());
+            try
+            {
+                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rdvm.staffMember.STAFF_CODE;
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Relative Diary", "DiaryID=" + diaryID.ToString(), _ip.GetIPAddress());
 
-            _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
-            _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
+                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
 
-            return View(_rdvm);
+                return View(_rdvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditRelativeDiary" });
+            }
         }
 
         [HttpPost]
         public IActionResult Edit(int diaryID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText, bool? isNotReturnExpected=false)
         {
-            _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
-            int relID = _rdvm.relativeDiary.RelsID;
+            try
+            {
+                _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
+                int relID = _rdvm.relativeDiary.RelsID;
 
-            int success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
-                null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
+                int success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                    null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
 
-            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
 
-            return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
+                return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditRelativeDiary" });
+            }
         }
     }
 }

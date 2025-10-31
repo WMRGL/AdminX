@@ -25,7 +25,7 @@ namespace AdminX.Controllers
         private readonly IPedigreeData _pedigreeData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
-
+        private readonly IPAddressFinder _ip;
 
         public PatientSearchController(ClinicalContext context, AdminContext adminContext, APIContext apiContext, IConfiguration config)
         {
@@ -40,6 +40,7 @@ namespace AdminX.Controllers
             _pedigreeData = new PedigreeData(_clinContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -114,7 +115,7 @@ namespace AdminX.Controllers
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                 }
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm, _ip.GetIPAddress());
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -141,7 +142,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
 
                 _pvm.patientSearchResultsList = new List<PatientSearchResults>();
@@ -263,11 +264,9 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
-
                 
-
                 if (message != null)
                 {
                     _pvm.success = success.GetValueOrDefault();
@@ -302,7 +301,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
 
                 APIControllers.Controllers.APIControllerLOCAL api = new APIControllers.Controllers.APIControllerLOCAL(_apiContext, _config);
@@ -339,7 +338,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+               // IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - ExistingFileSelect", "", _ip.GetIPAddress());
 
                 _pvm.patientsList = new List<Patient>();

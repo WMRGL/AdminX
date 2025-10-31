@@ -21,6 +21,7 @@ namespace AdminX.Controllers
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
         private readonly IReferralData _referralData;
+        private readonly IPAddressFinder _ip;
 
         public ReviewController(ClinicalContext context, IConfiguration config)
         {
@@ -34,6 +35,7 @@ namespace AdminX.Controllers
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
             _referralData = new ReferralData(_clinContext);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -48,7 +50,7 @@ namespace AdminX.Controllers
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);               
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);               
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews","", _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsListAll();
@@ -142,7 +144,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.activity = _activityData.GetActivityDetails(id);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -195,31 +197,37 @@ namespace AdminX.Controllers
         string Review_Recipient, string Completed_By, DateTime? Planned_Date, string Review_Status, string Comments
         )
         {
-
-            string login = User.Identity?.Name ?? "Unknown";
-
-            int success = _crud.PatientReview(
-                     sType: "Review",
-                     sOperation: "Create",
-                     int1: mpi,
-                     sLogin: User.Identity.Name,
-                     string1: Pathway,
-                     string2: Owner,
-                     string3: Review_Recipient,
-                     string4: Category,
-                     string7: Review_Status,
-                     string8: Comments,
-                     dDate1: Planned_Date,
-                     int2: Parent_RefID
-
-                 );
-            if (success != 1)
+            try
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                string login = User.Identity?.Name ?? "Unknown";
+
+                int success = _crud.PatientReview(
+                         sType: "Review",
+                         sOperation: "Create",
+                         int1: mpi,
+                         sLogin: User.Identity.Name,
+                         string1: Pathway,
+                         string2: Owner,
+                         string3: Review_Recipient,
+                         string4: Category,
+                         string7: Review_Status,
+                         string8: Comments,
+                         dDate1: Planned_Date,
+                         int2: Parent_RefID
+
+                     );
+                if (success != 1)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                }
+
+
+                return RedirectToAction("Index");
             }
-
-
-            return RedirectToAction("Index");
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review-add" });
+            }
         }
 
         public async Task<IActionResult> ReviewsForPatient(int id)
@@ -232,7 +240,7 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
@@ -267,7 +275,7 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _rvm.review = _reviewData.GetReviewDetails(id);
@@ -351,64 +359,80 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult Review(int mpi, int refID)
         {
-
-            _rvm.reviewList = _reviewData.GetReviewsListForPatient(mpi);
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+            try
             {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                
-                new BreadcrumbItem { Text = "Review" }
-            };
+                string staffCode = _staffUser.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "ReviewList", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
+                _rvm.reviewList = _reviewData.GetReviewsListForPatient(mpi);
+                _rvm.referral = _referralData.GetReferralDetails(refID);
 
-            return View(_rvm);
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+
+                    new BreadcrumbItem { Text = "Review" }
+                };
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Review" });
+            }
         }
 
         [HttpGet]
         public IActionResult AddReview(int mpi, int refID)
         {
-            _rvm.patient = _patientData.GetPatientDetails(mpi);
-            _rvm.activityList = _activityData.GetActivityList(mpi);
-            _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            _rvm.staffMembers = _staffUser.GetStaffMemberList();
-
-            if(refID != 0)
+            try
             {
-                _rvm.activity = _activityData.GetActivityDetails(refID);
+                _rvm.patient = _patientData.GetPatientDetails(mpi);
+                _rvm.activityList = _activityData.GetActivityList(mpi);
+                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMembers = _staffUser.GetStaffMemberList();
 
-                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
-            {
-                new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-                new BreadcrumbItem
+                _audit.CreateUsageAuditEntry(_rvm.staffMember.STAFF_CODE, "AddReview", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
+
+                if (refID != 0)
                 {
-                    Text = "Review",
-                    Controller = "Review",
-                    Action = "Index",
+                    _rvm.activity = _activityData.GetActivityDetails(refID);
 
-                },
-                new BreadcrumbItem { Text = "Add" }
-            };
-
-                if (_rvm.patient != null && _rvm.patient.DOB != null)
-                {
-                    DateTime today = DateTime.Today;
-                    int age = today.Year - _rvm.patient.DOB.Value.Year;
-                    if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
+                    ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                     {
-                        age--;
+                        new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
+                        new BreadcrumbItem
+                        {
+                            Text = "Review",
+                            Controller = "Review",
+                            Action = "Index",                                
+                        },
+                        new BreadcrumbItem { Text = "Add" }
+                    };
+
+                    if (_rvm.patient != null && _rvm.patient.DOB != null)
+                    {
+                        DateTime today = DateTime.Today;
+                        int age = today.Year - _rvm.patient.DOB.Value.Year;
+                        if (_rvm.patient.DOB.Value.Date > today.AddYears(-age))
+                        {
+                            age--;
+                        }
+                        ViewBag.IsUnder15 = (age < 15);
+                        ViewBag.DateOfFifteen = _rvm.patient.DOB.Value.AddYears(15).ToString("yyyy-MM-dd");
+
                     }
-                    ViewBag.IsUnder15 = (age < 15);
-                    ViewBag.DateOfFifteen = _rvm.patient.DOB.Value.AddYears(15).ToString("yyyy-MM-dd");
+                    else
+                    {
+                        ViewBag.IsUnder15 = false;
+                    }
+                }
 
-                }
-                else
-                {
-                    ViewBag.IsUnder15 = false;
-                }
+                return View(_rvm);
             }
-
-            return View(_rvm);
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddReview" });
+            }
         }
 
         [HttpPost]
@@ -417,16 +441,14 @@ namespace AdminX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "RefID=" + refID.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "RefID=" + refID.ToString(), _ip.GetIPAddress());
 
                 _rvm.activity = _activityData.GetActivityDetails(refID);
                 _rvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _rvm.patient = _patientData.GetPatientDetails(_rvm.activity.MPI);
                 _rvm.activityList = _activityData.GetActivityList(_rvm.patient.MPI).Where(c => c.REFERRAL_DATE != null).ToList();
                 _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-
                 
-
                 _crud.PatientReview("Review", "Create", User.Identity.Name, mpi, Pathway, Owner, Review_Recipient, Category, "", "Pending", Comments, Planned_Date, refID);
 
                 return View(_rvm);

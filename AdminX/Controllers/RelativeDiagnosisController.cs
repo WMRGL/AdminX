@@ -17,6 +17,7 @@ namespace ClinicX.Controllers
         private readonly IStaffUserData _staffUser;        
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
         
         public RelativeDiagnosisController(ClinicalContext context, IConfiguration config) 
         {
@@ -29,13 +30,14 @@ namespace ClinicX.Controllers
             _crud = new CRUD(_config);
             _rdvm = new RelativeDiagnosisVM();
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
         public IActionResult Index(int relID)
         {
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "ClinicX - Relative Diagnoses", "ID=" + relID.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(relID);
@@ -55,10 +57,9 @@ namespace ClinicX.Controllers
             try
             {
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative Diagnosis", "ID=" + id.ToString(), _ip.GetIPAddress());
-
-                
+                                
                 _rdvm.relativeDetails = _relativeData.GetRelativeDetails(id);
                 _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
                 _rdvm.cancerRegList = _relativeDiagnosisData.GetCancerRegList();
