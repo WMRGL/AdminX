@@ -9,7 +9,7 @@
 <div class="card">
     <h1 class="card-header text-center">Epic-CGU differences for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
 
-    @if (Model.patient.FIRSTNAME != Model.epicPatient.FirstName || Model.patient.LASTNAME != Model.epicPatient.LastName)
+    @if (Model.patient.Title != Model.epicPatient.Title || Model.patient.FIRSTNAME != Model.epicPatient.FirstName || Model.patient.LASTNAME != Model.epicPatient.LastName)
     {
         <div class="row mb-2 g-2">
             <div class="col-md-1"></div>
@@ -18,15 +18,15 @@
             </div>
             <div class="col-md-1">
                 <b>CGU record:</b>
-                <div class="col-md-2">
-                    @Model.patient.FIRSTNAME @Model.patient.LASTNAME
-                </div>
             </div>
+            <div class="col-md-2">
+                @Model.patient.Title @Model.patient.FIRSTNAME @Model.patient.LASTNAME
+            </div>            
             <div class="col-md-1">
                 <b>Epic record:</b> 
             </div>
             <div class="col-md-2">
-                @Model.epicPatient.FirstName @Model.epicPatient.LastName
+                @Model.epicPatient.Title @Model.epicPatient.FirstName @Model.epicPatient.LastName
             </div>
             <div class="col-md-2">
                 <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("Name")>Accept Name change</button>

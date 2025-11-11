@@ -134,8 +134,9 @@ namespace AdminX.Controllers
                         }
 
 
-                        if (_pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || _pvm.epicPatient.LastName != _pvm.patient.LASTNAME ||
-                            _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
+                        if (_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
+                            _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
+                            (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
                             _pvm.patient.GP != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
                             _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile)
                         {
