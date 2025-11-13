@@ -189,6 +189,7 @@ namespace AdminX.Controllers
                 _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = _docsData.GetDocumentsList();
+                _pvm.messages = new List<string>();
 
                 if (_pvm.patient.DECEASED == -1)
                 {
@@ -200,8 +201,8 @@ namespace AdminX.Controllers
                 }
 
                 if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0)
-                {
-                    _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
+                {                    
+                    _pvm.messages.Add("There is no activity for this patient, please rectify by adding a referral or temp-reg.");
                 }
 
                 string gpPractice = "";
@@ -218,17 +219,22 @@ namespace AdminX.Controllers
                 {
                     _pvm.success = false;
                     if (_pvm.patient.GP_Code != null)
-                    {
-                        _pvm.message = "The assigned GP code does not match a known GP. Please check in System Administration and add if necessary.";
+                    {                     
+                        _pvm.messages.Add("The assigned GP code does not match a known GP. Please check in System Administration and add if necessary.");
                     }
                     else
-                    {
-                        _pvm.message = "No GP is assigned to this patient.";
+                    {                        
+                        _pvm.messages.Add("No GP is assigned to this patient.");
                     }
                 }
                 else if (gpPractice != _pvm.patient.GP_Facility_Code)
-                {
-                    _pvm.message = "This patient's GP is no longer at this practice. Please check and select a new GP if necessary.";
+                {                 
+                    _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
+                }
+
+                if(_pvm.patient.PtAreaCode == null)
+                {                    
+                    _pvm.messages.Add("This patient has no area code assigned.");
                 }
 
                 if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
