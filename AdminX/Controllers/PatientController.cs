@@ -172,6 +172,7 @@ namespace AdminX.Controllers
                     _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 }
                 List<Referral> referrals = _referralData.GetReferralsList(id);
+                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
                 _pvm.tempReges = _referralData.GetTempRegList(id);
@@ -200,7 +201,12 @@ namespace AdminX.Controllers
                     _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
                 }
 
-                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0)
+                if (_pvm.patient.PtAreaCode == null)
+                {
+                    _pvm.messages.Add("This patient has no area code assigned.");
+                }
+
+                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0 && _pvm.incompleteReferrals.Count == 0)
                 {                    
                     _pvm.messages.Add("There is no activity for this patient, please rectify by adding a referral or temp-reg.");
                 }
@@ -232,10 +238,7 @@ namespace AdminX.Controllers
                     _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
                 }
 
-                if(_pvm.patient.PtAreaCode == null)
-                {                    
-                    _pvm.messages.Add("This patient has no area code assigned.");
-                }
+                
 
                 if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
                 {

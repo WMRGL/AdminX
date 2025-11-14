@@ -134,6 +134,12 @@ namespace AdminX.Controllers
                 _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
                 _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+
+                if(_rvm.patient.PtAreaCode == null)
+                {
+                    return RedirectToAction("PatientDetails", "Patient", new { id=_rvm.patient.MPI, message="You need to assign an area code before processing the referral.", success=false });
+                }
+
                 _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
                 if (_rvm.referral.ClockStartDate != null)
@@ -333,6 +339,47 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddReferral" });
             }
+        }
+
+        [HttpGet]
+        public IActionResult ProcessNewReferral(int refID)
+        {
+            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Process Epic Referral", "", _ip.GetIPAddress());
+
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+            _rvm.pathways = new List<string>();// { "Cancer", "General   " };
+            List<Pathway> pathwayList = _pathwayData.GetPathwayList();
+            foreach(var p in pathwayList)
+            {
+                _rvm.pathways.Add(p.CGU_Pathway);
+            }
+
+            _rvm.consultants = _staffUserData.GetConsultantsList();
+            _rvm.gcs = _staffUserData.GetGCList();
+            _rvm.admin = _staffUserData.GetAdminList();
+
+            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+
+            return View(_rvm);
+        }
+
+        [HttpPost]
+        public IActionResult ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
+        {
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            
+            int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
+
+            if (success != 1)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
+            }
+
+            return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
         }
     }
 }
