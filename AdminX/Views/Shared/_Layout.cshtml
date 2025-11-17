@@ -31,14 +31,18 @@
                 *@
                 <li class="nav-item dropdown">
                     <a class="nav-link  text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Patient
+                        Patients
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="Index">Search</a></li>
-                        <li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearch">Add New</a></li>     
+                        @*<li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearch">Add New</a></li>*@
                         <li><a class="dropdown-item" asp-area="" asp-controller="NewEpicPatient" asp-action="Index">New Epic Patients</a></li>
                         @*<li><a class="dropdown-item" asp-area="" asp-controller="PatientSearch" asp-action="NewPatientSearchAPI">Add New (API)</a></li>*@
                     </ul>
+                </li>
+                <li class="vr"></li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" asp-area="" asp-controller="ReferralList" asp-action="Index">Unassigned Referrals</a>
                 </li>
                 <li class="vr"></li>
                 <li class="nav-item">
