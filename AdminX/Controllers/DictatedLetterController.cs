@@ -604,10 +604,14 @@ namespace AdminX.Controllers
         {
             try
             {
-                _lc.PrintDOTPDF(dID, User.Identity.Name, false);
+                //_lc.PrintDOTPDF(dID, User.Identity.Name, false);
                 //return RedirectToAction("Edit", new { id = dID });
+                string user = User.Identity.Name;
+
+                byte[] pdfData = GenerateDOTPDFStream(dID, user, false);
                 _crud.CallStoredProcedure("DictatedLetter", "Print", dID,0,0,"","","","",User.Identity.Name,null,null); //updates everything to say the letter was printed
-                return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+                //return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+                return File(pdfData, "application/pdf");
             }
             catch (Exception ex)
             {
