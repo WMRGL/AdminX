@@ -1,0 +1,51 @@
+﻿@model AdminX.ViewModels.ReferralListVM
+@{
+    ViewData["Title"] = "Admin-X - Referral List";
+    ViewData["Page"] = "/ Referral List";
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1 class="text-center">New Unassigned Referrals</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        @if(Model.referralList.Count > 0)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU number</th>
+                        <th>Patient Name</th>
+                        <th>Referral type</th>
+                        <th>Referral Date</th>
+                        <th>Referred By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.referralList)
+                    {
+                        <tr>
+                            <td><a asp-controller="Referral" asp-action="ProcessNewReferral" asp-route-refID=@item.refid>@item.CGU_No</a></td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            <td>@item.RefType</td>
+                            @if(item.RefDate.HasValue)
+                            {
+                                <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>N/A</td>
+                            }
+                            <td>@item.ReferringClinician - @item.ReferringFacility</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {   
+            <h2>There are no new referrals awaiting assignment.</h2>
+        }
+    </div>
+</div>

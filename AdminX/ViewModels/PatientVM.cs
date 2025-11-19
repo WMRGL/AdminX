@@ -18,6 +18,7 @@ namespace AdminX.ViewModels
         public List<Referral> activeReferrals { get; set; }
         public List<Referral> inactiveReferrals { get; set; }
         public List<Referral> tempReges { get; set; }
+        public List<Referral> incompleteReferrals { get; set; }
         public List<Appointment> appointments { get; set; }
         public PatientPathway patientPathway { get; set; }
         public List<Alert> alerts { get; set; }
@@ -29,6 +30,7 @@ namespace AdminX.ViewModels
         public ExternalFacility GPPractice { get; set; }
         public StaffMember staffMember { get; set; }
         public string message { get; set; }
+        public List<string>? messages { get; set; }
         public string? diedage { get; set; }
         public string? currentage { get; set; }
         public List<Language> languages { get; set; }
@@ -67,5 +69,8 @@ namespace AdminX.ViewModels
         public List<Gender>? genderAtBirth { get; set; }
         public List<GenderIdentity> genderIdentities { get; set; }
         public string? GenderIdentity { get; set; }
+        public bool isEpicChanged { get; set; }
+        public EpicPatientReference epicPatient {  get; set; }
+        public List<EpicReferralStaging> epicReferralStaging { get; set; }
     }
 }

@@ -1,0 +1,202 @@
+﻿@model AdminX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+
+<div class="card">
+    <h1 class="card-header text-center">Epic-CGU differences for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
+
+    @if (Model.patient.Title != Model.epicPatient.Title || Model.patient.FIRSTNAME != Model.epicPatient.FirstName || Model.patient.LASTNAME != Model.epicPatient.LastName)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in Name</h3>
+            </div>
+            <div class="col-md-1">
+                <b>CGU record:</b>
+            </div>
+            <div class="col-md-2">
+                @Model.patient.Title @Model.patient.FIRSTNAME @Model.patient.LASTNAME
+            </div>            
+            <div class="col-md-1">
+                <b>Epic record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.epicPatient.Title @Model.epicPatient.FirstName @Model.epicPatient.LastName
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("Name")>Accept Name change</button>
+            </div>
+        </div>
+    }
+    
+    @if (Model.patient.DOB != Model.epicPatient.DOB)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in DOB</h3>
+            </div>
+            <div class="col-md-1">
+                <b>CGU record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.patient.DOB.Value.ToString("dd/MM/yyyy")
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.epicPatient.DOB.Value.ToString("dd/MM/yyyy")
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("dob")>Accept Date of Birth change</button>
+            </div>
+        </div>
+    }
+
+    @if (Model.patient.SOCIAL_SECURITY != Model.epicPatient.NHSNo && Model.epicPatient.NHSNo != null)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in NHS number</h3>
+            </div>
+            <div class="col-md-1">
+                <b>CGU record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.patient.SOCIAL_SECURITY
+            </div>            
+            <div class="col-md-1">
+                <b>Epic record:</b> 
+            </div>
+            <div class="col-md-2">
+                @Model.epicPatient.NHSNo
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("NhsNo")>Accept NHS No change</button>
+            </div>
+        </div>
+    }
+
+    @if (Model.patient.POSTCODE != Model.epicPatient.PostCode)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in Address</h3>
+            </div>
+            <div class="col-md-1">
+                <b>CGU record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">@Model.patient.ADDRESS1</div>
+                <div class="row">@Model.patient.ADDRESS2</div>
+                <div class="row">@Model.patient.ADDRESS3</div>
+                <div class="row">@Model.patient.ADDRESS4</div>
+                <div class="row">@Model.patient.POSTCODE</div>
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">@Model.epicPatient.Address1</div>
+                <div class="row">@Model.epicPatient.Address2</div>
+                <div class="row">@Model.epicPatient.Address3</div>
+                <div class="row">@Model.epicPatient.Address4</div>                
+                <div class="row">@Model.epicPatient.PostCode</div>
+            </div>           
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("Address")>Accept Address change</button>
+            </div>
+        </div>
+        
+    }
+    
+    @if (Model.patient.GP_Code != Model.epicPatient.GP || Model.patient.GP_Facility_Code != Model.epicPatient.GPPractice)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in GP</h3>
+            </div>
+            
+            <div class="col-md-1">
+                <b>CGU record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">GP Code: @Model.patient.GP_Code</div>
+                <div class="row">Facility Code: @Model.patient.GP_Facility_Code</div>
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row"> GP Code: @Model.epicPatient.GP</div>
+                <div class="row">Facility Code: @Model.epicPatient.GPPractice</div>
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("GP")>Accept GP change</button>
+            </div>
+        </div>
+    }
+
+    @if(Model.patient.TEL != Model.epicPatient.PhoneHome || Model.patient.WORKTEL != Model.epicPatient.PhoneWork || Model.patient.PtTelMobile != Model.epicPatient.PhoneMobile)
+    {
+        <div class="row mb-2 g-2">
+            <div class="col-md-1"></div>
+            <div class="col-md-2">
+                <h3>Change in contact number(s)</h3>
+            </div>
+            <div class="col-md-1">
+                <b>CGU record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">@Model.patient.TEL</div>
+                <div class="row">@Model.patient.WORKTEL</div>
+                <div class="row">@Model.patient.PtTelMobile</div>
+            </div>
+            <div class="col-md-1">
+                <b>Epic record:</b>
+            </div>
+            <div class="col-md-2">
+                <div class="row">@Model.epicPatient.PhoneHome</div>
+                <div class="row">@Model.epicPatient.PhoneWork</div>
+                <div class="row">@Model.epicPatient.PhoneMobile</div>
+            </div>
+            <div class="col-md-2">
+                <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("ContactNumbers")>Accept contact number change</button>
+            </div>
+        </div>
+    }
+
+    <div class="row mb-2 g-2">
+        <form id="frmSubmit" asp-action="EpicPatientChanges">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-primary" onclick=DoSubmit("All")>Accept all changes</button>
+            </div>
+            <div class="col-md-2">
+                <input name="mpi" asp-for=@Model.patient.MPI hidden />
+                <input name="epicID" asp-for=@Model.epicPatient.ExternalPatientID hidden />
+                <input id="txtType" name="changeType", value="All" hidden />
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
+<script>
+
+    function DoSubmit(type)
+    {
+        document.getElementById("txtType").value=type;
+        document.getElementById("frmSubmit").submit();
+    }
+
+</script>

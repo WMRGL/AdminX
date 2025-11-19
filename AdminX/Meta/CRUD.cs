@@ -45,7 +45,11 @@ namespace AdminX.Meta
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo);
 
-        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
+        public Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
+
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate);
+
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType);
     }
 
 
@@ -429,7 +433,7 @@ namespace AdminX.Meta
             conn.Close();
         }
 
-        public int PatientAssignCGUNumber(int mpi, string cguno, string sLogin)
+        public async Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin)
         {
             int success = 0;
 
@@ -450,6 +454,57 @@ namespace AdminX.Meta
             conn.Close();
             success = iReturnValue;
             return success;
+        }
+
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate)
+        {
+            int success = 0;
+            if(refBy == null) { refBy = ""; }
+            if (refTo == null) { refTo = ""; }
+            if (speciality == null) { speciality = ""; }
+            if (createdDate == null || createdDate == DateTime.Parse("0001-01-01")) { createdDate = DateTime.Parse("1900-01-01"); }
+            if (referralDate == null || referralDate == DateTime.Parse("0001-01-01")) { referralDate = DateTime.Parse("1900-01-01"); }
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_DownstreamRefStagingTableInsert", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
+            cmd.Parameters.Add("@PatientID", SqlDbType.VarChar).Value = epicPatID;
+            cmd.Parameters.Add("@ReferralID", SqlDbType.Int).Value = epicRefID;
+            cmd.Parameters.Add("@ReferralDate", SqlDbType.DateTime).Value = referralDate;
+            cmd.Parameters.Add("@ReferredBy", SqlDbType.VarChar).Value = refBy;
+            cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
+            cmd.Parameters.Add("@CreatedDate", SqlDbType.DateTime).Value = createdDate;
+            cmd.Parameters.Add("@Speciality", SqlDbType.VarChar).Value = speciality;
+            cmd.ExecuteNonQuery();            
+            conn.Close();
+
+            success = 1;
+
+            return success;
+        }
+
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType)
+        {
+            int success = 0;
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXAcceptEpicChange", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@mpi", SqlDbType.Int).Value = mpi;
+            cmd.Parameters.Add("@epicID", SqlDbType.VarChar).Value = epicID;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = itemType;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+            success = iReturnValue;
+            
+            return success;           
         }
     }
 }

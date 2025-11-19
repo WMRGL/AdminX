@@ -66,82 +66,97 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult ReferralDetails(int refID)
         {
-            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rvm.staffMember.STAFF_CODE;
-
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
-            _rvm.pathways = new List<string> { "Cancer", "General" };
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);            
-            _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
-            ICP icp = _triageData.GetICPDetailsByRefID(refID);
-            _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
-                      
-
-            if (_rvm.referral.ClockStartDate != null)
+            try
             {
-                if (_rvm.referral.ClockStopDate != null)
-                {
-                    _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
-                }
-                else
-                {
-                    _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
-                }
-                _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
-            }
+                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rvm.staffMember.STAFF_CODE;
+
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
+                _rvm.pathways = new List<string> { "Cancer", "General" };
+                _rvm.referral = _referralData.GetReferralDetails(refID);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
+                ICP icp = _triageData.GetICPDetailsByRefID(refID);
+                _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
 
 
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                if (_rvm.referral.ClockStartDate != null)
+                {
+                    if (_rvm.referral.ClockStopDate != null)
+                    {
+                        _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    }
+                    else
+                    {
+                        _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    }
+                    _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
+                }
+
+
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
 
                 new BreadcrumbItem { Text = "Referral" }
             };
 
-            return View(_rvm);
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ReferralDetails" });
+            }
         }
 
 
         [HttpGet]
         public IActionResult UpdateReferralDetails(int refID)
         {
-            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
-
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-            _rvm.activities = _activityTypeData.GetReferralTypes();
-            _rvm.consultants = _staffUserData.GetConsultantsList();
-            _rvm.gcs = _staffUserData.GetGCList();
-            _rvm.admin = _staffUserData.GetAdminList();
-            _rvm.admin_status = _adminStatusData.GetStatusAdmin();
-            _rvm.referrers = _externalClinicianData.GetClinicianList();
-            _rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
-            _rvm.diseases = _diseaseData.GetDiseases();
-            _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-            _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
-            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
-            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
-
-            if (_rvm.referral.ClockStartDate != null)
+            try
             {
-                if (_rvm.referral.ClockStopDate != null)
+                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rvm.staffMember.STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
+
+                _rvm.referral = _referralData.GetReferralDetails(refID);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.activities = _activityTypeData.GetReferralTypes();
+                _rvm.consultants = _staffUserData.GetConsultantsList();
+                _rvm.gcs = _staffUserData.GetGCList();
+                _rvm.admin = _staffUserData.GetAdminList();
+                _rvm.admin_status = _adminStatusData.GetStatusAdmin();
+                _rvm.referrers = _externalClinicianData.GetClinicianList();
+                _rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
+                _rvm.diseases = _diseaseData.GetDiseases();
+                _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
+                _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+                _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+
+                if(_rvm.patient.PtAreaCode == null)
                 {
-                    _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    return RedirectToAction("PatientDetails", "Patient", new { id=_rvm.patient.MPI, message="You need to assign an area code before processing the referral.", success=false });
                 }
-                else
+
+                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+
+                if (_rvm.referral.ClockStartDate != null)
                 {
-                    _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    if (_rvm.referral.ClockStopDate != null)
+                    {
+                        _rvm.clockAgeDays = (_rvm.referral.ClockStopDate.GetValueOrDefault() - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    }
+                    else
+                    {
+                        _rvm.clockAgeDays = (DateTime.Now - _rvm.referral.ClockStartDate.GetValueOrDefault()).Days;
+                    }
+                    _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
                 }
-                _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
-            }
 
 
-            ViewBag.Breadcrumbs = new List<BreadcrumbItem>
+                ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
                 new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
                 new BreadcrumbItem
@@ -157,7 +172,12 @@ namespace AdminX.Controllers
                 new BreadcrumbItem { Text = "Update" }
             };
 
-            return View(_rvm);
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "UpdateReferralDetails" });
+            }
         }
 
         [HttpPost]
@@ -166,119 +186,132 @@ namespace AdminX.Controllers
              string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
              int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic)
         {
-            
-            string login = User.Identity?.Name ?? "Unknown";
-
-            if (PATHWAY.Trim() == "Cancer")
+            try
             {
-                int success = _CRUD.ReferralDetail(
-                     sType: "Referral",
-                     sOperation: "Update",
-                     sLogin: login,
-                     int1: refid,
-                     string1: RefType,
-                     string2: INDICATION,
-                     text: REASON_FOR_REFERRAL,
-                     string3: PATHWAY,
-                     string4: UBRN,
-                     string5: Pathway_Subset,
-                     string6: PATIENT_TYPE_CODE,
-                     string7: GC_CODE,
-                     string8: AdminContact,
-                     string9: ReferrerCode,
-                     string10: PREGNANCY,
-                     string11: RefClass,
-                     string12: COMPLETE,
-                     dDate1: ClockStartDate,
-                     dDate2: ClockStopDate,
-                     string13: Status_Admin,
-                     string14: RefReasonCode,
-                     int2: RefFHF,
-                     int3: RefReasonAff,
-                     int4: OthReason1Aff,
-                     int5: OthReason2Aff,
-                     int6: OthReason3Aff,
-                     int7: OthReason4Aff,
-                     int8: symptomatic,
-                     string15: OthReason1,
-                     string16: OthReason2,
-                     string17: OthReason3,
-                     string18: OthReason4
-                     
+                string login = User.Identity?.Name ?? "Unknown";
 
-                 );
-                if (success != 1)
+                if (PATHWAY.Trim() == "Cancer")
                 {
-                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                    int success = _CRUD.ReferralDetail(
+                         sType: "Referral",
+                         sOperation: "Update",
+                         sLogin: login,
+                         int1: refid,
+                         string1: RefType,
+                         string2: INDICATION,
+                         text: REASON_FOR_REFERRAL,
+                         string3: PATHWAY,
+                         string4: UBRN,
+                         string5: Pathway_Subset,
+                         string6: PATIENT_TYPE_CODE,
+                         string7: GC_CODE,
+                         string8: AdminContact,
+                         string9: ReferrerCode,
+                         string10: PREGNANCY,
+                         string11: RefClass,
+                         string12: COMPLETE,
+                         dDate1: ClockStartDate,
+                         dDate2: ClockStopDate,
+                         string13: Status_Admin,
+                         string14: RefReasonCode,
+                         int2: RefFHF,
+                         int3: RefReasonAff,
+                         int4: OthReason1Aff,
+                         int5: OthReason2Aff,
+                         int6: OthReason3Aff,
+                         int7: OthReason4Aff,
+                         int8: symptomatic,
+                         string15: OthReason1,
+                         string16: OthReason2,
+                         string17: OthReason3,
+                         string18: OthReason4
+
+
+                     );
+                    if (success != 1)
+                    {
+                        return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                    }
                 }
+                else
+                {
+                    int success = _CRUD.ReferralDetail(
+                        sType: "Referral",
+                        sOperation: "Update",
+                        sLogin: login,
+                        int1: refid,
+                        int2: null,
+                        int3: null,
+                        int4: null,
+                        int5: null,
+                        int6: null,
+                        int7: null,
+                        int8: null,
+                        string1: RefType,
+                        string2: INDICATION,
+                        text: REASON_FOR_REFERRAL,
+                        string3: PATHWAY,
+                        string4: UBRN,
+                        string5: Pathway_Subset,
+                        string6: PATIENT_TYPE_CODE,
+                        string7: GC_CODE,
+                        string8: AdminContact,
+                        string9: ReferrerCode,
+                        string10: PREGNANCY,
+                        string11: RefClass,
+                        string12: COMPLETE,
+                        dDate1: ClockStartDate,
+                        dDate2: ClockStopDate,
+                        string13: Status_Admin
+
+                    );
+                    if (success != 1)
+                    {
+                        return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                    }
+                }
+                return RedirectToAction("ReferralDetails", new { refID = refid });
             }
-            else
+            catch (Exception ex)
             {
-                int success = _CRUD.ReferralDetail(
-                    sType: "Referral",
-                    sOperation: "Update",
-                    sLogin: login,
-                    int1: refid,
-                    int2: null,
-                    int3: null,
-                    int4: null,
-                    int5: null,
-                    int6: null,
-                    int7: null,
-                    int8: null,
-                    string1: RefType,
-                    string2: INDICATION,
-                    text: REASON_FOR_REFERRAL,
-                    string3: PATHWAY,
-                    string4: UBRN,
-                    string5: Pathway_Subset,
-                    string6: PATIENT_TYPE_CODE,
-                    string7: GC_CODE,
-                    string8: AdminContact,
-                    string9: ReferrerCode,
-                    string10: PREGNANCY,
-                    string11: RefClass,
-                    string12: COMPLETE,
-                    dDate1: ClockStartDate,
-                    dDate2: ClockStopDate,
-                    string13: Status_Admin
-
-                );
-                if (success != 1)
-                {
-                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
-                }
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "UpdateReferralDetails" });
             }
-            return RedirectToAction("ReferralDetails", new { refID = refid });
         }
 
 
         [HttpGet]
         public IActionResult AddNew(int mpi)
         {
-            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Referral", "", _ip.GetIPAddress());
+            try
+            {
+                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rvm.staffMember.STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Referral", "", _ip.GetIPAddress());
 
-            _rvm.patient = _patientData.GetPatientDetails(mpi);
-            _rvm.activities = _activityTypeData.GetReferralTypes();
-            _rvm.consultants = _staffUserData.GetConsultantsList();
-            _rvm.gcs = _staffUserData.GetGCList();
-            _rvm.admin = _staffUserData.GetAdminList();
-            _rvm.referrals = _activityData.GetActiveReferralList(mpi);
-            _rvm.referrers = _externalClinicianData.GetClinicianList();
-            _rvm.referrers.Add(_externalClinicianData.GetPatientGPReferrer(mpi));
-            _rvm.pathways = new List<string> { "Cancer", "General" };
-            _rvm.admin_status = _adminStatusData.GetStatusAdmin();
-            _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
-            _rvm.subPathways = _pathwayData.GetSubPathwayList();
-            _rvm.priorityList = _priorityData.GetPriorityList();
-            _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
-            _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
-            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.patient = _patientData.GetPatientDetails(mpi);
+                _rvm.activities = _activityTypeData.GetReferralTypes();
+                _rvm.consultants = _staffUserData.GetConsultantsList();
+                _rvm.gcs = _staffUserData.GetGCList();
+                _rvm.admin = _staffUserData.GetAdminList();
+                _rvm.referrals = _activityData.GetActiveReferralList(mpi);
+                _rvm.referrers = _externalClinicianData.GetClinicianList();
+                _rvm.referrers.Add(_externalClinicianData.GetPatientGPReferrer(mpi));
+                _rvm.pathways = new List<string> { "Cancer", "General" };
+                _rvm.admin_status = _adminStatusData.GetStatusAdmin();
+                _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+                _rvm.subPathways = _pathwayData.GetSubPathwayList();
+                _rvm.priorityList = _priorityData.GetPriorityList();
+                _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
+                _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
-            return View(_rvm);
+                return View(_rvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddReferral" });
+            }
         }
 
 
@@ -287,18 +320,66 @@ namespace AdminX.Controllers
             string indication, string consultant, string gc, string admin, string UBRN, string clinClass, string pregnancy, string? refReason, string? refReason1, 
             string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff, int? OthReason2Aff, int? OthReason3Aff, 
             int? OthReason4Aff, string? comments, int? symptomatic, int? RefFHF, string? Status_Admin)
-        {            
-            int success = _CRUD.ReferralDetail("Referral", "Create", User.Identity.Name, mpi, RefFHF,refReasonAff, OthReason1Aff, 
-                OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic, refType, indication, comments, refPathway, UBRN, subPathway, 
-                consultant, gc, admin, refPhys, pregnancy, clinClass, "Active", refDate, null, Status_Admin, refReason, refReason1, 
-                refReason2, refReason3, refReason4, false, false);
+        {
+            try
+            {
+                int success = _CRUD.ReferralDetail("Referral", "Create", User.Identity.Name, mpi, RefFHF, refReasonAff, OthReason1Aff,
+                    OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic, refType, indication, comments, refPathway, UBRN, subPathway,
+                    consultant, gc, admin, refPhys, pregnancy, clinClass, "Active", refDate, null, Status_Admin, refReason, refReason1,
+                    refReason2, refReason3, refReason4, false, false);
+
+                if (success != 1)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                }
+
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AddReferral" });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ProcessNewReferral(int refID)
+        {
+            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _rvm.staffMember.STAFF_CODE;
+            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Process Epic Referral", "", _ip.GetIPAddress());
+
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+            _rvm.pathways = new List<string>();// { "Cancer", "General   " };
+            List<Pathway> pathwayList = _pathwayData.GetPathwayList();
+            foreach(var p in pathwayList)
+            {
+                _rvm.pathways.Add(p.CGU_Pathway);
+            }
+
+            _rvm.consultants = _staffUserData.GetConsultantsList();
+            _rvm.gcs = _staffUserData.GetGCList();
+            _rvm.admin = _staffUserData.GetAdminList();
+
+            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+
+            return View(_rvm);
+        }
+
+        [HttpPost]
+        public IActionResult ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
+        {
+            _rvm.referral = _referralData.GetReferralDetails(refID);
+            
+            int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
 
             if (success != 1)
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
+                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
             }
-            TempData["SuccessMessage"] = "Referral created successfully.";
-            return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message= "Referral created successfully", success=true });
+
+            return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
         }
     }
 }

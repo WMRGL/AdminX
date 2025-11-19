@@ -26,7 +26,8 @@ namespace AdminX.Controllers
         private readonly IAuditService _audit;
         private readonly IOutcomeData _outcomeData;
         private readonly IClinicVenueData _venueData;
-        private readonly IActivityTypeData _activityTypeData;
+        private readonly IActivityTypeData _activityTypeData;        
+        private readonly IPAddressFinder _ip;
 
         public ClinicController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
         {
@@ -44,6 +45,7 @@ namespace AdminX.Controllers
             _outcomeData = new OutcomeData(_clinContext);
             _activityTypeData = new ActivityTypeData(_clinContext);
             _venueData = new ClinicVenueData(_clinContext);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
 
@@ -60,7 +62,7 @@ namespace AdminX.Controllers
                 else
                 {
                     string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                    IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                    //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinics", "", _ip.GetIPAddress());
 
                     _cvm.staffMembers = _staffUser.GetClinicalStaffList();
@@ -138,7 +140,7 @@ namespace AdminX.Controllers
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Clinic Details", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.Clinic = _clinicData.GetClinicDetails(id);
@@ -178,7 +180,7 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Clinic", "RefID=" + id.ToString());
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
 
                 _cvm.staffMembers = _staffUser.GetClinicalStaffList();
                 _cvm.activityItems = _activityData.GetClinicDetailsList(id);

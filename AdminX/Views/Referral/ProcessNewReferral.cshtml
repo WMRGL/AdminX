@@ -1,0 +1,193 @@
+﻿@model AdminX.ViewModels.ReferralVM
+@{
+    ViewData["Title"] = "Admin-X - Process New Referral";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPatientDetails" }),        
+    };
+}
+
+<div class="container">
+    <h1>Process New Referral for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
+
+    <div class="row mb-5 g-5">
+        <div class="col-md-1">
+            <label>Address:</label>
+        </div>
+        <div class="col-md-4">
+            @Model.patient.ADDRESS1<br />
+            @Model.patient.ADDRESS2<br />
+            @Model.patient.ADDRESS3<br />
+            @Model.patient.ADDRESS4<br />
+            @Model.patient.POSTCODE<br />            
+        </div>
+        <div class="col-md-1">
+            Indication:
+        </div>
+        <div class="col-md-4">
+            @Model.referral.INDICATION
+        </div>
+
+    </div>
+
+
+    <form id="frmProcessReferral" asp-action="ProcessNewReferral">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Referral Pathway</label>
+            </div>
+            <div class="col-md-4">
+                <select name="pathway" id="ddlPathways">
+                    <option value=""></option>
+                    @foreach(var item in Model.pathways)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <h3 id="manualChoiceCaption" hidden>Manual selection required</h3>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Consultant</label>
+            </div>
+            <div class="col-md-2">
+                <select name="consultant" id="ddlConsultants">
+                    <option value=""></option>
+                    @foreach (var item in Model.consultants)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>GC</label>
+            </div>
+            <div class="col-md-2">
+                <select name="gc" id="ddlGCs">
+                    <option value=""></option>
+                    @foreach (var item in Model.gcs)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Admin Contact</label>
+            </div>
+            <div class="col-md-2">
+                <select name="admin" id="ddlAdmin">
+                    <option value=""></option>
+                    @foreach (var item in Model.admin)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+
+        </div>
+
+        <div class="row mb-5 g-5">
+            <input name="refID" asp-for=@Model.referral.refid hidden />
+            <div class="col-md-2">
+                <button type="button" id="btnSubmit" class="btn btn-primary">Confirm Referral</button>
+            </div>
+        </div>
+    </form>
+
+
+</div>
+
+<script>
+
+    document.getElementById("ddlPathways").addEventListener("change", SetPathway);
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+
+    function SetPathway()
+    {
+        var pw = document.getElementById("ddlPathways");
+        var consList = document.getElementById("ddlConsultants");
+        var gcsList = document.getElementById("ddlGCs");
+        var adminList = document.getElementById("ddlAdmin");        
+        var refCons;
+        var refGC;
+        var refAdmin;
+        
+        
+
+        if(pw.value.includes("Cancer"))
+        {
+            refCons = "@Model.areaName.ConsCode";
+            refGC = "@Model.areaName.GC";
+            refAdmin = "@Model.areaName.FHCStaffCode";
+
+            if(refCons != null && refCons != "" && refCons != "Admin")
+            {
+                consList.value = refCons;
+            }
+
+            if(refGC != null && refGC != "" && refGC != "Admin")
+            {
+                gcsList.value = refGC;
+            }
+
+            if(refAdmin != null && refAdmin != "" && refAdmin != "Admin")
+            {
+                adminList.value = refAdmin;
+            }
+            document.getElementById("manualChoiceCaption").hidden = true;
+        }
+        else
+        {
+            consList.value = "";
+            gcsList.value = "";
+            adminList.value = "";
+            document.getElementById("manualChoiceCaption").hidden = false;
+        }
+    }
+
+    function DoSubmit()
+    {
+        if (CheckFormValid() == 1)
+        {
+            document.getElementById("frmProcessReferral").submit();
+        }
+    }
+
+     function CheckFormValid() { //validation to ensure all required data is entered
+
+        if (document.getElementById("ddlPathways").value == null || document.getElementById("ddlPathways").value == "")
+        {
+            window.alert("Please choose a pathway.");
+            return 0;
+        }
+
+        if (document.getElementById("ddlConsultants").value == null || document.getElementById("ddlConsultants").value == "")
+        {
+            window.alert("Please choose a consultant.");
+            return 0;
+        }
+
+        if (document.getElementById("ddlGCs").value == null || document.getElementById("ddlGCs").value == "")
+        {
+            window.alert("Please choose a GC.");
+            return 0;
+        }
+
+        if (document.getElementById("ddlAdmin").value == null || document.getElementById("ddlAdmin").value == "")
+        {
+            window.alert("Please choose an admin contact.");
+            return 0;
+        }
+
+        return 1;
+    }
+
+
+</script>

@@ -25,7 +25,8 @@ namespace AdminX.Controllers
         private readonly SysAdminVM _savm;
         private readonly IAuditService _audit;
         private readonly IConstantsData _constants;
-        private readonly ICRUD _crud;        
+        private readonly ICRUD _crud;
+        private readonly IPAddressFinder _ip;
 
         public SysAdminController(ClinicalContext context, DocumentContext docContext, AdminContext adminContext, IConfiguration config)
         {
@@ -42,7 +43,8 @@ namespace AdminX.Controllers
             _savm = new SysAdminVM();            
             _audit = new AuditService(_config);
             _constants = new ConstantsData(_docContext);
-            _crud = new CRUD(_config);            
+            _crud = new CRUD(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [HttpGet]
@@ -63,7 +65,7 @@ namespace AdminX.Controllers
                         _savm.isEditStaff = true;
                     }
 
-                    IPAddressFinder _ip = new IPAddressFinder(HttpContext); //this is necessary to do here, because there's simply no way to have the DLL find it!
+                    //IPAddressFinder _ip = new IPAddressFinder(HttpContext); //this is necessary to do here, because there's simply no way to have the DLL find it!
                     _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin", "", _ip.GetIPAddress());
 
                     return View(_savm);
@@ -82,7 +84,7 @@ namespace AdminX.Controllers
             try
             {                
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
                 _savm.staffMembers = _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
@@ -113,7 +115,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
                 _savm.staffMembers = _staffData.GetStaffMemberListAll().Where(s => s.BILL_ID != "Exclude").ToList();
                 _savm.teams = new List<string>();
@@ -176,7 +178,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
                 _savm.staffMember = _staffData.GetStaffMemberDetailsByStaffCode(staffCode);                
                 _savm.staffMembers = _staffData.GetStaffMemberListAll();
@@ -210,7 +212,7 @@ namespace AdminX.Controllers
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("StaffMember", "Edit", 0, 0, 0, staffCode, title, firstname, lastname, User.Identity.Name, startDate, endDate,
                 isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type);
@@ -226,7 +228,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
                 _savm.staffMembers = _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
@@ -258,7 +260,7 @@ namespace AdminX.Controllers
             string type, DateTime startDate, string email, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator = false)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("StaffMember", "Create", 0, 0, 0, loginName, title, firstname, lastname, User.Identity.Name, startDate, null,
                 isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type, gmcNumber, email);
@@ -278,7 +280,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians", "", _ip.GetIPAddress());
                 _savm.clinicians = new List<ExternalClinician>(); //because it can't load that many
 
                 _savm.message = message;
@@ -298,7 +300,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians", "", _ip.GetIPAddress());
 
                 _savm.clinicians = new List<ExternalClinician>(); 
 
@@ -348,7 +350,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
                 _savm.clinician = _clinicianData.GetClinicianDetails(clinCode);
                 _savm.titles = _titleData.GetTitlesList();
@@ -383,7 +385,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
                 _savm.titles = _titleData.GetTitlesList();
                 _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
@@ -400,7 +402,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
             string clinCode = lastName + firstName.Substring(0, 1);
             
@@ -434,7 +436,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities", "", _ip.GetIPAddress());
 
                 _savm.facilities = new List<ExternalFacility>(); //because it can't load that many
 
@@ -455,7 +457,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities", "", _ip.GetIPAddress());
                 _savm.facilities = new List<ExternalFacility>();
 
                 if (nameSearch != null)
@@ -506,7 +508,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details", "", _ip.GetIPAddress());
 
                 _savm.facility = _facilityData.GetFacilityDetails(facCode);
 
@@ -523,7 +525,7 @@ namespace AdminX.Controllers
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, city, state, zip);
@@ -539,7 +541,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility", "", _ip.GetIPAddress());
 
 
 
@@ -555,7 +557,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNewFacility(string facCode, string name, string address, string district, string city, string state, string postCode, int nonActive, int isGP)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Facility", "Create", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, city, state, postCode);
@@ -572,7 +574,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues", "", _ip.GetIPAddress());
 
                 _savm.venues = _venueData.GetVenueList();
 
@@ -593,7 +595,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues", "", _ip.GetIPAddress());
 
                 if (nameSearch != null)
                 {
@@ -620,7 +622,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details", "", _ip.GetIPAddress());
 
                 _savm.venue = _venueData.GetVenueDetails(clinCode);
 
@@ -644,7 +646,7 @@ namespace AdminX.Controllers
         {
 
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Venue", "Edit", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, locationCode, "", "");
@@ -660,7 +662,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
 
 
 
@@ -676,7 +678,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, locationCode, "", "");
@@ -693,7 +695,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details", "", _ip.GetIPAddress());
 
                 _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
 
@@ -714,7 +716,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details", "", _ip.GetIPAddress());
 
                 _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
 
@@ -737,7 +739,7 @@ namespace AdminX.Controllers
         {
             _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
             
             _savm.venues = _venueData.GetVenueList();
             _savm.staffMembers = _staffData.GetStaffMemberListByRole("Admin");
@@ -751,7 +753,7 @@ namespace AdminX.Controllers
         {
             _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Edit Clinic Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Edit Clinic Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Edit", 0, 0, 0, clinCode, addressee, salutation, preAmble, User.Identity.Name, null, null, callToBook, includeSPR,
                 showDate, showLocalRef, 0, 0, postLude, position, telephone, address, town, county, postCode, secretary);
@@ -767,7 +769,7 @@ namespace AdminX.Controllers
             try
             {
                 string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
                 if(clinCodeToCreate != null) { _savm.clinCodeToCreate = clinCodeToCreate; }
 
@@ -787,7 +789,7 @@ namespace AdminX.Controllers
             string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, bool? showLocalRef = false)
         {
             string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details");
+            _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
             int iShowLocalRef = 0;
             if(showLocalRef.GetValueOrDefault()) { iShowLocalRef = 1; }
@@ -798,8 +800,6 @@ namespace AdminX.Controllers
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "ClinicSetup-add(SQL)" }); }
 
             return RedirectToAction("CliniciansClinics", new { message = "New clinic details added.", success = true });
-
         }
-
     }
 }

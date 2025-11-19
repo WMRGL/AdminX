@@ -48,14 +48,13 @@
                 </div>
             </div>
         }
-
     }
     else
     {
         <a id="btnPhenotips" class="btn btn-default btn-primary mb-1" asp-controller="Phenotips" asp-action="Confirm" asp-route-mpi=@Model.patient.MPI>Push patient to Phenotips</a>
     }
-
 }
+
 
 
 @if (Model.message != null)
@@ -84,6 +83,55 @@
                     </div>
                 </div>
             }
+        </div>
+    </div>
+}
+
+@if(Model.messages.Count > 0)
+{
+    @foreach(var m in Model.messages)    
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-icon">
+                <i class="far fa-fw fa-bell"></i>
+            </div>
+            <div class="alert-message">
+                <h3>@m</h3>
+            </div>
+        </div>
+    }
+}
+
+@if (Model.incompleteReferrals.Count > 0)
+{
+    foreach (var r in Model.incompleteReferrals)
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-icon">
+                <i class="far fa-fw fa-bell"></i>
+            </div>
+            <div class="alert-message">
+                <h3>There is a new referral awaiting processing:</h3>
+                <a type="button" class="btn btn-outline-primary" asp-controller="Referral" asp-action="ProcessNewReferral" asp-route-refID=@r.refid>Process Referral</a>
+            </div>
+        </div>
+    }
+}
+
+
+@if(Model.isEpicChanged)
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>There have been changes in Epic.</h3> 
+                    <a type="button" class="btn btn-outline-dark" asp-controller="Patient" asp-action="EpicPatientChanges" asp-route-id=@Model.patient.MPI>See Epic Changes</a>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -122,7 +170,6 @@
 }
 
 
-
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -131,7 +178,7 @@
                 {
                     <a asp-action="PatientDetails" asp-route-id=@Model.previousPatient.MPI>
                         <h4>
-                            <i class="fa-solid fa-arrow-right fa-2xl ml-"></i>
+                            <i class="fa-solid fa-arrow-left fa-2xl ml-"></i>
                           &nbsp;  @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
                         </h4>
                     </a>
@@ -139,20 +186,27 @@
             </div>
             <div class="col-md-8">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-8"></div>
+                    @if(Model.patient.CGU_No == ".")
+                    {
+                        <div class="col-md-4">
+                            <a type="button" class="btn btn-primary" asp-controller="NewEpicPatient" asp-action="EpicPatientSearch" asp-route-id=@Model.patient.MPI>Assign CGU Number to Patient</a>
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
                         <h1 class="text-center">
-                            @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null){
-                            <span>"</span>
-                            @Model.patient.PtAKA
-                            <span>"</span>
-                                                        }
+                            @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null)
+                            {
+                                <span>"</span>@Model.patient.PtAKA<span>"</span>
+                            }
                             @Model.patient.LASTNAME
                         </h1>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         @if (Model.patientsList.Count() > 1)
                         {
-
                             <form asp-action="JumpToPatient" class="row row-cols-md-auto align-items-center text-center">
                                 <div class="col-12">
                                     <select name="id" class="form-control">
@@ -185,16 +239,12 @@
                 }
             </div>
         </div>
-
-
     </div>
 </div>
 
 
 <div class="row">
-
     <div class="col-md-3 col-xl-2">
-
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title mb-0"> Patient Details</h5>
@@ -1223,7 +1273,7 @@
                                             <td>Pathway</td>
                                             <td>Consultant</td>
                                             <td>GC</td>
-                                            <td>Refferal Status</td>
+                                            <td>Referral Status</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1287,7 +1337,7 @@
                                             <td>Pathway</td>
                                             <td>Consultant</td>
                                             <td>GC</td>
-                                            <td>Refferal Status</td>
+                                            <td>Referral Status</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1441,7 +1491,7 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <a asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
+                    <a id="btnImportRelative" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
                     <a asp-controller="Relative" asp-action="AddNew" asp-route-WMFACSID=@Model.patient.WMFACSID id="btnAddNew" class="btn btn-primary">Add New Relative</a>
                 </div>
 
@@ -1475,6 +1525,7 @@
         {
             document.getElementById("btnPhenotips").hidden = true;
             document.getElementById("btnPhenotipsSynch").hidden = true;
+            document.getElementById("btnImportRelative").hidden = true;
         }
     }
 

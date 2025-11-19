@@ -14,7 +14,8 @@ namespace AdminX.Controllers
         private readonly IConfiguration _config;
         private readonly IStaffUserData _staffUser;
         private readonly ICaseloadData _caseloadData;
-        private IAuditService _audit;
+        private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
 
         public OtherCaseloadController(ClinicalContext context, IConfiguration config)
         {
@@ -24,6 +25,7 @@ namespace AdminX.Controllers
             _staffUser = new StaffUserData(_clinContext);
             _caseloadData = new CaseloadData(_clinContext);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
@@ -33,7 +35,7 @@ namespace AdminX.Controllers
             {
                 string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.caseLoad = new List<Caseload>();
@@ -42,7 +44,6 @@ namespace AdminX.Controllers
                     _cvm.staffCode = staffCode;
                     _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
                 }
-
                 
                 _cvm.clinicians = _staffUser.GetClinicalStaffList();
                 if (_cvm.caseLoad.Count() > 0)

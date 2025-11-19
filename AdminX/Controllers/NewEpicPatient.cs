@@ -21,6 +21,8 @@ namespace AdminX.Controllers
         IConfiguration _configuration;
         ICRUD _crud;
         NewEpicPatientVM _epvm;
+        IPAddressFinder _ip;
+        IAuditService _audit;
 
         public NewEpicPatient(ClinicalContext context, AdminContext adminContext, IConfiguration configuration)
         {
@@ -34,57 +36,87 @@ namespace AdminX.Controllers
             _staffUserData = new StaffUserData(_context);
             _pedigreeData = new PedigreeData(_context);
             _patientSearchData = new PatientSearchData(_context);
+            _audit = new AuditService(_configuration);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         public IActionResult Index()
         {
-            _epvm.patientList = _patientData.GetPatientsWithoutCGUNumbers();
+            try
+            {
+                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patients", "", _ip.GetIPAddress());
+                _epvm.patientList = _patientData.GetPatientsWithoutCGUNumbers();
 
-            return View(_epvm);
+                return View(_epvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "NewEpicPatients" });
+            }
         }
 
         [HttpGet]
         public IActionResult EpicPatientSearch(int id)
         {
-            _epvm.patient = _patientData.GetPatientDetails(id);            
-            string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+            try
+            { 
+                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patient Search", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-            _crud.NewPatientSearch(_epvm.patient.FIRSTNAME, _epvm.patient.LASTNAME, _epvm.patient.DOB.GetValueOrDefault(), _epvm.patient.POSTCODE, _epvm.patient.SOCIAL_SECURITY, staffCode);
+                _epvm.patient = _patientData.GetPatientDetails(id);
 
-            int searchID = _searchData.GetPatientSearchID(staffCode);
+                _crud.NewPatientSearch(_epvm.patient.FIRSTNAME, _epvm.patient.LASTNAME, _epvm.patient.DOB.GetValueOrDefault(), _epvm.patient.POSTCODE, _epvm.patient.SOCIAL_SECURITY, staffCode);
 
-            List<PatientSearchResults> searchResults = _searchData.GetPatientSearchResults(searchID);
+                int searchID = _searchData.GetPatientSearchID(staffCode);
 
-            _epvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").Where(p => p.MPI != id).ToList();
-            _epvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
-            _epvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
+                List<PatientSearchResults> searchResults = _searchData.GetPatientSearchResults(searchID);
 
-            return View(_epvm);
+                _epvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").Where(p => p.MPI != id).ToList();
+                _epvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
+                _epvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
+
+                return View(_epvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "NewEpicPatientSearch" });
+            }
         }
 
         
-        public IActionResult AssignCGUNumber(int id, string? fileNumber)
+        public async Task<IActionResult> AssignCGUNumber(int id, string? fileNumber)
         {
-            string cguNumber = "";
-
-            if (fileNumber == null || fileNumber == "")
+            try
             {
-                cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
-            }
-            else
-            {
-                List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
-                int patientNumber = patList.Count();
+                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patient Search", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                string cguNumber = "";
+
+                if (fileNumber == null || fileNumber == "")
                 {
-                    cguNumber = fileNumber + "." + patientNumber.ToString();
+                    cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
                 }
+                else
+                {
+                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
+                    int patientNumber = patList.Count();
+
+                    if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    {
+                        cguNumber = fileNumber + "." + patientNumber.ToString();
+                    }
+                }
+
+                int success = await _crud.PatientAssignCGUNumber(id, cguNumber, User.Identity.Name);
+
+                return RedirectToAction("PatientDetails", "Patient", new { id = id });
             }
-
-            int success = _crud.PatientAssignCGUNumber(id, cguNumber, User.Identity.Name);
-
-            return RedirectToAction("PatientDetails", "Patient", new { id = id });
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "AssignCGUNumber" });
+            }
         }
     }
 }

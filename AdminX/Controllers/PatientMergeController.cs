@@ -32,97 +32,111 @@ namespace AdminX.Controllers
         [HttpGet]
         public async Task<IActionResult> MergePatient(int mpiFrom, int? mpiTo)
         {
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Merge");
-
-            _pvm.patientFrom = _patientData.GetPatientDetails(mpiFrom);
-            if (mpiTo != null)
+            try
             {
-                _pvm.patientTo = _patientData.GetPatientDetails(mpiTo.GetValueOrDefault());
-            }
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Merge");
 
-            return View(_pvm);
+                _pvm.patientFrom = _patientData.GetPatientDetails(mpiFrom);
+                if (mpiTo != null)
+                {
+                    _pvm.patientTo = _patientData.GetPatientDetails(mpiTo.GetValueOrDefault());
+                }
+
+                return View(_pvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MergePatient" });
+            }
         }
 
 
         [HttpPost]
         public async Task<IActionResult> MergePatient(int mpiFrom, int? mpiTo, string? cguNumberToMerge)
         {
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Merge");
-
-            _pvm.patientFrom = _patientData.GetPatientDetails(mpiFrom);
-
-            if (mpiTo != null)
+            try
             {
-                _pvm.patientTo = _patientData.GetPatientDetails(mpiTo.GetValueOrDefault());
+                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Merge");
 
-                bool isSuccess = false;
-                bool isMatch = false;
-                string sMessage = "";
+                _pvm.patientFrom = _patientData.GetPatientDetails(mpiFrom);
 
-                if (_pvm.patientFrom.FIRSTNAME == _pvm.patientTo.FIRSTNAME && _pvm.patientFrom.LASTNAME == _pvm.patientTo.LASTNAME && _pvm.patientFrom.DOB == _pvm.patientTo.DOB
-                    && _pvm.patientFrom.POSTCODE == _pvm.patientTo.POSTCODE && _pvm.patientFrom.SOCIAL_SECURITY == _pvm.patientTo.SOCIAL_SECURITY)
+                if (mpiTo != null)
                 {
-                    /*
-                    List<Alert> alertsForPatientFrom = _alert.GetAlertsList(mpiFrom);
-                    List<Alert> alertsForPatientTo = _alert.GetAlertsList(mpiTo);
+                    _pvm.patientTo = _patientData.GetPatientDetails(mpiTo.GetValueOrDefault());
 
-                    int matchingAlertCount = 0;
+                    bool isSuccess = false;
+                    bool isMatch = false;
+                    string sMessage = "";
 
-                    foreach (var alertFrom in alertsForPatientFrom)
+                    if (_pvm.patientFrom.FIRSTNAME == _pvm.patientTo.FIRSTNAME && _pvm.patientFrom.LASTNAME == _pvm.patientTo.LASTNAME && _pvm.patientFrom.DOB == _pvm.patientTo.DOB
+                        && _pvm.patientFrom.POSTCODE == _pvm.patientTo.POSTCODE && _pvm.patientFrom.SOCIAL_SECURITY == _pvm.patientTo.SOCIAL_SECURITY)
                     {
-                        foreach(var alertTo in alertsForPatientTo)
+                        /*
+                        List<Alert> alertsForPatientFrom = _alert.GetAlertsList(mpiFrom);
+                        List<Alert> alertsForPatientTo = _alert.GetAlertsList(mpiTo);
+
+                        int matchingAlertCount = 0;
+
+                        foreach (var alertFrom in alertsForPatientFrom)
                         {
-                            if(alertFrom.MPI == alertTo.MPI && alertFrom.Comments == alertTo.Comments && alertFrom.EffectiveFromDate == alertTo.EffectiveFromDate)
+                            foreach(var alertTo in alertsForPatientTo)
                             {
-                                matchingAlertCount++;
+                                if(alertFrom.MPI == alertTo.MPI && alertFrom.Comments == alertTo.Comments && alertFrom.EffectiveFromDate == alertTo.EffectiveFromDate)
+                                {
+                                    matchingAlertCount++;
+                                }
                             }
                         }
-                    }
 
-                    if (matchingAlertCount == alertsForPatientFrom.Count && matchingAlertCount == alertsForPatientTo.Count) 
-                    {
-                        isMatch = true;
+                        if (matchingAlertCount == alertsForPatientFrom.Count && matchingAlertCount == alertsForPatientTo.Count) 
+                        {
+                            isMatch = true;
+                        }
+                        else
+                        {
+                            sMessage = "Patients' alerts don't match.";
+                        }*/
+                        if (_pvm.patientFrom.INFECTION_RISK == _pvm.patientTo.INFECTION_RISK && _pvm.patientFrom.ADDITIONAL_NOTES == _pvm.patientTo.ADDITIONAL_NOTES)
+                        {
+                            isMatch = true;
+                        }
+                        else
+                        {
+                            sMessage = "Merge failed: Patients' alert details don't match, please check both and try the merge again.";
+                        }
+
                     }
                     else
                     {
-                        sMessage = "Patients' alerts don't match.";
-                    }*/
-                    if (_pvm.patientFrom.INFECTION_RISK == _pvm.patientTo.INFECTION_RISK && _pvm.patientFrom.ADDITIONAL_NOTES == _pvm.patientTo.ADDITIONAL_NOTES)
-                    {
-                        isMatch = true;
-                    }
-                    else
-                    {
-                        sMessage = "Merge failed: Patients' alert details don't match, please check both and try the merge again.";
+                        sMessage = "Merge failed: Patients' details don't match, please check both and try the merge again.";
                     }
 
+                    if (isMatch)
+                    {
+                        int success = _crud.MergePatient(mpiFrom, mpiTo.GetValueOrDefault(), staffCode);
+
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-PatientMerge(SQL)" }); }
+
+                        sMessage = "Patients have been merged.";
+                        isSuccess = true;
+                    }
+
+
+                    return RedirectToAction("PatientDetails", "Patient", new { id = mpiFrom, message = sMessage, success = isSuccess });
                 }
                 else
                 {
-                    sMessage = "Merge failed: Patients' details don't match, please check both and try the merge again.";
+                    _pvm.patientTo = _patientData.GetPatientDetailsByCGUNo(cguNumberToMerge);
+                    return RedirectToAction("MergePatient", "PatientMerge", new { mpiFrom = mpiFrom, mpiTo = _pvm.patientTo.MPI });
                 }
-
-                if (isMatch)
-                {
-                    int success = _crud.MergePatient(mpiFrom, mpiTo.GetValueOrDefault(), staffCode);
-
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-PatientMerge(SQL)" }); }
-
-                    sMessage = "Patients have been merged.";
-                    isSuccess = true;
-                }
-
-
-                return RedirectToAction("PatientDetails", "Patient", new { id = mpiFrom, message = sMessage, success = isSuccess });
             }
-            else
+            catch (Exception ex)
             {
-                _pvm.patientTo = _patientData.GetPatientDetailsByCGUNo(cguNumberToMerge);
-                return RedirectToAction("MergePatient", "PatientMerge", new { mpiFrom = mpiFrom, mpiTo = _pvm.patientTo.MPI });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MergePatient" });
             }
         }
     }

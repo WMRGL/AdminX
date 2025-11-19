@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AdminX.Models;
+﻿using AdminX.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AdminX.Data
@@ -24,6 +24,8 @@ namespace AdminX.Data
         public DbSet<GenderIdentity> GenderIdentity { get; set; }
         public DbSet<HS> HS { get; set; }
         public DbSet<CliniciansClinics> CliniciansClinics { get; set; }
+        public DbSet<EpicPatientReference> EpicPatientReferences { get; set; }
+        public DbSet<EpicReferralStaging> EpicReferralStaging { get; set; }
 
     }
 }

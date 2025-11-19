@@ -30,47 +30,69 @@ namespace AdminX.Controllers
         [HttpGet]
         public IActionResult Index(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob, bool? isPostback = false)
         {
-           if(isPostback.GetValueOrDefault()) //obviously we can't get the list and send it to the calling form. That would be too easy.
-           {
-                _mhvm.mergeHistory = new List<MergeHistory>();
+            try
+            {
 
-                if (firstName != null || lastName != null || dob != null || nhsNo != null)
+                if (isPostback.GetValueOrDefault()) //obviously we can't get the list and send it to the calling form. That would be too easy.
                 {
-                    Patient patient = new Patient();
-                    patient = _patientData.GetPatientDetailsByDemographicData(firstName, lastName, nhsNo, dob.GetValueOrDefault());
-                    if (patient != null)
+                    _mhvm.mergeHistory = new List<MergeHistory>();
+
+                    if (firstName != null || lastName != null || dob != null || nhsNo != null)
                     {
-                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByMPI(patient.MPI);
+                        Patient patient = new Patient();
+                        patient = _patientData.GetPatientDetailsByDemographicData(firstName, lastName, nhsNo, dob.GetValueOrDefault());
+                        if (patient != null)
+                        {
+                            _mhvm.mergeHistory = _mhData.GetMergeHistoryByMPI(patient.MPI);
+                        }
+                    }
+
+                    if (oldFileNo != null)
+                    {
+                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByOldFileNo(oldFileNo);
+                    }
+
+                    if (newCGUNo != null)
+                    {
+                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByNewFileNo(newCGUNo);
+                    }
+
+                    if (_mhvm.mergeHistory.Count == 0)
+                    {
+                        _mhvm.message = "No merge history found";
                     }
                 }
 
-                if (oldFileNo != null)
-                {
-                    _mhvm.mergeHistory = _mhData.GetMergeHistoryByOldFileNo(oldFileNo);
-                }
-
-                if (newCGUNo != null)
-                {
-                    _mhvm.mergeHistory = _mhData.GetMergeHistoryByNewFileNo(newCGUNo);
-                }
-
-                if (_mhvm.mergeHistory.Count == 0)
-                {
-                    _mhvm.message = "No merge history found";
-                }
+                return View(_mhvm);
             }
-
-            return View(_mhvm);
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MergeHistory" });
+            }
         }
 
         [HttpPost]
         public IActionResult Search(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob)
-        {          
+        {
+            try
+            {
 
 
-
-            return RedirectToAction("Index", new { oldFileNo = oldFileNo, newCGUNo = newCGUNo, nhsNo = nhsNo, 
-                firstName = firstName, lastName = lastName, dob = dob, isPostback = true });
+                return RedirectToAction("Index", new
+                {
+                    oldFileNo = oldFileNo,
+                    newCGUNo = newCGUNo,
+                    nhsNo = nhsNo,
+                    firstName = firstName,
+                    lastName = lastName,
+                    dob = dob,
+                    isPostback = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MergeHistorySearch" });
+            }
         }
     }
 }

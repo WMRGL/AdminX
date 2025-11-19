@@ -26,6 +26,7 @@ namespace AdminX.Controllers
         private readonly IDiaryActionData _diaryActionData;
         private readonly ICRUD _crud;
         private readonly IAuditService _audit;
+        private readonly IPAddressFinder _ip;
 
         public DiaryController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
         {
@@ -43,6 +44,7 @@ namespace AdminX.Controllers
             _diaryActionData = new DiaryActionData(_adminContext);
             _crud = new CRUD(_config);
             _audit = new AuditService(_config);
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [HttpGet]
@@ -57,7 +59,7 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);
@@ -97,7 +99,7 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _dvm.patient = _patientData.GetPatientDetails(mpi);
@@ -176,7 +178,7 @@ namespace AdminX.Controllers
                 }
 
                 string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit DiaryEntry", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
                 _dvm.diary = _diaryData.GetDiaryEntry(id);

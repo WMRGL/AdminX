@@ -50,6 +50,9 @@ namespace AdminX.Controllers
         private readonly IDiaryActionData _diaryActionData;
         private readonly IDocumentsData _docsData;
         private readonly IGenderIdentityData _genderIdentityData;
+        private readonly IReferralStagingData _referralStagingData;
+        private readonly IEpicPatientReferenceData _epicPatientReferenceData;
+        private readonly IPAddressFinder _ip;
 
         public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext,
             APIContext apiContext, IGenderIdentityData genderIdentityData)
@@ -89,6 +92,9 @@ namespace AdminX.Controllers
             _diaryActionData = new DiaryActionData(_adminContext);
             _docsData = new DocumentsData(_documentContext);
             _genderIdentityData = genderIdentityData;
+            _referralStagingData = new ReferralStagingData(_adminContext);
+            _epicPatientReferenceData = new EpicPatientReferenceData(_adminContext);
+            _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
         }
 
         [Authorize]
@@ -99,8 +105,8 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress());
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress()); 
 
                 if (message != null && message != "")
                 {
@@ -109,8 +115,37 @@ namespace AdminX.Controllers
                 }
 
                 _pvm.patient = _patientData.GetPatientDetails(id);
+                _pvm.patientsList = new List<Patient>(); //because null
 
-                _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList();
+                if (_pvm.patient.CGU_No != ".")
+                {
+                    _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
+
+                    if (_pvm.epicPatient != null)
+                    {
+                        _pvm.epicReferralStaging = _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
+
+                        if (_pvm.epicReferralStaging.Count > 0)
+                        {
+                            foreach (var item in _pvm.epicReferralStaging)
+                            {
+                                _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
+                            }
+                        }
+
+
+                        if (_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
+                            _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
+                            (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
+                            _pvm.patient.GP != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
+                            _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile)
+                        {
+                            _pvm.isEpicChanged = true;
+                        }
+                    }
+                
+                    _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
+                }
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -125,7 +160,6 @@ namespace AdminX.Controllers
                         _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
                         _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
                     }
-
                 }
 
                 if (_pvm.patient == null)
@@ -138,6 +172,7 @@ namespace AdminX.Controllers
                     _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
                 }
                 List<Referral> referrals = _referralData.GetReferralsList(id);
+                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
                 _pvm.tempReges = _referralData.GetTempRegList(id);
@@ -155,6 +190,7 @@ namespace AdminX.Controllers
                 _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = _docsData.GetDocumentsList();
+                _pvm.messages = new List<string>();
 
                 if (_pvm.patient.DECEASED == -1)
                 {
@@ -165,43 +201,63 @@ namespace AdminX.Controllers
                     _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
                 }
 
-                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0)
+                if (_pvm.patient.PtAreaCode == null)
                 {
-                    _pvm.message = "There is no activity for this patient, please rectify by adding a referral or temp-reg.";
+                    _pvm.messages.Add("This patient has no area code assigned.");
+                }
+
+                if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0 && _pvm.incompleteReferrals.Count == 0)
+                {                    
+                    _pvm.messages.Add("There is no activity for this patient, please rectify by adding a referral or temp-reg.");
                 }
 
                 string gpPractice = "";
 
-                if (_pvm.patient.GP_Code != null)
+                if (_pvm.patient.GP != null)
                 {
-                    gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                    if (_gpData.GetClinicianDetails(_pvm.patient.GP_Code) != null)
+                    {
+                        gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                    }
                 }
 
                 if(gpPractice == "")
                 {
-                    _pvm.message = "No GP is assigned to this patient.";
+                    _pvm.success = false;
+                    if (_pvm.patient.GP_Code != null)
+                    {                     
+                        _pvm.messages.Add("The assigned GP code does not match a known GP. Please check in System Administration and add if necessary.");
+                    }
+                    else
+                    {                        
+                        _pvm.messages.Add("No GP is assigned to this patient.");
+                    }
                 }
                 else if (gpPractice != _pvm.patient.GP_Facility_Code)
-                {
-                    _pvm.message = "This patient's GP is no longer at this practice. Please check and select a new GP if necessary.";
+                {                 
+                    _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
                 }
 
-                if (_constantsData.GetConstant("PhenotipsURL", 2) == "1") //pings the Phenotips API to see if a PPQ is scheduled
+                
+
+                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
                 {
-                    if (_api.GetPhenotipsPatientID(id).Result != "")
+                    _pvm.isPhenotipsAvailable = true;
+                }
+
+                if (_pvm.isPhenotipsAvailable) 
+                {
+                    //if (_api.GetPhenotipsPatientID(id).Result != "")
+                    if(_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
                     {
                         _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result;
+                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
                         _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
 
                         _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
                         _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
-                    }
-                    if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
-                    {
-                        _pvm.isPhenotipsAvailable = true;
-                    }
+                    }                    
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -304,11 +360,9 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
-                string cguNumber = "";
-                
+                string cguNumber = "";                
 
                 if (fileNumber == null || fileNumber == "")
                 {
@@ -340,8 +394,7 @@ namespace AdminX.Controllers
                 _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = _genderData.GetGenderList();
                 _pvm.genderAtBirth = _genderData.GetGenderList();
-               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
-              
+               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();              
 
                 if (success.HasValue)
                 {
@@ -359,8 +412,6 @@ namespace AdminX.Controllers
                     new BreadcrumbItem
                     {
                         Text = "Patient",
-
-
                     },
 
                     new BreadcrumbItem { Text = "New" }
@@ -395,7 +446,6 @@ namespace AdminX.Controllers
                 {
                     _pvm.success = false;
                     _pvm.message = "Patient already exists";
-
                 }
                 else
                 {
@@ -412,7 +462,6 @@ namespace AdminX.Controllers
                     if (maidenName != null) { maidenName = textInfo.ToTitleCase(maidenName); }
                     if (preferredName != null) { preferredName = textInfo.ToTitleCase(preferredName); }
                     if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
-
 
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
                         lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
@@ -445,7 +494,7 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
@@ -494,9 +543,7 @@ namespace AdminX.Controllers
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno,
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
-                    GenderIdentity
-                    );
-
+                    GenderIdentity);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
@@ -517,14 +564,13 @@ namespace AdminX.Controllers
                 _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 _pvm.patient = _patientData.GetPatientDetails(mpi);
                 _pvm.patientsList = new List<Patient>();
 
                 return View(_pvm);
-
             }
             catch (Exception ex)
             {
@@ -583,7 +629,6 @@ namespace AdminX.Controllers
 
                 if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
                 {
-
                     int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
@@ -609,7 +654,7 @@ namespace AdminX.Controllers
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update", _ip.GetIPAddress());
 
             int success = _crud.CallStoredProcedure("Patient", "MakeElectronic", mpi, 0, 0, "", "", "", "", User.Identity.Name);
 
@@ -645,6 +690,10 @@ namespace AdminX.Controllers
 
         public async Task<IActionResult> PhenotipsPatientRecord(int id, string? message, bool? success)
         {
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Phenotips Record", _ip.GetIPAddress());
+
             _pvm.patient = _patientData.GetPatientDetails(id);
             _pvm.ptPatient = _phenotipsMirrorData.GetPhenotipsPatientByID(id);
             _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
@@ -656,6 +705,30 @@ namespace AdminX.Controllers
             }
 
             return View(_pvm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EpicPatientChanges(int id)
+        {
+            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            string staffCode = _pvm.staffMember.STAFF_CODE;
+            //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Epic Changes", _ip.GetIPAddress());
+
+            _pvm.patient = _patientData.GetPatientDetails(id);
+            _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
+
+            return View(_pvm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EpicPatientChanges(int mpi, string epicID, string changeType)
+        {
+            int success = _crud.EpicAcceptChanges(mpi, epicID, User.Identity.Name, changeType);
+
+            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-AcceptEpicChange(SQL)" }); }
+
+            return RedirectToAction("PatientDetails", new { id = mpi, message = "Updated.", success = true });
         }
     }
 }
