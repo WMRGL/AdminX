@@ -499,6 +499,7 @@
                 document.getElementById("txtisAddressChanged").value = "true";
             }
         }
+        console.log(document.getElementById("txtisAddressChanged").value)
 
         function ShowLetterToClinician() {
             document.getElementById("ddlLetterToClinician").hidden = false;
@@ -683,7 +684,7 @@
             }
 
             document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
-            document.getElementById("txtisAddressChanged").value = "true";
+            // document.getElementById("txtisAddressChanged").value = "true";
         }
 
         function SetCCAddress(ccCode) {

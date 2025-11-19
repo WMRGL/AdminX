@@ -1,13 +1,16 @@
-﻿using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using AdminX.ViewModels;
-using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
+﻿using AdminX.Data;
 using AdminX.Meta;
 using AdminX.Models;
-using AdminX.Data;
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
+using MigraDoc.Rendering;
 
 namespace AdminX.Controllers
 {
@@ -180,7 +183,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
-            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments)
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments, string letterFrom)
         {
             try
             {
@@ -194,7 +197,7 @@ namespace AdminX.Controllers
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
 
-                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments);
+                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, letterFrom );
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
 
@@ -300,16 +303,285 @@ namespace AdminX.Controllers
 
         public async Task<IActionResult> PreviewDOT(int dID)
         {
+            //try
+            //{                
+            //    _lc.PrintDOTPDF(dID, User.Identity.Name, true);
+            //    //return RedirectToAction("Edit", new { id = dID });
+            //    return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+            //}
+            //catch (Exception ex)
+            //{
+            //    return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
+            //}
+
             try
-            {                
-                _lc.PrintDOTPDF(dID, User.Identity.Name, true);
-                //return RedirectToAction("Edit", new { id = dID });
-                return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
+            {
+                string user = User.Identity.Name;
+
+                byte[] pdfData = GenerateDOTPDFStream(dID, user, true);
+
+                return File(pdfData, "application/pdf");
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
             }
+        }
+
+        private byte[] GenerateDOTPDFStream(int dID, string user, bool isPreview)
+        {
+            LetterVM localLvm = new LetterVM();
+
+           
+            localLvm.staffMember = _staffUser.GetStaffMemberDetails(user);
+            localLvm.dictatedLetter = _dictatedLetterData.GetDictatedLetterDetails(dID);
+
+            var docContent = _docContext.DocumentsContent.FirstOrDefault(d => d.OurAddress != null);
+            string ourAddress = docContent != null ? docContent.OurAddress : "Address Not Found";
+
+            MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
+            Section section = document.AddSection();
+
+            // Logo
+            Paragraph contentLogo = section.AddParagraph();
+            string logoPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Letterhead.jpg");
+            if (System.IO.File.Exists(logoPath))
+            {
+                MigraDoc.DocumentObjectModel.Shapes.Image imgLogo = contentLogo.AddImage(logoPath);
+                imgLogo.ScaleWidth = new Unit(0.5, UnitType.Point);
+                imgLogo.ScaleHeight = new Unit(0.5, UnitType.Point);
+            }
+            contentLogo.Format.Alignment = ParagraphAlignment.Right;
+
+            // Title
+            Paragraph spacer = section.AddParagraph();
+            Paragraph title = section.AddParagraph();
+            title.AddFormattedText("WEST MIDLANDS REGIONAL CLINICAL GENETICS SERVICE", TextFormat.Bold);
+            title.Format.Alignment = ParagraphAlignment.Center;
+            title.Format.Font.Size = 12;
+            spacer = section.AddParagraph();
+
+            // Header Table
+            Table table = section.AddTable();
+            Column contactInfo = table.AddColumn();
+            contactInfo.Format.Alignment = ParagraphAlignment.Left;
+            Column ourAddressInfo = table.AddColumn();
+            ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
+            table.Rows.Height = 50;
+            table.Columns.Width = 250;
+            table.Format.Font.Size = 12;
+
+            Row row1 = table.AddRow();
+            row1.VerticalAlignment = VerticalAlignment.Top;
+
+            string clinicianHeader = $"Consultant: {localLvm.dictatedLetter.Consultant}" + Environment.NewLine + $"Genetic Counsellor: {localLvm.dictatedLetter.GeneticCounsellor}";
+            string phoneNumbers = "Secretaries Direct Line:" + Environment.NewLine;
+
+            var secretariesList = _staffUser.GetStaffMemberList().Where(s => s.BILL_ID == localLvm.dictatedLetter.SecTeam && s.CLINIC_SCHEDULER_GROUPS == "Admin");
+            foreach (var t in secretariesList)
+            {
+                phoneNumbers += $"{t.NAME} {t.TELEPHONE}" + Environment.NewLine;
+            }
+
+            row1.Cells[0].AddParagraph(clinicianHeader + Environment.NewLine + Environment.NewLine + phoneNumbers);
+            row1.Cells[1].AddParagraph(ourAddress + Environment.NewLine + Environment.NewLine + _constantsData.GetConstant("MainCGUEmail", 1));
+
+            // Dates
+            string datesInfo = "";
+            if (localLvm.dictatedLetter.DateDictated != null)
+            {
+                datesInfo = $"Dictated Date: {localLvm.dictatedLetter.DateDictated.Value:dd/MM/yyyy}" + Environment.NewLine +
+                            $"Date Typed: {localLvm.dictatedLetter.CreatedDate.Value:dd/MM/yyyy}";
+            }
+
+            localLvm.patient = _patientData.GetPatientDetails(localLvm.dictatedLetter.MPI.GetValueOrDefault());
+
+            spacer = section.AddParagraph();
+            Paragraph contentRefNo = section.AddParagraph($"Please quote our reference on all correspondence: {Environment.NewLine} {localLvm.patient.CGU_No}");
+            contentRefNo.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            Paragraph contentDatesInfo = section.AddParagraph(datesInfo);
+            contentDatesInfo.Format.Font.Size = 12;
+
+            // Address
+            string address = localLvm.dictatedLetter.LetterTo;
+            spacer = section.AddParagraph();
+            spacer = section.AddParagraph();
+
+            Paragraph contentPatientAddress = section.AddParagraph(address);
+            contentPatientAddress.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            Paragraph contentToday = section.AddParagraph(DateTime.Today.ToString("dd MMMM yyyy"));
+            contentToday.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            Paragraph contentSalutation = section.AddParagraph($"Dear {localLvm.dictatedLetter.LetterToSalutation}");
+            contentSalutation.Format.Font.Size = 12;
+
+            // Letter Body
+            spacer = section.AddParagraph();
+            Paragraph contentLetterRe = section.AddParagraph();
+            contentLetterRe.AddFormattedText(localLvm.dictatedLetter.LetterRe, TextFormat.Bold);
+            contentLetterRe.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            Paragraph contentSummary = section.AddParagraph();
+            contentSummary.AddFormattedText(localLvm.dictatedLetter.LetterContentBold, TextFormat.Bold);
+            contentSummary.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            string letterContent = RemoveHTML(localLvm.dictatedLetter.LetterContent);
+            Paragraph contentLetterContent = section.AddParagraph();
+            contentLetterContent.Format.Font.Size = 12;
+
+            if (letterContent.Contains("<<strong>>"))
+            {
+                List<string> letterContentParts = ParseBold(letterContent);
+                foreach (var item in letterContentParts)
+                {
+                    if (item.Contains("NOTBOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("NOTBOLD", ""), TextFormat.NotBold);
+                    }
+                    else if (item.Contains("BOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("BOLD", ""), TextFormat.Bold);
+                    }
+                    else
+                    {
+                        contentLetterContent.AddFormattedText(item, TextFormat.NotBold);
+                    }
+                }
+            }
+            else
+            {
+                contentLetterContent.AddFormattedText(letterContent, TextFormat.NotBold);
+            }
+
+            // Sign Off
+            string signOff = localLvm.staffMember.NAME + Environment.NewLine + localLvm.staffMember.POSITION;
+            string sigFilename = $"{localLvm.staffMember.StaffForename.Replace(" ", "")}{localLvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+            string sigPath = Path.Combine(Directory.GetCurrentDirectory(), $@"wwwroot\Signatures\{sigFilename}");
+
+            spacer = section.AddParagraph();
+            spacer = section.AddParagraph();
+
+            Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
+            contentSignOff.Format.Font.Size = 12;
+
+            spacer = section.AddParagraph();
+            Paragraph contentSig = section.AddParagraph();
+            if (System.IO.File.Exists(sigPath))
+            {
+                MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(sigPath);
+            }
+
+            spacer = section.AddParagraph();
+            Paragraph contentSignOffName = section.AddParagraph(signOff);
+            contentSignOffName.Format.Font.Size = 12;
+
+            if (!string.IsNullOrEmpty(localLvm.dictatedLetter.Enclosures))
+            {
+                spacer = section.AddParagraph();
+                spacer = section.AddParagraph();
+                Paragraph enclosures = section.AddParagraph("Enclosures: " + localLvm.dictatedLetter.Enclosures);
+                enclosures.Format.Font.Size = 12;
+            }
+
+            List<DictatedLettersCopy> ccList = _dictatedLetterData.GetDictatedLettersCopiesList(localLvm.dictatedLetter.DoTID);
+            if (ccList.Count > 0)
+            {
+                section.AddPageBreak();
+                foreach (var item in ccList)
+                {
+                    spacer = section.AddParagraph();
+                    spacer = section.AddParagraph();
+                    Table tableCC = section.AddTable();
+                    Column colCC = tableCC.AddColumn();
+                    Column colADDRESS = tableCC.AddColumn();
+                    Row rowcc = tableCC.AddRow();
+                    colCC.Width = 20;
+                    colADDRESS.Width = 300;
+                    rowcc[0].AddParagraph("cc:");
+                    rowcc[1].AddParagraph(item.CC);
+                    spacer = section.AddParagraph();
+                }
+            }
+
+            spacer = section.AddParagraph();
+            Paragraph contentDocCode = section.AddParagraph("Letter code: DOT");
+            contentDocCode.Format.Alignment = ParagraphAlignment.Right;
+            contentDocCode.Format.Font.Size = 8;
+
+            PdfDocumentRenderer pdf = new PdfDocumentRenderer();
+            pdf.Document = document;
+            pdf.RenderDocument();
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                pdf.PdfDocument.Save(stream, false);
+                return stream.ToArray();
+            }
+        }
+
+        private string RemoveHTML(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+
+            text = text.Replace("<div><font face=Arial size=3>", "");
+            text = text.Replace("</font></div>", "");
+            text = text.Replace("<div>&nbsp;</div>", "");
+            text = text.Replace("&nbsp;", "");
+            text = text.Replace("&amp;", "&");
+            text = text.Replace(Environment.NewLine, "newline");
+            text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
+            text = text.Replace("newlinenewline", Environment.NewLine);
+            text = text.Replace("newline", "");
+            text = text.Replace("<br>", Environment.NewLine + Environment.NewLine);
+            text = text.Replace("<div>", "");
+            text = text.Replace("</div>", "");
+            text = text.Replace("b>", "strong>");
+
+            if (text.Contains("<span style=\"font-weight: 600;\">"))
+            {
+                text = text.Replace("<span style=\"font-weight: 600;\">", "<strong>");
+            }
+
+            text = text.Replace("</span>", "</strong>");
+            text = text.Replace("<strong>", "<<strong>>");
+            text = text.Replace("</strong>", "<</strong>>");
+
+            return text;
+        }
+
+        private List<string> ParseBold(string text)
+        {
+            List<string> newText = new List<string>();
+            if (string.IsNullOrEmpty(text)) return newText;
+
+            if (text.Contains("<strong>"))
+            {
+                string[] textBlocks = text.Split(new[] { "strong>>" }, StringSplitOptions.None);
+
+                foreach (var item in textBlocks)
+                {
+                    if (item.Contains("<</"))
+                    {
+                        newText.Add(item.Replace("<</", "") + "BOLD ");
+                    }
+                    else if (item.Contains("<<"))
+                    {
+                        newText.Add(item.Replace("<<", "") + "NOTBOLD ");
+                    }
+                    else
+                    {
+                        newText.Add(item);
+                    }
+                }
+            }
+            return newText;
         }
 
         public async Task<IActionResult> PrintDOT(int dID)
