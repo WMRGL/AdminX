@@ -444,7 +444,8 @@ namespace AdminX.Controllers
 
             spacer = section.AddParagraph();
             Paragraph contentSummary = section.AddParagraph();
-            contentSummary.AddFormattedText(localLvm.dictatedLetter.LetterContentBold, TextFormat.Bold);
+            //contentSummary.AddFormattedText(localLvm.dictatedLetter.LetterContentBold, TextFormat.Bold);
+            contentSummary.AddFormattedText(localLvm.dictatedLetter.LetterContentBold ?? "", TextFormat.Bold);
             contentSummary.Format.Font.Size = 12;
 
             spacer = section.AddParagraph();
