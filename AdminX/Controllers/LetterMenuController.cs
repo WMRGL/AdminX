@@ -5,6 +5,8 @@ using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using AdminX.Data;
+using APIControllers.Data;
+using APIControllers.Controllers;
 
 namespace AdminX.Controllers
 {
@@ -14,6 +16,7 @@ namespace AdminX.Controllers
         private readonly ClinicalContext _context;
         private readonly DocumentContext _documentContext;
         private readonly AdminContext _adminContext;
+        private readonly APIContext _apiContext;
         private readonly IDocumentsData _documentsData;
         private readonly IPatientData _patientData;
         private readonly IRelativeData _relData;
@@ -27,13 +30,16 @@ namespace AdminX.Controllers
         private readonly IStaffUserData _staffData;
         private readonly IAuditService _audit;
         private readonly IPAddressFinder _ip;
+        private readonly APIController _api;
+        private readonly PhenotipsMirrorData _mirrorData;
 
-        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, AdminContext adminContext, IConfiguration config)
+        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, AdminContext adminContext, APIContext apiContext, IConfiguration config)
         {
             _config = config;   
             _context = context;
             _documentContext = documentContext;
             _adminContext = adminContext;
+            _apiContext = apiContext;
             _documentsData = new DocumentsData(_documentContext);
             _patientData = new PatientData(_context);
             _relData = new RelativeData(_context);
@@ -47,18 +53,20 @@ namespace AdminX.Controllers
             _staffData = new StaffUserData(_context);
             _audit = new AuditService(_config);
             _ip = new IPAddressFinder(HttpContext);
+            _api = new APIController(_apiContext, _config);
+            _mirrorData = new PhenotipsMirrorData(_context);
         }
 
-        public IActionResult Index(int id, bool isRelative)
+        public IActionResult Index(int id, bool? isRelative = false)
         {
             try
             {
                 string staffCode = _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Letter Menu", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _lvm.isRelative = isRelative;
+                _lvm.isRelative = isRelative.GetValueOrDefault();
 
-                if (!isRelative)
+                if (!isRelative.GetValueOrDefault())
                 {
                     _lvm.patient = _patientData.GetPatientDetails(id);
 
@@ -175,12 +183,26 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
-                            "", null, isPreview, "", leafletID);
+                    //_lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                    //        "", null, isPreview, "", leafletID);
 
-                    //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
-                    //lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
-                    //       "", null, isPreview, "", leafletID);
+                    string qrCode = "";
+
+                    if(_mirrorData.GetPhenotipsPatientByID(mpi) != null)
+                    {
+                        APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+                        string ppqType = "";
+
+                        
+                        if (api.CheckPPQExists(mpi, _lvm.referral.PATHWAY).Result)
+                        {
+                            qrCode = api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY).Result;
+                        }
+                    }
+
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
+                    lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                           "", null, isPreview, qrCode, leafletID);
                 }
 
 

@@ -421,11 +421,13 @@ namespace APIControllers.Controllers
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                //ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                //ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -445,6 +447,7 @@ namespace APIControllers.Controllers
                 request.AddHeader("X-Gene42-Secret", apiKey);
                 //string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
                 string apiCall = "{\"search\":{\"questionnaireId\":\"" + $"{ppqID}" + "\",\"mrn\":\"" + $"{patient.CGU_No}" + "\",\"status\":\"active\",\"orderBy\":\"\",\"orderDir\":\"\",\"offset\":0,\"limit\":25}}";
+                //string apiCall = "{\"search\":{\"mrn\":\"" + $"{patient.CGU_No}" + "\"}}";
 
                 request.AddJsonBody(apiCall, false);
                 var response = await client.PostAsync(request);
@@ -471,11 +474,11 @@ namespace APIControllers.Controllers
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
@@ -522,11 +525,11 @@ namespace APIControllers.Controllers
             string ppqID;
             if (ppqType == "Cancer")
             {
-                ppqID = "bwch_cancer";
+                ppqID = "cancer";
             }
             else
             {
-                ppqID = "bwch_general";
+                ppqID = "general";
             }
 
             pID = GetPhenotipsPatientID(id).Result;
