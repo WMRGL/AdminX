@@ -182,26 +182,22 @@ namespace AdminX.Controllers
                     hs.PrintHSForm(refID, diaryID, User.Identity.Name, isPreview);
                 }
                 else
-                {
-                    //_lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
-                    //        "", null, isPreview, "", leafletID);
-
+                {                    
                     string qrCode = "";
 
                     if(_mirrorData.GetPhenotipsPatientByID(mpi) != null)
                     {
-                        APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+                        //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
                         string ppqType = "";
-
                         
-                        if (api.CheckPPQExists(mpi, _lvm.referral.PATHWAY).Result)
+                        if (_api.CheckPPQExists(mpi, _lvm.referral.PATHWAY).Result)
                         {
-                            qrCode = api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY).Result;
+                            qrCode = _api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY).Result;
                         }
                     }
 
-                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
-                    lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                    //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
+                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
                            "", null, isPreview, qrCode, leafletID);
                 }
 

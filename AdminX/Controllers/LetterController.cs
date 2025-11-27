@@ -242,8 +242,9 @@ namespace AdminX.Controllers
             string signOff = "";
             string sigFilename = "";
             bool hasPhenotipsQRCode = false;
-
-
+            
+            hasPhenotipsQRCode = _lvm.documentsContent.hasPhenotipsPPQ; //because you KNOW there's gonna somehow be a null!
+            
             if (docCode.Contains("CF"))
             {
                 DoConsentForm(id, mpi, refID, user, referrer, additionalText, enclosures, reviewAtAge = 0, tissueType, isResearchStudy, isScreeningRels, diaryID, freeText1,
@@ -504,7 +505,6 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    hasPhenotipsQRCode = true;
                 }
 
                 if (docCode == "K")
@@ -593,7 +593,6 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
-                    hasPhenotipsQRCode = true;
                 }
 
                 if (docCode == "RejFHAW")
@@ -1605,9 +1604,7 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);                    
                     spacer = section.AddParagraph();
-
-                    hasPhenotipsQRCode = true;
-                    
+                                        
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     //File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
                     ccs[0] = referrerName;
@@ -1749,7 +1746,7 @@ namespace AdminX.Controllers
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
-                if (hasPhenotipsQRCode)
+                if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
                 {
                     if (qrCodeText != "")
                     {
