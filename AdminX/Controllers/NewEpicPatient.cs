@@ -100,12 +100,15 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
-                    int patientNumber = patList.Count();
+                    string pedno = fileNumber.Substring(0, fileNumber.IndexOf("."));
 
-                    if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(pedno); //get the next CGU point number
+                    int patientNumber = patList.Count();
+                                      
+
+                    if (_patientData.GetPatientDetailsByCGUNo(pedno + "." + patientNumber.ToString()) == null)
                     {
-                        cguNumber = fileNumber + "." + patientNumber.ToString();
+                        cguNumber = pedno + "." + patientNumber.ToString();
                     }
                 }
 
