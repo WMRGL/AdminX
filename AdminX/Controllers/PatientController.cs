@@ -473,9 +473,12 @@ namespace AdminX.Controllers
                         tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
-                }
+                }                
 
-                _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
+                //_pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
+
+                _pvm.patient = _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
+
 
                 if(startDate != null && endDate != null)
                 {                     

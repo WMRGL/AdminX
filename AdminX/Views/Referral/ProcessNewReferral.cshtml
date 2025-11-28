@@ -59,10 +59,10 @@
             </div>
             <div class="col-md-2">
                 <select name="consultant" id="ddlConsultants">
-                    <option value=""></option>
+                    <option value=""></option>                    
                     @foreach (var item in Model.consultants)
                     {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                     }
                 </select>
             </div>
@@ -74,7 +74,7 @@
                     <option value=""></option>
                     @foreach (var item in Model.gcs)
                     {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                     }
                 </select>
             </div>
@@ -86,7 +86,7 @@
                     <option value=""></option>
                     @foreach (var item in Model.admin)
                     {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                     }
                 </select>
             </div>
@@ -108,7 +108,7 @@
 
     document.getElementById("ddlPathways").addEventListener("change", SetPathway);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
-
+    
     function SetPathway()
     {
         var pw = document.getElementById("ddlPathways");
@@ -118,15 +118,14 @@
         var refCons;
         var refGC;
         var refAdmin;
-        
-        
+               
 
         if(pw.value.includes("Cancer"))
         {
-            refCons = "@Model.areaName.ConsCode";
-            refGC = "@Model.areaName.GC";
-            refAdmin = "@Model.areaName.FHCStaffCode";
-
+            refCons = "@Model.areaName.ConsCode".toUpperCase();
+            refGC = "@Model.areaName.GC".toUpperCase();
+            refAdmin = "@Model.areaName.FHCStaffCode".toUpperCase();
+                       
             if(refCons != null && refCons != "" && refCons != "Admin")
             {
                 consList.value = refCons;
