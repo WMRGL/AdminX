@@ -37,6 +37,15 @@
              
             </form>
         </div>
+        @if (Model.dictatedLetters.Status == "For Printing")
+        {
+            <form asp-action="Unapprove" method="post">
+
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+
+                <button type="submit" class="btn btn-primary">Unapprove</button>
+            </form>
+        }
     </div>
     <hr />
 
@@ -63,6 +72,7 @@
                                 <button type="button" class="btn btn-primary" id="btnPrint">Print and File in EDMS</button>
                             </div>
                         </div>
+                     
                         <div hidden>
                             <input asp-for="dictatedLetters.DoTID" name="dID" />
                         </div>
@@ -220,31 +230,7 @@
         </div>
 
     </div>
-    <div class="tab-pane fade" id="password" role="tabpanel">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Password</h5>
 
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordCurrent">Current password</label>
-                        <input type="password" class="form-control" id="inputPasswordCurrent">
-                        <small><a href="#">Forgot your password?</a></small>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordNew">New password</label>
-                        <input type="password" class="form-control" id="inputPasswordNew">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordNew2">Verify password</label>
-                        <input type="password" class="form-control" id="inputPasswordNew2">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </form>
-
-            </div>
-        </div>
-    </div>
 </div>
 </div>
 </div>
@@ -257,7 +243,8 @@
 
             @*<div class="row mb-5 g-5">*@
             <div class="d-grid mb-5">
-                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
+                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" 
+                aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
             </div>
 
             <div class="collapse" id="collapsePatientsTable">
@@ -838,8 +825,11 @@
         }
 
         function DoPrint() {
+            // alert("Step 1: A print window will open.\nStep 2: You MUST click the 'Print' button in that window to send this letter to the printer.");
             document.getElementById("Print").submit();
+           
         }
+
 
 
     </script>

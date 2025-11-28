@@ -10,97 +10,94 @@
     };
 }
 
-<div class="container">
-    <h1>Process New Referral for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h1>
+<div class="card">
+    <div class="card-body">
+        <h3 class="card-title text-dark">
+            Process New Referral for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-5 ">
+            <div class="col-md-1">
+                <label class="text-dark">Address:</label>
+            </div>
+            <div class="col-md-4">
+                @Model.patient.ADDRESS1
+                @Model.patient.ADDRESS2
+                @Model.patient.ADDRESS3
+                @Model.patient.ADDRESS4
+                @Model.patient.POSTCODE
+            </div>
+            <div class="col-md-1">
+                <label class="text-dark">Indication</label>
+            </div>
+            <div class="col-md-4">
+                @Model.referral.INDICATION
+            </div>
 
-    <div class="row mb-5 g-5">
-        <div class="col-md-1">
-            <label>Address:</label>
         </div>
-        <div class="col-md-4">
-            @Model.patient.ADDRESS1<br />
-            @Model.patient.ADDRESS2<br />
-            @Model.patient.ADDRESS3<br />
-            @Model.patient.ADDRESS4<br />
-            @Model.patient.POSTCODE<br />            
-        </div>
-        <div class="col-md-1">
-            Indication:
-        </div>
-        <div class="col-md-4">
-            @Model.referral.INDICATION
-        </div>
+
+        <form id="frmProcessReferral" asp-action="ProcessNewReferral">
+            <div class="row mb-3">
+                <div class="col">
+                    <label class="form-label">Referral Pathway</label>
+                    <select class="form-select" name="pathway" id="ddlPathways">
+                        <option value=""></option>
+                        @foreach (var item in Model.pathways)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label">Consultant</label>
+                    <select class="form-select " name="consultant" id="ddlConsultants">
+                        <option value=""></option>
+                        @foreach (var item in Model.consultants)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label">GC</label>
+                    <select class="form-select " name="gc" id="ddlGCs">
+                        <option value=""></option>
+                        @foreach (var item in Model.gcs)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+                <div class="col">
+                    <label class="form-label">Admin Contact</label>
+                    <select name="admin" class=" form-select" id="ddlAdmin">
+                        <option value=""></option>
+                        @foreach (var item in Model.admin)
+                        {
+                            <option value=@item.STAFF_CODE>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <h3 id="manualChoiceCaption" hidden>Manual selection required</h3>
+            </div>
+
+
+            <div class="row ">
+                <input name="refID" asp-for=@Model.referral.refid hidden />
+                <div class="col-md-2">
+                    <button type="button" id="btnSubmit" class="btn btn-primary">Confirm Referral</button>
+                </div>
+            </div>
+        </form>
 
     </div>
 
 
-    <form id="frmProcessReferral" asp-action="ProcessNewReferral">
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Referral Pathway</label>
-            </div>
-            <div class="col-md-4">
-                <select name="pathway" id="ddlPathways">
-                    <option value=""></option>
-                    @foreach(var item in Model.pathways)
-                    {
-                        <option value=@item>@item</option>
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <h3 id="manualChoiceCaption" hidden>Manual selection required</h3>
-        </div>
 
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Consultant</label>
-            </div>
-            <div class="col-md-2">
-                <select name="consultant" id="ddlConsultants">
-                    <option value=""></option>
-                    @foreach (var item in Model.consultants)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>GC</label>
-            </div>
-            <div class="col-md-2">
-                <select name="gc" id="ddlGCs">
-                    <option value=""></option>
-                    @foreach (var item in Model.gcs)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>Admin Contact</label>
-            </div>
-            <div class="col-md-2">
-                <select name="admin" id="ddlAdmin">
-                    <option value=""></option>
-                    @foreach (var item in Model.admin)
-                    {
-                        <option value=@item.STAFF_CODE>@item.NAME</option>
-                    }
-                </select>
-            </div>
-
-        </div>
-
-        <div class="row mb-5 g-5">
-            <input name="refID" asp-for=@Model.referral.refid hidden />
-            <div class="col-md-2">
-                <button type="button" id="btnSubmit" class="btn btn-primary">Confirm Referral</button>
-            </div>
-        </div>
-    </form>
-
+  
 
 </div>
 
@@ -119,22 +116,24 @@
         var refGC;
         var refAdmin;
         
-        
+        var specialOption = adminList.querySelector('option[value="AMIR"]') !== null;
 
         if(pw.value.includes("Cancer"))
         {
             refCons = "@Model.areaName.ConsCode";
             refGC = "@Model.areaName.GC";
             refAdmin = "@Model.areaName.FHCStaffCode";
-
+            console.log(refCons, refGC, refAdmin);
             if(refCons != null && refCons != "" && refCons != "Admin")
             {
                 consList.value = refCons;
+                console.log("Notification null")
             }
 
             if(refGC != null && refGC != "" && refGC != "Admin")
             {
                 gcsList.value = refGC;
+                console.log("GC null")
             }
 
             if(refAdmin != null && refAdmin != "" && refAdmin != "Admin")
@@ -142,6 +141,18 @@
                 adminList.value = refAdmin;
             }
             document.getElementById("manualChoiceCaption").hidden = true;
+            // document.getElementById("selected_admin").value = refAdmin;
+            // document.getElementById("selected_admin").text = refAdmin;
+
+            // const adminContact = adminList.querySelector('option[value=@Model.areaName.FHCStaffCode]');
+
+            // if (!adminContact) {
+            //     adminList.prepend(specialOption)
+            //     adminList.val('@Model.areaName.FHCStaffCode');
+            // } else {
+            //     adminContact.remove
+            // }
+  
         }
         else
         {
@@ -189,5 +200,6 @@
         return 1;
     }
 
+   
 
 </script>

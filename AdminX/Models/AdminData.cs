@@ -138,7 +138,7 @@ namespace AdminX.Models
     }
 
     [Keyless]
-   // [Table("GenderIdentity")]
+    [Table("GenderIdentity", Schema ="dbo")]
     public class GenderIdentity
     {
         public string Gender { get; set; }
