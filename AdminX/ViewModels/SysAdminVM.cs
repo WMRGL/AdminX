@@ -8,6 +8,9 @@ namespace AdminX.ViewModels
     public class SysAdminVM
     {        
         public List<StaffMember> staffMembers { get; set; }
+        public List<StaffMember> consultants { get; set; }
+        public List<StaffMember> gcs { get; set; }
+        public List<StaffMember> sprs { get; set; }
         public List<ExternalClinician> clinicians { get; set; }
         public List<ExternalFacility> facilities { get; set; }
         public List<ClinicVenue> venues { get; set; }   
@@ -25,5 +28,9 @@ namespace AdminX.ViewModels
         public bool isEditStaff { get; set; }
         public bool hasAssociatedClinicDetails { get; set; }
         public string clinCodeToCreate { get; set; }
+        public StaffMember dutyConsultant { get; set; }
+        public StaffMember dutyGC { get; set; }
+        public StaffMember dutySPR { get; set; }
+
     }
 }

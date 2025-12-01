@@ -801,5 +801,34 @@ namespace AdminX.Controllers
 
             return RedirectToAction("CliniciansClinics", new { message = "New clinic details added.", success = true });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> SetDutyClinicians(string? message, bool? success=false)
+        {
+            if(message != null)
+            {
+                _savm.message = message;
+                _savm.success = success.GetValueOrDefault();
+            }
+
+            _savm.consultants = _staffData.GetConsultantsList();
+            _savm.gcs = _staffData.GetGCList();            
+            _savm.sprs = _staffData.GetSpRList();
+            _savm.dutyConsultant = _savm.consultants.FirstOrDefault(s => s.isDutyClinician == true);            
+            _savm.dutySPR = _savm.sprs.FirstOrDefault(s => s.isDutyClinician == true);
+
+            return View(_savm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetDutyClinicians(string? dutyCons = "", string? dutyGC = "", string? dutySPR = "")
+        {
+            int iSuccess = _crud.CallStoredProcedure("DutyClinician", "Set", 0, 0, 0, dutyCons, dutySPR, "", "", User.Identity.Name, null, null, false, false, 0, 0, 0, "", "", "",
+                0, 0, 0, 0, 0, "", "");
+
+            if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DutyClinician-set(SQL)" }); }
+
+            return RedirectToAction("SetDutyClinicians", new { message = "Updated.", success = true });
+        }
     }
 }

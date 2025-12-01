@@ -54,7 +54,7 @@ namespace AdminX.Controllers
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home", "", _ip.GetIPAddress());
 
                     _hvm.name = user.NAME;
-                   
+                    _hvm.dutyClinicianList = _staffUser.GetClinicalStaffList().Where(s => s.isDutyClinician == true).ToList();
                     _hvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
                     _hvm.dllVersion = _version.GetDLLVersion();
                     _hvm.appVersion = _config.GetValue("AppVersion", "");

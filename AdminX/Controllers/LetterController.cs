@@ -1746,6 +1746,26 @@ namespace AdminX.Controllers
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
+                if(docCode == "DNMRC")
+                {
+                    Paragraph letterContentPt = section.AddParagraph();
+                    letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                                        
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
+
+                    StaffMember referralGC = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                    signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
+                }
+
                 if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
                 {
                     if (qrCodeText != "")

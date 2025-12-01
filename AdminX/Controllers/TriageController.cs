@@ -230,7 +230,6 @@ namespace AdminX.Controllers
                 docID = _icpActionData.GetICPCancerActionsList().Where(a => a.ID == action).FirstOrDefault().RelatedLetterID.GetValueOrDefault();
                 int diaryID = 0;
 
-
                 if (docID != 0)
                 {
                     DocumentsData docData = new DocumentsData(_docContext);
@@ -257,10 +256,13 @@ namespace AdminX.Controllers
                         _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); // send KC
                         break;
                     case 6:
-                        //do nothing //no letter, patient sent FHF
+                        //do nothing //no letter, patient sent FHF                        
+                        _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "B", "", "", "No referral letter, patient referred by FHF", User.Identity.Name, referral.RefDate, null, false, false);
                         break;
                     case 7:
                         //do nothing //no letter, self referred
+                        _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "B", "", "", "No referral letter, patient self referred at clinic", User.Identity.Name, referral.RefDate, null, false, false);
+                        _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "A", "", "", "", User.Identity.Name, DateTime.Now, null, false, false);
                         break;
                     case 8:
                         _lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID,"","",0,clinician);//send OOR1 and OOR2 //(out of area)
@@ -268,6 +270,8 @@ namespace AdminX.Controllers
                         break;
                     case 9:
                         //send DNMRC //not meet criteria
+                        LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+                        lc.DoPDF(202, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", ""); //TODO: add template to data library
                         break;
                     case 10:
                         _lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFH

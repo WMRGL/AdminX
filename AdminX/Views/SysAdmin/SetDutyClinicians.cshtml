@@ -1,0 +1,93 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Clinicians Clinic Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+    };
+}
+
+
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+<div class="container">
+
+    <h1>Set Duty Clinicians</h1>
+
+    <h3>This will overwrite any existing duty clinicians.</h3>
+
+    <form asp-action="SetDutyClinicians">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Duty Consultant:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="dutyCons" asp-for=@Model.dutyConsultant.STAFF_CODE>
+                    <option value=""></option>
+                    @foreach(var item in Model.consultants)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+        </div>        
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Duty SpR:</label>
+            </div>
+            <div class="col-md-4">
+                <select name="dutySPR" asp-for=@Model.dutySPR.STAFF_CODE>
+                    <option value=""></option>
+                    @foreach (var item in Model.sprs)
+                    {
+                        <option value=@item.STAFF_CODE>@item.NAME</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <button class="btn btn-outline-primary">Save</button>
+            </div>
+        </div>
+
+    </form>
+</div>
