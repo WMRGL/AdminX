@@ -137,7 +137,7 @@ namespace AdminX.Controllers
                         if (_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
                             _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
                             (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
-                            _pvm.patient.GP != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
+                            _pvm.patient.GP_Code != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
                             _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile)
                         {
                             _pvm.isEpicChanged = true;
@@ -250,9 +250,13 @@ namespace AdminX.Controllers
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
                     if(_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
                     {
+                        APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+
+
+
                         _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
-                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                        _pvm.isCancerPPQScheduled = api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
+                        _pvm.isGeneralPPQScheduled = api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
 
                         _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
@@ -469,9 +473,12 @@ namespace AdminX.Controllers
                         tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
-                }
+                }                
 
-                _pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
+                //_pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
+
+                _pvm.patient = _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
+
 
                 if(startDate != null && endDate != null)
                 {                     

@@ -37,51 +37,62 @@
 
         </div>
 
-        <form id="frmProcessReferral" asp-action="ProcessNewReferral">
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="form-label">Referral Pathway</label>
-                    <select class="form-select" name="pathway" id="ddlPathways">
-                        <option value=""></option>
-                        @foreach (var item in Model.pathways)
-                        {
-                            <option value=@item>@item</option>
-                        }
-                    </select>
-                </div>
-                <div class="col">
-                    <label class="form-label">Consultant</label>
-                    <select class="form-select " name="consultant" id="ddlConsultants">
-                        <option value=""></option>
-                        @foreach (var item in Model.consultants)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col">
-                    <label class="form-label">GC</label>
-                    <select class="form-select " name="gc" id="ddlGCs">
-                        <option value=""></option>
-                        @foreach (var item in Model.gcs)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-                <div class="col">
-                    <label class="form-label">Admin Contact</label>
-                    <select name="admin" class=" form-select" id="ddlAdmin">
-                        <option value=""></option>
-                        @foreach (var item in Model.admin)
-                        {
-                            <option value=@item.STAFF_CODE>@item.NAME</option>
-                        }
-                    </select>
-                </div>
+
+    <form id="frmProcessReferral" asp-action="ProcessNewReferral">
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Referral Pathway</label>
             </div>
-            <div class="row mb-5 g-5">
-                <h3 id="manualChoiceCaption" hidden>Manual selection required</h3>
+            <div class="col-md-4">
+                <select name="pathway" id="ddlPathways">
+                    <option value=""></option>
+                    @foreach(var item in Model.pathways)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <h3 id="manualChoiceCaption" hidden>Manual selection required</h3>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-2">
+                <label>Consultant</label>
+            </div>
+            <div class="col-md-2">
+                <select name="consultant" id="ddlConsultants">
+                    <option value=""></option>                    
+                    @foreach (var item in Model.consultants)
+                    {
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>GC</label>
+            </div>
+            <div class="col-md-2">
+                <select name="gc" id="ddlGCs">
+                    <option value=""></option>
+                    @foreach (var item in Model.gcs)
+                    {
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Admin Contact</label>
+            </div>
+            <div class="col-md-2">
+                <select name="admin" id="ddlAdmin">
+                    <option value=""></option>
+                    @foreach (var item in Model.admin)
+                    {
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
+                    }
+                </select>
             </div>
 
 
@@ -105,7 +116,7 @@
 
     document.getElementById("ddlPathways").addEventListener("change", SetPathway);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
-
+    
     function SetPathway()
     {
         var pw = document.getElementById("ddlPathways");
@@ -115,15 +126,14 @@
         var refCons;
         var refGC;
         var refAdmin;
-        
-        var specialOption = adminList.querySelector('option[value="AMIR"]') !== null;
+               
 
         if(pw.value.includes("Cancer"))
         {
-            refCons = "@Model.areaName.ConsCode";
-            refGC = "@Model.areaName.GC";
-            refAdmin = "@Model.areaName.FHCStaffCode";
-            console.log(refCons, refGC, refAdmin);
+            refCons = "@Model.areaName.ConsCode".toUpperCase();
+            refGC = "@Model.areaName.GC".toUpperCase();
+            refAdmin = "@Model.areaName.FHCStaffCode".toUpperCase();
+                       
             if(refCons != null && refCons != "" && refCons != "Admin")
             {
                 consList.value = refCons;

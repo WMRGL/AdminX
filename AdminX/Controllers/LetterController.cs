@@ -241,8 +241,10 @@ namespace AdminX.Controllers
             string quoteRef = "";
             string signOff = "";
             string sigFilename = "";
-
-
+            bool hasPhenotipsQRCode = false;
+            
+            hasPhenotipsQRCode = _lvm.documentsContent.hasPhenotipsPPQ; //because you KNOW there's gonna somehow be a null!
+            
             if (docCode.Contains("CF"))
             {
                 DoConsentForm(id, mpi, refID, user, referrer, additionalText, enclosures, reviewAtAge = 0, tissueType, isResearchStudy, isScreeningRels, diaryID, freeText1,
@@ -1602,17 +1604,7 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);                    
                     spacer = section.AddParagraph();
-
-                    if (qrCodeText != "")
-                    {
-                        CreateQRImageFile(qrCodeText, user);
-
-                        Paragraph contentQR = section.AddParagraph();
-                        MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
-                        imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
-                        imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
-                        contentQR.Format.Alignment = ParagraphAlignment.Center;
-                    }
+                                        
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     //File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
                     ccs[0] = referrerName;
@@ -1753,6 +1745,25 @@ namespace AdminX.Controllers
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
+
+                if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
+                {
+                    if (qrCodeText != "")
+                    {
+                        CreateQRImageFile(qrCodeText, user);
+
+                        spacer = section.AddParagraph();
+                        Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
+                            "receive an emailed link, let us know by contacting the department using the details above.");
+                        spacer = section.AddParagraph();
+                        Paragraph contentQR = section.AddParagraph();
+                        MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+                        imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
+                        imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
+                        contentQR.Format.Alignment = ParagraphAlignment.Center;
+                    }
+                }
+
 
                 //tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
                 spacer = section.AddParagraph();
