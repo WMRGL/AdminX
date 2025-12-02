@@ -32,7 +32,7 @@
                             <label>Linked Referral</label>
                         </dt>
                         <dd class="col-sm-10">
-                            <select name="linkedRefID" id="ddlRefID">
+                            <select class="form-select js-choice" name="linkedRefID" id="ddlRefID">
                                 @foreach(var item in Model.referralsList)
                                 {
                                     <option value=@item.refid>@item.refid - @item.RefType on @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.PATHWAY</option>
@@ -44,7 +44,7 @@
                             @Html.DisplayNameFor(model => model.activityItem.TYPE):
                         </dt>
                         <dd class="col-sm-10">
-                            <select name="appType" id="ddlAppType">
+                            <select class="form-select js-choice" name="appType" id="ddlAppType">
                                 <option value="">Select...</option>
                                 @foreach (var item in Model.appTypeList)
                                 {
@@ -56,13 +56,13 @@
                             Contact Date:
                         </dt>
                         <dd class="col-sm-10">
-                            <input type="date" name="bookedDate" id="txtBookedDate" />
+                            <input type="date" class="form-control" name="bookedDate" id="txtBookedDate" />
                         </dd>
                         <dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
                         </dt>
                         <dd class="col-sm-10">
-                            <input type="time" name="bookedTime" id="txtBookedTime" />
+                            <input type="time" class="form-control" name="bookedTime" id="txtBookedTime" />
                         </dd>
                         
                     </dl>

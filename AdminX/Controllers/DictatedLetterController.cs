@@ -1,14 +1,18 @@
-﻿using ClinicalXPDataConnections.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using AdminX.ViewModels;
-using ClinicalXPDataConnections.Meta;
-using ClinicalXPDataConnections.Models;
+﻿using AdminX.Data;
 using AdminX.Meta;
 using AdminX.Models;
-using AdminX.Data;
-
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Meta;
+using ClinicalXPDataConnections.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
+using MigraDoc.Rendering;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.Advanced;
 namespace AdminX.Controllers
 {
     public class DictatedLetterController : Controller
@@ -182,7 +186,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(int dID, string status, string letterTo, string letterFromCode, string letterContent, string letterContentBold, 
-            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments)
+            bool isAddresseeChanged, string secTeam, string consultant, string gc, string dateDictated, string letterToCode, string enclosures, string comments, string letterFrom)
         {
             try
             {
@@ -196,9 +200,61 @@ namespace AdminX.Controllers
                     if (success2 == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
                 }
 
-                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments);
+                int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, letterFrom );
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
+
+                return RedirectToAction("Edit", new { id = dID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Unapprove(int dID)
+        {
+            try
+            {
+               
+                var currentLetter = _dictatedLetterData.GetDictatedLetterDetails(dID);
+
+                if (currentLetter == null)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Letter not found.", formName = "DictatedLetter-Unapprove" });
+                }
+
+                int success = _crud.CallStoredProcedure(
+                    "Letter",
+                    "Update",
+                    dID,
+                    0,
+                    0,
+                    "Draft", 
+                    currentLetter.Enclosures ?? "",
+                    currentLetter.LetterContentBold ?? "",
+                    currentLetter.LetterContent,
+                    User.Identity.Name,
+                    currentLetter.DateDictated, 
+                    null,
+                    false,
+                    false,
+                    0,
+                    0,
+                    0,
+                    currentLetter.SecTeam,
+                    currentLetter.Consultant,
+                    currentLetter.GeneticCounsellor,
+                    0, 0, 0, 0, 0,
+                    currentLetter.Comments,
+                    currentLetter.LetterFrom
+                );
+
+                if (success == 0)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Database update failed.", formName = "DictatedLetter-Unapprove" });
+                }
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -317,7 +373,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> PreviewDOT(int dID)
         {
             try
-            {                
+            {
                 _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
@@ -326,14 +382,19 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
             }
+
+            
         }
 
+       
         public async Task<IActionResult> PrintDOT(int dID)
         {
             try
             {
                 _lc.PrintDOTPDF(dID, User.Identity.Name, false);
                 //return RedirectToAction("Edit", new { id = dID });
+                //string user = User.Identity.Name;
+
                 _crud.CallStoredProcedure("DictatedLetter", "Print", dID,0,0,"","","","",User.Identity.Name,null,null); //updates everything to say the letter was printed
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
@@ -342,6 +403,8 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-preview" });
             }
         }
+
+     
 
         public async Task<IActionResult> ActivityItems(int id)
         {
