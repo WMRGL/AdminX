@@ -3,8 +3,7 @@
     ViewData["Title"] = "Admin-X Home Page";
 }
 
-<div class="p-4  card">
-
+<div class="p-4 card">
     @if (!Model.isLive)
     {
         <div class="alert alert-danger alert-dismissible" role="alert">
@@ -21,7 +20,6 @@
     {
         <h1 class="text-center redtext">@Model.notificationMessage</h1>
     }
-
 
     <h2 class="text-center">Welcome, @Model.name!</h2>
     <br />
@@ -41,6 +39,22 @@
     </div>
 
 </div>
+
+@if (Model.dutyClinicianList.Count > 0)
+{
+    <div class="row">
+        <div class="col-sm-12 col-xl-12">
+            <div class="card">
+                <div class="card-body">
+                    @foreach (var item in Model.dutyClinicianList)
+                    {
+                        <h3 class="mt-1 mb-3"><strong>Duty @item.CLINIC_SCHEDULER_GROUPS:  </strong>@item.NAME</h3>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="row">
     <div class="col-sm-3">
@@ -114,18 +128,4 @@
     </div>
 </div>
 
-@if (Model.dutyClinicianList.Count > 0)
-{
-    <div class="row">
-        <div class="col-sm-12 col-xl-12">
-            <div class="card">
-                <div class="card-body">
-                    @foreach(var item in Model.dutyClinicianList)
-                    {
-                        <h3 class="mt-1 mb-3"><strong>Duty @item.CLINIC_SCHEDULER_GROUPS:  </strong>@item.NAME</h3>
-                    }                        
-                </div>
-            </div>
-        </div>
-    </div>
-}
+
