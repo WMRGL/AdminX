@@ -5,6 +5,7 @@ using AdminX.ViewModels;
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
@@ -40,6 +41,7 @@ namespace AdminX.Controllers
             _ip = new IPAddressFinder(HttpContext);
         }
 
+        [Authorize]
         public IActionResult Index()
         {
             try

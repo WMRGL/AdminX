@@ -6,6 +6,7 @@ using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AdminX.Controllers
 {
@@ -28,6 +29,7 @@ namespace AdminX.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob, bool? isPostback = false)
         {
             try

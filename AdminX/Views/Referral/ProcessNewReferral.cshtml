@@ -53,7 +53,7 @@
             </div>
             <div class="col">
                 <label class="form-label">Consultant</label>
-                <select class="form-select" name="consultant" id="ddlConsultants">
+                <select class="form-select" name="consultant" id="ddlConsultants" asp-for=@Model.referral.PATIENT_TYPE_CODE>
                     <option value=""></option>
                     @foreach (var item in Model.consultants)
                     {
@@ -160,7 +160,7 @@
         }
         else
         {
-            consList.value = "";
+            consList.value = "@Model.referral.PATIENT_TYPE_CODE";
             gcsList.value = "";
             adminList.value = "";
             document.getElementById("manualChoiceCaption").hidden = false;

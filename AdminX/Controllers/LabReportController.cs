@@ -3,6 +3,7 @@ using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AdminX.Controllers
 {
@@ -28,8 +29,8 @@ namespace AdminX.Controllers
             _audit = new AuditService(_config);
             _ip = new IPAddressFinder(HttpContext);
         }
-               
 
+        [Authorize]
         public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
             try

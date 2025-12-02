@@ -2,6 +2,7 @@
 using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AdminX.Controllers
 {
@@ -18,6 +19,7 @@ namespace AdminX.Controllers
             _rvm = new ReferralListVM();
         }
 
+        [Authorize]        
         public IActionResult Index()
         {            
             _rvm.referralList = _referralData.GetUnassignedReferrals();
