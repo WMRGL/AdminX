@@ -361,7 +361,10 @@ namespace AdminX.Controllers
             _rvm.consultants = _staffUserData.GetConsultantsList();
             _rvm.gcs = _staffUserData.GetGCList();
             _rvm.admin = _staffUserData.GetAdminList();
-
+            if (string.IsNullOrEmpty(_rvm.patient.PtAreaCode))
+            {
+                return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
+            }
             _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
             return View(_rvm);

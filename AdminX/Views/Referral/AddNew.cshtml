@@ -82,7 +82,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="indication">Indication</label>                            
-                            <select class="form-control" id="ddlIndication" name="indication">
+                            <select class="form-control js-choice" id="ddlIndication" name="indication">
                                 <option value="" selected>Select</option>
                                 @foreach (var item in Model.indicationList)
                                 {
@@ -119,7 +119,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="consultant">Consultant</label>
-                            <select class="form-select" id="ddlConsultant" name="consultant">
+                            <select class="form-select js-choice" id="ddlConsultant" name="consultant">
                                 @foreach (var item in Model.consultants)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -128,7 +128,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="refDate">Genetic Counsellor</label>
-                            <select name="gc" id="ddlGc" class="form-select">
+                            <select name="gc" id="ddlGc" class="form-select js-choice">
                                 @foreach (var item in Model.gcs)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -137,7 +137,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="refDate">Admin Contact</label>
-                            <select class="form-select" id="ddlAdmin" name="admin">
+                            <select class="form-select js-choice" id="ddlAdmin" name="admin">
                                 @foreach (var item in Model.admin)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>

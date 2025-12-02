@@ -1,4 +1,4 @@
-﻿@model AdminX.ViewModels.DictatedLetterVM
+﻿ @model AdminX.ViewModels.DictatedLetterVM
 
 @{
     ViewData["Title"] = "Admin-X - Dictated Letters";
@@ -40,7 +40,7 @@
                         <div class="card-body">
                             @if (Model.dictatedlettersReportClinicians.Count() > 0)
                             {
-                                <table class="table defaultTable table-bordered ">
+                                <table class="table defaultTable table-hover  table-bordered ">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>Clinician Name</th>
@@ -91,9 +91,9 @@
                             @if (Model.dictatedLettersSecTeamReports.Count() > 0)
                             {
                                 <h3>Dictated Letters for Secretaries</h3>
-                                <table class="table defaultTable">
+                                <table class="table table-hover  table-bordered  defaultTable">
                                     <thead>
-                                        <tr>
+                                        <tr class="table-dark">
                                             <th>Clinician Name</th>
                                             <th>Secretarial Team</th>
                                             <th>Drafts</th>

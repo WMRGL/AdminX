@@ -37,6 +37,15 @@
              
             </form>
         </div>
+        @if (Model.dictatedLetters.Status == "For Printing")
+        {
+            <form asp-action="Unapprove" method="post">
+
+                <input asp-for="dictatedLetters.DoTID" name="dID" hidden />
+
+                <button type="submit" class="btn btn-primary">Unapprove</button>
+            </form>
+        }
     </div>
     <hr />
 
@@ -45,12 +54,12 @@
 
         <div class="card-body">
 
-            <h4 class="text-dark">
+            <h4 class="text-dark mb-4">
                 Dictated Letter For @Html.ValueFor(model => model.patientDetails.FIRSTNAME) @Html.ValueFor(model => model.patientDetails.LASTNAME),
                 <a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patientDetails.MPI>@Html.ValueFor(model => model.patientDetails.CGU_No)</a>
             </h4>
 
-            <h5>Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h5>
+            <h5 class="mb-4">Re: @Html.ValueFor(model => model.dictatedLetters.LetterRe)</h5>
 
             <div class="mb-5">
                
@@ -63,6 +72,7 @@
                                 <button type="button" class="btn btn-primary" id="btnPrint">Print and File in EDMS</button>
                             </div>
                         </div>
+                     
                         <div hidden>
                             <input asp-for="dictatedLetters.DoTID" name="dID" />
                         </div>
@@ -76,21 +86,12 @@
                         <input id="txtLetterToCode" name="letterToCode" />
                     </div>
 
-                    <div class="row mb-5 g-5">
+                    <div class="row ">
                         <div class="row">
-                            <div class="col-md-2"></div>
-                            <div class="col-md-1">
-                                <label>To:</label>
-                            </div>
-                            <div class="col-md-4"></div>
-                            <div class="col-md-1">
-                                <label>From:</label>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-2">
-                                <select class="w-100" id="ddlLetterTo">
+                           
+                            <div class="mb-3 col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <select class="form-select" id="ddlLetterTo">
                                     <option value="" selected>Select...</option>
                                     <option value="Patient">Patient</option>
                                     <option value="Relative">Relative</option>
@@ -101,25 +102,14 @@
                                     <option value="GP">GP</option>
                                     <option value="Other">Other</option>
                                 </select>
-
-                                <select class="w-100" id="ddlLetterToType" hidden>
-                                    <option value="">Select...</option>
-                                    @foreach (var item in Model.specialities)
-                                    {
-                                        <option value=@item>@item</option>
-                                    }
-                                </select>
-
-
-                                <select class="w-100" id="ddlLetterToClinician" hidden>
-                                </select>
                             </div>
-                            <div class="col-md-4">
-                                <textarea id="txtLetterTo" rows="8" cols="40" asp-for="dictatedLetters.LetterTo" name="letterTo"></textarea>
+                            <div class="mb-3 col-md-3">
+                                <label class="form-label">To:</label>
+                                <textarea id="txtLetterTo" rows=8 class="form-control" asp-for="dictatedLetters.LetterTo" name="letterTo" required></textarea>
                             </div>
-
-                            <div class="col-md-2">
-                                <select class="w-100" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
+                            <div class="col-md-3">
+                                <label class="form-label">From:</label>
+                                <select class="form-select js-choice" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
                                     <option value="">Select...</option>
                                     @foreach (var item in Model.staffMemberList)
                                     {
@@ -127,17 +117,33 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <textarea id="txtLetterFrom" rows="8" cols="40" asp-for="dictatedLetters.LetterFrom" name="letterFrom"></textarea>
+                            <div class="col-md-3">
+                                <textarea id="txtLetterFrom" rows="8" class="form-control" asp-for="dictatedLetters.LetterFrom" name="letterFrom" required></textarea>
+
                             </div>
+                        </div>
+                        <br />
+                        <div class="row">
+                            <div class="col-md-2">
+                                <select class="form-select" id="ddlLetterToType" hidden>
+                                    <option value="">Select...</option>
+                                    @foreach (var item in Model.specialities)
+                                    {
+                                        <option value=@item>@item</option>
+                                    }
+                                </select>
+                                <select class="w-100" id="ddlLetterToClinician" hidden>
+                                </select>
+                            </div>
+                           
                         </div>
                     </div>
                     <div class="row mb-5 g-5">
-                        <div class="col-md-2" class="text-right">
+                        <div class="col-md-2 text-right">
                             Letter Status:
                         </div>
                         <div class="col-md-4">
-                            <select class="w-100" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="status">
+                            <select class="form-select" id="ddlLetterStatus" asp-for="dictatedLetters.Status" name="status">
                                 <option value="" selected></option>
                                 <option value="Draft">Draft</option>
                                 <option value="For Approval">For Approval</option>
@@ -146,20 +152,20 @@
                                 <option id="optICP" value="ICP Draft">ICP Draft</option>
                             </select>
                         </div>
-                        <div class="col-md-6"></div>
+                       
                     </div>
                     <div class="row mb-5 g-5">
-                        <div class="col-md-2" class="text-right">Summary:</div>
+                        <div class="col-md-2 text-right">Summary:</div>
                         <div class="col-md-10">
-                            <textarea id="txtLetterContentBold" rows="10" cols="80" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold"></textarea>
+                            <textarea id="txtLetterContentBold" rows="10" class="form-control" asp-for="dictatedLetters.LetterContentBold" name="letterContentBold" required></textarea>
                         </div>
                         <div class="col-md-2"></div>
                     </div>
 
                     <div class="row mb-5">
-                        <div class="col-md-1" class="text-right">Secreterial Team:</div>
-                        <div class="col-md-2">
-                            <select class="w-100" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
+                        <div class="col-md-3">
+                            <label class="form-label">Secreterial Team:</label>
+                            <select class="form-select" id="ddlSecTeam" asp-for=@Model.dictatedLetters.SecTeam name="secTeam">
                                 <option value="">Select...</option>
                                 @foreach (var item in Model.secteams)
                                 {
@@ -167,50 +173,55 @@
                                 }
                             </select>
                         </div>
-                        <div class="col-md-1" class="text-right">Consultant:</div>
-                        <div class="col-md-2">
-                            <select class="w-100" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
+                        <div class="col-md-3">
+                            <label class="form-label">Consultant:</label>
+                            <select class="form-select js-choice" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                                 @foreach (var item in Model.consultants)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>
                                 }
                             </select>
                         </div>
-                        <div class="col-md-1" class="text-right">Genetic Counsellor:</div>
-                        <div class="col-md-2">
-                            <select class="w-100" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
+                        <div class="col-md-3">
+                            <label class="form-label">Genetic Counsellor:</label>
+                            <select class="form-select js-choice" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                                 @foreach (var item in Model.gcs)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>
                                 }
                             </select>
                         </div>
-                        <div class="col-md-1" class="text-right">Date Dictated:</div>
-                        <div class="col-md-2">
-                            <input class="w-100" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
+                        <div class="col-md-3">
+                            <label class="form-label">Date Dictated:</label>
+                            <input class="form-control" id="txtDateDictated" type=date asp-for=@Model.dictatedLetters.DateDictated name="dateDictated" />
                         </div>
                     </div>
                     <hr />
                     <div class="row mb-5">
-                        <div class="col-md-1" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
-                        <div class="col-md-11">
+                        <div class="col-md-2" class="text-right"><b>Letter Content:</b> (type your letter here)</div>
+                        <div class="col-md-10">
                             <textarea id="txtLetterContent" rows="40" cols="200" asp-for="dictatedLetters.LetterContent" name="letterContent" hidden></textarea>
-                            <div class="col-md-10 solidbordertext min-vh-50" id="letterText" contenteditable="true">
-                                @Html.Raw(@Model.dictatedLetters.LetterContent)
+                            <div class="col-md-10 solidbordertext min-vh-50 form-control" id="letterText"  contenteditable="true">
+                                @if (Model.dictatedLetters.LetterContent != null)
+                                {
+                                    @Html.Raw(@Model.dictatedLetters.LetterContent)
+                                }
                             </div>
                         </div>
                     </div>
                     <hr />
                     <div class="row mb-5">
-                        <div class="col-md-2" class="text-right">Enclosures:</div>
+                        <div class="col-md-2 text-right">
+                            <label class="form-label">Enclosures:</label>
+                            </div>
                         <div class="col-md-10">
-                            <textarea id="txtEnclosures" rows="8" cols="40" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
+                            <textarea id="txtEnclosures" rows="8" class="form-control" asp-for="dictatedLetters.Enclosures" name="enclosures"></textarea>
                         </div>
                     </div>
                     <div class="row mb-5">
-                        <div class="col-md-2" class="text-right">Comments:</div>
+                        <div class="col-md-2" >Comments:</div>
                         <div class="col-md-10">
-                            <textarea id="txtComments" rows="4" cols="80" asp-for="dictatedLetters.Comments" name="comments"></textarea>
+                            <textarea id="txtComments" rows="4" class="form-control" asp-for="dictatedLetters.Comments" name="comments"></textarea>
                         </div>
                     </div>
 
@@ -219,31 +230,7 @@
         </div>
 
     </div>
-    <div class="tab-pane fade" id="password" role="tabpanel">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Password</h5>
 
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordCurrent">Current password</label>
-                        <input type="password" class="form-control" id="inputPasswordCurrent">
-                        <small><a href="#">Forgot your password?</a></small>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordNew">New password</label>
-                        <input type="password" class="form-control" id="inputPasswordNew">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="inputPasswordNew2">Verify password</label>
-                        <input type="password" class="form-control" id="inputPasswordNew2">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </form>
-
-            </div>
-        </div>
-    </div>
 </div>
 </div>
 </div>
@@ -256,7 +243,8 @@
 
             @*<div class="row mb-5 g-5">*@
             <div class="d-grid mb-5">
-                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
+                <button class="btn btn-default btn-primary" data-bs-toggle="collapse" data-bs-target="#collapsePatientsTable" 
+                aria-expanded="false" aria-controls="collapseExample">Re: Patients</button>
             </div>
 
             <div class="collapse" id="collapsePatientsTable">
@@ -499,6 +487,7 @@
                 document.getElementById("txtisAddressChanged").value = "true";
             }
         }
+        console.log(document.getElementById("txtisAddressChanged").value)
 
         function ShowLetterToClinician() {
             document.getElementById("ddlLetterToClinician").hidden = false;
@@ -683,7 +672,7 @@
             }
 
             document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
-            document.getElementById("txtisAddressChanged").value = "true";
+            // document.getElementById("txtisAddressChanged").value = "true";
         }
 
         function SetCCAddress(ccCode) {
@@ -836,8 +825,11 @@
         }
 
         function DoPrint() {
+            // alert("Step 1: A print window will open.\nStep 2: You MUST click the 'Print' button in that window to send this letter to the printer.");
             document.getElementById("Print").submit();
+           
         }
+
 
 
     </script>

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Admin-X Epic Patient Search";
 }
 
-<div class="container">
+<div>
     <div class="card">
         <h1 class="card-header">Possible matches for @Model.patient.FIRSTNAME @Model.patient.LASTNAME</h1>
     
@@ -46,78 +46,80 @@
             <h3 class="card-header">No patient/family matches - <a type="button" class="btn btn-outline-primary" asp-controller="NewEpicPatient" asp-action="AssignCGUNumber" asp-route-id=@Model.patient.MPI>Generate New CGU Number</a></h3>
         }
 
-        @if(Model.relativeSearchResultsList.Count() > 0)
-        {
-            <h3>Possible Relative Matches</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>Name</th>
-                        <th>Date of Birth</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.relativeSearchResultsList)
-                    {
+            @if (Model.relativeSearchResultsList.Count() > 0)
+            {
+                <h3>Possible Relative Matches</h3>
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>@item.CGUNo</td>
-                            <td>@item.Firstname @item.Lastname</td>
-                            @if (item.DOB != null)
-                            {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td>Not known</td>
-                            }
-                            <td>@item.NHSNo</td>
+                            <th>CGU Number</th>
+                            <th>Name</th>
+                            <th>Date of Birth</th>
+                            <th>NHS Number</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <h3 class="card-header">No relative matches</h3>
-        }
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.relativeSearchResultsList)
+                        {
+                            <tr>
+                                <td>@item.CGUNo</td>
+                                <td>@item.Firstname @item.Lastname</td>
+                                @if (item.DOB != null)
+                                {
+                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td>Not known</td>
+                                }
+                                <td>@item.NHSNo</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <h3 class="card-header">No relative matches</h3>
+            }
 
-        @if(Model.pedigreeSearchResultsList.Count() > 0)
-        {
-            <h3>Possible Pedigree Matches</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>Name</th>
-                        <th>Date of Birth</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.pedigreeSearchResultsList)
-                    {
+            @if (Model.pedigreeSearchResultsList.Count() > 0)
+            {
+                <h3>Possible Pedigree Matches</h3>
+                <table class="table table-bordered table-striped defaultTable">
+                    <thead>
                         <tr>
-                            <td>@item.CGUNo</td>
-                            <td>@item.Firstname @item.Lastname</td>
-                            @if (item.DOB != null)
-                            {
-                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            }
-                            else
-                            {
-                                <td>Not known</td>
-                            }
-                            <td>@item.NHSNo</td>
+                            <th>CGU Number</th>
+                            <th>Name</th>
+                            <th>Date of Birth</th>
+                            <th>NHS Number</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <h3 class="card-header">No pedigree matches</h3>
-        }
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.pedigreeSearchResultsList)
+                        {
+                            <tr>
+                                <td>@item.CGUNo</td>
+                                <td>@item.Firstname @item.Lastname</td>
+                                @if (item.DOB != null)
+                                {
+                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                }
+                                else
+                                {
+                                    <td>Not known</td>
+                                }
+                                <td>@item.NHSNo</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <h3 class="card-header">No pedigree matches</h3>
+            }
+
+        </div>
     </div>
 </div>

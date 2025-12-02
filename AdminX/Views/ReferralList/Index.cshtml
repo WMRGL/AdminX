@@ -1,19 +1,20 @@
 ﻿@model AdminX.ViewModels.ReferralListVM
 @{
     ViewData["Title"] = "Admin-X - Referral List";
-    ViewData["Page"] = "/ Referral List";
+    ViewData["Page"] = " Referral List";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <h1 class="text-center">New Unassigned Referrals</h1>
-    </div>
+<h2>@ViewData["Page "]</h2>
 
-    <div class="row mb-5 g-5">
-        @if(Model.referralList.Count > 0)
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title text-dark"> New Unassigned Referrals</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.referralList.Count > 0)
         {
-            <table class="table">
-                <thead>
+            <table class="table table-responsive table-bordered table-striped defaultTable">
+                <thead class="table-dark">
                     <tr>
                         <th>CGU number</th>
                         <th>Patient Name</th>
@@ -29,7 +30,7 @@
                             <td><a asp-controller="Referral" asp-action="ProcessNewReferral" asp-route-refID=@item.refid>@item.CGU_No</a></td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             <td>@item.RefType</td>
-                            @if(item.RefDate.HasValue)
+                            @if (item.RefDate.HasValue)
                             {
                                 <td>@item.RefDate.Value.ToString("dd/MM/yyyy")</td>
                             }
@@ -44,8 +45,9 @@
             </table>
         }
         else
-        {   
+        {
             <h2>There are no new referrals awaiting assignment.</h2>
         }
     </div>
 </div>
+
