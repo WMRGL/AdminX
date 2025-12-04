@@ -6,6 +6,7 @@ using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using AdminX.Data;
 using AdminX.Models;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AdminX.Controllers
@@ -275,6 +276,42 @@ namespace AdminX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "UpdateReferralDetails" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult MarkReferralDeleted(int refid, int mpi, bool logicaldelete)
+        {
+            try
+            {
+                string login = User.Identity?.Name ?? "Unknown";
+
+              
+                int success = _CRUD.ReferralDetail(
+                     sType: "Referral",
+                     sOperation: "LogicalDelete", 
+                     sLogin: login,
+                     int1: refid,           
+                     bool1: logicaldelete,     
+
+                     string1: null, string2: null, text: null, string3: null,
+                     string4: null, string5: null, string6: null, string7: null,
+                     string8: null, string9: null, string10: null, string11: null,
+                     string12: null, dDate1: null, dDate2: null, string13: null,
+                     string14: null, int2: null, int3: null, int4: null, int5: null,
+                     int6: null, int7: null, int8: null
+                 );
+
+                if (success != 1)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Could not delete referral.", formName = "MarkReferralDeleted" });
+                }
+                TempData["SuccessMessage"] = "Referral deleted successfully";
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MarkReferralDeleted" });
             }
         }
 

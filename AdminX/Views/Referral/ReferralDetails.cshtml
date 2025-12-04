@@ -6,13 +6,32 @@
 } 
 
 @{
-    ViewBag.HomeButton = new[]
-    {
-        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
-        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1"  }),        
-    };
-}
+    var buttonList = new List<object>();
 
+    buttonList.Add(Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    buttonList.Add(Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+
+    if (Model.staffMember.POSITION == "Admin Team Leader" || Model.staffMember.POSITION == "Admin Manager" || Model.staffMember.POSITION == "System Developer")
+    {
+        var postUrl = Url.Action("MarkReferralDeleted", "Referral");
+        var refId = Model.referral.refid;
+        var mpi = Model.patient.MPI;
+
+        string deleteForm = "<form method='post' action='" + postUrl + "' class='d-inline'>" +
+                            "<input type='hidden' name='refid' value='" + refId + "' />" +
+
+                           
+                            "<input type='hidden' name='logicaldelete' value='true' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi +"' />" +
+
+                            "<button type='submit' class='btn btn-danger me-2 m-1'>Delete Referral</button>" +
+                            "</form>";
+
+        buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(deleteForm));
+    }
+
+    ViewBag.HomeButton = buttonList;
+}
 
 <div class="row">
     <div class="col-md-3 col-xl-2">

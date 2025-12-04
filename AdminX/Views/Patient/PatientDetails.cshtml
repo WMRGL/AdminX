@@ -257,14 +257,14 @@
                 <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#patient-details" role="tab" aria-selected="false" tabindex="-1">
                     Patient Details
                 </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
+                    Active Referrals
+                </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#alert" role="tab" aria-selected="false" tabindex="-1">
                     Active Alerts
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#diary" role="tab" aria-selected="false" tabindex="-1">
                     Diary
-                </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#active-referral" role="tab" aria-selected="false" tabindex="-1">
-                    Active Referrals
                 </a>
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#inactive-referral" role="tab" aria-selected="false" tabindex="-1">
                     Completed Referrals
@@ -1408,7 +1408,8 @@
                                                 <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
                                                 @if (a.BOOKED_DATE != null)
                                                 {
-                                                    <td>@a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                                    <td data-sort= @a.BOOKED_DATE.Value.ToString("yyyyMMdd")>
+                                                        @a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                                                 }
                                                 else
                                                 {
