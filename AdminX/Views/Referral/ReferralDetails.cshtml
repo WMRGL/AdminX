@@ -464,9 +464,9 @@
                         </div>                       
                     </div>
                     <div class="card-body">
-                        <table class="table">
+                        <table class="table table-bordered table-striped defaultTable">
                             <thead>
-                                <tr>
+                                <tr class="table-dark">
                                     <th></th>
                                     <th>Type</th>
                                     <th>Booked Date</th>
@@ -482,7 +482,7 @@
                                     <tr>
                                         <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
                                         <td>@item.AppType</td>
-                                        <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                        <td data-sort=@item.BOOKED_DATE.Value.ToString("yyyyMMdd")>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                                         <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
                                         <td>@item.Clinic</td>
                                         @if (@item.SeenBy != null)

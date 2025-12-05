@@ -5,118 +5,82 @@
 
 <div class="card">
     <div class="card-header">
-        <h5 class="card-title text-dark">New Relative Details</h5>
+        <h5 class="card-title text-dark">New Relative Details</h5>            
+        <a type="button" class="btn btn-outline-primary float-end" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
+
     </div>
     <div class="card-body">
-
-    </div>
-</div>
-
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-auto ms-auto text-end mt-n1">
-            <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
-        </div>
-
-        <div class="col-md-6"></div>        
-    </div>
-
-    <div class="row mb-5">
-        <hr />
-    </div>
-
-    <div class="row mb-5 g-5">
-        <h1></h1>
-    </div>
-
-    <div class="row mb-5 g-5">
         <form id="frmAddNew" asp-action="AddNew">
             <div class="row" id="Metadata">
-                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden/>
+                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden />
             </div>
-            <dl class="row">        
-                <dt class="col-sm-1">
-                    Full Name:
-                </dt>
-                <dd class="col-sm-1">
-                    <label>Title:</label> 
-                </dd>
-                <dd class="col-sm-1">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label"> Title </label>
                     <select class="form-select" name="title">
+                        <option ></option>
                         @foreach (var r in Model.titleList)
                         {
                             <option value=@r.Title>@r.Title</option>
                         }
                     </select>
-                </dd>
-                <dd class="col-sm-1">
-                    <label>First name(s):</label>
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
-                </dd>
-                <dd class="col-sm-2">
-                    <label>Surname:</label>
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurname name="surname" />
-                </dd>
-                <dt class="col-sm-2">
-                    Relation to Proband:
-                </dt>
-                <dd class="col-sm-2">
-                    @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Relation name="relation">
-                        <option value="">Select...</option>
-                        @foreach(var r in Model.relationsList)
-                        {
-                            <option value=@r.RelCode>@r.relation</option>
-                        }
-                    </select>
-                </dd>
-                <dt class="col-sm-2">
-                    DOB:
-                </dt>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="sDOB" />
-                </dd>               
-                <dt class="col-sm-2">DOD: (if deceased)</dt>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="sDOD" />
-                </dd>        
-                <dt class="col-sm-2">
-                    Sex:
-                </dt>
-                <dd class="col-sm-2">
-                    @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Firstname</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Middlename</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
+                </div>
+             
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Surname:</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelSurname name="surname" />
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Relation to Proband</label>
+                    <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex">
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
                         {
                             <option value=@r.SexCode>@r.Sex</option>
                         }
                     </select>
-                </dd>
-                <dt class="col-sm-2">
-                    Affected:
-                </dt>
-                <dd class="col-sm-2">
-                    <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
+                </div>
+     
+                <div class="col-md-6">
+                    <label class="form-label">Affected</label>
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
                         <option value=1>Yes</option>
                         <option value=2 selected>Don't know</option>
                     </select>
-                </dd>
-            </dl>
+                    
+                </div>
+                <div class="col-md-6">
+                    <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
+                </div>
+                
+            </div>
         </form>
+
+    </div>
+</div> 
+
+<div class="">
+    
+    <div class="row mb-5 g-5">
     </div>
 
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
+            
         </div>
     </div>
 </div>

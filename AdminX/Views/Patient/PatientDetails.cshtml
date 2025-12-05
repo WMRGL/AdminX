@@ -1072,19 +1072,18 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <th></th>
+                                            <th scope="col">Effective From</th>
                                             <th scope="col">Type</th>
                                             <th scope="col">Protected Address</th>
-                                            <th scope="col">Effective From</th>
                                             <th scope="col">Details</th>
-
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var a in Model.alerts)
                                         {
                                             <tr>
-                                                <td><a type="button" class="btn btn-default btn-outline-primary" asp-controller="Alert" asp-action="AlertDetails" asp-route-alertID=@a.AlertID>Details</a></td>
+                                                <td data-sort=@a.EffectiveFromDate.ToString("yyyyMMdd")>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
                                                 <td>@a.AlertType</td>
                                                 @if (@a.ProtectedAddress)
                                                 {
@@ -1095,9 +1094,8 @@
                                                 {
                                                     <td>No</td>
                                                 }
-                                                <td>@a.EffectiveFromDate.ToString("dd/MM/yyyy")</td>
                                                 <td>@a.Comments</td>
-
+                                                <td><a type="button" class="btn btn-default btn-outline-primary" asp-controller="Alert" asp-action="AlertDetails" asp-route-alertID=@a.AlertID>Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1206,27 +1204,27 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <th></th>
+                                            
                                             <th scope="col">Diary Date</th>
                                             <th scope="col">Diary With</th>
                                             <th scope="col">Action</th>
                                             <th scope="col">Text</th>
                                             <th scope="col">Doc Code</th>
                                             <th scope="col">Related Ref ID</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var d in Model.diary)
                                         {
                                             <tr>
-                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
                                                 @if (d.DiaryDate != null)
                                                 {
-                                                    <td>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
+                                                    <td data-sort=@d.DiaryDate.Value.ToString("yyyyMMdd")>@d.DiaryDate.Value.ToString("dd/MM/yyyy")</td>
                                                 }
                                                 else
                                                 {
-                                                    <td></td>
+                                                    <td data-sort="0"></td>
                                                 }
 
                                                 <td>@d.DiaryWithName</td>
@@ -1234,6 +1232,7 @@
                                                 <td>@d.DiaryText</td>
                                                 <td>@d.DocCode</td>
                                                 <td>@d.RefID</td>
+                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1264,7 +1263,6 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <td></td>
                                             <td>Referral Date</td>
                                             <td>Type</td>
                                             <td>Referring Clinician</td>
@@ -1274,14 +1272,14 @@
                                             <td>Consultant</td>
                                             <td>GC</td>
                                             <td>Referral Status</td>
+                                            <td></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var r in Model.inactiveReferrals)
                                         {
                                             <tr>
-                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
-                                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td data-sort=@r.RefDate.Value.ToString("yyyyMMdd")>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
                                                 <td>@r.RefType</td>
                                                 @if (@r.ReferringFacilityCode != "GP")
                                                 {
@@ -1298,6 +1296,7 @@
                                                 <td>@r.LeadClinician</td>
                                                 <td>@r.GC</td>
                                                 <td>@r.COMPLETE</td>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1328,7 +1327,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <td></td>
+                                            
                                             <td>Referral Date</td>
                                             <td>Type</td>
                                             <td>Referring Clinician</td>
@@ -1338,14 +1337,14 @@
                                             <td>Consultant</td>
                                             <td>GC</td>
                                             <td>Referral Status</td>
+                                            <td></td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var r in Model.activeReferrals)
                                         {
                                             <tr>
-                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
-                                                <td>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td data-sort=@r.RefDate.Value.ToString("yyyyMMdd")>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
                                                 <td>@r.RefType</td>
                                                 @if (@r.ReferringFacilityCode != "GP")
                                                 {
@@ -1362,6 +1361,7 @@
                                                 <td>@r.LeadClinician</td>
                                                 <td>@r.GC</td>
                                                 <td>@r.COMPLETE</td>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1391,13 +1391,14 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <td></td>
+                                            
                                             <td>Booked Date</td>
                                             <td>Time</td>
                                             <td>Location</td>
                                             <td>Clinician</td>
                                             <td>Type</td>
                                             <td>Outcome</td>
+                                            <td></td>
 
                                         </tr>
                                     </thead>
@@ -1405,7 +1406,6 @@
                                         @foreach (var a in Model.appointments)
                                         {
                                             <tr>
-                                                <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
                                                 @if (a.BOOKED_DATE != null)
                                                 {
                                                     <td data-sort= @a.BOOKED_DATE.Value.ToString("yyyyMMdd")>
@@ -1427,6 +1427,7 @@
                                                 <td>@a.Clinician</td>
                                                 <td>@a.AppType</td>
                                                 <td>@a.Attendance</td>
+                                                <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1451,33 +1452,33 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            <th></th>
-                                            <th>Name</th>
                                             <th>DOB</th>
+                                            <th>Name</th>
                                             <th>Alive</th>
                                             <th>Diagnosis</th>
                                             <th>Status</th>
                                             <th>Site</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var item in Model.relatives)
                                         {
                                             <tr>
-                                                <td><a class="btn btn-outline-primary text-dark" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid> View Details</a></td>
-                                                <td>@item.Name</td>
                                                 @if (@item.DOB.HasValue)
                                                 {
-                                                    <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                                    <td data-sort=@item.DOB.Value.ToString("yyyyMMdd")>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
                                                 }
                                                 else
                                                 {
-                                                    <td>Not known</td>
+                                                    <td data-sort="0">Not known</td>
                                                 }
+                                                <td>@item.Name</td>
                                                 <td>@item.RelAlive</td>
                                                 <td>@item.Diagnosis</td>
                                                 <td>@item.Status</td>
                                                 <td>@item.SiteCode</td>
+                                                <td><a class="btn btn-outline-primary text-dark" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@item.relsid> View Details</a></td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1565,7 +1566,19 @@
                                                 window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
                                             </text>
                 }
+
+             
             });
+
+            //     $('.defaultTable').DataTable({
+            //     info: true,
+            //     "order": [[ 0, "desc" ]],
+            //     paging: true,
+            //     autoWidth: false,
+            //     width: "100%",
+            //     dom: 'lBfrtip'
+
+            // });
         });
 
     </script>
