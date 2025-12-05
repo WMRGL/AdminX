@@ -192,7 +192,8 @@
 </div>
 *@
 <script>
-    function ClearForm() {
+    function ClearForm() 
+    {
         document.getElementById("cguSearch").value = null;
         document.getElementById("forenameSearch").value = null;
         document.getElementById("surnameSearch").value = null;
@@ -201,6 +202,7 @@
         document.getElementById("PatientSearch").submit();
     }
 
+    Inputmask("999 999 9999").mask(document.getElementById("nhsSearch"));
 
 </script>
 

@@ -199,7 +199,14 @@
                     </div>
                     <div class="mb-3 col-md-6">
                         <label class="form-label" for="EmailAddress">Email Address</label>
-                        <input type="text" name="email" class="form-control" id="EmailAddress"  asp-for=@Model.patient.EmailAddress>
+                        @if (Model.patient.EmailAddress == null)
+                        {
+                            <input type="text" name="email" class="form-control" id="EmailAddress"  asp-for=@Model.patient.EmailAddressUnconfirmed>
+                        }
+                        else
+                        {
+                            <input type="text" name="email" class="form-control" id="EmailAddress" asp-for=@Model.patient.EmailAddress>
+                        }
                     </div>
                 </div>
                 <div class="row">
@@ -414,5 +421,6 @@
         }
     }
 
+    Inputmask("999 999 9999").mask(document.getElementById("nhsno"));
 
 </script>
