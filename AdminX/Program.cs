@@ -1,10 +1,16 @@
 using AdminX.Data;
 using AdminX.Meta;
 using APIControllers.Data;
+using Audit.Core;
+using Audit.EntityFramework;
+using Audit.Mvc;
 using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
+
+using Audit.Core.Providers; 
+using Audit.EntityFramework.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false)
@@ -30,6 +36,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddScoped<IAppointmentDQData, AppointmentDQData>();
 builder.Services.AddScoped<IPatientDQData, PatientDQData>();
 builder.Services.AddScoped<IGenderIdentityData, GenderIdentityData>();
+
+builder.Services.AddControllersWithViews(options =>
+{
+    // Adds auditing to ALL controllers automatically
+    options.Filters.Add(new Audit.Mvc.AuditAttribute()
+    {
+        IncludeHeaders = true,
+        IncludeRequestBody = true,
+        IncludeModel = true, 
+        EventTypeName = "{verb} {controller}/{action}" 
+    });
+});
 
 builder.Services.AddMvc();
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("secrets.json");
@@ -67,5 +85,66 @@ app.MapControllerRoute(
     name: "default",
     //pattern: "{controller=Login}/{action=UserLogin}/{id?}");
     pattern: "{controller=Home}/{action=Index}");
+
+
+Audit.Core.Configuration.Setup()
+    .UseConditional(c => c
+        // 1. HANDLE DATABASE CHANGES (Insert/Update/Delete triggered by SaveChanges)
+        .When(ev => ev is AuditEventEntityFramework,
+            new EntityFrameworkDataProvider(ef => ef
+                .UseDbContext<AdminX.Data.AdminContext>()
+                .AuditTypeMapper(t => typeof(AdminX.Models.AuditLog))
+                .AuditEntityAction<AdminX.Models.AuditLog>((ev, entry, audit) =>
+                {
+                    audit.UserId = ev.Environment.UserName;
+                    audit.EventType = ev.EventType;
+                    audit.DateTime = DateTime.UtcNow;
+                    audit.TableName = entry.Table;
+                    audit.Action = entry.Action;
+                    audit.OldValues = entry.ColumnValues.ContainsKey("Old") ? System.Text.Json.JsonSerializer.Serialize(entry.ColumnValues["Old"]) : null;
+                    audit.NewValues = entry.ColumnValues.ContainsKey("New") ? System.Text.Json.JsonSerializer.Serialize(entry.ColumnValues["New"]) : null;
+                    audit.IpAddress = ev.Environment.CustomFields.ContainsKey("IpAddress") ? ev.Environment.CustomFields["IpAddress"]?.ToString() : null;
+                })
+                .IgnoreMatchedProperties(true)
+            )
+        )
+        // 2. HANDLE MVC ACTIONS (Search, View, Get triggered by Controller)
+        .When(ev => ev is AuditEventMvcAction,
+            new DynamicAsyncDataProvider(d => d
+                .OnInsert(async ev =>
+                {
+                    // We need to manually resolve the DbContext to save this "View" event
+                    using (var scope = app.Services.CreateScope())
+                    {
+                        var ctx = scope.ServiceProvider.GetRequiredService<AdminX.Data.AdminContext>();
+                        var mvcData = ev.GetMvcAuditAction(); // Helper to get MVC specific data
+
+                        var log = new AdminX.Models.AuditLog
+                        {
+                            UserId = ev.Environment.UserName ?? "Anonymous",
+                            EventType = ev.EventType, 
+                            DateTime = DateTime.UtcNow,
+                            TableName = mvcData.ControllerName, // Treat Controller as the "Table"
+                            Action = mvcData.ActionName,        // Treat Action as the "Action" (Search/Index)
+
+                            // Save the Search Parameters (e.g. query strings) into NewValues
+                            NewValues = mvcData.ActionParameters != null
+                                        ? System.Text.Json.JsonSerializer.Serialize(mvcData.ActionParameters)
+                                        : null,
+
+                            IpAddress = ev.Environment.CustomFields.ContainsKey("IpAddress")
+                                        ? ev.Environment.CustomFields["IpAddress"]?.ToString()
+                                        : null
+                        };
+
+                        ctx.AuditLogs.Add(log);
+                        await ctx.SaveChangesAsync();
+                    }
+                })
+            )
+        )
+    );
+
+
 
 app.Run();
