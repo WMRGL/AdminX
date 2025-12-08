@@ -35,5 +35,6 @@ namespace AdminX.ViewModels
         public List<ReferralReason> referralReasonsList { get; set; }
         public Triage relatedICP { get; set; }
         public AreaNames areaName { get; set; }
-        }
+        public bool canDeleteICP { get; set; }
+    }
 }

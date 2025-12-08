@@ -494,6 +494,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> EditPatientDetails(int mpi, string? message, bool? success)
         {
             try
@@ -564,6 +565,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> ChangeCGUNumber(int mpi)
         {
             try
@@ -657,6 +659,7 @@ namespace AdminX.Controllers
             return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
 
+        [Authorize]
         public async Task<IActionResult> MakePatientElectronic(int mpi)
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
@@ -673,11 +676,13 @@ namespace AdminX.Controllers
             return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
 
+        [Authorize]
         public async Task<IActionResult> JumpToPatient(int id)
         {
             return RedirectToAction("PatientDetails", "Patient", new { id = id });
         }
 
+        [Authorize]
         public async Task<IActionResult> SynchronisePhenotips(int id)
         {            
             int result = _api.SynchroniseMirrorWithPhenotips(id).Result;
@@ -695,6 +700,7 @@ namespace AdminX.Controllers
             return RedirectToAction("PatientDetails", new { id = id, message = message, success = success });
         }
 
+        [Authorize]
         public async Task<IActionResult> PhenotipsPatientRecord(int id, string? message, bool? success)
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
@@ -715,6 +721,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> EpicPatientChanges(int id)
         {
             _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);

@@ -8,8 +8,6 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using System.Drawing;
-using System.Threading.Tasks;
 
 
 namespace AdminX.Controllers
@@ -18,7 +16,9 @@ namespace AdminX.Controllers
     {
         private readonly ClinicalContext _clinContext;
         private readonly AdminContext _adminContext;
+        private readonly DocumentContext _documentContext;
         private readonly IConfiguration _config;
+        private readonly ConstantsData _constantsData;
         private readonly IPatientData _patientData;
         private readonly IActivityTypeData _activityTypeData;
         private readonly IExternalClinicianData _externalClinicianData;
@@ -40,10 +40,11 @@ namespace AdminX.Controllers
         private readonly ITriageData _triageData;
         private readonly IAreaNamesData _areaNamesData;
 
-        public ReferralController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
+        public ReferralController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
         {
             _clinContext = context;
             _adminContext = adminContext;
+            _documentContext = documentContext;
             _config = config;
             _patientData = new PatientData(context);
             _activityTypeData = new ActivityTypeData(context);
@@ -65,9 +66,11 @@ namespace AdminX.Controllers
             _refReasonData = new RefReasonData(_clinContext);
             _triageData = new TriageData(_clinContext);
             _areaNamesData = new AreaNamesData(_clinContext);
+            _constantsData = new ConstantsData(_documentContext);
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult ReferralDetails(int refID)
         {
             try
@@ -83,6 +86,12 @@ namespace AdminX.Controllers
                 _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
                 ICP icp = _triageData.GetICPDetailsByRefID(refID);
                 _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
+                string canDeleteICP = _constantsData.GetConstant("DeleteICPBtn", 1);
+
+                if(canDeleteICP.ToUpper().Contains(User.Identity.Name.ToUpper()))
+                {
+                    _rvm.canDeleteICP = true;
+                }
 
 
                 if (_rvm.referral.ClockStartDate != null)
@@ -116,6 +125,7 @@ namespace AdminX.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public IActionResult UpdateReferralDetails(int refID)
         {
             try
@@ -308,31 +318,27 @@ namespace AdminX.Controllers
                
 
 
-                if (success != 1)
+                string query = "Select top 1 DeleteReason, DeleteStatus from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
+                string readerObjString = "";
+                int deleteStatus = 0;
+                SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
                 {
-                    
-
-                    var query = "Select top 1 DeleteReason from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
-                    var readerObjString = "";
-                    SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    SqlDataReader reader = cmd.ExecuteReader();
-                    if (reader.Read())
+                    if (!reader.IsDBNull(0))
                     {
-                        if (!reader.IsDBNull(0))
-                        {
-                            readerObjString = reader.GetString(0);
-                        }
+                        readerObjString = reader.GetString(0);
+                        deleteStatus = reader.GetInt16(1);
                     }
-                    conn.Close();
-
-
-                    //TempData["ErrorMessage"] = readerObjString;
-                    return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = readerObjString });
                 }
-                TempData["SuccessMessage"] = "Referral deleted successfully";
-                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = "" });
+                conn.Close();
+
+                bool deleteSuccess = false;
+                if (deleteStatus == 1) { deleteSuccess = true; }                    
+                
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = readerObjString, success = deleteSuccess });
             }
             catch (Exception ex)
             {
@@ -342,6 +348,7 @@ namespace AdminX.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public IActionResult AddNew(int mpi)
         {
             try
@@ -404,6 +411,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult ProcessNewReferral(int refID)
         {
             _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
