@@ -1,12 +1,15 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿using AdminX.Data;
+using AdminX.Meta;
+using AdminX.Models;
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using AdminX.Meta;
-using AdminX.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using AdminX.Data;
-using AdminX.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System.Drawing;
+using System.Threading.Tasks;
 
 
 namespace AdminX.Controllers
@@ -280,7 +283,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult MarkReferralDeleted(int refid, int mpi, bool logicaldelete)
+        public async Task<IActionResult> MarkReferralDeleted(int refid, int mpi, bool logicaldelete)
         {
             try
             {
@@ -302,12 +305,34 @@ namespace AdminX.Controllers
                      int6: null, int7: null, int8: null
                  );
 
+               
+
+
                 if (success != 1)
                 {
-                    return RedirectToAction("ErrorHome", "Error", new { error = "Could not delete referral.", formName = "MarkReferralDeleted" });
+                    
+
+                    var query = "Select top 1 DeleteReason from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
+                    var readerObjString = "";
+                    SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    if (reader.Read())
+                    {
+                        if (!reader.IsDBNull(0))
+                        {
+                            readerObjString = reader.GetString(0);
+                        }
+                    }
+                    conn.Close();
+
+
+                    //TempData["ErrorMessage"] = readerObjString;
+                    return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = readerObjString });
                 }
                 TempData["SuccessMessage"] = "Referral deleted successfully";
-                return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
+                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = "" });
             }
             catch (Exception ex)
             {
