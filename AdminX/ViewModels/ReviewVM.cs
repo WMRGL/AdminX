@@ -15,6 +15,8 @@ namespace AdminX.ViewModels
         public Referral referral { get; set; }
         public ActivityItem activity { get; set; }
         public List<ActivityItem> activityList { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
 
     }
 }

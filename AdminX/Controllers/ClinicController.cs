@@ -51,7 +51,7 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Index(string? filterClinician)
+        public async Task<IActionResult> Index(string? filterClinician, string? message, bool? success)
         {
             try
             {
@@ -69,15 +69,21 @@ namespace AdminX.Controllers
 
                     if (filterClinician != "" && filterClinician != null)
                     {
-                        _cvm.outstandingClinicsList = _clinicData.GetClinicList(filterClinician);
+                        _cvm.outstandingClinicsList = _clinicData.GetClinicList(filterClinician).Distinct().ToList();
                     }
                     else
                     {
-                        _cvm.outstandingClinicsList = _clinicData.GetAllOutstandingClinics();
+                        _cvm.outstandingClinicsList = _clinicData.GetAllOutstandingClinics().Distinct().ToList();
                     }
 
                     _cvm.outstandingClinicsList = _cvm.outstandingClinicsList.Where(c => c.BOOKED_DATE <= DateTime.Today).OrderByDescending(c => c.BOOKED_DATE).ThenBy(c => c.BOOKED_TIME).ToList();
                     _cvm.filterClinician = filterClinician; //to allow the HTML to keep selected parameters
+
+                    if (message != null && message != "")
+                    {
+                        _cvm.message = message;
+                        _cvm.success = success.GetValueOrDefault();
+                    }
 
                     ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                     {
@@ -150,6 +156,11 @@ namespace AdminX.Controllers
                 if (_cvm.Clinic == null)
                 {
                     return RedirectToAction("NotFound", "WIP");
+                }
+
+                if(_cvm.linkedReferral == null)
+                {
+                    return RedirectToAction("Index", "Clinic", new { message = "Appointment ID: " + _cvm.Clinic.RefID + " is not linked to a referral, or the linked referral was deleted", success = false });
                 }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>

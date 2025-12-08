@@ -19,5 +19,7 @@ namespace AdminX.ViewModels
         public List<Referral> referralsList { get; set; }
         public List<ActivityType> appTypeList { get; set; }
         public List<ClinicVenue> venueList { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
     }
 }

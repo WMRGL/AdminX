@@ -39,7 +39,7 @@ namespace AdminX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? message, bool? success)
         {
             try
             {
@@ -54,6 +54,13 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews","", _ip.GetIPAddress());
 
                 _rvm.reviewList = _reviewData.GetReviewsListAll();
+
+                if (message != null && message != "")
+                {
+                    _rvm.message = message;
+                    _rvm.success = success.GetValueOrDefault();
+                }
+
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
@@ -287,14 +294,14 @@ namespace AdminX.Controllers
 
                 if (_rvm.activityDetail is null)
                 {
-                    TempData["ErrorMessage"] = "Patient does not have Referral ID";
-                    return RedirectToAction("Index", "Review");
+                    //TempData["ErrorMessage"] = "Review does not have a parent referral ID";
+                    return RedirectToAction("Index", "Review", new { message = "Review does not have a parent referral ID", success = false });
                 }
 
                 if (_rvm.patient is null)
                 {
-                    TempData["ErrorMessage"] = "Patient does not have Patient ID";
-                    return RedirectToAction("Index", "Review");
+                    //TempData["ErrorMessage"] = "Patient MPI does not match a known patient";
+                    return RedirectToAction("Index", "Review", new { message = "Patient MPI does not match a known patient", success = false });
                 }
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
