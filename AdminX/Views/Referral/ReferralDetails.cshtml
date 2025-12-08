@@ -6,13 +6,32 @@
 } 
 
 @{
-    ViewBag.HomeButton = new[]
-    {
-        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
-        Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1"  }),        
-    };
-}
+    var buttonList = new List<object>();
 
+    buttonList.Add(Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    buttonList.Add(Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+
+    if (Model.staffMember.POSITION == "Admin Team Leader" || Model.staffMember.POSITION == "Admin Manager" || Model.staffMember.POSITION == "System Developer")
+    {
+        var postUrl = Url.Action("MarkReferralDeleted", "Referral");
+        var refId = Model.referral.refid;
+        var mpi = Model.patient.MPI;
+
+        string deleteForm = "<form method='post' action='" + postUrl + "' class='d-inline'>" +
+                            "<input type='hidden' name='refid' value='" + refId + "' />" +
+
+                           
+                            "<input type='hidden' name='logicaldelete' value='true' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi +"' />" +
+
+                            "<button type='submit' class='btn btn-danger me-2 m-1'>Delete Referral</button>" +
+                            "</form>";
+
+        buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(deleteForm));
+    }
+
+    ViewBag.HomeButton = buttonList;
+}
 
 <div class="row">
     <div class="col-md-3 col-xl-2">
@@ -445,9 +464,9 @@
                         </div>                       
                     </div>
                     <div class="card-body">
-                        <table class="table">
+                        <table class="table table-bordered table-striped defaultTable">
                             <thead>
-                                <tr>
+                                <tr class="table-dark">
                                     <th></th>
                                     <th>Type</th>
                                     <th>Booked Date</th>
@@ -463,7 +482,7 @@
                                     <tr>
                                         <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
                                         <td>@item.AppType</td>
-                                        <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                        <td data-sort=@item.BOOKED_DATE.Value.ToString("yyyyMMdd")>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
                                         <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
                                         <td>@item.Clinic</td>
                                         @if (@item.SeenBy != null)
