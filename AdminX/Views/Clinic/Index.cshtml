@@ -45,7 +45,7 @@
                     <label>Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-select js-choice" id="filterClinician" name="filterClinician" asp-for=@Model.filterClinician>
+                    <select class="form-select" id="filterClinician" name="filterClinician" asp-for=@Model.filterClinician>
                         <option value="" selected>Select...</option>
                         @foreach (var item in Model.staffMembers)
                         {

@@ -32,7 +32,7 @@
                             <label>Linked Referral</label>
                         </dt>
                         <dd class="col-sm-10">
-                            <select class="form-select js-choice" name="linkedRefID" id="ddlRefID">
+                            <select class="form-select" name="linkedRefID" id="ddlRefID">
                                 @foreach(var item in Model.referralsList)
                                 {
                                     <option value=@item.refid>@item.refid - @item.RefType on @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.PATHWAY</option>
@@ -44,7 +44,7 @@
                             @Html.DisplayNameFor(model => model.activityItem.TYPE):
                         </dt>
                         <dd class="col-sm-10">
-                            <select class="form-select js-choice" name="appType" id="ddlAppType">
+                            <select class="form-select" name="appType" id="ddlAppType">
                                 <option value="">Select...</option>
                                 @foreach (var item in Model.appTypeList)
                                 {
@@ -175,7 +175,7 @@
                                 <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                             </div>
                             <div class="col-md-4">
-                                <select id="ddlSeenBy" name="clinician1" class="w-100 js-choice form-select">
+                                <select id="ddlSeenBy" name="clinician1" class="w-100 form-select">
                                     <option value="" selected>select...</option>
                                     @foreach (var c in Model.staffMembers)
                                     {
@@ -187,7 +187,7 @@
                         <div class="row">
                             <div class="col-md-8"></div>
                             <div class="col-md-4">
-                                <select id="ddlSeenBy" name="clinician2" class="w-100 js-choice form-select">
+                                <select id="ddlSeenBy" name="clinician2" class="w-100 form-select">
                                     <option value="" selected>select...</option>
                                     @foreach (var c in Model.staffMembers)
                                     {
@@ -199,7 +199,7 @@
                         <div class="row mb-5">
                             <div class="col-md-8"></div>
                             <div class="col-md-4">
-                                <select id="ddlSeenBy" name="clinician3" class="w-100 js-choice form-select">
+                                <select id="ddlSeenBy" name="clinician3" class="w-100 form-select">
                                     <option value="" selected>select...</option>
                                     @foreach (var c in Model.staffMembers)
                                     {

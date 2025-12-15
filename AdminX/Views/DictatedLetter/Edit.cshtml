@@ -109,7 +109,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">From:</label>
-                                <select class="form-select js-choice" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
+                                <select class="form-select" id="ddlLetterFrom" asp-for=@Model.dictatedLetters.LetterFromCode name="letterFromCode">
                                     <option value="">Select...</option>
                                     @foreach (var item in Model.staffMemberList)
                                     {
@@ -175,7 +175,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Consultant:</label>
-                            <select class="form-select js-choice" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
+                            <select class="form-select" id="ddlConsultant" asp-for=@Model.dictatedLetters.Consultant name="consultant">
                                 @foreach (var item in Model.consultants)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>
@@ -184,7 +184,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Genetic Counsellor:</label>
-                            <select class="form-select js-choice" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
+                            <select class="form-select" id="ddlGC" asp-for=@Model.dictatedLetters.GeneticCounsellor name="gc">
                                 @foreach (var item in Model.gcs)
                                 {
                                     <option value=@item.STAFF_CODE>@item.NAME</option>

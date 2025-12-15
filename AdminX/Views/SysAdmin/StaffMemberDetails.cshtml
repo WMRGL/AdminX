@@ -65,7 +65,7 @@
 
                 <div class="mb-3 col-md-4">
                     <label class="form-label" for="team">Team</label>
-                    <select name="type" class="form-select js-choice" id="team" asp-for=@Model.staffMember.BILL_ID>
+                    <select name="type" class="form-select" id="team" asp-for=@Model.staffMember.BILL_ID>
                         @foreach (var item in Model.teams)
                         {
                             <option value=@item>@item</option>

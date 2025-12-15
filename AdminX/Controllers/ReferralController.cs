@@ -143,7 +143,10 @@ namespace AdminX.Controllers
                 _rvm.admin = _staffUserData.GetAdminList();
                 _rvm.admin_status = _adminStatusData.GetStatusAdmin();
                 _rvm.referrers = _externalClinicianData.GetClinicianList();
-                _rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
+                //_rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
+                _rvm.pathways = new List<string>();
+                List<Pathway> pathways = _pathwayData.GetPathwayList();
+                foreach (var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }
                 _rvm.diseases = _diseaseData.GetDiseases();
                 _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
                 _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
@@ -364,9 +367,12 @@ namespace AdminX.Controllers
                 _rvm.gcs = _staffUserData.GetGCList();
                 _rvm.admin = _staffUserData.GetAdminList();
                 _rvm.referrals = _activityData.GetActiveReferralList(mpi);
-                _rvm.referrers = _externalClinicianData.GetClinicianList();
+                _rvm.referrers = _externalClinicianData.GetClinicianList().OrderBy(r => r.LAST_NAME).ToList();
                 _rvm.referrers.Add(_externalClinicianData.GetPatientGPReferrer(mpi));
-                _rvm.pathways = new List<string> { "Cancer", "General" };
+                //_rvm.pathways = new List<string> { "Cancer", "General" };
+                _rvm.pathways = new List<string>();
+                List<Pathway> pathways = _pathwayData.GetPathwayList();
+                foreach(var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }
                 _rvm.admin_status = _adminStatusData.GetStatusAdmin();
                 _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
                 _rvm.subPathways = _pathwayData.GetSubPathwayList();
@@ -414,45 +420,59 @@ namespace AdminX.Controllers
         [Authorize]
         public IActionResult ProcessNewReferral(int refID)
         {
-            _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _rvm.staffMember.STAFF_CODE;
-            IPAddressFinder _ip = new IPAddressFinder(HttpContext);
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Process Epic Referral", "", _ip.GetIPAddress());
-
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-            _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-            _rvm.pathways = new List<string>();// { "Cancer", "General   " };
-            List<Pathway> pathwayList = _pathwayData.GetPathwayList();
-            foreach(var p in pathwayList)
+            try
             {
-                _rvm.pathways.Add(p.CGU_Pathway);
-            }
+                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rvm.staffMember.STAFF_CODE;
+                IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Process Epic Referral", "", _ip.GetIPAddress());
 
-            _rvm.consultants = _staffUserData.GetConsultantsList();
-            _rvm.gcs = _staffUserData.GetGCList();
-            _rvm.admin = _staffUserData.GetAdminList();
-            if (string.IsNullOrEmpty(_rvm.patient.PtAreaCode))
+                _rvm.referral = _referralData.GetReferralDetails(refID);
+                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.pathways = new List<string>();
+                List<Pathway> pathwayList = _pathwayData.GetPathwayList();
+                foreach (var p in pathwayList)
+                {
+                    _rvm.pathways.Add(p.CGU_Pathway);
+                }
+
+                _rvm.consultants = _staffUserData.GetConsultantsList();
+                _rvm.gcs = _staffUserData.GetGCList();
+                _rvm.admin = _staffUserData.GetAdminList();
+                if (string.IsNullOrEmpty(_rvm.patient.PtAreaCode))
+                {
+                    return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
+                }
+                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+
+                return View(_rvm);
+            }
+            catch (Exception ex)
             {
-                return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProcessReferral" });
             }
-            _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
-
-            return View(_rvm);
         }
 
         [HttpPost]
         public IActionResult ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
         {
-            _rvm.referral = _referralData.GetReferralDetails(refID);
-            
-            int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
-
-            if (success != 1)
+            try
             {
-                return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
-            }
+                _rvm.referral = _referralData.GetReferralDetails(refID);
 
-            return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
+                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
+
+                if (success != 1)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
+                }
+
+                return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProcessReferral" });
+            }
         }
     }
 }

@@ -50,7 +50,7 @@
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-1 text-sm-end">  Relation to Proband</label>
                 <div class="col-sm-7">
-                    <select class="form-select js-choice" asp-for=@Model.relativeDetails.RelCode name="relation">
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation">
                         <option value="">Select...</option>
                         @foreach (var r in Model.relationList)
                         {

@@ -32,7 +32,7 @@
                         <label>Staff Member:</label>
                     </div>
                     <div class="col-md-4">
-                        <select class="form-select js-choice" name="staffCode" asp-for=@Model.staffCode>
+                        <select class="form-select" name="staffCode" asp-for=@Model.staffCode>
                             @foreach (var item in Model.clinicians)
                             {
                                 <option value=@item.STAFF_CODE>@item.NAME</option>

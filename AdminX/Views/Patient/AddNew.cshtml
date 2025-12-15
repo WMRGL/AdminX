@@ -160,7 +160,7 @@
 
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
-                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
+                        <select class="form-select" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()">
                             <option value="" selected="@(string.IsNullOrEmpty(Model.gpPracticeCode) ? "selected" : null)">Select...</option>
                             @foreach (var item in Model.GPPracticeList)
                             {
@@ -227,7 +227,7 @@
                 <div class="row">
                     <div class="mb-3 col-md-6">
                         <label class="form-label">Area Code</label>
-                        <select name="AreaCode" class="form-select js-choice" id="AreaCode">
+                        <select name="AreaCode" class="form-select" id="AreaCode">
                             <option value="">Select Area Code</option>
                             @foreach(var item in Model.areaNamesList)
                             {

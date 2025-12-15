@@ -42,7 +42,7 @@
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-end">Referral</label>
                 <div class="col-sm-10">
-                    <select class="form-select js-choice" name="refID" id="ddlRefID">
+                    <select class="form-select" name="refID" id="ddlRefID">
                         <option value="">Select</option>
                         @foreach (var item in Model.referralList)
                         {
@@ -105,7 +105,7 @@
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-end">To clinician (if applicable)</label>
                 <div class="col-sm-10">
-                <select class="form-select js-choice" name="clinicianCode">
+                <select class="form-select" name="clinicianCode">
                         <option value="">Select</option>
                         @foreach (var item in Model.clinicianList)
                         {
@@ -147,7 +147,7 @@
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-end">Leaflets</label>
                 <div class="col-sm-10">
-                    <select class="form-select js-choice" name="clinicianCode">
+                    <select class="form-select" name="clinicianCode">
                         <option value="0">Select</option>
                         @foreach (var l in Model.leaflets)
                         {

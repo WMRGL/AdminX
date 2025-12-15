@@ -32,7 +32,7 @@
                     <div class="mb-3 row">
                         <label class="col-form-label col-sm-1 ">Action Code</label>
                         <div class="col-sm-11">
-                            <select name="diaryAction" class="form-select js-choice" asp-for=@Model.diary.DiaryAction>
+                            <select name="diaryAction" class="form-select" asp-for=@Model.diary.DiaryAction>
                                 <option value="">Select</option>
                                 @foreach (var item in Model.diaryActionsList)
                                 {
@@ -51,7 +51,7 @@
                     <div class="mb-3 row">
                         <label class="col-form-label col-sm-1 ">DocCode</label>
                         <div class="col-sm-11">
-                            <select name="docCode" class="form-select js-choice" asp-for=@Model.diary.DocCode>
+                            <select name="docCode" class="form-select" asp-for=@Model.diary.DocCode>
                                 <option value="">Select</option>
                                 @foreach (var item in Model.documentsList)
                                 {
@@ -63,7 +63,7 @@
                     <div class="mb-3 row">
                         <label class="col-form-label col-sm-1 ">Referral</label>
                         <div class="col-sm-11">
-                            <select name="refID" class="form-select js-choice" asp-for=@Model.diary.RefID>
+                            <select name="refID" class="form-select" asp-for=@Model.diary.RefID>
                                 @foreach (var item in Model.referralsList)
                                 {
                                     <option value=@item.refid>@item.refid - @item.RefType, @item.RefDate</option>

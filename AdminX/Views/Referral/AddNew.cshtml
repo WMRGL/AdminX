@@ -46,7 +46,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="type">Type</label>
-                            <select class="form-select js-choice" id="type" name="refType">
+                            <select class="form-select" id="type" name="refType">
                                 @foreach (var item in Model.activities)
                                 {
                                     <option value=@item.APP_TYPE>@item.APP_TYPE</option>
@@ -82,7 +82,7 @@
                     <div class="row">
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="indication">Indication</label>                            
-                            <select class="form-control js-choice" id="ddlIndication" name="indication">
+                            <select class="form-control" id="ddlIndication" name="indication">
                                 <option value="" selected>Select</option>
                                 @foreach (var item in Model.indicationList)
                                 {
@@ -119,28 +119,31 @@
                     <div class="row">
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="consultant">Consultant</label>
-                            <select class="form-select js-choice" id="ddlConsultant" name="consultant">
+                            <select class="form-select" id="ddlConsultant" name="consultant">
+                                <option value=""></option>
                                 @foreach (var item in Model.consultants)
                                 {
-                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                    <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                                 }
                             </select>
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="refDate">Genetic Counsellor</label>
-                            <select name="gc" id="ddlGc" class="form-select js-choice">
+                            <select name="gc" id="ddlGc" class="form-select">
+                                <option value=""></option>
                                 @foreach (var item in Model.gcs)
                                 {
-                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                    <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                                 }
                             </select>
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label" for="refDate">Admin Contact</label>
-                            <select class="form-select js-choice" id="ddlAdmin" name="admin">
+                            <select class="form-select" id="ddlAdmin" name="admin">
+                                <option value=""></option>
                                 @foreach (var item in Model.admin)
                                 {
-                                    <option value=@item.STAFF_CODE>@item.NAME</option>
+                                    <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
                                 }
                             </select>
                         </div>
@@ -148,7 +151,7 @@
                         <div class="row">
                             <div class="col-md-10">
                                 <label class="form-label" for="refDate">Referring Clinician</label>
-                                <select class="form-select js-choice" id="ddlRefPhys" name="refPhys">
+                                <select class="form-select" id="ddlRefPhys" name="refPhys">
                                     <option value=@Model.patient.GP_Code selected>Use Patient's GP (@Model.patient.GP - @Model.patient.GP_Facility)</option>
                                     @foreach (var item in Model.referrers)
                                     {
@@ -230,7 +233,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label class="form-label">Referral Reason Code</label>
-                                    <select class="form-select js-choice" name="refReason">
+                                    <select class="form-select" name="refReason">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)
                                         {
@@ -240,7 +243,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <label class="form-label">Affected?</label>
-                                    <select class="form-select js-choice" name="refReasonAff">
+                                    <select class="form-select" name="refReasonAff">
                                         <option value="0">Not affected</option>
                                         <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
@@ -250,7 +253,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     
-                                    <select  class="form-select js-choice" name="refReason1">
+                                    <select  class="form-select" name="refReason1">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)
                                         {
@@ -259,7 +262,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select class="form-select js-choice" name="OthReason1Aff">
+                                    <select class="form-select" name="OthReason1Aff">
                                         <option value="0">Not affected</option>
                                         <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
@@ -268,7 +271,7 @@
                             </div>                            
                             <div class="row">
                                 <div class="col-md-4">                            
-                                    <select class="form-select js-choice" name="refReason2">
+                                    <select class="form-select" name="refReason2">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)
                                         {
@@ -277,7 +280,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select class="form-select js-choice" name="OthReason2Aff">
+                                    <select class="form-select" name="OthReason2Aff">
                                         <option value="0">Not affected</option>
                                         <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
@@ -286,7 +289,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">                            
-                                    <select class="form-select js-choice" name="refReason3">
+                                    <select class="form-select" name="refReason3">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)
                                         {
@@ -295,7 +298,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select class="form-select js-choice" name="OthReason3Aff">
+                                    <select class="form-select" name="OthReason3Aff">
                                         <option value="0">Not affected</option>
                                         <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
@@ -304,7 +307,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">                                
-                                    <select class="form-select js-choice" name="refReason4">
+                                    <select class="form-select" name="refReason4">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.referralReasonsList)
                                         {
@@ -313,7 +316,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-2">
-                                    <select class="form-select js-choice" name="OthReason4Aff">
+                                    <select class="form-select" name="OthReason4Aff">
                                         <option value="0">Not affected</option>
                                         <option value="-1">Affected</option>
                                         <option value="1" selected>Unclear</option>
@@ -349,41 +352,43 @@
 
     function ShowCancerStuff()
     {
-        var cStuff = document.getElementById("cancerStuff");
+        var cStuff = document.getElementById("cancerStuff");        
 
         if(document.getElementById("refPathway").value == "Cancer")
         {
-            cStuff.hidden = false;            
+            cStuff.hidden = false;
+            document.getElementById("type").value = "New Referral";
             document.getElementById("ddlIndication").value = "?Cancer";
             document.getElementById("ddlClinClass").value = "Routine";
             document.getElementById("ddlPregnancy").value = "No Pregnancy";
             document.getElementById("admin_status").value = "New Referral";
             
-            document.getElementById("ddlConsultant").value = "@Model.areaName.ConsCode";
-            document.getElementById("ddlGc").value = "@Model.areaName.GC";            
-            document.getElementById("ddlAdmin").value = "@Model.areaName.MedSecCode";
+            document.getElementById("ddlConsultant").value = "@Model.areaName.ConsCode.ToUpper()";
+            document.getElementById("ddlGc").value = "@Model.areaName.GC.ToUpper()";
+            document.getElementById("ddlAdmin").value = "@Model.areaName.MedSecCode.ToUpper()";            
         }
         else
         {
             cStuff.hidden = true;
-            document.getElementById("ddlIndication").value = "";
+            document.getElementById("type").value = "Incomplete Referral";
+            document.getElementById("ddlIndication").value = "?Other";
             document.getElementById("ddlClinClass").value = "";
             document.getElementById("ddlPregnancy").value = "";
             document.getElementById("admin_status").value = "";
 
-            document.getElementById("ddlConsultant").value = "@Model.areaName.GenCons";
-            document.getElementById("ddlGc").value = "@Model.areaName.GenGC";
-            document.getElementById("ddlAdmin").value = "@Model.areaName.GenAdmin";
+            document.getElementById("ddlConsultant").value = "";
+            document.getElementById("ddlGc").value = "";
+            document.getElementById("ddlAdmin").value = "";
         }        
     }
 
-    function SetReferrerToGP()
+    function SetReferrerToGP() //this isn't called from anywhere, do we actually need it...?
     {
         var _refer = document.getElementById("ddlRefPhys");
         const _newRefer = "@Model.patient.GP_Code";
-        window.alert(_newRefer);        
+        
         _refer.value = _newRefer;
-    }
+    }    
 
 </script>
 

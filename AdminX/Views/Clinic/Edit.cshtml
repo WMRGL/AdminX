@@ -80,7 +80,7 @@
                             <label for="ddlSeenBy" id="lblSeenBy">Seen by:</label>
                         </div>
                         <div class="col-md-4">
-                            <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="seenBy" class="w-100 js-choice form-select">
+                            <select asp-for=@Model.activityItem.SEEN_BY id="ddlSeenBy" name="seenBy" class="w-100 form-select">
                                 <option value="" selected>select...</option>
                                 @foreach (var c in Model.staffMembers)
                                 {

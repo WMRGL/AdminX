@@ -979,7 +979,7 @@
                             <div class="mb-3 row">
                                 <label class="col-form-label col-sm-2 ">Language</label>
                                 <div class="col-sm-8">
-                                    <select class="form-select js-choice" name="LanguageName">
+                                    <select class="form-select" name="LanguageName">
                                         <option value="" selected></option>
                                         @foreach (var item in Model.languages)
                                         {
@@ -1129,7 +1129,7 @@
                                                 <div class="mb-3 row">
                                                     <label class="col-form-label col-sm-3 text-sm-end">Action Code:</label>
                                                     <div class="col-sm-9">
-                                                        <select name="diaryAction" class="form-select js-choice">
+                                                        <select name="diaryAction" class="form-select">
                                                             <option value="">Select</option>
                                                             @foreach (var item in Model.diaryActionsList)
                                                             {
@@ -1149,7 +1149,7 @@
                                                 <div class="mb-3 row">
                                                     <label class="col-form-label col-sm-3 text-sm-end">DocCode:</label>
                                                     <div class="col-sm-9">
-                                                        <select name="docCode" class="form-select js-choice">
+                                                        <select name="docCode" class="form-select">
                                                             <option value="">Select</option>
                                                             @foreach (var item in Model.documentsList)
                                                             {

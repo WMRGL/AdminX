@@ -381,7 +381,7 @@ namespace AdminX.Controllers
                     {
                         cguNumber = fileNumber + "." + patientNumber.ToString();
                     }
-                }
+                }                
 
                 _pvm.cguNumber = cguNumber;
                 _pvm.firstName = firstname;

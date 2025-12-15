@@ -34,7 +34,6 @@
             <div class="col-md-4">
                 @Model.referral.INDICATION
             </div>
-
         </div>
 
 
@@ -42,14 +41,14 @@
         <div class="row mb-3">
             <div class="col">
                 <label class="form-label">Referral Pathway</label>
-                    <select class="form-select" name="pathway" id="ddlPathways">
-                        <option value=""></option>
-                        @foreach (var item in Model.pathways)
-                        {
-                            <option value=@item>@item</option>
-                        }
-                    </select>
-                    <h5  class="mt-4"id="manualChoiceCaption" hidden>Manual selection required</h5>
+                <select class="form-select" name="pathway" id="ddlPathways">
+                    <option value=""></option>
+                    @foreach (var item in Model.pathways)
+                    {
+                        <option value=@item>@item</option>
+                    }
+                </select>
+                <h5  class="mt-4"id="manualChoiceCaption" hidden>Manual selection required</h5>
             </div>
             <div class="col">
                 <label class="form-label">Consultant</label>
@@ -71,25 +70,19 @@
                     }
                 </select>
             </div>
-                <div class="col">
-                    <label class="form-label">Admin Contact</label>
-                    <select class="form-select" name="admin" id="ddlAdmin">
-                        <option value=""></option>
-                        @foreach (var item in Model.admin)
-                        {
-                            <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
-                        }
-                    </select>
-                </div>
-         
-        </div>
-   
+            <div class="col">
+                <label class="form-label">Admin Contact</label>
+                <select class="form-select" name="admin" id="ddlAdmin">
+                    <option value=""></option>
+                    @foreach (var item in Model.admin)
+                    {
+                        <option value=@item.STAFF_CODE.ToUpper()>@item.NAME</option>
+                    }
+                </select>
+            </div>         
+        </div>   
 
-        <div class="row mb-5">
-          
-         
-
-
+        <div class="row mb-5">          
             <div class="row ">
                 <input name="refID" asp-for=@Model.referral.refid hidden />
                 <div class="col-md-2">
@@ -97,13 +90,7 @@
                 </div>
             </div>
         </form>
-
     </div>
-
-
-
-  
-
 </div>
 
 <script>
@@ -119,8 +106,7 @@
         var adminList = document.getElementById("ddlAdmin");        
         var refCons;
         var refGC;
-        var refAdmin;
-               
+        var refAdmin;               
 
         if(pw.value.includes("Cancer"))
         {
@@ -144,19 +130,7 @@
             {
                 adminList.value = refAdmin;
             }
-            document.getElementById("manualChoiceCaption").hidden = true;
-            // document.getElementById("selected_admin").value = refAdmin;
-            // document.getElementById("selected_admin").text = refAdmin;
-
-            // const adminContact = adminList.querySelector('option[value=@Model.areaName.FHCStaffCode]');
-
-            // if (!adminContact) {
-            //     adminList.prepend(specialOption)
-            //     adminList.val('@Model.areaName.FHCStaffCode');
-            // } else {
-            //     adminContact.remove
-            // }
-  
+            document.getElementById("manualChoiceCaption").hidden = true;  
         }
         else
         {
@@ -175,7 +149,8 @@
         }
     }
 
-     function CheckFormValid() { //validation to ensure all required data is entered
+    function CheckFormValid() 
+    { //validation to ensure all required data is entered
 
         if (document.getElementById("ddlPathways").value == null || document.getElementById("ddlPathways").value == "")
         {
@@ -202,8 +177,6 @@
         }
 
         return 1;
-    }
-
-   
+    }   
 
 </script>

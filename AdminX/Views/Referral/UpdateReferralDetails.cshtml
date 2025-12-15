@@ -96,7 +96,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="consultant">Consultant</label>
-                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select">
                                             <option value="" selected></option>
                                             @foreach (var item in Model.consultants)
                                             {
@@ -106,7 +106,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="nurse">Counsellor/Nurse </label>
-                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select">
                                             <option value="" selected></option>
                                             @foreach (var item in Model.gcs)
                                             {
@@ -116,7 +116,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="admin">Admin Contact</label>
-                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select">
                                             <option selected="">@Model.referral.AdminContact</option>
                                             @foreach (var item in Model.admin)
                                             {
@@ -130,7 +130,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="referrerCode">Referrer Code</label>
-                                        <select id="referrerCode" name="ReferrerCode" class="form-select js-choice">
+                                        <select id="referrerCode" name="ReferrerCode" class="form-select">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             @foreach (var item in Model.referrers)
                                             {
@@ -160,7 +160,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="indication">Indication</label>
-                                        <select class="form-control js-choice" name="indication" asp-for=@Model.referral.INDICATION>
+                                        <select class="form-control" name="indication" asp-for=@Model.referral.INDICATION>
                                             @foreach (var item in Model.indicationList)
                                             {
                                                 <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
@@ -169,7 +169,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select js-choice">
+                                        <select id="rclass" name="RefClass" class="form-select">
                                             <option selected="">@Model.referral.RefClass</option>
                                             <option value="Urgent">Urgent</option>
                                             <option value="Fast Track">Fast Track</option>
@@ -205,7 +205,7 @@
                                     </div>
                                     <div class="mb-3 col-md-6">
                                         <label class="form-label" for="admin_status">Admin Status</label>
-                                        <select id="admin_status" name="Status_Admin" class="form-control js-choice">
+                                        <select id="admin_status" name="Status_Admin" class="form-control">
                                             <option value="" selected>@Model.referral.Status_Admin</option>
                                             @foreach (var item in Model.admin_status)
                                             {
@@ -220,7 +220,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="ref_code">Referral Reason Code</label>
-                                        <select id="ref_code" class="form-control js-choice" name="RefReasonCode" asp-for=@Model.referral.RefReasonCode>
+                                        <select id="ref_code" class="form-control" name="RefReasonCode" asp-for=@Model.referral.RefReasonCode>
                                             <option value="">Select</option>
                                             @foreach (var item in Model.referralReasonsList)
                                             {
@@ -228,28 +228,28 @@
                                             }
                                         </select>
 
-                                        <select name="OthReason1" class="form-control js-choice" asp-for=@Model.referral.OthReason1>
+                                        <select name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
                                             <option value="">Select</option>
                                             @foreach (var item in Model.referralReasonsList)
                                             {
                                                 <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                             }
                                         </select>
-                                        <select name="OthReason2" class="form-control js-choice" asp-for=@Model.referral.OthReason2>
+                                        <select name="OthReason2" class="form-control" asp-for=@Model.referral.OthReason2>
                                             <option value="">Select</option>
                                            @foreach (var item in Model.referralReasonsList)
                                             {
                                                 <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                             }
                                         </select>
-                                        <select name="OthReason3" class="form-control js-choice" asp-for=@Model.referral.OthReason3>
+                                        <select name="OthReason3" class="form-control" asp-for=@Model.referral.OthReason3>
                                             <option value="">Select</option>
                                             @foreach (var item in Model.referralReasonsList)
                                             {
                                                 <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                             }
                                         </select>
-                                        <select name="OthReason4" class="form-control js-choice" asp-for=@Model.referral.OthReason4>
+                                        <select name="OthReason4" class="form-control" asp-for=@Model.referral.OthReason4>
                                             <option value="">Select</option>
                                             @foreach (var item in Model.referralReasonsList)
                                             {
@@ -259,27 +259,27 @@
                                     </div>
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="inputZip">Affected?</label><br />
-                                        <select class="form-select js-choice" name="refReasonAff" asp-for=@Model.referral.RefReasonAff>
+                                        <select class="form-select" name="refReasonAff" asp-for=@Model.referral.RefReasonAff>
                                             <option value="0">Not affected</option>
                                             <option value="-1">affected</option>
                                             <option value="1">Unclear</option>
                                         </select>
-                                        <select class="form-select js-choice" name="OthReason1Aff" asp-for=@Model.referral.OthReason1Aff>
+                                        <select class="form-select" name="OthReason1Aff" asp-for=@Model.referral.OthReason1Aff>
                                             <option value="0">Not affected</option>
                                             <option value="-1">affected</option>
                                             <option value="1">Unclear</option>
                                         </select>
-                                        <select class="form-select js-choice" name="OthReason2Aff" asp-for=@Model.referral.OthReason2Aff>
+                                        <select class="form-select" name="OthReason2Aff" asp-for=@Model.referral.OthReason2Aff>
                                             <option value="0">Not affected</option>
                                             <option value="-1">affected</option>
                                             <option value="1">Unclear</option>
                                         </select>
-                                        <select class="form-select js-choice" name="OthReason3Aff" asp-for=@Model.referral.OthReason3Aff>
+                                        <select class="form-select" name="OthReason3Aff" asp-for=@Model.referral.OthReason3Aff>
                                             <option value="0">Not affected</option>
                                             <option value="-1">affected</option>
                                             <option value="1">Unclear</option>
                                         </select>
-                                        <select class="form-select js-choice" name="OthReason4Aff" asp-for=@Model.referral.OthReason4Aff>
+                                        <select class="form-select" name="OthReason4Aff" asp-for=@Model.referral.OthReason4Aff>
                                             <option value="0">Not affected</option>
                                             <option value="-1">affected</option>
                                             <option value="1">Unclear</option>
@@ -444,7 +444,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="consultant">Consultant</label>
-                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select">
                                             <option value="" selected></option>
                                             @foreach (var item in Model.consultants)
                                             {
@@ -454,7 +454,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="nurse">Counsellor/Nurse </label>
-                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select">
                                             <option value="" selected></option>
                                             @foreach (var item in Model.gcs)
                                             {
@@ -464,7 +464,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="admin">Admin Contact</label>
-                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select js-choice">
+                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select">
                                             <option selected="">@Model.referral.AdminContact</option>
                                             @foreach (var item in Model.admin)
                                             {
@@ -478,7 +478,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="referrerCode">Referrer Code</label>
-                                        <select id="referrerCode" name="ReferrerCode" class="form-select js-choice">
+                                        <select id="referrerCode" name="ReferrerCode" class="form-select">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             @foreach (var item in Model.referrers)
                                             {
@@ -500,7 +500,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputEmail4">Pregnancy</label>
-                                        <select id="inputState" name="PREGNANCY" class="form-select js-choice">
+                                        <select id="inputState" name="PREGNANCY" class="form-select">
                                             <option selected="">@Model.referral.PREGNANCY</option>
                                             <option value="No Pregnancy">No Pregnancy</option>
                                             <option value="Pregnant">Pregnant</option>
@@ -518,7 +518,7 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select js-choice" asp-for=@Model.referral.RefClass>                                            
+                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>                                            
                                             <option value="Urgent">Urgent</option>
                                             <option value="Fast Track">Fast Track</option>
                                             <option value="Routine">Routine</option>
@@ -552,7 +552,7 @@
                                     @*
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="admin_status">Admin Status</label>
-                                        <select id="admin_status" name="Status_Admin" class="form-control js-choice">
+                                        <select id="admin_status" name="Status_Admin" class="form-control">
                                             <option value="" selected>@Model.referral.Status_Admin</option>
                                             @foreach (var item in Model.admin_status)
                                             {
