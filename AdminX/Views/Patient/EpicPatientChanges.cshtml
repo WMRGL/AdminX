@@ -85,6 +85,37 @@
             </div>
         }
 
+        @if (Model.patient.EthnicCode != Model.epicPatient.EthnicCode && Model.epicPatient.EthnicCode != null)
+        {
+            <div class="row mb-2 g-2">
+                <div class="col-md-2">
+                    <h3>Change in Ethnic Code</h3>
+                </div>
+                <div class="col-md-1">
+                    <b>CGU record:</b>
+                </div>
+                @if (Model.patient.EthnicCode != null)
+                {
+                    <div class="col-md-2">
+                        @Model.patient.EthnicCode (@Model.patient.Ethnic)
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-2"></div>                    
+                }
+                <div class="col-md-1">
+                    <b>Epic record:</b>
+                </div>
+                <div class="col-md-2">
+                    @Model.epicPatient.EthnicCode
+                </div>
+                <div class="col-md-2">
+                    <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit("EthnicCode")>Accept Ethnic Code change</button>
+                </div>
+            </div>
+        }
+
         @if (Model.patient.POSTCODE != Model.epicPatient.PostCode)
         {
             <div class="row mb-2 g-2">

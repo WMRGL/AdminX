@@ -138,7 +138,8 @@ namespace AdminX.Controllers
                             _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
                             (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
                             _pvm.patient.GP_Code != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
-                            _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile)
+                            _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile ||
+                            _pvm.patient.EthnicCode != _pvm.epicPatient.EthnicCode)
                         {
                             _pvm.isEpicChanged = true;
                         }
