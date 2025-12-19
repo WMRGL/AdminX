@@ -116,7 +116,7 @@ namespace AdminX.Controllers
                     Action = "Index",
 
                 },
-                new BreadcrumbItem { Text = "Add" }
+                new BreadcrumbItem { Text = "Complete" }
             };
 
                 return View(_ivm);
@@ -285,6 +285,23 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-canTriage" });
             }
-        }        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DoHaemoglobinopathyTriage (int icpID)
+        {
+            try
+            {
+                int success = _crud.TriageDetail("Haemoglobinopathy", "", icpID, 0,0,"","","","",User.Identity.Name);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-hbeTriage(SQL)" }); }
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-hbeTriage" });
+            }
+        }
     }
 }

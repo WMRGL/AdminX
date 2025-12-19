@@ -214,6 +214,18 @@
                     <div class="col-md-2"></div>
                 </div>
             </form>
+            <form id="formICPHBE" asp-action="DoHaemoglobinopathyTriage">
+                <div id="metadata-hbe" hidden>
+                    <input value=@Html.DisplayFor(model => model.triage.ICPID) name="icpID" />
+                </div>
+                <div class="row ">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8">
+                        <button id="btnHBETriage" type="submit" class="btn btn-default btn-outline-primary mt-2">Complete Haemoglobinopathy Triage</button>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -276,31 +288,40 @@
     function LoadICP() 
     {
         var _rp = "@(Model.triage.ReferralPathway)";
+        var _rpSub = "@(Model.referralDetails.Pathway_Subset)";
         
         document.getElementById("formICPGeneral").hidden = true;
         document.getElementById("formICPCancer").hidden = true;
+        document.getElementById("formICPHBE").hidden = true;
 
         if (_rp.match("Gen*")) 
         {
-            document.getElementById("formICPGeneral").hidden = false;
-            document.getElementById("metadata-general").hidden = true;
-            //document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
-            if(document.getElementById("ddlTreatPath1").value == 2)
+            if(_rpSub.match("Haemo*"))
             {
-                document.getElementById("ddlTreatPath2-NoClinic").hidden = false;
+                document.getElementById("formICPHBE").hidden = false;
             }
-            else if(document.getElementById("ddlTreatPath1").value > 2)
+            else
             {
-                document.getElementById("ddlTreatPath2-Clinic").hidden = false;
-            }
+                document.getElementById("formICPGeneral").hidden = false;
+                document.getElementById("metadata-general").hidden = true;
+                //document.getElementById("ddlIsSPR").value = "@(Model.triage.ConsWLForSPR)";
+                if(document.getElementById("ddlTreatPath1").value == 2)
+                {
+                    document.getElementById("ddlTreatPath2-NoClinic").hidden = false;
+                }
+                else if(document.getElementById("ddlTreatPath1").value > 2)
+                {
+                    document.getElementById("ddlTreatPath2-Clinic").hidden = false;
+                }
 
-            if("@Model.referralDetails.Pathway_Subset".match("Haem*"))
-            {
-                document.getElementById("ddlTreatPath1").hidden = true;
-                document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
-                document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+                if("@Model.referralDetails.Pathway_Subset".match("Haem*"))
+                {
+                    document.getElementById("ddlTreatPath1").hidden = true;
+                    document.getElementById("ddlTreatPath2-NoClinic").hidden = true;
+                    document.getElementById("ddlTreatPath2-Clinic").hidden = true;
+                }
             }
-        }
+        }        
         else 
         {
             document.getElementById("formICPCancer").hidden = false;
