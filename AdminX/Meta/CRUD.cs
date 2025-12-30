@@ -5,7 +5,7 @@ using System.Net;
 
 namespace AdminX.Meta
 {
-    interface ICRUD
+    public interface ICRUD
     {
         public int CallStoredProcedure(string sType, string sOperation, int int1, int int2, int int3,
             string string1, string string2, string string3, string text, string sLogin,

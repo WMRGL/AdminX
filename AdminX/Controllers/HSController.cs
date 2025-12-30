@@ -14,32 +14,32 @@ namespace AdminX.Controllers
 {
     public class HSController
     {
-        private readonly ClinicalContext _context;
-        private readonly DocumentContext _docContext;
-        private readonly AdminContext _adminContext;
-        private readonly IHSData _hSData;
-        private readonly IReferralData _referralData;
-        private readonly IPatientData _patientData;
-        private readonly IConstantsData _constantsData;
+        //private readonly ClinicalContext _context;
+        //private readonly DocumentContext _docContext;
+        //private readonly AdminContext _adminContext;
+        private readonly IHSDataAsync _hSData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IConstantsDataAsync _constantsData;
 
-        public HSController(ClinicalContext context, DocumentContext documentContext, AdminContext adminContext)
+        public HSController(IConfiguration config, IHSDataAsync hs, IReferralDataAsync referral, IPatientDataAsync patient, IConstantsDataAsync constants)
         {
-            _context = context;
-            _docContext = documentContext;
-            _adminContext = adminContext;
-            _hSData = new HSData(_adminContext);
-            _referralData = new ReferralData(_context);
-            _patientData = new PatientData(_context);
-            _constantsData = new ConstantsData(_docContext);
+            //_context = context;
+            //_docContext = documentContext;
+            //_adminContext = adminContext;
+            _hSData = hs;
+            _referralData = referral;
+            _patientData = patient;
+            _constantsData = constants;
         }
 
-        public void PrintHSForm(int refid, int diaryID, string user, bool? isPreview = false)
+        public async Task PrintHSForm(int refid, int diaryID, string user, bool? isPreview = false)
         {
             string docCode = "HS";
-            Referral referral = _referralData.GetReferralDetails(refid);
-            Patient pat = _patientData.GetPatientDetails(referral.MPI);
+            Referral referral = await _referralData.GetReferralDetails(refid);
+            Patient pat = await _patientData.GetPatientDetails(referral.MPI);
             
-            List<HS> hs = _hSData.GetHSList(pat.PEDNO);
+            List<HS> hs = await _hSData.GetHSList(pat.PEDNO);
 
             MigraDoc.DocumentObjectModel.Document document = new MigraDoc.DocumentObjectModel.Document();
 
@@ -159,7 +159,7 @@ namespace AdminX.Controllers
 
             if (!isPreview.GetValueOrDefault())
             {
-                string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
+                string edmsPath = await _constantsData.GetConstant("PrintPathEDMS", 1);
                 File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{pat.CGU_No}-{docCode}-{pat.MPI.ToString()}-0-{refid.ToString()}-0-{DateTime.Now.ToString("yyyyMMddHHmmSS")}-{diaryID.ToString()}.pdf");
 
             }           

@@ -3,7 +3,7 @@ using AdminX.Models;
 
 namespace AdminX.Meta
 {
-    interface IDiaryActionData
+    public interface IDiaryActionData
     {
         public DiaryAction GetDiaryActionDetails(string actionCode);
         public List<DiaryAction> GetDiaryActions();        

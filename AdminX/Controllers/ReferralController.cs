@@ -14,79 +14,83 @@ namespace AdminX.Controllers
 {
     public class ReferralController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly AdminContext _adminContext;
-        private readonly DocumentContext _documentContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly AdminContext _adminContext;
+        //private readonly DocumentContext _documentContext;
         private readonly IConfiguration _config;
-        private readonly ConstantsData _constantsData;
-        private readonly IPatientData _patientData;
-        private readonly IActivityTypeData _activityTypeData;
-        private readonly IExternalClinicianData _externalClinicianData;
-        private readonly IStaffUserData _staffUserData;
-        private readonly IActivityData _activityData;
+        private readonly IConstantsDataAsync _constantsData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IActivityTypeDataAsync _activityTypeData;
+        private readonly IExternalClinicianDataAsync _externalClinicianData;
+        private readonly IStaffUserDataAsync _staffUserData;
+        private readonly IActivityDataAsync _activityData;
         private readonly ICRUD _CRUD;
         private readonly ReferralVM _rvm;
-        private readonly IReferralData _referralData;
-        private readonly IAdminStatusData _adminStatusData;
-        private readonly IListDiseaseData _diseaseData;
-        private readonly IClinicData _clinicData;
-        private readonly IExternalFacilityData _externalFacilityData;
-        private readonly IReviewData _reviewData;    
-        private readonly IAuditService _audit;
-        private readonly IDiseaseData _indicationData;
-        private readonly IPathwayData _pathwayData;
-        private readonly IPriorityData _priorityData;
-        private readonly IRefReasonData _refReasonData;
-        private readonly ITriageData _triageData;
-        private readonly IAreaNamesData _areaNamesData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IAdminStatusDataAsync _adminStatusData;
+        private readonly IListDiseaseDataAsync _diseaseData;
+        private readonly IClinicDataAsync _clinicData;
+        private readonly IExternalFacilityDataAsync _externalFacilityData;
+        private readonly IReviewDataAsync _reviewData;    
+        private readonly IAuditServiceAsync _audit;
+        private readonly IDiseaseDataAsync _indicationData;
+        private readonly IPathwayDataAsync _pathwayData;
+        private readonly IPriorityDataAsync _priorityData;
+        private readonly IRefReasonDataAsync _refReasonData;
+        private readonly ITriageDataAsync _triageData;
+        private readonly IAreaNamesDataAsync _areaNamesData;
 
-        public ReferralController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
+        public ReferralController(IConfiguration config, IPatientDataAsync patient, IActivityTypeDataAsync activityType, IExternalClinicianDataAsync extClinician, IStaffUserDataAsync staffUser,
+            IActivityDataAsync activity, ICRUD crud, IReferralDataAsync referral, IAdminStatusDataAsync adminStatus, IListDiseaseDataAsync listDisease, IClinicDataAsync clinic, IExternalFacilityDataAsync extFacility,
+            IReviewDataAsync review, IAuditServiceAsync audit, IDiseaseDataAsync disease, IPathwayDataAsync pathway, IPriorityDataAsync priority, IRefReasonDataAsync refReason, ITriageDataAsync triage,
+            IAreaNamesDataAsync areanames, IConstantsDataAsync constants)
         {
-            _clinContext = context;
-            _adminContext = adminContext;
-            _documentContext = documentContext;
+            //_clinContext = context;
+            //_adminContext = adminContext;
+            //_documentContext = documentContext;
             _config = config;
-            _patientData = new PatientData(context);
-            _activityTypeData = new ActivityTypeData(context);
-            _externalClinicianData = new ExternalClinicianData(context);
-            _staffUserData = new StaffUserData(context);
-            _activityData = new ActivityData(context);
+            _patientData = patient;
+            _activityTypeData = activityType;
+            _externalClinicianData = extClinician;
+            _staffUserData = staffUser;
+            _activityData = activity;
             _rvm = new ReferralVM();
-            _CRUD = new CRUD(_config);
-            _referralData = new ReferralData(_clinContext);
-            _adminStatusData = new AdminStatusData(_adminContext);
-            _diseaseData = new ListDiseaseData(_adminContext);
-            _clinicData = new ClinicData(_clinContext);
-            _externalFacilityData = new ExternalFacilityData(_clinContext);
-            _reviewData = new ReviewData(_clinContext);
-            _audit = new AuditService(_config);
-            _indicationData = new DiseaseData(_clinContext);
-            _pathwayData = new PathwayData(_clinContext);
-            _priorityData = new PriorityData(_clinContext);
-            _refReasonData = new RefReasonData(_clinContext);
-            _triageData = new TriageData(_clinContext);
-            _areaNamesData = new AreaNamesData(_clinContext);
-            _constantsData = new ConstantsData(_documentContext);
+            _CRUD = crud;
+            _referralData = referral;
+            _adminStatusData = adminStatus;
+            _diseaseData = listDisease;
+            _clinicData = clinic;
+            _externalFacilityData = extFacility;
+            _reviewData = review;
+            _audit = audit;
+            _indicationData = disease;
+            _pathwayData = pathway;
+            _priorityData = priority;
+            _refReasonData = refReason;
+            _triageData = triage;
+            _areaNamesData = areanames;
+            _constantsData = constants;
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult ReferralDetails(int refID)
+        public async Task<IActionResult> ReferralDetails(int refID)
         {
             try
             {
-                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
                 _rvm.pathways = new List<string> { "Cancer", "General" };
-                _rvm.referral = _referralData.GetReferralDetails(refID);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-                _rvm.ClinicList = _clinicData.GetClinicByPatientsList(_rvm.referral.MPI).Where(a => a.ReferralRefID == refID).Distinct().ToList();
-                ICP icp = _triageData.GetICPDetailsByRefID(refID);
-                _rvm.relatedICP = _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
-                string canDeleteICP = _constantsData.GetConstant("DeleteICPBtn", 1);
+                _rvm.referral = await _referralData.GetReferralDetails(refID);
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
+                var clinicList = await _clinicData.GetClinicByPatientsList(_rvm.referral.MPI);
+                _rvm.ClinicList = clinicList.Where(a => a.ReferralRefID == refID).Distinct().ToList();
+                ICP icp = await _triageData.GetICPDetailsByRefID(refID);
+                _rvm.relatedICP = await _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
+                string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
                 if(canDeleteICP.ToUpper().Contains(User.Identity.Name.ToUpper()))
                 {
@@ -126,38 +130,40 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult UpdateReferralDetails(int refID)
+        public async Task<IActionResult> UpdateReferralDetails(int refID)
         {
             try
             {
-                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
 
-                _rvm.referral = _referralData.GetReferralDetails(refID);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
-                _rvm.activities = _activityTypeData.GetReferralTypes();
-                _rvm.consultants = _staffUserData.GetConsultantsList();
-                _rvm.gcs = _staffUserData.GetGCList();
-                _rvm.admin = _staffUserData.GetAdminList();
-                _rvm.admin_status = _adminStatusData.GetStatusAdmin();
-                _rvm.referrers = _externalClinicianData.GetClinicianList();
+                _rvm.referral = await _referralData.GetReferralDetails(refID);
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.activities = await _activityTypeData.GetReferralTypes();
+                _rvm.consultants = await _staffUserData.GetConsultantsList();
+                _rvm.gcs = await _staffUserData.GetGCList();
+                _rvm.admin = await _staffUserData.GetAdminList();
+                _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
+                _rvm.referrers = await _externalClinicianData.GetClinicianList();
                 //_rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
                 _rvm.pathways = new List<string>();
-                List<Pathway> pathways = _pathwayData.GetPathwayList();
+                List<Pathway> pathways = await _pathwayData.GetPathwayList();
                 foreach (var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }
-                _rvm.diseases = _diseaseData.GetDiseases();
-                _rvm.facilities = _externalFacilityData.GetFacilityList().Where(f => f.IS_GP_SURGERY == 0).ToList();
-                _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
-                _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
+                _rvm.diseases = await _diseaseData.GetDiseases();
+                var facility = await _externalFacilityData.GetFacilityList();
+                _rvm.facilities = facility.Where(f => f.IS_GP_SURGERY == 0).ToList();
+                var indication = await _indicationData.GetDiseaseList();
+                _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+                _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
 
                 if(_rvm.patient.PtAreaCode == null)
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id=_rvm.patient.MPI, message="You need to assign an area code before processing the referral.", success=false });
                 }
 
-                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
                 if (_rvm.referral.ClockStartDate != null)
                 {
@@ -352,34 +358,37 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddNew(int mpi)
+        public async Task<IActionResult> AddNew(int mpi)
         {
             try
             {
-                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Referral", "", _ip.GetIPAddress());
 
-                _rvm.patient = _patientData.GetPatientDetails(mpi);
-                _rvm.activities = _activityTypeData.GetReferralTypes();
-                _rvm.consultants = _staffUserData.GetConsultantsList();
-                _rvm.gcs = _staffUserData.GetGCList();
-                _rvm.admin = _staffUserData.GetAdminList();
-                _rvm.referrals = _activityData.GetActiveReferralList(mpi);
-                _rvm.referrers = _externalClinicianData.GetClinicianList().OrderBy(r => r.LAST_NAME).ToList();
-                _rvm.referrers.Add(_externalClinicianData.GetPatientGPReferrer(mpi));
+                _rvm.patient = await _patientData.GetPatientDetails(mpi);
+                _rvm.activities = await _activityTypeData.GetReferralTypes();
+                _rvm.consultants = await _staffUserData.GetConsultantsList();
+                _rvm.gcs = await _staffUserData.GetGCList();
+                _rvm.admin = await _staffUserData.GetAdminList();
+                _rvm.referrals = await _activityData.GetActiveReferralList(mpi);
+                var refs = await _externalClinicianData.GetClinicianList();
+                _rvm.referrers = refs.OrderBy(r => r.LAST_NAME).ToList();
+                var gp = await _externalClinicianData.GetPatientGPReferrer(mpi);
+                _rvm.referrers.Add(gp);
                 //_rvm.pathways = new List<string> { "Cancer", "General" };
                 _rvm.pathways = new List<string>();
-                List<Pathway> pathways = _pathwayData.GetPathwayList();
+                List<Pathway> pathways = await _pathwayData.GetPathwayList();
                 foreach(var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }
-                _rvm.admin_status = _adminStatusData.GetStatusAdmin();
-                _rvm.indicationList = _indicationData.GetDiseaseList().Where(d => d.EXCLUDE_CLINIC == 0).ToList();
-                _rvm.subPathways = _pathwayData.GetSubPathwayList();
-                _rvm.priorityList = _priorityData.GetPriorityList();
+                _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
+                var indication = await _indicationData.GetDiseaseList();
+                _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
+                _rvm.subPathways = await _pathwayData.GetSubPathwayList();
+                _rvm.priorityList = await _priorityData.GetPriorityList();
                 _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
-                _rvm.referralReasonsList = _refReasonData.GetRefReasonList();
-                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
+                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
                 return View(_rvm);
             }
@@ -418,32 +427,32 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult ProcessNewReferral(int refID)
+        public async Task<IActionResult> ProcessNewReferral(int refID)
         {
             try
             {
-                _rvm.staffMember = _staffUserData.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Process Epic Referral", "", _ip.GetIPAddress());
 
-                _rvm.referral = _referralData.GetReferralDetails(refID);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.referral.MPI);
+                _rvm.referral = await _referralData.GetReferralDetails(refID);
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 _rvm.pathways = new List<string>();
-                List<Pathway> pathwayList = _pathwayData.GetPathwayList();
+                List<Pathway> pathwayList = await _pathwayData.GetPathwayList();
                 foreach (var p in pathwayList)
                 {
                     _rvm.pathways.Add(p.CGU_Pathway);
                 }
 
-                _rvm.consultants = _staffUserData.GetConsultantsList();
-                _rvm.gcs = _staffUserData.GetGCList();
-                _rvm.admin = _staffUserData.GetAdminList();
+                _rvm.consultants = await _staffUserData.GetConsultantsList();
+                _rvm.gcs = await _staffUserData.GetGCList();
+                _rvm.admin = await _staffUserData.GetAdminList();
                 if (string.IsNullOrEmpty(_rvm.patient.PtAreaCode))
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
                 }
-                _rvm.areaName = _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
 
                 return View(_rvm);
             }
@@ -454,11 +463,11 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
+        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
         {
             try
             {
-                _rvm.referral = _referralData.GetReferralDetails(refID);
+                _rvm.referral = await _referralData.GetReferralDetails(refID);
 
                 int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
 

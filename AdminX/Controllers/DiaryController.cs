@@ -1,8 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,38 +10,37 @@ namespace AdminX.Controllers
 {
     public class DiaryController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly AdminContext _adminContext;
-        private readonly DocumentContext _docContext;
+        
         private readonly DiaryVM _dvm;
         private readonly IConfiguration _config;
-        private readonly IPatientData _patientData;
-        private readonly IDiaryData _diaryData;
-        private readonly IReferralData _referralData;
-        private readonly IActivityData _activityData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IDocumentsData _docsData;
-        private readonly IDiaryActionData _diaryActionData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IDiaryDataAsync _diaryData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IActivityDataAsync _activityData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IDocumentsDataAsync _docsData;
+        private readonly IDiaryActionDataAsync _diaryActionData;
         private readonly ICRUD _crud;
-        private readonly IAuditService _audit;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
 
-        public DiaryController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
+        public DiaryController(IConfiguration config, IPatientDataAsync patient, IDiaryDataAsync diary, IReferralDataAsync referral, IActivityDataAsync activity, IStaffUserDataAsync staffUser,
+            IDocumentsDataAsync documents, IDiaryActionDataAsync diaryAction, ICRUD crud, IAuditServiceAsync audit)
         {
-            _clinContext = context;
-            _adminContext = adminContext;
-            _docContext = documentContext;
+            //_clinContext = context;
+            //_adminContext = adminContext;
+            //_docContext = documentContext;
             _config = config;
             _dvm = new DiaryVM();
-            _patientData = new PatientData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _docsData = new DocumentsData(_docContext);
-            _diaryActionData = new DiaryActionData(_adminContext);
+            _patientData = patient;
+            _diaryData = diary;
+            _referralData = referral;
+            _activityData = activity;
+            _staffUser = staffUser;
+            _docsData = documents;
+            _diaryActionData = diaryAction;
             _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
         }
 
@@ -58,14 +55,14 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Diary Details", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
-                _dvm.diary = _diaryData.GetDiaryEntry(id);
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                _dvm.linkedRef = _activityData.GetActivityDetails(_dvm.diary.RefID.GetValueOrDefault());
-                _dvm.defaultAction = _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
+                _dvm.diary = await _diaryData.GetDiaryEntry(id);
+                _dvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
+                _dvm.linkedRef = await _activityData.GetActivityDetails(_dvm.diary.RefID.GetValueOrDefault());
+                _dvm.defaultAction = await _diaryActionData.GetDiaryActionDetails(_dvm.diary.DiaryAction);
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
@@ -98,19 +95,19 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add New Diary Entry", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _dvm.patient = _patientData.GetPatientDetails(mpi);
-                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                _dvm.patient = await _patientData.GetPatientDetails(mpi);
+                _dvm.referralsList = await _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
                 if (_dvm.referralsList.Count > 0)
                 {
                     _dvm.defaultRef = _dvm.referralsList.OrderByDescending(r => r.refid).First();
                 }
-                _dvm.documents = _docsData.GetDocumentsList();                
-                _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
-                _dvm.documentsList = _docsData.GetDocumentsList();
+                _dvm.documents = await _docsData.GetDocumentsList();                
+                _dvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
+                _dvm.documentsList = await _docsData.GetDocumentsList();
 
           
 
@@ -145,9 +142,10 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
+                var referral = await _referralData.GetReferralDetails(refID);
 
-                _dvm.patient = _patientData.GetPatientDetails(_referralData.GetReferralDetails(refID).MPI);                
+                _dvm.patient = await _patientData.GetPatientDetails(referral.MPI);                
 
                 int success = _crud.CallStoredProcedure("Diary", "Create", refID, _dvm.patient.MPI, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 
@@ -177,16 +175,16 @@ namespace AdminX.Controllers
                     return NotFound();
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit DiaryEntry", "DiaryID=" + id.ToString(), _ip.GetIPAddress());
 
-                _dvm.diary = _diaryData.GetDiaryEntry(id);
-                _dvm.patient = _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
-                _dvm.referralsList = _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
-                _dvm.documents = _docsData.GetDocumentsList();
-                _dvm.diaryActionsList = _diaryActionData.GetDiaryActions();
-                _dvm.documentsList = _docsData.GetDocumentsList();
+                _dvm.diary = await _diaryData.GetDiaryEntry(id);
+                _dvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_dvm.diary.WMFACSID);
+                _dvm.referralsList = await _referralData.GetActiveReferralsListForPatient(_dvm.patient.MPI);
+                _dvm.documents = await _docsData.GetDocumentsList();
+                _dvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
+                _dvm.documentsList = await _docsData.GetDocumentsList();
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
@@ -211,7 +209,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int diaryID, int refID, DateTime diaryDate, string diaryAction, string diaryText, string? docCode = "")
+        public IActionResult Edit(int diaryID, int refID, DateTime diaryDate, string diaryAction, string diaryText, string? docCode = "")
         {
             try
             {

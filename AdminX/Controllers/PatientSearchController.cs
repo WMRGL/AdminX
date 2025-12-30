@@ -9,37 +9,41 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using APIControllers.Data;
+using APIControllers.Controllers;
 
 namespace AdminX.Controllers
 {
     public class PatientSearchController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly AdminContext _adminContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly AdminContext _adminContext;
+        //private readonly APIContext _apiContext;
         private readonly PatientSearchVM _pvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientSearchData _patientSearchData;
-        private readonly INewPatientSearchData _newPatientSearchData;
-        private readonly IPedigreeData _pedigreeData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientSearchDataAsync _patientSearchData;
+        private readonly INewPatientSearchDataAsync _newPatientSearchData;
+        private readonly IPedigreeDataAsync _pedigreeData;
         private readonly ICRUD _crud;
-        private readonly IAuditService _audit;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
+        //private readonly APIControllerLOCAL _api; //not sure what this was done for... to test?
 
-        public PatientSearchController(ClinicalContext context, AdminContext adminContext, APIContext apiContext, IConfiguration config)
+        public PatientSearchController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientSearchDataAsync patientSearch, INewPatientSearchDataAsync newPatientSearch, IPedigreeDataAsync pedigree,
+            ICRUD crud, IAuditServiceAsync audit)
         {
-            _clinContext = context;
-            _adminContext = adminContext;
-            _apiContext = apiContext;
+            //_clinContext = context;
+            //_adminContext = adminContext;
+            //_apiContext = apiContext;
             _config = config;
             _pvm = new PatientSearchVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientSearchData = new PatientSearchData(_clinContext);
-            _newPatientSearchData = new NewPatientSearchData(_adminContext);
-            _pedigreeData = new PedigreeData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
+            _staffUser = staffUser;
+            _patientSearchData = patientSearch;
+            _newPatientSearchData = newPatientSearch;
+            _pedigreeData = pedigree;
+            _crud = crud;
+            _audit = audit;
+            //_api = api;
             _ip = new IPAddressFinder(HttpContext);
         }
 
@@ -48,14 +52,14 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 string searchTerm = "";
 
                 if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
                 {
                     if (cguNo != null)
                     {
-                        _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(cguNo);
+                        _pvm.patientsList = await _patientSearchData.GetPatientsListByCGUNo(cguNo);
                         searchTerm = "CGU_No=" + cguNo;
                         _pvm.cguNumberSearch = cguNo;
                     }
@@ -63,7 +67,7 @@ namespace AdminX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByNHS(nhsNo);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByNHS(nhsNo);
                         }
                         else
                         {
@@ -76,7 +80,7 @@ namespace AdminX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(firstname, null);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByName(firstname, null);
                         }
                         else
                         {
@@ -89,7 +93,7 @@ namespace AdminX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByName(null, lastname);
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByName(null, lastname);
                         }
                         else
                         {
@@ -102,7 +106,7 @@ namespace AdminX.Controllers
                     {
                         if (searchTerm == "")
                         {
-                            _pvm.patientsList = _patientSearchData.GetPatientsListByDOB(dob.GetValueOrDefault());
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByDOB(dob.GetValueOrDefault());
                         }
                         else
                         {
@@ -115,7 +119,6 @@ namespace AdminX.Controllers
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                 }
 
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm, _ip.GetIPAddress());
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
@@ -139,10 +142,9 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
 
                 _pvm.patientSearchResultsList = new List<PatientSearchResults>();
@@ -214,7 +216,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 if (firstname == "" || lastname == "" || postcode == "" || nhs == "" || dobToSearch == "0001-01-01")
@@ -226,9 +228,9 @@ namespace AdminX.Controllers
                     DateTime DOB = DateTime.Parse(dobToSearch);
                     _crud.NewPatientSearch(firstname, lastname, DOB, postcode, nhs, staffCode);
 
-                    int searchID = _newPatientSearchData.GetPatientSearchID(staffCode);
+                    int searchID = await _newPatientSearchData.GetPatientSearchID(staffCode);
 
-                    List<PatientSearchResults> searchResults = _newPatientSearchData.GetPatientSearchResults(searchID);
+                    List<PatientSearchResults> searchResults = await _newPatientSearchData.GetPatientSearchResults(searchID);
 
                     _pvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").ToList();
                     _pvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
@@ -261,10 +263,9 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
                 
                 if (message != null)
@@ -298,15 +299,12 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+                                
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - NewPatientSearch", "", _ip.GetIPAddress());
-
-                APIControllers.Controllers.APIControllerLOCAL api = new APIControllers.Controllers.APIControllerLOCAL(_apiContext, _config);
-
-                _pvm.jsonTest = api.SearchSCRPatients(firstname, lastname).Result;
+                
+                //_pvm.jsonTest = _api.SearchSCRPatients(firstname, lastname).Result; //what's this for - to test?
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
@@ -335,10 +333,9 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-               // IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - ExistingFileSelect", "", _ip.GetIPAddress());
 
                 _pvm.patientsList = new List<Patient>();
@@ -362,13 +359,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "NewPatientSearch");
 
-                _pvm.pedigree = _pedigreeData.GetPedigree(fileNumber);
+                _pvm.pedigree = await _pedigreeData.GetPedigree(fileNumber);
 
-                _pvm.patientsList = _patientSearchData.GetPatientsListByCGUNo(_pvm.pedigree.PEDNO);
+                _pvm.patientsList = await _patientSearchData.GetPatientsListByCGUNo(_pvm.pedigree.PEDNO);
 
                 _pvm.forenameSearch = firstname;
                 _pvm.surnameSearch = lastname;

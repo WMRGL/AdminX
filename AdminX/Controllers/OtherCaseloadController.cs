@@ -9,47 +9,49 @@ namespace AdminX.Controllers
 {
     public class OtherCaseloadController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly CaseloadVM _cvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly ICaseloadData _caseloadData;
-        private readonly IAuditService _audit;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly ICaseloadDataAsync _caseloadData;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
 
-        public OtherCaseloadController(ClinicalContext context, IConfiguration config)
+        public OtherCaseloadController(IConfiguration config, IStaffUserDataAsync staffUser, ICaseloadDataAsync caseload, IAuditServiceAsync audit)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _cvm = new CaseloadVM();            
-            _staffUser = new StaffUserData(_clinContext);
-            _caseloadData = new CaseloadData(_clinContext);
-            _audit = new AuditService(_config);
+            _staffUser = staffUser;
+            _caseloadData = caseload;
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
-        public IActionResult Index(string? staffCode)
+        public async Task<IActionResult> Index(string? staffCode)
         {
             try
             {
-                string userStaffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffUser.GetStaffCode(User.Identity.Name);
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - Caseloads", "StaffCode=" + staffCode, _ip.GetIPAddress());
 
                 _cvm.caseLoad = new List<Caseload>();
-                if (staffCode != null)
+                if (staffCode == null)
+                {
+                    staffCode = userStaffCode;
+                }
+                else
                 {
                     _cvm.staffCode = staffCode;
-                    _cvm.caseLoad = _caseloadData.GetCaseloadList(staffCode).OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
+                    var caseLoad = await _caseloadData.GetCaseloadList(staffCode);
+                    _cvm.caseLoad = caseLoad.OrderBy(c => c.BookedDate).ThenBy(c => c.BookedTime).ToList();
                 }
                 
-                _cvm.clinicians = _staffUser.GetClinicalStaffList();
-                if (_cvm.caseLoad.Count() > 0)
-                {
-                    _cvm.name = _cvm.caseLoad.FirstOrDefault().Clinician;
-                }
+                _cvm.clinicians = await _staffUser.GetClinicalStaffList();                                  
+                _cvm.name = await _staffUser.GetStaffNameFromStaffCode(staffCode);                
 
                 return View(_cvm);
             }

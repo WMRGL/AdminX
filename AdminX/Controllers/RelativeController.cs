@@ -1,44 +1,45 @@
 ﻿using AdminX.Meta;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIControllers.Controllers;
-using APIControllers.Data;
+//using APIControllers.Data;
 
 namespace AdminX.Controllers
 {
     public class RelativeController : Controller
     {
         
-        private readonly ClinicalContext _clinContext;        
-        private readonly APIContext _apiContext;        
+        //private readonly ClinicalContext _clinContext;        
+        //private readonly APIContext _apiContext;        
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;        
-        private readonly IPatientData _patientData;
-        private readonly IRelativeData _relativeData;
-        private readonly ITitleData _titleData;
+        private readonly IStaffUserDataAsync _staffUser;        
+        private readonly IPatientDataAsync _patientData;
+        private readonly IRelativeDataAsync _relativeData;
+        private readonly ITitleDataAsync _titleData;
         private readonly ICRUD _crud;
-        private readonly IAuditService _audit;
+        private readonly IAuditServiceAsync _audit;
         private readonly APIController _api;
         private readonly IPAddressFinder _ip;
 
-        public RelativeController(ClinicalContext context, APIContext apiContext, IConfiguration config)
+        public RelativeController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IRelativeDataAsync relative, ITitleDataAsync title, ICRUD crud, 
+            IAuditServiceAsync audit, APIController api)
         {
             
-            _clinContext = context;            
-            _apiContext = apiContext;
-            _config = config;            
-            _crud = new CRUD(_config);
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);    
-            _titleData = new TitleData(_clinContext);
+            //_clinContext = context;            
+            //_apiContext = apiContext;
+            _config = config;
+            _crud = crud;
+            _staffUser = staffUser;
+            _patientData = patient;
+            _relativeData = relative;
+            _titleData = title;
             _rvm = new RelativeVM();
-            _audit = new AuditService(_config);
-            _api = new APIController(_apiContext, _config);
+            _audit = audit;
+            _api = api;
             _ip = new IPAddressFinder(HttpContext);
         }
 
@@ -48,12 +49,12 @@ namespace AdminX.Controllers
         {
             try
             {
-                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                _rvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _rvm.staffMember.STAFF_CODE;
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - View Relative", "ID=" + id.ToString(), _ip.GetIPAddress());
-                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
+                _rvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                _rvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
                 _rvm.MPI = _rvm.patient.MPI;
 
                 return View(_rvm);
@@ -69,14 +70,15 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Relative", "ID=" + id.ToString());
 
-                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
-                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
+                _rvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
+                _rvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rvm.relativeDetails.WMFACSID);
                 _rvm.MPI = _rvm.patient.MPI;
-                _rvm.relationList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rvm.genderList = _relativeData.GetGenderList();
+                var rel = await _relativeData.GetRelationsList();
+                _rvm.relationList = rel.OrderBy(r => r.ReportOrder).ToList();
+                _rvm.genderList = await _relativeData.GetGenderList();
 
                 return View(_rvm);
             }
@@ -92,7 +94,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _rvm.relativeDetails = _relativeData.GetRelativeDetails(id);
+                _rvm.relativeDetails = await _relativeData.GetRelativeDetails(id);
 
                 //making sure all the nulls have values
 
@@ -145,15 +147,17 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add Relative", "WMFACSID=" + wmfacsid.ToString(), _ip.GetIPAddress());
 
                 _rvm.WMFACSID = wmfacsid;
-                _rvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
-                _rvm.relationsList = _relativeData.GetRelationsList().OrderBy(r => r.ReportOrder).ToList();
-                _rvm.genderList = _relativeData.GetGenderList();
-                _rvm.titleList = _titleData.GetTitlesList();
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
+                _rvm.MPI = pat.MPI;
+                var rels = await _relativeData.GetRelationsList();
+                _rvm.relationsList = rels.OrderBy(r => r.ReportOrder).ToList();
+                _rvm.genderList = await _relativeData.GetGenderList();
+                _rvm.titleList = await _titleData.GetTitlesList();
                 return View(_rvm);
             }
             catch (Exception ex)
@@ -169,7 +173,8 @@ namespace AdminX.Controllers
         {
             try
             {
-                _rvm.MPI = _patientData.GetPatientDetailsByWMFACSID(wmfacsid).MPI;
+                var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
+                _rvm.MPI = pat.MPI;
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
@@ -216,13 +221,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Import Revatives", "WMFACSID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.patient = _patientData.GetPatientDetailsByWMFACSID(id);
-                _rvm.cgudbRelativesList = _relativeData.GetRelativesList(_rvm.patient.MPI);
-                _rvm.relationsList = _relativeData.GetRelationsList();
+                _rvm.patient = await _patientData.GetPatientDetailsByWMFACSID(id);
+                _rvm.cgudbRelativesList = await _relativeData.GetRelativesList(_rvm.patient.MPI);
+                _rvm.relationsList = await _relativeData.GetRelationsList();
 
                 List<APIControllers.Models.Relative> relList = new List<APIControllers.Models.Relative>();
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
@@ -243,8 +248,6 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
-        }
-
-        
+        }        
     }
 }

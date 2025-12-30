@@ -1,8 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,38 +9,39 @@ namespace AdminX.Controllers
     public class AlertController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly ClinicalContext _context;
-        private readonly AdminContext _adminContext;
-        private readonly IPatientData _patientData;
-        private readonly IAlertData _alertData;
-        private readonly IAlertTypeData _alertTypeData;
+        //private readonly ClinicalContext _context;
+        //private readonly AdminContext _adminContext;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IAlertDataAsync _alertData;
+        private readonly IAlertTypeDataAsync _alertTypeData;
         private readonly ICRUD _crud;
         private readonly AlertVM _avm;
-        private readonly IStaffUserData _staffUserData;
-        private readonly IAuditService _audit;
+        private readonly IStaffUserDataAsync _staffUserData;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
 
-        public AlertController(ClinicalContext context, AdminContext adminContext, IConfiguration config)
+        public AlertController(IConfiguration config, IPatientDataAsync patient, IAlertDataAsync alert, IAlertTypeDataAsync alerttype, ICRUD crud, IStaffUserDataAsync staffUser, 
+            IAuditServiceAsync audit)
         {
             _config = config;
-            _context = context;
-            _adminContext = adminContext;
-            _patientData = new PatientData(_context);
-            _alertData = new AlertData(_context);
-            _alertTypeData = new AlertTypeData(_adminContext);
-            _crud = new CRUD(_config);
+            //_context = context;
+            //_adminContext = adminContext;
+            _patientData = patient;
+            _alertData = alert;
+            _alertTypeData = alerttype;
+            _crud = crud;
             _avm = new AlertVM();
-            _staffUserData = new StaffUserData(_context);
-            _audit = new AuditService(_config);
+            _staffUserData = staffUser;
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
         }
 
-        public IActionResult Index(int mpi)
+        public async Task<IActionResult> Index(int mpi)
         {
             try
             {
-                _avm.patient = _patientData.GetPatientDetails(mpi);
-                _avm.alertList = _alertData.GetAlertsListAll(mpi);
+                _avm.patient = await _patientData.GetPatientDetails(mpi);
+                _avm.alertList = await _alertData.GetAlertsListAll(mpi);
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
@@ -59,15 +58,15 @@ namespace AdminX.Controllers
             }
         }
 
-        public IActionResult AlertDetails(int alertID)
+        public async Task<IActionResult> AlertDetails(int alertID)
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - AlertDetails", "MPI=" + alertID.ToString(), _ip.GetIPAddress());
 
-                _avm.alert = _alertData.GetAlertDetails(alertID);
-                _avm.patient = _patientData.GetPatientDetails(_avm.alert.MPI);
+                _avm.alert = await _alertData.GetAlertDetails(alertID);
+                _avm.patient = await _patientData.GetPatientDetails(_avm.alert.MPI);
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
@@ -91,16 +90,16 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create(int mpi)
+        public async Task<IActionResult> Create(int mpi)
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Alert", "New Alert", _ip.GetIPAddress());
 
-                _avm.patient = _patientData.GetPatientDetails(mpi);
-                _avm.alertList = _alertData.GetAlertsListAll(mpi);
-                _avm.alertTypes = _alertTypeData.GetAlertTypes();
+                _avm.patient = await _patientData.GetPatientDetails(mpi);
+                _avm.alertList = await _alertData.GetAlertsListAll(mpi);
+                _avm.alertTypes = await _alertTypeData.GetAlertTypes();
 
                 return View(_avm);
             }
@@ -111,7 +110,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(int mpi, string alertType, bool isProtectedAddress, DateTime? startDate, string? comments)
+        public async Task<IActionResult> Create(int mpi, string alertType, bool isProtectedAddress, DateTime? startDate, string? comments)
         {
             try
             {
@@ -119,9 +118,10 @@ namespace AdminX.Controllers
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Alert-edit(SQL)" }); }
 
-                int alertID = _alertData.GetAlertsList(mpi).OrderByDescending(a => a.AlertID).FirstOrDefault().AlertID;
+                var alert = await _alertData.GetAlertsList(mpi);
+                int alertID = alert.OrderByDescending(a => a.AlertID).FirstOrDefault().AlertID;
 
-                _avm.patient = _patientData.GetPatientDetails(mpi);
+                _avm.patient = await _patientData.GetPatientDetails(mpi);
                 _avm.success = true;
                 _avm.message = "New alert added.";
                 TempData["SuccessMessage"] = "New alert added";
@@ -134,17 +134,17 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int alertID)
+        public async Task<IActionResult> Edit(int alertID)
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Alert", "MPI=" + alertID.ToString(), _ip.GetIPAddress());
 
-                _avm.alert = _alertData.GetAlertDetails(alertID);
-                _avm.patient = _patientData.GetPatientDetails(_avm.alert.MPI);
-                _avm.alertList = _alertData.GetAlertsListAll(_avm.alert.MPI);
-                _avm.alertTypes = _alertTypeData.GetAlertTypes();
+                _avm.alert = await _alertData.GetAlertDetails(alertID);
+                _avm.patient = await _patientData.GetPatientDetails(_avm.alert.MPI);
+                _avm.alertList = await _alertData.GetAlertsListAll(_avm.alert.MPI);
+                _avm.alertTypes = await _alertTypeData.GetAlertTypes();
 
                 return View(_avm);
             }

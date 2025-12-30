@@ -1,10 +1,10 @@
-﻿using AdminX.Data;
+﻿//using AdminX.Data;
 using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
 using APIControllers.Controllers;
-using APIControllers.Data;
-using ClinicalXPDataConnections.Data;
+//using APIControllers.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,85 +15,89 @@ namespace AdminX.Controllers
 {
     public class PatientController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _documentContext;
-        private readonly AdminContext _adminContext;
-        private readonly APIContext _apiContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _documentContext;
+        //private readonly AdminContext _adminContext;
+        //private readonly APIContext _apiContext;
         private readonly PatientVM _pvm;
         private readonly ICRUD _crud;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffUser;
-        private readonly IPatientData _patientData;
-        private readonly IPatientSearchData _patientSearchData;
-        private readonly IPedigreeData _pedigreeData;
-        private readonly ITitleData _titleData;
-        private readonly IEthnicityData _ethnicityData;
-        private readonly IRelativeData _relativeData;
-        private readonly IPathwayData _pathwayData;
-        private readonly IAlertData _alertData;
-        private readonly IReferralData _referralData;
-        private readonly IAppointmentData _appointmentData;
-        private readonly IDiaryData _diaryData;
-        private readonly IExternalClinicianData _gpData;
-        private readonly IExternalFacilityData _gpPracticeData;
-        private readonly IAuditService _audit;
-        private readonly ILanguageData _languageData;
-        private readonly IPatientAlertData _patientAlertData;
-        private readonly IReviewData _reviewData;
-        private readonly ICityData _cityData;
-        private readonly IAreaNamesData _areaNamesData;
-        private readonly IGenderData _genderData;
-        private readonly IConstantsData _constantsData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IPatientSearchDataAsync _patientSearchData;
+        private readonly IPedigreeDataAsync _pedigreeData;
+        private readonly ITitleDataAsync _titleData;
+        private readonly IEthnicityDataAsync _ethnicityData;
+        private readonly IRelativeDataAsync _relativeData;
+        private readonly IPathwayDataAsync _pathwayData;
+        private readonly IAlertDataAsync _alertData;
+        private readonly IReferralDataAsync _referralData;
+        private readonly IAppointmentDataAsync _appointmentData;
+        private readonly IDiaryDataAsync _diaryData;
+        private readonly IExternalClinicianDataAsync _gpData;
+        private readonly IExternalFacilityDataAsync _gpPracticeData;
+        private readonly IAuditServiceAsync _audit;
+        private readonly ILanguageDataAsync _languageData;
+        private readonly IPatientAlertDataAsync _patientAlertData;
+        private readonly IReviewDataAsync _reviewData;
+        private readonly ICityDataAsync _cityData;
+        private readonly IAreaNamesDataAsync _areaNamesData;
+        private readonly IGenderDataAsync _genderData;
+        private readonly IConstantsDataAsync _constantsData;
         private readonly APIController _api;
-        private readonly IPhenotipsMirrorData _phenotipsMirrorData;
-        private readonly IAlertTypeData _alertTypeData;
-        private readonly IDiaryActionData _diaryActionData;
-        private readonly IDocumentsData _docsData;
-        private readonly IGenderIdentityData _genderIdentityData;
-        private readonly IReferralStagingData _referralStagingData;
-        private readonly IEpicPatientReferenceData _epicPatientReferenceData;
+        private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
+        private readonly IAlertTypeDataAsync _alertTypeData;
+        private readonly IDiaryActionDataAsync _diaryActionData;
+        private readonly IDocumentsDataAsync _docsData;
+        private readonly IGenderIdentityDataAsync _genderIdentityData;
+        private readonly IReferralStagingDataAsync _referralStagingData;
+        private readonly IEpicPatientReferenceDataAsync _epicPatientReferenceData;
         private readonly IPAddressFinder _ip;
 
-        public PatientController(ClinicalContext context, IConfiguration config, AdminContext adminContext, DocumentContext documentContext,
-            APIContext apiContext, IGenderIdentityData genderIdentityData)
+        public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
+            ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
+            IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
+            IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
+            IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging, 
+            IEpicPatientReferenceDataAsync epicPatientReference, APIController api)
         {
-            _clinContext = context;
-            _adminContext = adminContext;
-            _documentContext = documentContext;
-            _apiContext = apiContext;
+            //_clinContext = context;
+            //_adminContext = adminContext;
+            //_documentContext = documentContext;
+            //_apiContext = apiContext;
             _config = config;
-            _crud = new CRUD(_config);
+            _crud = crud;
             _pvm = new PatientVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _patientData = new PatientData(_clinContext);
-            _patientSearchData = new PatientSearchData(_clinContext);
-            _pedigreeData = new PedigreeData(_clinContext);
-            _relativeData = new RelativeData(_clinContext);
-            _pathwayData = new PathwayData(_clinContext);
-            _alertData = new AlertData(_clinContext);
-            _referralData = new ReferralData(_clinContext);
-            _appointmentData = new AppointmentData(_clinContext);
-            _diaryData = new DiaryData(_clinContext);
-            _gpData = new ExternalClinicianData(_clinContext);
-            _gpPracticeData = new ExternalFacilityData(_clinContext);
-            _titleData = new TitleData(_clinContext);
-            _ethnicityData = new EthnicityData(_clinContext);
-            _audit = new AuditService(_config);
-            _languageData = new LanguageData(_adminContext);
-            _patientAlertData = new PateintAlertData(_clinContext);
-            _reviewData = new ReviewData(_clinContext);
-            _cityData = new CityData(_adminContext);
-            _areaNamesData = new AreaNamesData(_clinContext);
-            _genderData = new GenderData(_clinContext);
-            _constantsData = new ConstantsData(_documentContext);
-            _api = new APIController(_apiContext, _config);
-            _phenotipsMirrorData = new PhenotipsMirrorData(_clinContext);
-            _alertTypeData = new AlertTypeData(_adminContext);
-            _diaryActionData = new DiaryActionData(_adminContext);
-            _docsData = new DocumentsData(_documentContext);
-            _genderIdentityData = genderIdentityData;
-            _referralStagingData = new ReferralStagingData(_adminContext);
-            _epicPatientReferenceData = new EpicPatientReferenceData(_adminContext);
+            _staffUser = staffUser;
+            _patientData = patient;
+            _patientSearchData = patientSearch;
+            _pedigreeData = pedigree;
+            _relativeData = relative;
+            _pathwayData = pathway;
+            _alertData = alert;
+            _referralData = referral;
+            _appointmentData = appointment;
+            _diaryData = diary;
+            _gpData = extClinician;
+            _gpPracticeData = extFacility;
+            _titleData = title;
+            _ethnicityData = ethnicity;
+            _audit = audit;
+            _languageData = language;
+            _patientAlertData = patientAlert;
+            _reviewData = review;
+            _cityData = city;
+            _areaNamesData = areaNames;
+            _genderData = gender;
+            _constantsData = constants;
+            _api = api;
+            _phenotipsMirrorData = phenotipsMirror;
+            _alertTypeData = alertType;
+            _diaryActionData = diaryAction;
+            _docsData = documents;
+            _genderIdentityData = genderIdentity;
+            _referralStagingData = referralStaging;
+            _epicPatientReferenceData = epicPatientReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
         }
 
@@ -102,7 +106,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
@@ -114,16 +118,17 @@ namespace AdminX.Controllers
                     _pvm.success = success.GetValueOrDefault();
                 }
 
-                _pvm.patient = _patientData.GetPatientDetails(id);
+                _pvm.patient = await _patientData.GetPatientDetails(id);                
+
                 _pvm.patientsList = new List<Patient>(); //because null
 
                 if (_pvm.patient.CGU_No != ".")
                 {
-                    _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
+                    _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
 
                     if (_pvm.epicPatient != null)
                     {
-                        _pvm.epicReferralStaging = _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
+                        _pvm.epicReferralStaging = await _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
 
                         if (_pvm.epicReferralStaging.Count > 0)
                         {
@@ -132,7 +137,6 @@ namespace AdminX.Controllers
                                 _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
                             }
                         }
-
 
                         if (_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
                             _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
@@ -144,9 +148,30 @@ namespace AdminX.Controllers
                             _pvm.isEpicChanged = true;
                         }
                     }
-                
-                    _pvm.patientsList = _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO).OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
+
+                    var patientList = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
+                    _pvm.patientsList = patientList.OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
                 }
+
+                List<Referral> referrals = await _referralData.GetReferralsList(id);
+                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
+                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
+                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
+                _pvm.tempReges = await _referralData.GetTempRegList(id);
+                _pvm.appointments = await _appointmentData.GetAppointmentListByPatient(id);
+                _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
+                _pvm.alerts = await _alertData.GetAlertsList(id);
+                _pvm.diary = await _diaryData.GetDiaryList(id);
+                _pvm.languages = await _languageData.GetLanguages();
+                _pvm.protectedAddress = await _patientAlertData.GetProtectedAdress(id);
+                _pvm.GP = await _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
+                _pvm.GPPractice = await _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
+                _pvm.reviewList = await _reviewData.GetReviewsListForPatient(id);
+                _pvm.edmsLink = await _constantsData.GetConstant("GEMRlink", 1);
+                _pvm.alertTypes = await _alertTypeData.GetAlertTypes();
+                _pvm.referralsList = await _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
+                _pvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
+                _pvm.documentsList = await _docsData.GetDocumentsList();
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -158,8 +183,8 @@ namespace AdminX.Controllers
                         int prevRegNo = regNo - 1;
                         int nextRegNo = regNo + 1;
 
-                        _pvm.previousPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
-                        _pvm.nextPatient = _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
+                        _pvm.previousPatient = await _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
+                        _pvm.nextPatient = await _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
                     }
                 }
 
@@ -167,30 +192,14 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("NotFound", "WIP");
                 }
+
                 _pvm.relatives = new List<Relative>();
                 if (_pvm.patient.PEDNO != null)
                 {
-                    _pvm.relatives = _relativeData.GetRelativesList(id).Distinct().ToList();
+                    var rels = await _relativeData.GetRelativesList(id);
+                    _pvm.relatives = rels.Distinct().ToList();
                 }
-                List<Referral> referrals = _referralData.GetReferralsList(id);
-                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
-                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active" ).ToList();
-                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
-                _pvm.tempReges = _referralData.GetTempRegList(id);
-                _pvm.appointments = _appointmentData.GetAppointmentListByPatient(id);
-                _pvm.patientPathway = _pathwayData.GetPathwayDetails(id);
-                _pvm.alerts = _alertData.GetAlertsList(id);
-                _pvm.diary = _diaryData.GetDiaryList(id);
-                _pvm.languages = _languageData.GetLanguages();
-                _pvm.protectedAddress = _patientAlertData.GetProtectedAdress(id);
-                _pvm.GP = _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
-                _pvm.GPPractice = _gpPracticeData.GetFacilityDetails(_pvm.patient.GP_Facility_Code);
-                _pvm.reviewList = _reviewData.GetReviewsListForPatient(id);
-                _pvm.edmsLink = _constantsData.GetConstant("GEMRlink", 1);
-                _pvm.alertTypes = _alertTypeData.GetAlertTypes();
-                _pvm.referralsList = _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
-                _pvm.diaryActionsList = _diaryActionData.GetDiaryActions();
-                _pvm.documentsList = _docsData.GetDocumentsList();
+                
                 _pvm.messages = new List<string>();
 
                 if (_pvm.patient.DECEASED == -1)
@@ -216,9 +225,12 @@ namespace AdminX.Controllers
 
                 if (_pvm.patient.GP != null)
                 {
-                    if (_gpData.GetClinicianDetails(_pvm.patient.GP_Code) != null)
+                    var clin = await _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
+
+                    if (clin != null)
                     {
-                        gpPractice = _gpData.GetClinicianDetails(_pvm.patient.GP_Code).FACILITY;
+                        var gp = await _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
+                        gpPractice = gp.FACILITY;
                     }
                 }
 
@@ -239,9 +251,9 @@ namespace AdminX.Controllers
                     _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
                 }
 
-                
+                string ptURL = await _constantsData.GetConstant("PhenotipsURL", 2);
 
-                if (!_constantsData.GetConstant("PhenotipsURL", 2).Contains("0"))
+                if (!ptURL.Contains("0"))
                 {
                     _pvm.isPhenotipsAvailable = true;
                 }
@@ -251,13 +263,11 @@ namespace AdminX.Controllers
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
                     if(_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
                     {
-                        APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
-
-
+                        //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
                         _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
-                        _pvm.isGeneralPPQScheduled = api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
+                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
 
                         _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                         _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
@@ -301,11 +311,11 @@ namespace AdminX.Controllers
 
             if (language == null)
             {
-                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
                 language = _pvm.patient.PrimaryLanguage;
             }
 
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
@@ -362,7 +372,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
@@ -375,7 +385,7 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
+                    List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
                     int patientNumber = patList.Count();
 
                     if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
@@ -391,15 +401,16 @@ namespace AdminX.Controllers
                 _pvm.postCode = postcode;
                 _pvm.nhs = nhs;
                 _pvm.ethnicCode = "NA";
-                _pvm.titles = _titleData.GetTitlesList();
-                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
-                _pvm.GPList = _gpData.GetGPList();
-                _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
-                _pvm.cityList = _cityData.GetAllCities();
-                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
-                _pvm.genders = _genderData.GetGenderList();
-                _pvm.genderAtBirth = _genderData.GetGenderList();
-               _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();              
+                _pvm.titles = await _titleData.GetTitlesList();
+                _pvm.ethnicities = await _ethnicityData.GetEthnicitiesList();
+                _pvm.GPList = await _gpData.GetGPList();
+                _pvm.GPPracticeList = await _gpPracticeData.GetGPPracticeList();
+                _pvm.cityList = await _cityData.GetAllCities();
+                var areaNames = await _areaNamesData.GetAreaNames();
+                _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
+                _pvm.genders = await _genderData.GetGenderList();
+                _pvm.genderAtBirth = await _genderData.GetGenderList();
+               _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();              
 
                 if (success.HasValue)
                 {
@@ -439,7 +450,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 int day = dob.Day;
@@ -478,7 +489,7 @@ namespace AdminX.Controllers
 
                 //_pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
 
-                _pvm.patient = _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
+                _pvm.patient = await _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
 
 
                 if(startDate != null && endDate != null)
@@ -500,22 +511,23 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _pvm.patient = _patientData.GetPatientDetails(mpi);
-                _pvm.titles = _titleData.GetTitlesList();
-                _pvm.ethnicities = _ethnicityData.GetEthnicitiesList();
-                _pvm.GPList = _gpData.GetGPList();
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
+                _pvm.titles = await _titleData.GetTitlesList();
+                _pvm.ethnicities = await _ethnicityData.GetEthnicitiesList();
+                _pvm.GPList = await _gpData.GetGPList();
                 _pvm.currentGPList = _pvm.GPList.Where(g => g.FACILITY == _pvm.patient.GP_Facility_Code).ToList();
-                _pvm.GPPracticeList = _gpPracticeData.GetGPPracticeList();
-                _pvm.cityList = _cityData.GetAllCities();
-                _pvm.areaNamesList = _areaNamesData.GetAreaNames().OrderBy(a => a.AreaName).ToList();
-                _pvm.genders = _genderData.GetGenderList();
-                _pvm.genderIdentities = _genderIdentityData.GetGenderIdentities();
+                _pvm.GPPracticeList = await _gpPracticeData.GetGPPracticeList();
+                _pvm.cityList = await _cityData.GetAllCities();
+                var areaNames = await _areaNamesData.GetAreaNames();
+                _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
+                _pvm.genders = await _genderData.GetGenderList();
+                _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();
 
                 if (success.HasValue)
                 {
@@ -543,11 +555,11 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
 
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno,
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
@@ -571,13 +583,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _pvm.patient = _patientData.GetPatientDetails(mpi);
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
                 _pvm.patientsList = new List<Patient>();
 
                 return View(_pvm);
@@ -593,12 +605,12 @@ namespace AdminX.Controllers
         {
             try
             {
-                _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
-                _pvm.patient = _patientData.GetPatientDetails(mpi);
-                _pvm.patientsList = _patientData.GetPatientsInPedigree(newFileNo);
+                _pvm.patient = await _patientData.GetPatientDetails(mpi);
+                _pvm.patientsList = await _patientData.GetPatientsInPedigree(newFileNo);
                 _pvm.cguNumber = newFileNo;
 
                 return View(_pvm);
@@ -614,11 +626,11 @@ namespace AdminX.Controllers
         public async Task<IActionResult> UpdateCGUNumber(int mpi, string newFileNumber)
         {
 
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-            List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
+            List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
 
             int patientNumber = patList.Count();
 
@@ -630,11 +642,13 @@ namespace AdminX.Controllers
 
             if (_patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) == null)
             {
-                sourceDCTM = _patientData.GetPatientDetails(mpi).Patient_Dctm_Sts;
+                var pat = await _patientData.GetPatientDetails(mpi);
+                sourceDCTM = pat.Patient_Dctm_Sts;
 
                 if (_pedigreeData.GetPedigree(newFileNumber) != null)
                 {
-                    destDCTM = _pedigreeData.GetPedigree(newFileNumber).File_Dctm_Sts;
+                    var ped = await _pedigreeData.GetPedigree(newFileNumber);
+                    destDCTM = ped.File_Dctm_Sts;
                 }
 
                 if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
@@ -663,7 +677,7 @@ namespace AdminX.Controllers
         [Authorize]
         public async Task<IActionResult> MakePatientElectronic(int mpi)
         {
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update", _ip.GetIPAddress());
 
@@ -704,12 +718,12 @@ namespace AdminX.Controllers
         [Authorize]
         public async Task<IActionResult> PhenotipsPatientRecord(int id, string? message, bool? success)
         {
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Phenotips Record", _ip.GetIPAddress());
 
-            _pvm.patient = _patientData.GetPatientDetails(id);
-            _pvm.ptPatient = _phenotipsMirrorData.GetPhenotipsPatientByID(id);
+            _pvm.patient = await _patientData.GetPatientDetails(id);
+            _pvm.ptPatient = await _phenotipsMirrorData.GetPhenotipsPatientByID(id);
             _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
 
             if (message != null && message != "")
@@ -725,13 +739,13 @@ namespace AdminX.Controllers
         [Authorize]
         public async Task<IActionResult> EpicPatientChanges(int id)
         {
-            _pvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
             string staffCode = _pvm.staffMember.STAFF_CODE;
             //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Epic Changes", _ip.GetIPAddress());
 
-            _pvm.patient = _patientData.GetPatientDetails(id);
-            _pvm.epicPatient = _epicPatientReferenceData.GetEpicPatient(id);
+            _pvm.patient = await _patientData.GetPatientDetails(id);
+            _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
 
             return View(_pvm);
         }

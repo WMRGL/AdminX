@@ -1,4 +1,4 @@
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
@@ -8,36 +8,37 @@ namespace AdminX.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly HomeVM _hvm;
         private readonly IConfiguration _config;        
-        private readonly IStaffUserData _staffUser;
+        private readonly IStaffUserDataAsync _staffUser;
         private readonly IVersionData _version;
-        private readonly INotificationData _notificationData;
-        private readonly IAuditService _audit;
-		private readonly IClinicData _clinicData;
-		private readonly ITriageData _triageData;
-		private readonly IReviewData _reviewData;
-        private readonly IDictatedLetterData _dictatedLetterData;
+        private readonly INotificationDataAsync _notificationData;
+        private readonly IAuditServiceAsync _audit;
+		private readonly IClinicDataAsync _clinicData;
+		private readonly ITriageDataAsync _triageData;
+		private readonly IReviewDataAsync _reviewData;
+        private readonly IDictatedLetterDataAsync _dictatedLetterData;
         private readonly IPAddressFinder _ip;
 
-		public HomeController(ClinicalContext context, IConfiguration config)
+		public HomeController(IConfiguration config, IStaffUserDataAsync staffUser, IVersionData version, INotificationDataAsync notification, IAuditServiceAsync audit, IClinicDataAsync clinic,
+            ITriageDataAsync triage, IReviewDataAsync review, IDictatedLetterDataAsync dictatedLetter)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _hvm = new HomeVM();
-            _staffUser = new StaffUserData(_clinContext);
-            _version = new VersionData();
-            _notificationData = new NotificationData(_clinContext);
-            _audit = new AuditService(_config);
-			_clinicData = new ClinicData(_clinContext);
-			_triageData = new TriageData(_clinContext);
-            _reviewData = new ReviewData(_clinContext);
-			_dictatedLetterData = new DictatedLetterData(_clinContext);
+            _staffUser = staffUser;
+            _version = version;
+            _notificationData = notification;
+            _audit = audit;
+			_clinicData = clinic;
+			_triageData = triage;
+            _reviewData = review;
+			_dictatedLetterData = dictatedLetter;
             _ip = new IPAddressFinder(HttpContext);
 		}
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
@@ -47,21 +48,26 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    _hvm.notificationMessage = _notificationData.GetMessage("AdminXOutage");
-                    var user = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                    _hvm.notificationMessage = await _notificationData.GetMessage("AdminXOutage");
+                    var user = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
                     //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                     _audit.CreateUsageAuditEntry(user.STAFF_CODE, "AdminX - Home", "", _ip.GetIPAddress());
 
                     _hvm.name = user.NAME;
-                    _hvm.dutyClinicianList = _staffUser.GetClinicalStaffList().Where(s => s.isDutyClinician == true).ToList();
+                    var clinList = await _staffUser.GetClinicalStaffList();
+                    _hvm.dutyClinicianList = clinList.Where(s => s.isDutyClinician == true).ToList();
                     _hvm.isLive = bool.Parse(_config.GetValue("IsLive", ""));
                     _hvm.dllVersion = _version.GetDLLVersion();
                     _hvm.appVersion = _config.GetValue("AppVersion", "");
-                    _hvm.contactOutcomes = _clinicData.GetAllOutstandingClinics().Count();
-                    _hvm.triageOutcomes = _triageData.GetTriageListFull().Count();
-                    _hvm.reviewOutcomes = _reviewData.GetReviewsListAll().Count();
-                    _hvm.dictatedLetters = _dictatedLetterData.GetDictatedLettersListFull().Count();
+                    var co = await _clinicData.GetAllOutstandingClinics();
+                    _hvm.contactOutcomes = co.Count();
+                    var tr = await _triageData.GetTriageListFull();
+                    _hvm.triageOutcomes = tr.Count();
+                    var rev = await _reviewData.GetReviewsListAll();
+                    _hvm.reviewOutcomes = rev.Count();
+                    var dl = await _dictatedLetterData.GetDictatedLettersListFull();
+                    _hvm.dictatedLetters = dl.Count();
 
 					return View(_hvm);
                 }

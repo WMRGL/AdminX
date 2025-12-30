@@ -1,10 +1,8 @@
-﻿using ClinicalXPDataConnections.Data;
-using ClinicalXPDataConnections.Meta;
+﻿using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using AdminX.Data;
 using APIControllers.Data;
 using APIControllers.Controllers;
 
@@ -13,79 +11,85 @@ namespace AdminX.Controllers
     public class LetterMenuController : Controller
     {
         private readonly IConfiguration _config;
-        private readonly ClinicalContext _context;
-        private readonly DocumentContext _documentContext;
-        private readonly AdminContext _adminContext;
+        //private readonly ClinicalContext _context;
+        //private readonly DocumentContext _documentContext;
+        //private readonly AdminContext _adminContext;
         private readonly APIContext _apiContext;
-        private readonly IDocumentsData _documentsData;
-        private readonly IPatientData _patientData;
-        private readonly IRelativeData _relData;
-        private readonly IReferralData _referralData;
+        private readonly IDocumentsDataAsync _documentsData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IRelativeDataAsync _relData;
+        private readonly IReferralDataAsync _referralData;
         private readonly LettersMenuVM _lvm;
         private readonly LetterController _lc;
+        private readonly HSController _hs;
         private readonly ICRUD _crud;
-        private readonly IDiaryData _diaryData;
-        private readonly ILeafletData _leafletData;
-        private readonly IExternalClinicianData _clinicianData;
-        private readonly IStaffUserData _staffData;
-        private readonly IAuditService _audit;
+        private readonly IDiaryDataAsync _diaryData;
+        private readonly ILeafletDataAsync _leafletData;
+        private readonly IExternalClinicianDataAsync _clinicianData;
+        private readonly IStaffUserDataAsync _staffData;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
         private readonly APIController _api;
-        private readonly PhenotipsMirrorData _mirrorData;
+        private readonly IPhenotipsMirrorDataAsync _mirrorData;
 
-        public LetterMenuController(ClinicalContext context, DocumentContext documentContext, AdminContext adminContext, APIContext apiContext, IConfiguration config)
+        public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
+            ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
+            IAuditServiceAsync audit, HSController hs)
         {
             _config = config;   
-            _context = context;
-            _documentContext = documentContext;
-            _adminContext = adminContext;
-            _apiContext = apiContext;
-            _documentsData = new DocumentsData(_documentContext);
-            _patientData = new PatientData(_context);
-            _relData = new RelativeData(_context);
-            _referralData = new ReferralData(_context);
+            //_context = context;
+            //_documentContext = documentContext;
+            //_adminContext = adminContext;
+            //_apiContext = apiContext;
+            _documentsData = documents;
+            _patientData = patient;
+            _relData = relative;
+            _referralData = referral;
             _lvm = new LettersMenuVM();
-            _lc = new LetterController(_context, _documentContext);
-            _crud = new CRUD(_config);
-            _diaryData = new DiaryData(_context);
-            _leafletData = new LeafletData(_documentContext);
-            _clinicianData = new ExternalClinicianData(_context);
-            _staffData = new StaffUserData(_context);
-            _audit = new AuditService(_config);
+            _lc = letter;
+            _crud = crud;
+            _diaryData = diary;
+            _leafletData = leaflet;
+            _clinicianData = clinician;
+            _staffData = staffUser;
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
             _api = new APIController(_apiContext, _config);
-            _mirrorData = new PhenotipsMirrorData(_context);
+            _mirrorData = ptmirror;
+            _hs = hs;
         }
 
-        public IActionResult Index(int id, bool? isRelative = false)
+        public async Task<IActionResult> Index(int id, bool? isRelative = false)
         {
             try
             {
-                string staffCode = _staffData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Letter Menu", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 _lvm.isRelative = isRelative.GetValueOrDefault();
 
                 if (!isRelative.GetValueOrDefault())
                 {
-                    _lvm.patient = _patientData.GetPatientDetails(id);
+                    _lvm.patient = await _patientData.GetPatientDetails(id);
 
                 }
                 else
                 {
-                    _lvm.relative = _relData.GetRelativeDetails(id);
-                    _lvm.patient = _patientData.GetPatientDetailsByWMFACSID(_lvm.relative.WMFACSID);
+                    _lvm.relative = await _relData.GetRelativeDetails(id);
+                    _lvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_lvm.relative.WMFACSID);
                 }
                 int mpi = _lvm.patient.MPI;
-                _lvm.docsListStandard = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Standard").ToList();
-                _lvm.docsListMedRec = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "MEDREC").ToList();
-                _lvm.docsListDNA = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "DNATS").ToList();
-                _lvm.docsListOutcome = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "Outcome").ToList();
-                _lvm.docsListReport = _documentsData.GetDocumentsList().Where(d => d.DocGroup == "REPORTS").ToList();
+                var docList = await _documentsData.GetDocumentsList();
+                _lvm.docsListStandard = docList.Where(d => d.DocGroup == "Standard").ToList();
+                _lvm.docsListMedRec = docList.Where(d => d.DocGroup == "MEDREC").ToList();
+                _lvm.docsListDNA = docList.Where(d => d.DocGroup == "DNATS").ToList();
+                _lvm.docsListOutcome = docList.Where(d => d.DocGroup == "Outcome").ToList();
+                _lvm.docsListReport = docList.Where(d => d.DocGroup == "REPORTS").ToList();
                 _lvm.leaflets = new List<Leaflet>();
-                _lvm.referralList = _referralData.GetActiveReferralsListForPatient(mpi);
-                _lvm.clinicianList = _clinicianData.GetClinicianList().Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
-                _lvm.staffMemberList = _staffData.GetStaffMemberListAll();
+                _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
+                var clins = await _clinicianData.GetClinicianList();
+                _lvm.clinicianList = clins.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
+                _lvm.staffMemberList = await _staffData.GetStaffMemberListAll();
 
                 string salutation = "";
 
@@ -111,20 +115,20 @@ namespace AdminX.Controllers
                 {
                     if (_lvm.referral.PATHWAY == "Cancer")
                     {
-                        _lvm.leaflets = _leafletData.GetCancerLeafletsList();
+                        _lvm.leaflets = await _leafletData.GetCancerLeafletsList();
                     }
                     else if (_lvm.referral.PATHWAY == "General")
                     {
-                        _lvm.leaflets = _leafletData.GetGeneralLeafletsList();
+                        _lvm.leaflets = await _leafletData.GetGeneralLeafletsList();
                     }
                     else
                     {
-                        _lvm.leaflets = _leafletData.GetAllLeafletsList(); //in case there is no referral pathway listed
+                        _lvm.leaflets = await _leafletData.GetAllLeafletsList(); //in case there is no referral pathway listed
                     }
                 }
                 else
                 {
-                    _lvm.leaflets = _leafletData.GetAllLeafletsList(); //in case there is no referral at all
+                    _lvm.leaflets = await _leafletData.GetAllLeafletsList(); //in case there is no referral at all
                 }
 
                 return View(_lvm);
@@ -136,7 +140,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? clinicianCode, string? letterFrom, string? letterTo,
+        public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? clinicianCode, string? letterFrom, string? letterTo,
             int? relID = 0, int? leafletID = 0, bool? isRelative = false)
         {
             try
@@ -145,17 +149,18 @@ namespace AdminX.Controllers
 
                 if (docCode != "HS")
                 {
-                    docID = _documentsData.GetDocumentDetailsByDocCode(docCode).DocContentID;
+                    var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
+                    docID = doc.DocContentID;
                 }
-                _lvm.referral = _referralData.GetReferralDetails(refID);
-                _lvm.patient = _patientData.GetPatientDetails(_lvm.referral.MPI);
+                _lvm.referral = await _referralData.GetReferralDetails(refID);
+                _lvm.patient = await _patientData.GetPatientDetails(_lvm.referral.MPI);
 
                 int mpi = _lvm.patient.MPI;
                 int diaryID = 0;
 
                 if (isRelative.GetValueOrDefault())
                 {
-                    _lvm.relative = _relData.GetRelativeDetails(relID.GetValueOrDefault());
+                    _lvm.relative = await _relData.GetRelativeDetails(relID.GetValueOrDefault());
                 }
 
                 if (!isPreview) //don't create a diary entry for every preview!!
@@ -173,13 +178,14 @@ namespace AdminX.Controllers
 
                     if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DoLetter-diary insert(SQL)" }); }
 
-                    diaryID = _diaryData.GetLatestDiaryByRefID(refID, docCode).DiaryID; //get the diary ID of the entry just created to add to the letter's filename
+                    var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
+                    diaryID = diary.DiaryID; //get the diary ID of the entry just created to add to the letter's filename
                 }
 
                 if (docCode == "HS")
                 {
-                    HSController hs = new HSController(_context, _documentContext, _adminContext);
-                    hs.PrintHSForm(refID, diaryID, User.Identity.Name, isPreview);
+                    //HSController hs = new HSController(_context, _documentContext, _adminContext);
+                    _hs.PrintHSForm(refID, diaryID, User.Identity.Name, isPreview);
                 }
                 else
                 {                    

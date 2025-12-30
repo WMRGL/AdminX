@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Data;
+﻿//using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using ClinicalXPDataConnections.Meta;
@@ -6,35 +6,37 @@ using AdminX.Meta;
 using AdminX.ViewModels;
 using AdminX.Models;
 using ClinicalXPDataConnections.Models;
+using System.Threading.Tasks;
 
 namespace AdminX.Controllers
 {
     public class ReviewController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         private readonly ReviewVM _rvm;
         private readonly IConfiguration _config;
-        private readonly IActivityData _activityData;        
-        private readonly IPatientData _patientData;
-        private readonly IStaffUserData _staffUser;
-        private readonly IReviewData _reviewData;
+        private readonly IActivityDataAsync _activityData;        
+        private readonly IPatientDataAsync _patientData;
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IReviewDataAsync _reviewData;
         private readonly ICRUD _crud;
-        private readonly IAuditService _audit;
-        private readonly IReferralData _referralData;
+        private readonly IAuditServiceAsync _audit;
+        private readonly IReferralDataAsync _referralData;
         private readonly IPAddressFinder _ip;
 
-        public ReviewController(ClinicalContext context, IConfiguration config)
+        public ReviewController(IConfiguration config, IActivityDataAsync activity, IPatientDataAsync patient, IStaffUserDataAsync staffUser, IReviewDataAsync review, ICRUD crud, 
+            IAuditServiceAsync audit, IReferralDataAsync referral)
         {
-            _clinContext = context;
+            //_clinContext = context;
             _config = config;
             _rvm = new ReviewVM();
-            _patientData = new PatientData(_clinContext);
-            _activityData = new ActivityData(_clinContext);
-            _staffUser = new StaffUserData(_clinContext);
-            _reviewData = new ReviewData(_clinContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
-            _referralData = new ReferralData(_clinContext);
+            _patientData = patient;
+            _activityData = activity;
+            _staffUser = staffUser;
+            _reviewData = review;
+            _crud = crud;
+            _audit = audit;
+            _referralData = referral;
             _ip = new IPAddressFinder(HttpContext);
         }
 
@@ -48,12 +50,12 @@ namespace AdminX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
 
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);               
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews","", _ip.GetIPAddress());
 
-                _rvm.reviewList = _reviewData.GetReviewsListAll();
+                _rvm.reviewList = await _reviewData.GetReviewsListAll();
 
                 if (message != null && message != "")
                 {
@@ -77,7 +79,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetReviews()
+        public async Task<IActionResult> GetReviews()
         {
             try
             {
@@ -93,7 +95,7 @@ namespace AdminX.Controllers
                 int pageSize = length != null ? Convert.ToInt32(length) : 0;
                 int skip = start != null ? Convert.ToInt32(start) : 0;
 
-                List<Review> reviews = _reviewData.GetReviewsListAll();
+                List<Review> reviews = await _reviewData.GetReviewsListAll();
 
 				if (!string.IsNullOrEmpty(searchValue))
 				{
@@ -150,14 +152,15 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.activity = _activityData.GetActivityDetails(id);
-                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.activity.MPI);
-                _rvm.activityList = _activityData.GetActivityList(_rvm.patient.MPI).Where(c => c.REFERRAL_DATE != null).ToList();
-                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.activity = await _activityData.GetActivityDetails(id);
+                _rvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.activity.MPI);
+                var activity = await _activityData.GetActivityList(_rvm.patient.MPI);
+                _rvm.activityList = activity.Where(c => c.REFERRAL_DATE != null).ToList();
+                _rvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
                 if (_rvm.patient != null && _rvm.patient.DOB != null)
                 {
@@ -246,12 +249,12 @@ namespace AdminX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Reviews", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.reviewList = _reviewData.GetReviewsListForPatient(id);
-                _rvm.patient = _patientData.GetPatientDetails(id);
+                _rvm.reviewList = await _reviewData.GetReviewsListForPatient(id);
+                _rvm.patient = await _patientData.GetPatientDetails(id);
 
                 return View(_rvm);
             }
@@ -264,9 +267,9 @@ namespace AdminX.Controllers
  
 
         [HttpGet]
-        public IActionResult GetLinkedAppointment(int refID)
+        public async Task<IActionResult> GetLinkedAppointment(int refID)
         {
-            var activityDetails = _activityData.GetActivityDetails(refID);
+            var activityDetails = await _activityData.GetActivityDetails(refID);
             string linkedAppointment = activityDetails.RefID.ToString();
             string referral = activityDetails.TYPE;
             string pathway = activityDetails.PATHWAY;
@@ -281,16 +284,16 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Review", "ID=" + id.ToString(), _ip.GetIPAddress());
 
-                _rvm.review = _reviewData.GetReviewDetails(id);
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.review.MPI);
-                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.review = await _reviewData.GetReviewDetails(id);
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.review.MPI);
+                _rvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _rvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
 
-                _rvm.activityDetail = _activityData.GetActivityDetails((int)_rvm.review.Parent_RefID);
+                _rvm.activityDetail = await _activityData.GetActivityDetails((int)_rvm.review.Parent_RefID);
 
                 if (_rvm.activityDetail is null)
                 {
@@ -335,7 +338,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                _rvm.review = _reviewData.GetReviewDetails(id);
+                _rvm.review = await _reviewData.GetReviewDetails(id);
 
                 DateTime reviewDate = new DateTime();
 
@@ -364,14 +367,14 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult Review(int mpi, int refID)
+        public async Task<IActionResult> Review(int mpi, int refID)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "ReviewList", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
-                _rvm.reviewList = _reviewData.GetReviewsListForPatient(mpi);
-                _rvm.referral = _referralData.GetReferralDetails(refID);
+                _rvm.reviewList = await _reviewData.GetReviewsListForPatient(mpi);
+                _rvm.referral = await _referralData.GetReferralDetails(refID);
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
@@ -389,20 +392,20 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddReview(int mpi, int refID)
+        public async Task<IActionResult> AddReview(int mpi, int refID)
         {
             try
             {
-                _rvm.patient = _patientData.GetPatientDetails(mpi);
-                _rvm.activityList = _activityData.GetActivityList(mpi);
-                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
-                _rvm.staffMembers = _staffUser.GetStaffMemberList();
+                _rvm.patient = await _patientData.GetPatientDetails(mpi);
+                _rvm.activityList = await _activityData.GetActivityList(mpi);
+                _rvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.staffMembers = await _staffUser.GetStaffMemberList();
 
                 _audit.CreateUsageAuditEntry(_rvm.staffMember.STAFF_CODE, "AddReview", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
                 if (refID != 0)
                 {
-                    _rvm.activity = _activityData.GetActivityDetails(refID);
+                    _rvm.activity = await _activityData.GetActivityDetails(refID);
 
                     ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                     {
@@ -443,18 +446,19 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddReview(int mpi, int refID, string Owner, string Category, string Pathway, string Review_Recipient, DateTime? Planned_Date, string Comments)
+        public async Task<IActionResult> AddReview(int mpi, int refID, string Owner, string Category, string Pathway, string Review_Recipient, DateTime? Planned_Date, string Comments)
         {
             try
             {
-                string staffCode = _staffUser.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Create Review", "RefID=" + refID.ToString(), _ip.GetIPAddress());
 
-                _rvm.activity = _activityData.GetActivityDetails(refID);
-                _rvm.staffMembers = _staffUser.GetClinicalStaffList();
-                _rvm.patient = _patientData.GetPatientDetails(_rvm.activity.MPI);
-                _rvm.activityList = _activityData.GetActivityList(_rvm.patient.MPI).Where(c => c.REFERRAL_DATE != null).ToList();
-                _rvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rvm.activity = await _activityData.GetActivityDetails(refID);
+                _rvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _rvm.patient = await _patientData.GetPatientDetails(_rvm.activity.MPI);
+                var activity = await _activityData.GetActivityList(_rvm.patient.MPI);
+                _rvm.activityList = activity.Where(c => c.REFERRAL_DATE != null).ToList();
+                _rvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 
                 _crud.PatientReview("Review", "Create", User.Identity.Name, mpi, Pathway, Owner, Review_Recipient, Category, "", "Pending", Comments, Planned_Date, refID);
 

@@ -1,8 +1,8 @@
-﻿using AdminX.Data;
+﻿//using AdminX.Data;
 using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,37 +13,38 @@ namespace AdminX.Controllers
 {
     public class SysAdminController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly DocumentContext _docContext;
-        private readonly AdminContext _adminContext;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly DocumentContext _docContext;
+        //private readonly AdminContext _adminContext;
         private readonly IConfiguration _config;
-        private readonly IStaffUserData _staffData;
-        private readonly IExternalClinicianData _clinicianData;
-        private readonly IExternalFacilityData _facilityData;
-        private readonly IClinicVenueData _venueData;
-        private readonly ICliniciansClinicData _clinicDetailsData;
-        private readonly ITitleData _titleData;
+        private readonly IStaffUserDataAsync _staffData;
+        private readonly IExternalClinicianDataAsync _clinicianData;
+        private readonly IExternalFacilityDataAsync _facilityData;
+        private readonly IClinicVenueDataAsync _venueData;
+        private readonly ICliniciansClinicDataAsync _clinicDetailsData;
+        private readonly ITitleDataAsync _titleData;
         private readonly SysAdminVM _savm;
-        private readonly IAuditService _audit;
-        private readonly IConstantsData _constants;
+        private readonly IAuditServiceAsync _audit;
+        private readonly IConstantsDataAsync _constants;
         private readonly ICRUD _crud;
         private readonly IPAddressFinder _ip;
 
-        public SysAdminController(ClinicalContext context, DocumentContext docContext, AdminContext adminContext, IConfiguration config)
+        public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
+            IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud)
         {
-            _clinContext = context;
-            _docContext = docContext;
-            _adminContext = adminContext;
+            //_clinContext = context;
+            //_docContext = docContext;
+            //_adminContext = adminContext;
             _config = config;
-            _staffData = new StaffUserData(_clinContext);
-            _clinicianData = new ExternalClinicianData(_clinContext);
-            _facilityData = new ExternalFacilityData(_clinContext);
-            _venueData = new ClinicVenueData(_clinContext);
-            _clinicDetailsData = new CliniciansClinicData(_adminContext);
-            _titleData = new TitleData(_clinContext);
+            _staffData = staffUser;
+            _clinicianData = extClinician;
+            _facilityData = extFacility;
+            _venueData = clinicVenue;
+            _clinicDetailsData = cliniciansClinic;
+            _titleData = title;
             _savm = new SysAdminVM();            
-            _audit = new AuditService(_config);
-            _constants = new ConstantsData(_docContext);
+            _audit = audit;
+            _constants = constants;
             _crud = new CRUD(_config);
             _ip = new IPAddressFinder(HttpContext);
         }
@@ -60,9 +61,12 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    _savm.staffMember = _staffData.GetStaffMemberDetails(User.Identity.Name);
+                    _savm.staffMember = await _staffData.GetStaffMemberDetails(User.Identity.Name);
                     string userStaffCode = _savm.staffMember.STAFF_CODE;
-                    if(_constants.GetConstant("DeleteICPBtn", 1).Contains(User.Identity.Name.ToUpper()))
+
+                    string delICPBtn = await _constants.GetConstant("DeleteICPBtn", 1);
+
+                    if (delICPBtn.Contains(User.Identity.Name.ToUpper()))
                     {
                         _savm.isEditStaff = true;
                     }
@@ -85,10 +89,10 @@ namespace AdminX.Controllers
         {
             try
             {                
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
-                _savm.staffMembers = _staffData.GetStaffMemberListAll();
+                _savm.staffMembers = await _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
 
                 foreach (var item in _savm.staffMembers)
@@ -116,13 +120,16 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
-                _savm.staffMembers = _staffData.GetStaffMemberListAll().Where(s => s.BILL_ID != "Exclude").ToList();
+                var staffMemberList = await _staffData.GetStaffMemberListAll();                
+                staffMemberList = staffMemberList.Where(s => s.BILL_ID != "Exclude").ToList();
+                IQueryable<StaffMember> staffMembers = staffMemberList.AsQueryable();
+               
                 _savm.teams = new List<string>();
 
-                foreach(var item in _savm.staffMembers)
+                foreach(var item in staffMembers)
                 {
                     if(!_savm.teams.Contains(item.BILL_ID))
                     {
@@ -132,39 +139,43 @@ namespace AdminX.Controllers
 
                 if (staffCodeSearch != null)
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.STAFF_CODE == staffCodeSearch).ToList();
+                    staffMembers = staffMembers.Where(s => s.STAFF_CODE == staffCodeSearch);
                 }
 
                 if (nameSearch != null)
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.NAME.Contains(nameSearch)).ToList();
+                    staffMembers = staffMembers.Where(s => s.NAME != null);
+                    staffMembers = staffMembers.Where(s => s.NAME.Contains(nameSearch));                    
                 }
 
                 if (teamSearch != null)
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.BILL_ID != null).ToList();
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.BILL_ID.Contains(teamSearch)).ToList();
+                    staffMembers = staffMembers.Where(s => s.BILL_ID != null);
+                    staffMembers = staffMembers.Where(s => s.BILL_ID.Contains(teamSearch));
                 }
 
                 if (isOnlyCurrent.GetValueOrDefault())
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.InPost).ToList();
+                    staffMembers = staffMembers.Where(s => s.InPost);
                 }
 
                 if (isNotExternal.GetValueOrDefault())
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.BILL_ID != "External").ToList();
+                    staffMembers = staffMembers.Where(s => s.BILL_ID != "External");
                 }
 
                 if (isOnlyAdmin.GetValueOrDefault())
                 {                    
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.CLINIC_SCHEDULER_GROUPS == "Admin").ToList();
+                    staffMembers = staffMembers.Where(s => s.CLINIC_SCHEDULER_GROUPS == "Admin");
                 }
 
                 if (isOnlyClinical.GetValueOrDefault())
                 {
-                    _savm.staffMembers = _savm.staffMembers.Where(s => s.CLINIC_SCHEDULER_GROUPS != "Admin" && s.CLINIC_SCHEDULER_GROUPS != null).ToList();
-                }                
+                    staffMembers = staffMembers.Where(s => s.CLINIC_SCHEDULER_GROUPS != "Admin" && s.CLINIC_SCHEDULER_GROUPS != null);
+                    Console.WriteLine(staffMembers.Count());
+                }
+
+                _savm.staffMembers = staffMembers.ToList();
 
                 return View(_savm);
             }
@@ -179,14 +190,14 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
-                _savm.staffMember = _staffData.GetStaffMemberDetailsByStaffCode(staffCode);                
-                _savm.staffMembers = _staffData.GetStaffMemberListAll();
+                _savm.staffMember = await _staffData.GetStaffMemberDetailsByStaffCode(staffCode);                
+                _savm.staffMembers = await _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
                 _savm.types = new List<string>();
-                _savm.titles = _titleData.GetTitlesList();
+                _savm.titles = await _titleData.GetTitlesList();
 
                 foreach (var item in _savm.staffMembers)
                 {
@@ -213,7 +224,7 @@ namespace AdminX.Controllers
             string type, DateTime startDate, DateTime endDate, bool isInPost, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator=false)
         {
 
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("StaffMember", "Edit", 0, 0, 0, staffCode, title, firstname, lastname, User.Identity.Name, startDate, endDate,
@@ -229,13 +240,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
-                _savm.staffMembers = _staffData.GetStaffMemberListAll();
+                _savm.staffMembers = await _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
                 _savm.types = new List<string>();
-                _savm.titles = _titleData.GetTitlesList();
+                _savm.titles = await _titleData.GetTitlesList();
 
                 foreach (var item in _savm.staffMembers)
                 {
@@ -261,7 +272,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNewStaffMember(string loginName, string title, string firstname, string lastname, string role, string team,
             string type, DateTime startDate, string email, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator = false)
         {
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("StaffMember", "Create", 0, 0, 0, loginName, title, firstname, lastname, User.Identity.Name, startDate, null,
@@ -269,8 +280,8 @@ namespace AdminX.Controllers
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
-            string password = _staffData.GetStaffMemberDetails(loginName).PASSWORD;
-                       
+            StaffMember newStaff = await _staffData.GetStaffMemberDetails(loginName);
+            string password = newStaff.PASSWORD;                       
 
             return RedirectToAction("StaffMembers", new { message = "New staff member added. Please advise new staff member of password: " + password, success = true });
             
@@ -281,7 +292,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians", "", _ip.GetIPAddress());
                 _savm.clinicians = new List<ExternalClinician>(); //because it can't load that many
 
@@ -301,14 +312,14 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians", "", _ip.GetIPAddress());
 
                 _savm.clinicians = new List<ExternalClinician>(); 
 
                 if (firstNameSearch != null || lastNameSearch != null)
                 {
-                    _savm.clinicians = _clinicianData.GetAllCliniciansList();
+                    _savm.clinicians = await _clinicianData.GetAllCliniciansList();
 
                     if (firstNameSearch != null)
                     {
@@ -351,12 +362,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
-                _savm.clinician = _clinicianData.GetClinicianDetails(clinCode);
-                _savm.titles = _titleData.GetTitlesList();
-                _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
+                _savm.clinician = await _clinicianData.GetClinicianDetails(clinCode);
+                _savm.titles = await _titleData.GetTitlesList();
+                var fac = await _facilityData.GetFacilityListAll();
+                _savm.facilities = fac.Where(f => f.NONACTIVE == 0).ToList();
 
                 return View(_savm);
             }
@@ -370,7 +382,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> ClinicianDetails(string clinCode, string title, string firstName, string lastName, string facility, string speciality, string position, int isGP, int isNonActive)
         {
 
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
 
             int iSuccess = _crud.SysAdminCRUD("Clinician", "Edit", isGP, isNonActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
@@ -386,11 +398,12 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
-                _savm.titles = _titleData.GetTitlesList();
-                _savm.facilities = _facilityData.GetFacilityListAll().Where(f => f.NONACTIVE == 0).ToList();
+                _savm.titles = await _titleData.GetTitlesList();
+                var fac = await _facilityData.GetFacilityListAll();
+                _savm.facilities = fac.Where(f => f.NONACTIVE == 0).ToList();
                 
                 return View(_savm);
             }
@@ -403,7 +416,7 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
         {
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
             string clinCode = lastName + firstName.Substring(0, 1);
@@ -437,7 +450,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities", "", _ip.GetIPAddress());
 
                 _savm.facilities = new List<ExternalFacility>(); //because it can't load that many
@@ -458,42 +471,45 @@ namespace AdminX.Controllers
         {            
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facilities", "", _ip.GetIPAddress());
                 _savm.facilities = new List<ExternalFacility>();
+                var facList = await _facilityData.GetFacilityListAll();
+                IQueryable<ExternalFacility> facs = facList.AsQueryable();
 
                 if (nameSearch != null)
-                {
-                    _savm.facilities = _facilityData.GetFacilityListAll().Where(s => s.NAME != null).ToList();
-                    _savm.facilities = _savm.facilities.Where(s => s.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
+                {                    
+                    facs = facs.Where(s => s.NAME != null);
+                    facs = facs.Where(s => s.NAME.ToUpper().Contains(nameSearch.ToUpper()));
                 }
 
                 if (citySearch != null)
-                {
-                    _savm.facilities = _facilityData.GetFacilityListAll().Where(s => s.CITY != null).ToList();
-                    _savm.facilities = _savm.facilities.Where(s => s.CITY.ToUpper().Contains(citySearch.ToUpper())).ToList();
+                {                    
+                    facs = facs.Where(s => s.CITY != null);
+                    facs = facs.Where(s => s.CITY.ToUpper().Contains(citySearch.ToUpper()));
                 }
 
                 if (codeSearch != null)
                 {                    
-                    _savm.facilities = _savm.facilities.Where(s => s.MasterFacilityCode.ToUpper().Contains(codeSearch.ToUpper())).ToList();
+                    facs = facs.Where(s => s.MasterFacilityCode.ToUpper().Contains(codeSearch.ToUpper()));
                 }
 
                 if (isOnlyCurrent.GetValueOrDefault())
                 {
-                    _savm.facilities = _savm.facilities.Where(s => s.NONACTIVE == 0).ToList();
+                    facs = facs.Where(s => s.NONACTIVE == 0);
                 }
 
                 if (isOnlyGP.GetValueOrDefault())
                 {
-                    _savm.facilities = _savm.facilities.Where(s => s.IS_GP_SURGERY == -1).ToList();
+                    facs = facs.Where(s => s.IS_GP_SURGERY == -1);
                 }
 
                 if (isOnlyNonGP.GetValueOrDefault())
                 {
-                    _savm.facilities = _savm.facilities.Where(s => s.IS_GP_SURGERY == 0).ToList();
+                    facs = facs.Where(s => s.IS_GP_SURGERY == 0);
                 }
 
+                _savm.facilities = facs.ToList();
 
                 return View(_savm);
             }
@@ -509,10 +525,10 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details", "", _ip.GetIPAddress());
 
-                _savm.facility = _facilityData.GetFacilityDetails(facCode);
+                _savm.facility = await _facilityData.GetFacilityDetails(facCode);
 
                 return View(_savm);
             }
@@ -526,7 +542,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> FacilityDetails(string facCode, string name, string address, string district, string city, string state, string zip, int nonActive, int isGP)
         {
 
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
@@ -542,10 +558,8 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility", "", _ip.GetIPAddress());
-
-
 
                 return View(_savm);
             }
@@ -558,7 +572,7 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewFacility(string facCode, string name, string address, string district, string city, string state, string postCode, int nonActive, int isGP)
         {
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Facility", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Facility", "Create", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
@@ -575,10 +589,10 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues", "", _ip.GetIPAddress());
 
-                _savm.venues = _venueData.GetVenueList();
+                _savm.venues = await _venueData.GetVenueList();
 
                 _savm.message = message;
                 _savm.success = success.GetValueOrDefault();
@@ -596,18 +610,22 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venues", "", _ip.GetIPAddress());
+
+                var venues = await _venueData.GetVenueList();
 
                 if (nameSearch != null)
                 {
-                    _savm.venues = _venueData.GetVenueList().Where(v => v.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
+                    venues = venues.Where(v => v.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
                 }
 
                 if(isOnlyCurrent.GetValueOrDefault())
                 {
-                    _savm.venues = _venueData.GetVenueList().Where(v => v.NON_ACTIVE == 0).ToList();
+                    venues = venues.Where(v => v.NON_ACTIVE == 0).ToList();
                 }
+
+                _savm.venues = venues;
 
 
                 return View(_savm);
@@ -623,12 +641,12 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details", "", _ip.GetIPAddress());
 
-                _savm.venue = _venueData.GetVenueDetails(clinCode);
+                _savm.venue = await _venueData.GetVenueDetails(clinCode);
 
-                CliniciansClinics clin = _clinicDetailsData.GetCliniciansClinic(clinCode);
+                CliniciansClinics clin = await _clinicDetailsData.GetCliniciansClinic(clinCode);
 
                 if (clin != null)
                 {
@@ -647,7 +665,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> VenueDetails(string clinCode, string name, string location, string notes, string locationCode, int isNonActive)
         {
 
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Venue Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Venue", "Edit", isNonActive, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
@@ -663,10 +681,8 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
-
-
 
                 return View(_savm);
             }
@@ -679,7 +695,7 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode)
         {
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
@@ -696,10 +712,10 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details", "", _ip.GetIPAddress());
 
-                _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
+                _savm.cliniciansClinicList = await _clinicDetailsData.GetCliniciansClinicList();
 
                 _savm.message = message;
                 _savm.success = success.GetValueOrDefault();
@@ -717,10 +733,10 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinic Details", "", _ip.GetIPAddress());
 
-                _savm.cliniciansClinicList = _clinicDetailsData.GetCliniciansClinicList();
+                _savm.cliniciansClinicList = await _clinicDetailsData.GetCliniciansClinicList();
 
                 if (siteSearch != null)
                 {
@@ -739,12 +755,12 @@ namespace AdminX.Controllers
         [HttpGet]
         public async Task<IActionResult> ClinicDetails(string clinCode)
         {
-            _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _savm.cliniciansClinic = await _clinicDetailsData.GetCliniciansClinic(clinCode);
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
             
-            _savm.venues = _venueData.GetVenueList();
-            _savm.staffMembers = _staffData.GetStaffMemberListByRole("Admin");
+            _savm.venues = await _venueData.GetVenueList();
+            _savm.staffMembers = await _staffData.GetStaffMemberListByRole("Admin");
 
             return View(_savm);
         }
@@ -753,8 +769,8 @@ namespace AdminX.Controllers
         public async Task<IActionResult> ClinicDetails(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site,
             string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, int? showLocalRef = 0)
         {
-            _savm.cliniciansClinic = _clinicDetailsData.GetCliniciansClinic(clinCode);
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            _savm.cliniciansClinic = await _clinicDetailsData.GetCliniciansClinic(clinCode);
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Edit Clinic Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Edit", 0, 0, 0, clinCode, addressee, salutation, preAmble, User.Identity.Name, null, null, callToBook, includeSPR,
@@ -770,13 +786,13 @@ namespace AdminX.Controllers
         {
             try
             {
-                string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
                 if(clinCodeToCreate != null) { _savm.clinCodeToCreate = clinCodeToCreate; }
 
-                _savm.venues = _venueData.GetVenueList();
-                _savm.staffMembers = _staffData.GetStaffMemberListByRole("Admin");
+                _savm.venues = await _venueData.GetVenueList();
+                _savm.staffMembers = await _staffData.GetStaffMemberListByRole("Admin");
 
                 return View(_savm);
             }
@@ -790,7 +806,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> AddNewCliniciansClinic(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site, 
             string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, bool? showLocalRef = false)
         {
-            string userStaffCode = _staffData.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+            string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
             int iShowLocalRef = 0;
@@ -813,9 +829,9 @@ namespace AdminX.Controllers
                 _savm.success = success.GetValueOrDefault();
             }
 
-            _savm.consultants = _staffData.GetConsultantsList();
-            _savm.gcs = _staffData.GetGCList();            
-            _savm.sprs = _staffData.GetSpRList();
+            _savm.consultants = await _staffData.GetConsultantsList();
+            _savm.gcs = await _staffData.GetGCList();            
+            _savm.sprs = await _staffData.GetSpRList();
             _savm.dutyConsultant = _savm.consultants.FirstOrDefault(s => s.isDutyClinician == true);            
             _savm.dutySPR = _savm.sprs.FirstOrDefault(s => s.isDutyClinician == true);
 

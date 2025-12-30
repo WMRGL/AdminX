@@ -9,40 +9,40 @@ namespace AdminX.Controllers
 {
     public class LabReportController : Controller
     {
-        private readonly LabContext _context;
-        private readonly ClinicalContext _clinContext;
+     //   private readonly LabContext _context;
+       // private readonly ClinicalContext _clinContext;
         private readonly IConfiguration _config;
-        private readonly ILabData _labData;
+        private readonly ILabDataAsync _labData;
         private readonly LabReportVM _lvm;
-        private readonly StaffUserData _staff;
-        private readonly AuditService _audit;
+        private readonly IStaffUserDataAsync _staff;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
 
-        public LabReportController(LabContext context, ClinicalContext clinContext, IConfiguration config)
+        public LabReportController(IConfiguration config, ILabDataAsync lab, IStaffUserDataAsync staffUser, IAuditServiceAsync audit)
         {
-            _context = context;
-            _clinContext = clinContext;
+         //   _context = context;
+           // _clinContext = clinContext;
             _config = config;
-            _labData = new LabReportData(_context);
+            _labData = lab;
             _lvm = new LabReportVM();
-            _staff = new StaffUserData(_clinContext);
-            _audit = new AuditService(_config);
+            _staff = staffUser;
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
-        public IActionResult LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
+        public async Task<IActionResult> LabPatientSearch(string? firstname, string? lastname, string? nhsno, string? postcode, DateTime? dob)
         {
             try
             {
-                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staff.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "", _ip.GetIPAddress());
 
                 _lvm.patientsList = new List<LabPatient>();
 
                 if (firstname != null || lastname != null || nhsno != null || postcode != null || dob != null)
                 {
-                    _lvm.patientsList = _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
+                    _lvm.patientsList = await _labData.GetPatients(firstname, lastname, nhsno, postcode, dob);
                     _lvm.searchTerms = "Firstname:" + firstname + ",Lastname:" + lastname + ",NHSNo:" + nhsno + ",Postcode:" + postcode;
                     if (dob != null)
                     {
@@ -58,17 +58,17 @@ namespace AdminX.Controllers
             }
         }
 
-        public IActionResult LabReports(int intID)
+        public async Task<IActionResult> LabReports(int intID)
         {
             try
             {
-                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staff.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "PatientID=" + intID.ToString(), _ip.GetIPAddress());
 
-                _lvm.patient = _labData.GetPatientDetails(intID);
-                _lvm.cytoReportsList = _labData.GetCytoReportsList(intID);
+                _lvm.patient = await _labData.GetPatientDetails(intID);
+                _lvm.cytoReportsList = await _labData.GetCytoReportsList(intID);
                 //_lvm.dnaReportsList = _labData.GetDNAReportsList(intID);
-                _lvm.labDNALabDataList = _labData.GetDNALabDataList(intID);
+                _lvm.labDNALabDataList = await _labData.GetDNALabDataList(intID);
 
                 return View(_lvm);
             }
@@ -78,15 +78,15 @@ namespace AdminX.Controllers
             }
         }
 
-        public IActionResult SampleDetails(string labno)
+        public async Task<IActionResult> SampleDetails(string labno)
         {
             try
             {
-                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staff.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
 
-                _lvm.cytoReport = _labData.GetCytoReport(labno);
-                _lvm.dnaReport = _labData.GetDNAReport(labno);
+                _lvm.cytoReport = await _labData.GetCytoReport(labno);
+                _lvm.dnaReport = await _labData.GetDNAReport(labno);
 
                 return View(_lvm);
             }
@@ -96,15 +96,15 @@ namespace AdminX.Controllers
             }
         }
 
-        public IActionResult DNALabReport(string labno, string indication, string reason)
+        public async Task<IActionResult> DNALabReport(string labno, string indication, string reason)
         {
             try
             {
-                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staff.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
 
-                _lvm.dnaReportDetails = _labData.GetDNAReportDetails(labno, indication, reason);
-                _lvm.dnaReport = _labData.GetDNAReport(labno);
+                _lvm.dnaReportDetails = await _labData.GetDNAReportDetails(labno, indication, reason);
+                _lvm.dnaReport = await _labData.GetDNAReport(labno);
 
                 return View(_lvm);
             }
@@ -114,14 +114,14 @@ namespace AdminX.Controllers
             }
         }
 
-        public IActionResult CytoLabReport(string labno)
+        public async Task<IActionResult> CytoLabReport(string labno)
         {
             try
             {
-                string staffCode = _staff.GetStaffMemberDetails(User.Identity.Name).STAFF_CODE;
+                string staffCode = await _staff.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - LabReports", "LabNo=" + labno, _ip.GetIPAddress());
 
-                _lvm.cytoReport = _labData.GetCytoReport(labno);
+                _lvm.cytoReport = await _labData.GetCytoReport(labno);
 
                 return View(_lvm);
             }

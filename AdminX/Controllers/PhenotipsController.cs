@@ -1,17 +1,18 @@
 ﻿using APIControllers.Controllers;
-using APIControllers.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
 {
     public class PhenotipsController : Controller
     {        
-        private readonly APIContext _apiContext;
+        //private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
+        private readonly APIController _api;
 
-        public PhenotipsController(APIContext apiContext, IConfiguration config)
-        {            
-            _apiContext = apiContext;
+        public PhenotipsController(APIController api, IConfiguration config)
+        {
+            //_apiContext = apiContext;
+            _api = api;
             _config = config;
         }
 
@@ -22,9 +23,9 @@ namespace AdminX.Controllers
                 string sMessage = "";
                 bool isSuccess = false;
 
-                APIController api = new APIController(_apiContext, _config);
+                //APIController api = new APIController(_apiContext, _config);
 
-                Int16 result = await api.PushPtToPhenotips(mpi);
+                Int16 result = await _api.PushPtToPhenotips(mpi);
 
                 if (result == 1)
                 {

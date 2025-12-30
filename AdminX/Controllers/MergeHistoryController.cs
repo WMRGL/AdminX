@@ -1,8 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using AdminX.Models;
@@ -12,25 +10,25 @@ namespace AdminX.Controllers
 {
     public class MergeHistoryController : Controller
     {
-        private readonly ClinicalContext _clinContext;
-        private readonly AdminContext _context;
-        private readonly IMergeHistoryData _mhData;
-        private readonly IPatientData _patientData;
+        //private readonly ClinicalContext _clinContext;
+        //private readonly AdminContext _context;
+        private readonly IMergeHistoryDataAsync _mhData;
+        private readonly IPatientDataAsync _patientData;
         private readonly MergeHistoryVM _mhvm;
 
-        public MergeHistoryController(ClinicalContext clinContext, AdminContext context)
+        public MergeHistoryController(IConfiguration config, IMergeHistoryDataAsync mergeHistory, IPatientDataAsync patient)
         {
-            _clinContext = clinContext;
-            _context = context;
-            _mhData = new MergeHistoryData(_context);
-            _patientData = new PatientData(_clinContext);
+            //_clinContext = clinContext;
+            //_context = context;
+            _mhData = mergeHistory;
+            _patientData = patient;
             _mhvm = new MergeHistoryVM();
         }
 
 
         [HttpGet]
         [Authorize]
-        public IActionResult Index(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob, bool? isPostback = false)
+        public async Task<IActionResult> Index(string? oldFileNo, string? newCGUNo, string? nhsNo, string? firstName, string? lastName, DateTime? dob, bool? isPostback = false)
         {
             try
             {
@@ -42,21 +40,21 @@ namespace AdminX.Controllers
                     if (firstName != null || lastName != null || dob != null || nhsNo != null)
                     {
                         Patient patient = new Patient();
-                        patient = _patientData.GetPatientDetailsByDemographicData(firstName, lastName, nhsNo, dob.GetValueOrDefault());
+                        patient = await _patientData.GetPatientDetailsByDemographicData(firstName, lastName, nhsNo, dob.GetValueOrDefault());
                         if (patient != null)
                         {
-                            _mhvm.mergeHistory = _mhData.GetMergeHistoryByMPI(patient.MPI);
+                            _mhvm.mergeHistory = await _mhData.GetMergeHistoryByMPI(patient.MPI);
                         }
                     }
 
                     if (oldFileNo != null)
                     {
-                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByOldFileNo(oldFileNo);
+                        _mhvm.mergeHistory = await _mhData.GetMergeHistoryByOldFileNo(oldFileNo);
                     }
 
                     if (newCGUNo != null)
                     {
-                        _mhvm.mergeHistory = _mhData.GetMergeHistoryByNewFileNo(newCGUNo);
+                        _mhvm.mergeHistory = await _mhData.GetMergeHistoryByNewFileNo(newCGUNo);
                     }
 
                     if (_mhvm.mergeHistory.Count == 0)

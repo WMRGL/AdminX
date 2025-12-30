@@ -1,5 +1,5 @@
 ﻿using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,28 +7,27 @@ namespace AdminX.Controllers
 {
     public class EDMSMoverController : Controller
     {
-        private readonly ClinicalContext _clinicalContext;
-        private readonly DocumentContext _documentContext;
-        private readonly IPatientData _patientData;
-        private readonly IConstantsData _constantsData;
-        private readonly IDocKindsData _docKindsData;
+        //private readonly ClinicalContext _clinicalContext;
+        //private readonly DocumentContext _documentContext;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IConstantsDataAsync _constantsData;
+        private readonly IDocKindsDataAsync _docKindsData;
         private readonly EDMSVM _vm;
-        private readonly IStaffUserData _staffUserData;
-        private readonly IAuditService _audit;
+        private readonly IStaffUserDataAsync _staffUserData;
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
         private readonly IConfiguration _config;
 
-        public EDMSMoverController(ClinicalContext clinicalContext, DocumentContext documentContext, IConfiguration configuration)
+        public EDMSMoverController(IConfiguration configuration, IPatientDataAsync patient, IConstantsDataAsync constants, IDocKindsDataAsync docKinds, IStaffUserDataAsync staffUser, 
+            IAuditServiceAsync audit)
         {
-            _config = configuration;
-            _clinicalContext = clinicalContext;
-            _documentContext = documentContext;
-            _patientData = new PatientData(_clinicalContext);
-            _constantsData = new ConstantsData(_documentContext);
-            _docKindsData = new DocKindsData(_documentContext);
+            _config = configuration;            
+            _patientData = patient;
+            _constantsData = constants;
+            _docKindsData = docKinds;
             _vm = new EDMSVM();
-            _staffUserData = new StaffUserData(_clinicalContext);
-            _audit = new AuditService(_config);
+            _staffUserData = staffUser;
+            _audit = audit;
         }
 
         [HttpGet]
@@ -36,11 +35,11 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Upload to EDMS", "MPI=" + mpi.ToString(), _ip.GetIPAddress());
 
-                _vm.patient = _patientData.GetPatientDetails(mpi);
-                _vm.docKinds = _docKindsData.GetDocumentKindsList();
+                _vm.patient = await _patientData.GetPatientDetails(mpi);
+                _vm.docKinds = await _docKindsData.GetDocumentKindsList();
 
                 if (message != null) { _vm.Message = message; }
                 _vm.isSuccess = success.GetValueOrDefault();

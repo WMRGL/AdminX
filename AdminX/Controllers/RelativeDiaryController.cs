@@ -1,7 +1,7 @@
-﻿using AdminX.Data;
+﻿//using AdminX.Data;
 using AdminX.Meta;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
+//using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,51 +9,51 @@ namespace AdminX.Controllers
 {
     public class RelativeDiaryController : Controller
     {
-        private readonly ClinicalContext _context;
+        //private readonly ClinicalContext _context;
         private readonly IConfiguration _config;
-        private readonly IRelativeDiaryData _relDiaryData;
-        private readonly IRelativeData _relData;
-        private readonly IPatientData _patientData;
+        private readonly IRelativeDiaryDataAsync _relDiaryData;
+        private readonly IRelativeDataAsync _relData;
+        private readonly IPatientDataAsync _patientData;
         private readonly ICRUD _crud;
         private readonly RelativeDiaryVM _rdvm;
-        private readonly AdminContext _adminContext;
-        private readonly DocumentContext _docContext;        
-        private readonly IStaffUserData _staffUser;
-        private readonly IDocumentsData _docsData;
-        private readonly IDiaryActionData _diaryActionData;        
-        private readonly IAuditService _audit;
+        //private readonly AdminContext _adminContext;
+        //private readonly DocumentContext _docContext;        
+        private readonly IStaffUserDataAsync _staffUser;
+        private readonly IDocumentsDataAsync _docsData;
+        private readonly IDiaryActionDataAsync _diaryActionData;        
+        private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
-        public RelativeDiaryController(ClinicalContext context, AdminContext adminContext, DocumentContext documentContext, IConfiguration config)
+        public RelativeDiaryController(IConfiguration config, IRelativeDataAsync relative, IRelativeDiaryDataAsync relativeDiary, IPatientDataAsync patient, ICRUD crud, IStaffUserDataAsync staffUser,
+            IDocumentsDataAsync documents, IDiaryActionDataAsync diaryAction, IAuditServiceAsync audit)
         {
-            _context = context;
+            //_context = context;
             _config = config;
-            _relDiaryData = new RelativeDiaryData(_context);
-            _relData = new RelativeData(_context);
-            _patientData = new PatientData(_context);
-            _crud = new CRUD(_config);
+            _relDiaryData = relativeDiary;
+            _relData = relative;
+            _patientData = patient;
+            _crud = crud;
             _rdvm = new RelativeDiaryVM();
-            _adminContext = adminContext;
-            _docContext = documentContext;
+            //_adminContext = adminContext;
+            //_docContext = documentContext;
             _config = config;                        
-            _staffUser = new StaffUserData(_context);
-            _docsData = new DocumentsData(_docContext);
-            _diaryActionData = new DiaryActionData(_adminContext);
-            _crud = new CRUD(_config);
-            _audit = new AuditService(_config);
+            _staffUser = staffUser;
+            _docsData = documents;
+            _diaryActionData = diaryAction;            
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
         }
-        public IActionResult Index(int relID)
+        public async Task<IActionResult> Index(int relID)
         {
             try
             {
-                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rdvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rdvm.staffMember.STAFF_CODE;
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relative = _relData.GetRelativeDetails(relID);
-                _rdvm.relativeDiaryList = _relDiaryData.GetRelativeDiaryList(relID);
-                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.relative = await _relData.GetRelativeDetails(relID);
+                _rdvm.relativeDiaryList = await _relDiaryData.GetRelativeDiaryList(relID);
+                _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
 
                 return View(_rdvm);
             }
@@ -65,19 +65,19 @@ namespace AdminX.Controllers
 
 
         [HttpGet]
-        public IActionResult AddNew(int relID)
+        public async Task<IActionResult> AddNew(int relID)
         {
             try
             {
-                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rdvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rdvm.staffMember.STAFF_CODE;
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Relative Diary", "RelID=" + relID.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relative = _relData.GetRelativeDetails(relID);
-                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
-                _rdvm.documentsList = _docsData.GetDocumentsList();
-                _rdvm.diaryActionsList = _diaryActionData.GetDiaryActions();
+                _rdvm.relative = await _relData.GetRelativeDetails(relID);
+                _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.documentsList = await _docsData.GetDocumentsList();
+                _rdvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
 
                 return View(_rdvm);
             }
@@ -106,17 +106,17 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int diaryID)
+        public async Task<IActionResult> Edit(int diaryID)
         {
             try
             {
-                _rdvm.staffMember = _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                _rdvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rdvm.staffMember.STAFF_CODE;
                 //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Relative Diary", "DiaryID=" + diaryID.ToString(), _ip.GetIPAddress());
 
-                _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
-                _rdvm.patient = _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.relativeDiary = await _relDiaryData.GetRelativeDiaryDetails(diaryID);
+                _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
 
                 return View(_rdvm);
             }
@@ -127,11 +127,11 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int diaryID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText, bool? isNotReturnExpected=false)
+        public async Task<IActionResult> Edit(int diaryID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText, bool? isNotReturnExpected=false)
         {
             try
             {
-                _rdvm.relativeDiary = _relDiaryData.GetRelativeDiaryDetails(diaryID);
+                _rdvm.relativeDiary = await _relDiaryData.GetRelativeDiaryDetails(diaryID);
                 int relID = _rdvm.relativeDiary.RelsID;
 
                 int success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,

@@ -1,8 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,45 +8,46 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdminX.Controllers
 {
-    public class NewEpicPatient : Controller
+    public class NewEpicPatientController : Controller
     {
-        ClinicalContext _context;
-        AdminContext _adminContext;
-        IPatientData _patientData;
-        IPedigreeData _pedigreeData;
-        INewPatientSearchData _searchData;
-        IPatientSearchData _patientSearchData;
-        IStaffUserData _staffUserData;
+        //ClinicalContext _context;
+        //AdminContext _adminContext;
+        IPatientDataAsync _patientData;
+        IPedigreeDataAsync _pedigreeData;
+        INewPatientSearchDataAsync _searchData;
+        IPatientSearchDataAsync _patientSearchData;
+        IStaffUserDataAsync _staffUserData;
         IConfiguration _configuration;
         ICRUD _crud;
         NewEpicPatientVM _epvm;
         IPAddressFinder _ip;
-        IAuditService _audit;
+        IAuditServiceAsync _audit;
 
-        public NewEpicPatient(ClinicalContext context, AdminContext adminContext, IConfiguration configuration)
+        public NewEpicPatientController(IConfiguration configuration, IPatientDataAsync patient, INewPatientSearchDataAsync newSearch, IStaffUserDataAsync staffUser, IPedigreeDataAsync pedigree,
+            IAuditServiceAsync audit, ICRUD crud, IPatientSearchDataAsync patSearch)
         {
-            _context = context;
-            _adminContext = adminContext;
-            _patientData = new PatientData(_context);
-            _searchData = new NewPatientSearchData(_adminContext);
+            //_context = context;
+            //_adminContext = adminContext;
+            _patientData = patient;
+            _searchData = newSearch;
             _epvm = new NewEpicPatientVM();
             _configuration = configuration;
-            _crud = new CRUD(_configuration);
-            _staffUserData = new StaffUserData(_context);
-            _pedigreeData = new PedigreeData(_context);
-            _patientSearchData = new PatientSearchData(_context);
-            _audit = new AuditService(_configuration);
+            _crud = crud;
+            _staffUserData = staffUser;
+            _pedigreeData = pedigree;
+            _patientSearchData = patSearch;
+            _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patients", "", _ip.GetIPAddress());
-                _epvm.patientList = _patientData.GetPatientsWithoutCGUNumbers();
+                _epvm.patientList = await _patientData.GetPatientsWithoutCGUNumbers();
 
                 return View(_epvm);
             }
@@ -59,20 +58,20 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public IActionResult EpicPatientSearch(int id)
+        public async Task<IActionResult> EpicPatientSearch(int id)
         {
             try
             { 
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode =  await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patient Search", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
-                _epvm.patient = _patientData.GetPatientDetails(id);
+                _epvm.patient = await _patientData.GetPatientDetails(id);
 
                 _crud.NewPatientSearch(_epvm.patient.FIRSTNAME, _epvm.patient.LASTNAME, _epvm.patient.DOB.GetValueOrDefault(), _epvm.patient.POSTCODE, _epvm.patient.SOCIAL_SECURITY, staffCode);
 
-                int searchID = _searchData.GetPatientSearchID(staffCode);
+                int searchID = await _searchData.GetPatientSearchID(staffCode);
 
-                List<PatientSearchResults> searchResults = _searchData.GetPatientSearchResults(searchID);
+                List<PatientSearchResults> searchResults = await _searchData.GetPatientSearchResults(searchID);
 
                 _epvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").Where(p => p.MPI != id).ToList();
                 _epvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
@@ -91,7 +90,7 @@ namespace AdminX.Controllers
         {
             try
             {
-                string staffCode = _staffUserData.GetStaffCode(User.Identity.Name);
+                string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patient Search", "MPI=" + id.ToString(), _ip.GetIPAddress());
 
                 string cguNumber = "";
@@ -104,7 +103,7 @@ namespace AdminX.Controllers
                 {
                     string pedno = fileNumber.Substring(0, fileNumber.IndexOf("."));
 
-                    List<Patient> patList = _patientSearchData.GetPatientsListByCGUNo(pedno); //get the next CGU point number
+                    List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(pedno); //get the next CGU point number
                     int patientNumber = patList.Count();
                                       
 
