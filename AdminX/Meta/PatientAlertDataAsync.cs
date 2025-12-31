@@ -20,7 +20,7 @@ namespace AdminX.Meta
 
         public async Task<Alert> GetProtectedAdress(int id)
         {
-            Alert alert = await _clinContext.Alert.FirstAsync(i => i.MPI == id);
+            Alert alert = await _clinContext.Alert.FirstOrDefaultAsync(i => i.MPI == id);
 
             return alert;
         }

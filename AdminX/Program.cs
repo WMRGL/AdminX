@@ -88,13 +88,12 @@ builder.Services.AddScoped<IEthnicityDataAsync, EthnicityDataAsync>();
 builder.Services.AddScoped<IAdminStatusDataAsync, AdminStatusDataAsync>();
 builder.Services.AddScoped<IListDiseaseDataAsync, ListDiseaseDataAsync>();
 builder.Services.AddScoped<ICliniciansClinicDataAsync, CliniciansClinicDataAsync>();
+builder.Services.AddScoped<IRefReasonDataAsync, RefReasonDataAsync>();
 
 builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
 builder.Services.AddScoped<ICRUD, CRUD>();
 builder.Services.AddScoped<LetterController>();
 builder.Services.AddScoped<APIController>();
-//builder.Services.AddScoped<APIControllerLOCAL>(); //see if we need this
-
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

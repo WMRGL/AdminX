@@ -21,6 +21,7 @@
 @*Html.Raw("<button type=\"button\" class=\"btn btn-light bg-white me-2 m-1\" id=\"createReviewBtn\">Create New Review</button>"),*@
         Html.ActionLink("Patient Merge", "MergePatient", "PatientMerge", new { mpiFrom = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
         Html.ActionLink("Synch with Phenotips", "SynchronisePhenotips", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id="btnPhenotipsSynch"  }),
+        Html.ActionLink("Open Pedigree Assistant", "PedigreeAssistant", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id="btnPedigree"  }),
     };
 }
 
@@ -1529,6 +1530,12 @@
             document.getElementById("btnPhenotipsSynch").hidden = true;
             document.getElementById("btnImportRelative").hidden = true;
         }
+                
+
+        if("@(Model.isPhenotipsAvailable)" == "True")
+        {         
+            document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
+        }        
     }
 
     function GoBack()

@@ -21,7 +21,7 @@ namespace AdminX.Meta
         public async Task<string> GetCounty(string city)
         {
             string county = "";
-            var cityCounty = await _adminContext.ListCity.FirstAsync(c => c.TownCity == city);
+            var cityCounty = await _adminContext.ListCity.FirstOrDefaultAsync(c => c.TownCity == city);
             if(cityCounty != null) { county = cityCounty.County; }
 
             return county;

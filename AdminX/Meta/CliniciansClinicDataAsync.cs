@@ -20,7 +20,7 @@ namespace AdminX.Meta
 
         public async Task<CliniciansClinics> GetCliniciansClinic(string facilityCode)
         {
-            CliniciansClinics cd = await _adminContext.CliniciansClinics.FirstAsync(c => c.Facility ==  facilityCode);
+            CliniciansClinics cd = await _adminContext.CliniciansClinics.FirstOrDefaultAsync(c => c.Facility ==  facilityCode);
 
             return cd;
         }

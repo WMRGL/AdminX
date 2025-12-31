@@ -10,6 +10,7 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace AdminX.Controllers
 {
@@ -758,6 +759,21 @@ namespace AdminX.Controllers
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-AcceptEpicChange(SQL)" }); }
 
             return RedirectToAction("PatientDetails", new { id = mpi, message = "Updated.", success = true });
+        }
+
+        [HttpGet]
+        public IActionResult PedigreeAssistant(int id)
+        {
+            RunPedigreeAssistant();
+
+            return RedirectToAction("PatientDetails", new { id = id });
+        }
+
+
+        public void RunPedigreeAssistant()
+        {
+            //Process.Start($"G:\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
+            Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
         }
     }
 }

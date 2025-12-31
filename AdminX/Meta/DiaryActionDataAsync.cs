@@ -20,7 +20,7 @@ namespace AdminX.Meta
 
         public async Task<DiaryAction> GetDiaryActionDetails(string actionCode)
         {
-            DiaryAction action = await _adminContext.DiaryAction.FirstAsync(a => a.ActionCode == actionCode);
+            DiaryAction action = await _adminContext.DiaryAction.FirstOrDefaultAsync(a => a.ActionCode == actionCode);
 
             return action;
         }

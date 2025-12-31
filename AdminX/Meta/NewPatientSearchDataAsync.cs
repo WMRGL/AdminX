@@ -21,7 +21,7 @@ namespace AdminX.Meta
 
         public async Task<int> GetPatientSearchID(string staffCode)
         {
-            var search = await _adminContext.PatientSearches.OrderByDescending(s => s.SearchID).Where(s => s.SearchBy == staffCode).FirstAsync();
+            var search = await _adminContext.PatientSearches.OrderByDescending(s => s.SearchID).Where(s => s.SearchBy == staffCode).FirstOrDefaultAsync();
 
             return search.SearchID;
         }

@@ -1,8 +1,6 @@
-﻿using AdminX.Data;
-using AdminX.Meta;
+﻿using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
-using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -47,7 +45,7 @@ namespace AdminX.Controllers
         {
             //_clinContext = context;
             //_adminContext = adminContext;
-            //_documentContext = documentContext;
+            //_documentContext = documentContext;            
             _config = config;
             _patientData = patient;
             _activityTypeData = activityType;
@@ -70,6 +68,7 @@ namespace AdminX.Controllers
             _triageData = triage;
             _areaNamesData = areanames;
             _constantsData = constants;
+            
         }
 
         [HttpGet]
@@ -96,7 +95,6 @@ namespace AdminX.Controllers
                 {
                     _rvm.canDeleteICP = true;
                 }
-
 
                 if (_rvm.referral.ClockStartDate != null)
                 {
@@ -483,5 +481,6 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProcessReferral" });
             }
         }
+
     }
 }
