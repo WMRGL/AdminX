@@ -14,3 +14,74 @@
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" })
     };
 }
+
+<div class="container">
+
+    <div class="row mb-5 g-5">
+        <h1>New Diary Entry for @Model.relative.RelForename1 @Model.relative.RelSurname</h1>
+    </div>
+
+    <div class="row mb-5 g-5">
+        <form id="frmAddNew" asp-action="Edit">
+            <div class="row mb-5 g-5">
+                <input asp-for=@Model.relativeDiary.DiaryID name="diaryID" hidden  />
+                <div class="col-md-1">
+                    <label>Diary Date:</label>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" name="diaryDate" class="w-100" value=@DateTime.Today.ToString("yyyy-MM-dd") asp-for=@Model.relativeDiary.DiaryDate />
+                </div>
+
+                <div class="col-md-1">
+                    <label>Action Code:</label>
+                </div>
+                <div class="col-md-2">
+                    <select name="actionCode" class="w-100" asp-for=@Model.relativeDiary.DiaryAction>
+                        <option value="">Select</option>
+                        @foreach (var item in Model.diaryActionsList)
+                        {
+                            @if (item.Action != null)
+                            {
+                                <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                            }
+                            else
+                            {
+                                <option value=@item.ActionCode>@item.ActionCode</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    DocCode:
+                </div>
+                <div class="col-md-6">
+                    <select name="docCode" class="w-100" asp-for=@Model.relativeDiary.DocCode>
+                        <option value="">Select</option>
+                        @foreach (var item in Model.documentsList)
+                        {
+                            <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-5 g-5">
+                <div class="col-md-1">
+                    DiaryText:
+                </div>
+                <div class="col-md-8">
+                    <input name="diaryText" class="w-100" asp-for=@Model.relativeDiary.DiaryText />
+                </div>
+            </div>
+            <div class="row g-5 mb-5">
+                <div class="col-md-2">
+                    <input type="submit" class="btn btn-default btn-primary" value="Save" id="btnSave" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    
+</div>

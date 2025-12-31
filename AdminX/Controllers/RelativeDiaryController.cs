@@ -116,7 +116,10 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Update Relative Diary", "DiaryID=" + diaryID.ToString(), _ip.GetIPAddress());
 
                 _rdvm.relativeDiary = await _relDiaryData.GetRelativeDiaryDetails(diaryID);
+                _rdvm.relative = await _relData.GetRelativeDetails(_rdvm.relativeDiary.RelsID);
                 _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relative.WMFACSID);
+                _rdvm.documentsList = await _docsData.GetDocumentsList();
+                _rdvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
 
                 return View(_rdvm);
             }

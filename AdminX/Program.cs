@@ -53,6 +53,7 @@ builder.Services.AddScoped<ISupervisorDataAsync, SupervisorDataAsync>();
 builder.Services.AddScoped<IAreaNamesDataAsync, AreaNamesDataAsync>();
 builder.Services.AddScoped<IPathwayDataAsync, PathwayDataAsync>();
 builder.Services.AddScoped<IRelativeDataAsync, RelativeDataAsync>();
+builder.Services.AddScoped<IRelativeDiaryDataAsync, RelativeDiaryDataAsync>();
 builder.Services.AddScoped<IRelativeDiagnosisDataAsync, RelativeDiagnosisDataAsync>();
 builder.Services.AddScoped<IAlertDataAsync, AlertDataAsync>();
 builder.Services.AddScoped<IAgeCalculator, AgeCalculator>();
@@ -89,6 +90,7 @@ builder.Services.AddScoped<IAdminStatusDataAsync, AdminStatusDataAsync>();
 builder.Services.AddScoped<IListDiseaseDataAsync, ListDiseaseDataAsync>();
 builder.Services.AddScoped<ICliniciansClinicDataAsync, CliniciansClinicDataAsync>();
 builder.Services.AddScoped<IRefReasonDataAsync, RefReasonDataAsync>();
+builder.Services.AddScoped<IDocKindsDataAsync, DocKindsDataAsync>();
 
 builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
 builder.Services.AddScoped<ICRUD, CRUD>();

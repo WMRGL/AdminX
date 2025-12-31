@@ -1,6 +1,17 @@
 ﻿@model AdminX.ViewModels.EDMSVM
 @{
+    ViewData["Title"] = "Admin-X - Relative Diary";
+    ViewData["Page"] = "/ Relative / Diary";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
+
+@{
+    ViewBag.HomeButton = new[]
+    {        
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" })
+    };
+}
+
 
 @if (Model.Message != null)
 {

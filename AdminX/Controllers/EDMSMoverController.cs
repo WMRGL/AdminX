@@ -28,6 +28,7 @@ namespace AdminX.Controllers
             _vm = new EDMSVM();
             _staffUserData = staffUser;
             _audit = audit;
+            _ip = new IPAddressFinder(HttpContext);
         }
 
         [HttpGet]
