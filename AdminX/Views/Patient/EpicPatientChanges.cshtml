@@ -204,6 +204,69 @@
             </div>
         }
 
+
+        @foreach (var item in Model.referralsList)
+        {
+            foreach (var item2 in Model.epicReferrals)
+            {
+
+                @if (item.PATIENT_TYPE_CODE != item2.Consultant || item.GC_CODE != item2.GC || item.PATHWAY != item2.Pathway || item.AdminContactCode != item2.AdminContact ||
+                        item.COMPLETE != item2.ReferralStatus)
+                {
+                    <div class="row mb-2 g-2">
+                        <div class="col-md-2">
+                            <h3>Change in referral details</h3>
+                        </div>
+                        <div class="col-md-1">
+                            <b>CGU record:</b>
+                        </div>
+                        <div class="col-md-2">
+                            @if (item.PATIENT_TYPE_CODE != item2.Consultant)
+                            {
+                                <div class="row">Consultant code: @item.PATIENT_TYPE_CODE</div>
+                            }
+                            @if (item.GC_CODE != item2.GC)
+                            {
+                                <div class="row"> GC code: @item.GC_CODE </div>
+                            }
+                            @if (item.AdminContactCode != item2.AdminContact)
+                            {
+                                <div class="row">Admin contact code: @item.AdminContactCode</div>
+                            }
+                            @if (item.PATHWAY != item2.Pathway)
+                            {
+                                <div class="row">Pathway: @item.PATHWAY</div>
+                            }
+                        </div>
+                        <div class="col-md-1">
+                            <b>Epic record:</b>
+                        </div>
+                        <div class="col-md-2">
+                            @if (item.PATIENT_TYPE_CODE != item2.Consultant)
+                            {
+                                <div class="row">Consultant code: @item2.Consultant</div>
+                            }
+                            @if (item.GC_CODE != item2.GC)
+                            {
+                                <div class="row">GC code: @item2.GC</div>
+                            }
+                            @if (item.AdminContactCode != item2.AdminContact)
+                            {
+                                <div class="row">Admin contact code: @item2.AdminContact</div>
+                            }
+                            @if (item.PATHWAY != item2.Pathway)
+                            {
+                                <div class="row">Pathway: @item2.Pathway</div>
+                            }
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit(@item.refid)>Accept referral details change</button>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
         
 
         <div class="row mb-2 g-2">
@@ -225,67 +288,7 @@
 
     </div>
 
-    @foreach (var item in Model.referralsList)
-    {
-        foreach (var item2 in Model.epicReferrals)
-        {
-
-            @if (item.PATIENT_TYPE_CODE != item2.Consultant || item.GC_CODE != item2.GC || item.PATHWAY != item2.Pathway || item.AdminContactCode != item2.AdminContact ||
-                item.COMPLETE != item2.ReferralStatus)
-            {
-                <div class="row mb-2 g-2">
-                    <div class="col-md-2">
-                        <h3>Change in referral details</h3>
-                    </div>
-                    <div class="col-md-1">
-                        <b>CGU record:</b>
-                    </div>
-                    <div class="col-md-2">
-                        @if (item.PATIENT_TYPE_CODE != item2.Consultant)
-                        {
-                            <div class="row">Consultant code: @item.PATIENT_TYPE_CODE</div>
-                        }
-                        @if (item.GC_CODE != item2.GC)
-                        {
-                            <div class="row"> GC code: @item.GC_CODE </div>
-                        }
-                        @if (item.AdminContactCode != item2.AdminContact)
-                        {
-                            <div class="row">Admin contact code: @item.AdminContactCode</div>
-                        }
-                        @if (item.PATHWAY != item2.Pathway)
-                        {
-                            <div class="row">Pathway: @item.PATHWAY</div>
-                        }
-                    </div>
-                    <div class="col-md-1">
-                        <b>Epic record:</b>
-                    </div>
-                    <div class="col-md-2">
-                        @if (item.PATIENT_TYPE_CODE != item2.Consultant)
-                        {
-                            <div class="row">Consultant code: @item2.Consultant</div>
-                        }
-                        @if (item.GC_CODE != item2.GC)
-                        {
-                            <div class="row">GC code: @item2.GC</div>
-                        }
-                        @if (item.AdminContactCode != item2.AdminContact)
-                        {
-                            <div class="row">Admin contact code: @item2.AdminContact</div>
-                        }
-                        @if (item.PATHWAY != item2.Pathway)
-                        {
-                            <div class="row">Pathway: @item2.Pathway</div>
-                        }
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" id="btnAddress" class="btn btn-outline-primary" onclick=DoSubmit(@item.refid)>Accept referral details change</button>
-                    </div>
-                </div>
-            }
-        }
-    }
+    
 
    
 
