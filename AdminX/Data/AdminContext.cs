@@ -26,6 +26,7 @@ namespace AdminX.Data
         public DbSet<CliniciansClinics> CliniciansClinics { get; set; }
         public DbSet<EpicPatientReference> EpicPatientReferences { get; set; }
         public DbSet<EpicReferralStaging> EpicReferralStaging { get; set; }
+        public DbSet<EpicReferralReference> EpicReferralReference { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
 
     }

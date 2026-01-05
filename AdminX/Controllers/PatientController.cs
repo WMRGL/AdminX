@@ -53,6 +53,7 @@ namespace AdminX.Controllers
         private readonly IGenderIdentityDataAsync _genderIdentityData;
         private readonly IReferralStagingDataAsync _referralStagingData;
         private readonly IEpicPatientReferenceDataAsync _epicPatientReferenceData;
+        private readonly IEpicReferralReferenceDataAsync _epicReferralReferenceData;
         private readonly IPAddressFinder _ip;
 
         public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
@@ -60,7 +61,7 @@ namespace AdminX.Controllers
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging, 
-            IEpicPatientReferenceDataAsync epicPatientReference, APIController api)
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api)
         {
             //_clinContext = context;
             //_adminContext = adminContext;
@@ -99,6 +100,7 @@ namespace AdminX.Controllers
             _genderIdentityData = genderIdentity;
             _referralStagingData = referralStaging;
             _epicPatientReferenceData = epicPatientReference;
+            _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
         }
 
@@ -135,18 +137,21 @@ namespace AdminX.Controllers
                         {
                             foreach (var item in _pvm.epicReferralStaging)
                             {
-                                _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.CreatedDate.GetValueOrDefault());
+                                _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
+                                    item.CreatedDate.GetValueOrDefault());
                             }
                         }
 
-                        if (_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
+                        /*if ((_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
                             _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
                             (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
                             _pvm.patient.GP_Code != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
                             _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile ||
-                            _pvm.patient.EthnicCode != _pvm.epicPatient.EthnicCode)
+                            _pvm.patient.EthnicCode != _pvm.epicPatient.EthnicCode) && _pvm.epicPatient.UpdateSts == 1)*/
+
+                        if(_pvm.epicPatient.UpdateSts == 1)
                         {
-                            _pvm.isEpicChanged = true;
+                            _pvm.isEpicPatientChanged = true;
                         }
                     }
 
@@ -173,6 +178,22 @@ namespace AdminX.Controllers
                 _pvm.referralsList = await _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = await _docsData.GetDocumentsList();
+
+                foreach (var item in referrals)
+                {
+                    EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
+                    if (epicRef != null)
+                    {
+                        _pvm.epicReferral = epicRef;                        
+
+                        /*if(item.PATIENT_TYPE_CODE != epicRef.Consultant || item.GC_CODE != epicRef.GC || item.PATHWAY != epicRef.Pathway) //etc*/
+                        if(epicRef.LocalUpdateSts == 1)
+                        {
+                            _pvm.isEpicReferralChanged = true;
+                            _pvm.referral = item;
+                        }
+                    }
+                }
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -282,7 +303,7 @@ namespace AdminX.Controllers
 
                     new BreadcrumbItem { Text = "Patient" }
                 };
-
+                
                 return View(_pvm);
             }
             catch (Exception ex)
@@ -747,6 +768,8 @@ namespace AdminX.Controllers
 
             _pvm.patient = await _patientData.GetPatientDetails(id);
             _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
+            _pvm.referralsList = await _referralData.GetReferralsList(id);
+            _pvm.epicReferrals = await _epicReferralReferenceData.GetEpicReferralsList(id);
 
             return View(_pvm);
         }
@@ -754,7 +777,14 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EpicPatientChanges(int mpi, string epicID, string changeType)
         {
-            int success = _crud.EpicAcceptChanges(mpi, epicID, User.Identity.Name, changeType);
+            int refID = 0;
+            if(Int32.TryParse(changeType, out refID)) //if the value passed is a number, treat it as a RefID - then change it to "referral" (obtuse I know but how else can we get Javascript to
+             //pass multiple values to a form?
+            {
+                changeType = "Referral";
+            }
+
+            int success = _crud.EpicAcceptChanges(mpi, epicID, User.Identity.Name, changeType, refID);
 
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-AcceptEpicChange(SQL)" }); }
 

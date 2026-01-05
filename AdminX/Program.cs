@@ -91,6 +91,7 @@ builder.Services.AddScoped<IListDiseaseDataAsync, ListDiseaseDataAsync>();
 builder.Services.AddScoped<ICliniciansClinicDataAsync, CliniciansClinicDataAsync>();
 builder.Services.AddScoped<IRefReasonDataAsync, RefReasonDataAsync>();
 builder.Services.AddScoped<IDocKindsDataAsync, DocKindsDataAsync>();
+builder.Services.AddScoped<IEpicReferralReferenceDataAsync, EpicReferralReferenceDataAsync>();
 
 builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
 builder.Services.AddScoped<ICRUD, CRUD>();

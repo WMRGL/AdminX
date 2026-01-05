@@ -47,9 +47,10 @@ namespace AdminX.Meta
 
         public Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate);
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway,
+            string? refStatus, DateTime createdDate);
 
-        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType);
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0);
     }
 
 
@@ -456,7 +457,8 @@ namespace AdminX.Meta
             return success;
         }
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, DateTime createdDate)
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway, 
+            string? refStatus, DateTime createdDate)
         {
             int success = 0;
             if(refBy == null) { refBy = ""; }
@@ -477,6 +479,9 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
             cmd.Parameters.Add("@CreatedDate", SqlDbType.DateTime).Value = createdDate;
             cmd.Parameters.Add("@Speciality", SqlDbType.VarChar).Value = speciality;
+            cmd.Parameters.Add("@Pathway", SqlDbType.VarChar).Value = pathway;
+            cmd.Parameters.Add("@RefStatus", SqlDbType.VarChar).Value = refStatus;
+
             cmd.ExecuteNonQuery();            
             conn.Close();
 
@@ -485,7 +490,7 @@ namespace AdminX.Meta
             return success;
         }
 
-        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType)
+        public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0)
         {
             int success = 0;
 
@@ -495,6 +500,7 @@ namespace AdminX.Meta
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@mpi", SqlDbType.Int).Value = mpi;
             cmd.Parameters.Add("@epicID", SqlDbType.VarChar).Value = epicID;
+            cmd.Parameters.Add("@RefID", SqlDbType.Int).Value = refID;
             cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = itemType;
             cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);

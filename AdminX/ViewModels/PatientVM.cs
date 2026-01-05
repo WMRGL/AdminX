@@ -69,8 +69,11 @@ namespace AdminX.ViewModels
         public List<Gender>? genderAtBirth { get; set; }
         public List<GenderIdentity> genderIdentities { get; set; }
         public string? GenderIdentity { get; set; }
-        public bool isEpicChanged { get; set; }
+        public bool isEpicPatientChanged { get; set; }
+        public bool isEpicReferralChanged { get; set; }
         public EpicPatientReference epicPatient {  get; set; }
+        public EpicReferralReference epicReferral { get; set; }
         public List<EpicReferralStaging> epicReferralStaging { get; set; }
+        public List<EpicReferralReference> epicReferrals { get; set; }
     }
 }

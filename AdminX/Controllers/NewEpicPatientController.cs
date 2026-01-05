@@ -97,7 +97,8 @@ namespace AdminX.Controllers
 
                 if (fileNumber == null || fileNumber == "")
                 {
-                    cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
+                    cguNumber = await _pedigreeData.GetNextPedigreeNumber();
+                    cguNumber += ".0";
                 }
                 else
                 {
