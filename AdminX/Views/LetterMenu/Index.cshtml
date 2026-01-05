@@ -102,11 +102,11 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-3 row">
+            <div class="mb-3 row" hidden id="divExtClinician">
                 <label class="col-form-label col-sm-2 text-sm-end">To clinician (if applicable)</label>
                 <div class="col-sm-10">
-                <select class="form-select" name="clinicianCode">
-                        <option value="">Select</option>
+                    <select class="form-select" name="clinicianCode" id="ddlExtClinician">
+                        <option value="">Select</option>                        
                         @foreach (var item in Model.clinicianList)
                         {
                             <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
@@ -244,10 +244,29 @@
         var dnaLetters = document.getElementById("docGroupDNA");
         var outcomeLetters = document.getElementById("docGroupOutcome");
         var reports = document.getElementById("docGroupReport");
+        var clinList = document.getElementById("ddlExtClinician");
+
+        var docCodeArray = [];
+        var recipArray = [];
+        var recip = "";
+
+        var clinCodeArray = [];
+        var clinNameArray = [];
+        var clinDeptArray = [];
+
+        var i, L = clinList.options.length - 1;
+        for(i = L; i >= 0; i--) 
+        {
+            clinList.remove(i);
+        }
+
+        clinCodeArray.push("@Model.patGP.MasterClinicianCode");
+        clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME" );
+        clinDeptArray.push("@Model.patGP.FACILITY");
 
         if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
         {
-            docCode = standardLetters.value;
+            docCode = standardLetters.value;                        
         }
 
         if(!medrecLetters.hidden)
@@ -271,6 +290,89 @@
         }
 
         document.getElementById("txtDocCode").value = docCode;
+        
+        @foreach (var item in Model.docContentList)
+        {
+            @:docCodeArray.push("@item.DocCode");
+            @:recipArray.push("@item.LetterTo");
+        }
+
+        for(var i = 0; i < docCodeArray.length; i++)
+        {
+            if(docCodeArray[i] == docCode)
+            {
+                recip = recipArray[i];
+            }
+        }
+
+        if(recip == "Histo")
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach(var item in Model.histoList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if(item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+
+        if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach (var item in Model.breastList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if (item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+        if(recip == "Other")
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach (var item in Model.geneticsList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if (item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+
+
+        for(var j = 0; j < clinCodeArray.length; j++)
+        {
+            var option = document.createElement('option');
+            option.value = clinCodeArray[j];
+            option.text = clinNameArray[j] + ", " + clinDeptArray[j].replace("&#x27;", "'").replace("&amp;", "&");
+            clinList.add(option, 0);
+        }
+              
     }
 
     function SetLetterFromTo()

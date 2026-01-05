@@ -14,8 +14,8 @@ namespace AdminX.Controllers
         //private readonly ClinicalContext _context;
         //private readonly DocumentContext _documentContext;
         //private readonly AdminContext _adminContext;
-        private readonly APIContext _apiContext;
-        private readonly IDocumentsDataAsync _documentsData;
+        //private readonly APIContext _apiContext;
+        private readonly IDocumentsDataAsync _documentsData;        
         private readonly IPatientDataAsync _patientData;
         private readonly IRelativeDataAsync _relData;
         private readonly IReferralDataAsync _referralData;
@@ -34,7 +34,7 @@ namespace AdminX.Controllers
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs)
+            IAuditServiceAsync audit, HSController hs, APIController api)
         {
             _config = config;   
             //_context = context;
@@ -54,7 +54,7 @@ namespace AdminX.Controllers
             _staffData = staffUser;
             _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
-            _api = new APIController(_apiContext, _config);
+            _api = api;
             _mirrorData = ptmirror;
             _hs = hs;
         }
@@ -85,10 +85,19 @@ namespace AdminX.Controllers
                 _lvm.docsListDNA = docList.Where(d => d.DocGroup == "DNATS").ToList();
                 _lvm.docsListOutcome = docList.Where(d => d.DocGroup == "Outcome").ToList();
                 _lvm.docsListReport = docList.Where(d => d.DocGroup == "REPORTS").ToList();
+                _lvm.docContentList = await _documentsData.GetDocumentsContentList();
                 _lvm.leaflets = new List<Leaflet>();
                 _lvm.referralList = await _referralData.GetActiveReferralsListForPatient(mpi);
-                var clins = await _clinicianData.GetClinicianList();
-                _lvm.clinicianList = clins.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
+                var clinList = await _clinicianData.GetClinicianList();
+                var clins = new List<ExternalCliniciansAndFacilities>();
+                _lvm.patGP = await _clinicianData.GetPatientGPReferrer(mpi);
+                clins.Add(_lvm.patGP);
+                _lvm.clinicianList = clins;
+                _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
+                _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
+                _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
+                
+
                 _lvm.staffMemberList = await _staffData.GetStaffMemberListAll();
 
                 string salutation = "";
