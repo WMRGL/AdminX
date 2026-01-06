@@ -306,13 +306,13 @@ namespace AdminX.Controllers
             {
                 string login = User.Identity?.Name ?? "Unknown";
 
-              
+
                 int success = _CRUD.ReferralDetail(
                      sType: "Referral",
-                     sOperation: "LogicalDelete", 
+                     sOperation: "LogicalDelete",
                      sLogin: login,
-                     int1: refid,           
-                     bool1: logicaldelete,     
+                     int1: refid,
+                     bool1: logicaldelete,
 
                      string1: null, string2: null, text: null, string3: null,
                      string4: null, string5: null, string6: null, string7: null,
@@ -322,7 +322,7 @@ namespace AdminX.Controllers
                      int6: null, int7: null, int8: null
                  );
 
-               
+
 
 
                 string query = "Select top 1 DeleteReason, DeleteStatus from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
@@ -343,8 +343,8 @@ namespace AdminX.Controllers
                 conn.Close();
 
                 bool deleteSuccess = false;
-                if (deleteStatus == 1) { deleteSuccess = true; }                    
-                
+                if (deleteStatus == 1) { deleteSuccess = true; }
+
                 return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = readerObjString, success = deleteSuccess });
             }
             catch (Exception ex)
@@ -352,7 +352,6 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MarkReferralDeleted" });
             }
         }
-
 
         [HttpGet]
         [Authorize]
