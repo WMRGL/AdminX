@@ -464,6 +464,7 @@ namespace AdminX.Meta
             if(refBy == null) { refBy = ""; }
             if (refTo == null) { refTo = ""; }
             if (speciality == null) { speciality = ""; }
+            if (pathway == null) { pathway = ""; }
             if (createdDate == null || createdDate == DateTime.Parse("0001-01-01")) { createdDate = DateTime.Parse("1900-01-01"); }
             if (referralDate == null || referralDate == DateTime.Parse("0001-01-01")) { referralDate = DateTime.Parse("1900-01-01"); }
 
@@ -479,7 +480,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
             cmd.Parameters.Add("@CreatedDate", SqlDbType.DateTime).Value = createdDate;
             cmd.Parameters.Add("@Speciality", SqlDbType.VarChar).Value = speciality;
-            cmd.Parameters.Add("@Pathway", SqlDbType.VarChar).Value = pathway;
+            cmd.Parameters.Add("@Pathway", SqlDbType.VarChar).Value = pathway;            
             cmd.Parameters.Add("@RefStatus", SqlDbType.VarChar).Value = refStatus;
 
             cmd.ExecuteNonQuery();            
