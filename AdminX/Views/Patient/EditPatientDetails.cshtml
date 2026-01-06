@@ -167,6 +167,7 @@
                 <div class="row">                    
                     <div class="mb-3 col-md-3">
                         <select class="form-select" id="ddlGP" name="gpCode" asp-for=@Model.patient.GP_Code>
+                            <option value="" selected>Select...</option>
                             @foreach(var item in Model.currentGPList)
                             {
                                 <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.NAME (@item.MasterClinicianCode)</option>
@@ -178,7 +179,7 @@
                 <div class="row">
                     <div class="mb-3 col-md-6">
                         <label class="form-label">Address</label>
-                        <input type="text" name="ADDRESS1" class="form-control" id="ADDRESS1" asp-for=@Model.patient.ADDRESS1>
+                        <input type="text" placeholder="Address 1" name="ADDRESS1" class="form-control" id="ADDRESS1" asp-for=@Model.patient.ADDRESS1>
                     </div>
                     <div class="mb-3 col-md-6">
                         <label class="form-label" for="TEL">Contact Number</label>
@@ -187,7 +188,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <input type="text" name="ADDRESS2" class="form-control" id="ADDRESS2" asp-for=@Model.patient.ADDRESS2>
+                        <input type="text" placeholder="Address 2" name="ADDRESS2" class="form-control" id="ADDRESS2" asp-for=@Model.patient.ADDRESS2>
                     </div> <div class="mb-3 col-md-6">
                         <label class="form-label" for="Mobile">Mobile</label>
                         <input type="text" name="PtTelMobile" class="form-control" id="Mobile" asp-for=@Model.patient.PtTelMobile>
@@ -195,7 +196,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" asp-for=@Model.patient.ADDRESS3>
+                        <input type="text" placeholder="City" name="ADDRESS3" class="form-control" id="ADDRESS3" asp-for=@Model.patient.ADDRESS3>
                     </div>
                     <div class="mb-3 col-md-6">
                         <label class="form-label" for="EmailAddress">Email Address</label>
@@ -211,7 +212,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <input type="text" name="ADDRESS4" class="form-control" id="ADDRESS4"  asp-for=@Model.patient.ADDRESS4>
+                        <input type="text" placeholder="County" name="ADDRESS4" class="form-control" id="ADDRESS4"  asp-for=@Model.patient.ADDRESS4>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label">Consent to Electronic Communication</label>
@@ -223,7 +224,7 @@
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-6">
-                        <input type="text" name="POSTCODE" class="form-control" id="POSTCODE" asp-for=@Model.patient.POSTCODE>
+                        <input type="text" placeholder="PostCode" name="POSTCODE" class="form-control" id="POSTCODE" asp-for=@Model.patient.POSTCODE>
                     </div>
                 </div>
 
