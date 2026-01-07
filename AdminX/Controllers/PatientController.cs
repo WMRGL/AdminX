@@ -137,8 +137,16 @@ namespace AdminX.Controllers
                         {
                             foreach (var item in _pvm.epicReferralStaging)
                             {
-                                _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
-                                    item.CreatedDate.GetValueOrDefault());
+                                var updateStatus = item.UpdateSts;
+
+                                while (updateStatus < 5) //cycle through them all until they hit 5
+                                {
+                                    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
+                                        item.CreatedDate.GetValueOrDefault());
+
+                                    var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
+                                    updateStatus = stagedUpdate.UpdateSts;
+                                }
                             }
                         }
 

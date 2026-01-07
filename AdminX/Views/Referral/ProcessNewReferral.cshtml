@@ -41,7 +41,7 @@
         <div class="row mb-3">
             <div class="col">
                 <label class="form-label">Referral Pathway</label>
-                <select class="form-select" name="pathway" id="ddlPathways">
+                <select class="form-select" name="pathway" id="ddlPathways" asp-for=@Model.referral.PATHWAY>
                     <option value=""></option>
                     @foreach (var item in Model.pathways)
                     {
