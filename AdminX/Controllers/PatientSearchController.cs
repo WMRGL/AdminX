@@ -54,6 +54,7 @@ namespace AdminX.Controllers
             {
                 string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 string searchTerm = "";
+                if (nhsNo != null) { nhsNo = nhsNo.Replace(" ", ""); }
 
                 if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
                 {
