@@ -3,7 +3,6 @@ using AdminX.Data;
 using AdminX.Meta;
 using APIControllers.Controllers;
 using APIControllers.Data;
-using Audit.Core;
 using Audit.Core.Providers; 
 using Audit.EntityFramework;
 using Audit.EntityFramework.Providers;
@@ -13,7 +12,6 @@ using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
-using PdfSharp.Snippets;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false)
@@ -25,7 +23,6 @@ builder.Services.AddDbContext<ClinicalContext>(options => options.UseSqlServer(c
 builder.Services.AddDbContext<AdminContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringLab")));
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
-builder.Services.AddDbContext<KlaxonContext>(options => options.UseSqlServer(config.GetConnectionString("ConStringEpic")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DQContext>(options => options.UseSqlServer(config.GetConnectionString("DQLab")));
 
@@ -113,13 +110,15 @@ builder.Services.AddScoped<IGenderIdentityData, GenderIdentityData>();
 builder.Services.AddControllersWithViews(options =>
 {
     // Adds auditing to ALL controllers automatically
-    options.Filters.Add(new Audit.Mvc.AuditAttribute()
+     //THIS IS CAUSING THE WHOLE THING TO THROW A FIT IN LIVE - check with Isaiah to see what's required to be added
+    options.Filters.Add(new AuditAttribute()
     {
         IncludeHeaders = true,
         IncludeRequestBody = true,
         IncludeModel = true, 
         EventTypeName = "{verb} {controller}/{action}" 
     });
+    
 });
 
 builder.Services.AddMvc();
@@ -165,7 +164,7 @@ Audit.Core.Configuration.Setup()
         // 1. HANDLE DATABASE CHANGES (Insert/Update/Delete triggered by SaveChanges)
         .When(ev => ev is AuditEventEntityFramework,
             new EntityFrameworkDataProvider(ef => ef
-                .UseDbContext<AdminX.Data.AdminContext>()
+                .UseDbContext<AdminContext>()
                 .AuditTypeMapper(t => typeof(AdminX.Models.AuditLog))
                 .AuditEntityAction<AdminX.Models.AuditLog>((ev, entry, audit) =>
                 {
@@ -189,7 +188,7 @@ Audit.Core.Configuration.Setup()
                     // We need to manually resolve the DbContext to save this "View" event
                     using (var scope = app.Services.CreateScope())
                     {
-                        var ctx = scope.ServiceProvider.GetRequiredService<AdminX.Data.AdminContext>();
+                        var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>();
                         var mvcData = ev.GetMvcAuditAction(); // Helper to get MVC specific data
 
                         var log = new AdminX.Models.AuditLog
