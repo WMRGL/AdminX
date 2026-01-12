@@ -144,8 +144,9 @@ namespace AdminX.Controllers
                 _rvm.gcs = await _staffUserData.GetGCList();
                 _rvm.admin = await _staffUserData.GetAdminList();
                 _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
-                _rvm.referrers = await _externalClinicianData.GetClinicianList();
-                //_rvm.pathways = new List<string> { "Cancer", "General   " }; //because the stupid fucking thing is a text field with trailing spaces for some reason!!!!! And there's no way to remove them.
+                var referrers = await _externalClinicianData.GetClinicianList();
+                _rvm.referrers = referrers.OrderBy(r => r.LAST_NAME).ToList();
+                //_rvm.pathways = new List<string> { "Cancer", "General   " };
                 _rvm.pathways = new List<string>();
                 List<Pathway> pathways = await _pathwayData.GetPathwayList();
                 foreach (var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }

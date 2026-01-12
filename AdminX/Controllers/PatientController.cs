@@ -291,7 +291,7 @@ namespace AdminX.Controllers
                 if (_pvm.isPhenotipsAvailable) 
                 {
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
-                    if(_phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
+                    if(await _phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
                     {
                         //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
