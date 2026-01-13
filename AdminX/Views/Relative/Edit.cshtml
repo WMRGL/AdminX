@@ -88,6 +88,7 @@
                 <label class="col-form-label col-sm-1 text-sm-end">Affected</label>
                 <div class="col-sm-7">
                     <select class="form-select" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
+                        <option value="@Model.relativeDetails.RelAffected" selected>@Model.relativeDetails.RelAffected</option>
                         <option value=0>No</option>
                         <option value=1>Yes</option>
                         <option value=2>Don't know</option>

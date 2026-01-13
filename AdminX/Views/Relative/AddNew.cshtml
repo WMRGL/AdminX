@@ -41,10 +41,21 @@
                 </div>
 
             </div>
+
+           <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">DOB</label>
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOB name="sDOB">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">DOD (if deceased)</label>
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOD name="sDOD">
+                </div>
+            </div>
             <div class="row">
 
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Relation to Proband</label>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Gender</label>
                     <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex">
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
@@ -52,9 +63,21 @@
                             <option value=@r.SexCode>@r.Sex</option>
                         }
                     </select>
+         
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Relation to Proband</label>
+
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation">
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.relationList)
+                        {
+                            <option value=@r.RelCode>@r.relation</option>
+                        }
+                    </select>
                 </div>
      
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label">Affected</label>
                     <select class="form-select" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
