@@ -155,7 +155,7 @@ namespace AdminX.Controllers
                 var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
                 _rvm.MPI = pat.MPI;
                 var rels = await _relativeData.GetRelationsList();
-                _rvm.relationsList = rels.OrderBy(r => r.ReportOrder).ToList();
+                _rvm.relationList = rels.OrderBy(r => r.ReportOrder).ToList();
                 _rvm.genderList = await _relativeData.GetGenderList();
                 _rvm.titleList = await _titleData.GetTitlesList();
                 return View(_rvm);

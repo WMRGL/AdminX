@@ -58,10 +58,10 @@
 
   <ItemGroup>
     <Reference Include="APIControllers">
-      <HintPath>..\..\APIControllers\APIControllers\bin\Debug\net8.0\APIControllers.dll</HintPath>
+      <HintPath>\\zion.matrix.local\dfsrootbwh\Cling\Technical Improvements Group\C# Libraries\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\..\ClinicalXPDataConnections\bin\Debug\net8.0\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>\\zion.matrix.local\dfsrootbwh\Cling\Technical Improvements Group\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 
