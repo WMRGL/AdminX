@@ -34,7 +34,15 @@ namespace AdminX.ViewModels
         public List<Disease> indicationList { get; set; }
         public List<ReferralReason> referralReasonsList { get; set; }
         public Triage relatedICP { get; set; }
+        public ICP ICPDetails { get; set; } 
         public AreaNames areaName { get; set; }
         public bool canDeleteICP { get; set; }
+        public ICPGeneral icpGeneral { get; set; }
+        public ICPCancer icpCancer { get; set; }
+        public string icpCancerAction { get; set; }
+        public string icpGeneralAction1 { get; set; }
+        public string icpGeneralAction2 { get; set; }
+        public string waitingListDetails { get; set; }
+
     }
 }

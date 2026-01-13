@@ -49,6 +49,9 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
                     Related Appointments/Contacts
                 </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#icp" role="tab" aria-selected="false" tabindex="-1">
+                    ICP Details
+                </a>
             </div>
         </div>
     </div>
@@ -504,6 +507,84 @@
                 
                 
                 
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="icp" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header">
+                            <div class="row mb-2 mb-xl-3">
+                                <div class="col-auto d-none d-sm-block">
+                                    <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.referral.RefType on @Model.referral.RefDate.Value.ToString("dd/MM/yyyy") - ICP</h5>
+                                </div>
+
+                                <div class="col-auto ms-auto text-end mt-n1">
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if(Model.ICPDetails != null)
+                        {
+                            <h4>ICP Details</h4>
+
+                            @if (Model.referral.PATHWAY.Contains("General"))
+                            {
+                                <div class="row mb-2 g-2">
+                                    <div class="col-md-2">Treatment pathway:</div>
+                                    <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>                                    
+                                </div>
+                                
+                                <div class="row mb-2 g-2">
+                                    <div class="col-md-2">CLICS pathway:</div>
+                                    @if (Model.referral.Clics == "CLICS")
+                                    {
+                                        <div class="col-md-2">Yes</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-2">No</div>
+                                    }
+                                </div>
+
+                                <div class="row mb-2 g-2">
+                                    @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
+                                    {
+                                        <div class="col-md-2">Waiting List Details:</div>
+                                        @if(Model.icpGeneral.ConsWLAdded)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-2">Consultant:</div>
+                                                <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
+                                            </div>
+                                        }
+                                        @if(Model.icpGeneral.GCWLAdded)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-2">GC:</div>
+                                                <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                
+                            }
+
+                            @if (Model.referral.PATHWAY.Contains("Cancer"))
+                            {
+                                <div class="row mb-2 g-2">
+                                    <div class="col-md-2">Action on Referral Letter:</div>
+                                    <div class="col-md-10">@Model.icpCancerAction</div>
+                                </div>
+                            }
+
+                        }
+                        else
+                        {
+                            <h4>There is no ICP</h4>
+                        }
                     </div>
                 </div>
             </div>

@@ -65,7 +65,7 @@ namespace ClinicX.Controllers
                 _rdvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_rdvm.relativeDetails.WMFACSID);
                 _rdvm.cancerRegList = await _relativeDiagnosisData.GetCancerRegList();
                 _rdvm.requestStatusList = await _relativeDiagnosisData.GetRequestStatusList();     
-                _rdvm.staffList = await _staffUser.GetStaffMemberList();
+                _rdvm.consultantList = await _staffUser.GetConsultantsList();
                 _rdvm.clinicianList = await _staffUser.GetClinicalStaffList();
 
                 return View(_rdvm);

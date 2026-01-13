@@ -37,11 +37,12 @@ namespace AdminX.Controllers
         private readonly IRefReasonDataAsync _refReasonData;
         private readonly ITriageDataAsync _triageData;
         private readonly IAreaNamesDataAsync _areaNamesData;
+        private readonly IICPActionDataAsync _icpActions;
 
         public ReferralController(IConfiguration config, IPatientDataAsync patient, IActivityTypeDataAsync activityType, IExternalClinicianDataAsync extClinician, IStaffUserDataAsync staffUser,
             IActivityDataAsync activity, ICRUD crud, IReferralDataAsync referral, IAdminStatusDataAsync adminStatus, IListDiseaseDataAsync listDisease, IClinicDataAsync clinic, IExternalFacilityDataAsync extFacility,
             IReviewDataAsync review, IAuditServiceAsync audit, IDiseaseDataAsync disease, IPathwayDataAsync pathway, IPriorityDataAsync priority, IRefReasonDataAsync refReason, ITriageDataAsync triage,
-            IAreaNamesDataAsync areanames, IConstantsDataAsync constants)
+            IAreaNamesDataAsync areanames, IConstantsDataAsync constants, IICPActionDataAsync icpActions)
         {
             //_clinContext = context;
             //_adminContext = adminContext;
@@ -68,7 +69,7 @@ namespace AdminX.Controllers
             _triageData = triage;
             _areaNamesData = areanames;
             _constantsData = constants;
-            
+            _icpActions = icpActions;
         }
 
         [HttpGet]
@@ -87,14 +88,53 @@ namespace AdminX.Controllers
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 var clinicList = await _clinicData.GetClinicByPatientsList(_rvm.referral.MPI);
                 _rvm.ClinicList = clinicList.Where(a => a.ReferralRefID == refID).Distinct().ToList();
-                ICP icp = await _triageData.GetICPDetailsByRefID(refID);
-                _rvm.relatedICP = await _triageData.GetTriageDetails(icp.ICPID); //because ICP and Triage are different, apparently
+                _rvm.ICPDetails = await _triageData.GetICPDetailsByRefID(refID);                
+                _rvm.relatedICP = await _triageData.GetTriageDetails(_rvm.ICPDetails.ICPID); //because ICP and Triage are different, apparently
                 string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
                 if(canDeleteICP.ToUpper().Contains(User.Identity.Name.ToUpper()))
                 {
                     _rvm.canDeleteICP = true;
                 }
+
+                _rvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(_rvm.ICPDetails.ICPID);
+                _rvm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(_rvm.ICPDetails.ICPID);
+
+                if(_rvm.icpCancer != null)
+                {
+                    var icpAction = await _icpActions.GetCancerReferralAction(_rvm.icpCancer.ActOnRef.GetValueOrDefault());
+
+                    _rvm.icpCancerAction = icpAction.Action;
+                }
+
+                
+                if(_rvm.icpGeneral != null)
+                {
+                    if (_rvm.icpGeneral.TreatPath != null) 
+                    { 
+                        var icpAction1 = await _icpActions.GetGeneralReferralAction1(_rvm.icpGeneral.TreatPath.GetValueOrDefault());
+                        _rvm.icpGeneralAction1 = icpAction1.Action;
+                    }
+                    if (_rvm.icpGeneral.TreatPath != null) 
+                    { 
+                        var icpAction2 = await _icpActions.GetGeneralReferralAction2(_rvm.icpGeneral.TreatPath2.GetValueOrDefault());
+                        _rvm.icpGeneralAction2 = icpAction2.Action;
+                    }
+                    
+                    /*
+                    if(_rvm.icpGeneral.ConsWLAdded || _rvm.icpGeneral.GCWLAdded)
+                    {
+                        string wlDetails = "";
+
+                        if(_rvm.icpGeneral.ConsWLClinician != null)
+                        {
+                            string staff1 = await _staffUserData.GetStaffNameFromStaffCode(_rvm.icpGeneral.ConsWLClinician);
+                            wlDetails += staff1;
+                        }
+                    }
+                    */
+                }
+                
 
                 if (_rvm.referral.ClockStartDate != null)
                 {
