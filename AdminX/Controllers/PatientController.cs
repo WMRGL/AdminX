@@ -552,7 +552,8 @@ namespace AdminX.Controllers
                 _pvm.ethnicities = await _ethnicityData.GetEthnicitiesList();
                 _pvm.GPList = await _gpData.GetGPList();
                 _pvm.currentGPList = _pvm.GPList.Where(g => g.FACILITY == _pvm.patient.GP_Facility_Code).ToList();
-                _pvm.GPPracticeList = await _gpPracticeData.GetGPPracticeList();
+                var gpPracList = await _gpPracticeData.GetGPPracticeList();
+                _pvm.GPPracticeList = gpPracList.OrderBy(p => p.MasterFacilityCode).ToList();
                 _pvm.cityList = await _cityData.GetAllCities();
                 var areaNames = await _areaNamesData.GetAreaNames();
                 _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
@@ -670,7 +671,9 @@ namespace AdminX.Controllers
             int sourceDCTM = 0;
             int destDCTM = 0;
 
-            if (_patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) == null)
+            Patient patToMergeTo = await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString());
+
+            if (patToMergeTo == null)
             {
                 var pat = await _patientData.GetPatientDetails(mpi);
                 sourceDCTM = pat.Patient_Dctm_Sts;
