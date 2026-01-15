@@ -487,7 +487,7 @@ namespace AdminX.Controllers
                 int day = dob.Day;
                 int month = dob.Month;
 
-                var patient = _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
+                var patient = await _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
 
                 if (patient != null)
                 {
