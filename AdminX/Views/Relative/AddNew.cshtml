@@ -42,19 +42,72 @@
 
             </div>
 
-           <div class="row">
-                <div class="col-md-6 mb-3">
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Salutation:</label>
+                    <input type="text" name="RelSalutation" class="form-control" asp-for="@Model.relativeDetails.RelSalutation" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Also Know As:</label>
+                    <input type="text" name="RelAKA" asp-for=@Model.relativeDetails.RelAKA class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" >Surname at Birth:</label>
+                    <input type="text" name="RelSurnameBirth" asp-for=@Model.relativeDetails.RelSurnameBirth class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Previous Names:</label>
+                    <input type="text" asp-for=@Model.relativeDetails.RelSurnamePrevious name="RelSurnamePrevious" class="form-control" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Address 1:</label>
+                    <input type="text" name="RelAdd1" class="form-control" asp-for=@Model.relativeDetails.RelAdd1>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Address 2:</label>
+                    <input type="text" name="RelAdd2" class="form-control" asp-for=@Model.relativeDetails.RelAdd2>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Town/City:</label>
+                    <input type="text" name="RelAdd3" class="form-control" asp-for=@Model.relativeDetails.RelAdd3>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">County:</label>
+                    <input type="text" name="RelAdd4" class="form-control" asp-for=@Model.relativeDetails.RelAdd4>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Telephone</label>
+                    <input type="text" class="form-control" name="RelTel" asp-for="@Model.relativeDetails.RelTel">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">NHS No:</label>
+                    <input type="number" name="RelNHSNo" class="form-control" asp-for="@Model.relativeDetails.RelNHSNo" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Postcode:</label>
+                    <input type="text" name="RelPC1" class="form-control" asp-for=@Model.relativeDetails.RelPC1>
+                </div>
+                <div class="col-md-3 mb-3">
                     <label class="form-label">DOB</label>
                     <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOB name="sDOB">
                 </div>
-                <div class="col-md-6 mb-3">
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
                     <label class="form-label">DOD (if deceased)</label>
                     <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOD name="sDOD">
                 </div>
-            </div>
-            <div class="row">
-
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Death Age</label>
+                    <input type="number" class="form-control" asp-for="@Model.relativeDetails.DeathAge" name="DeathAge">
+                </div>
+                
+                <div class="col-md-3">
                     <label class="form-label">Gender</label>
                     <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex">
                         <option value="">Select...</option>
@@ -65,7 +118,7 @@
                     </select>
          
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3">
                     <label class="form-label">Relation to Proband</label>
 
                     <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation">
@@ -75,21 +128,35 @@
                             <option value=@r.RelCode>@r.relation</option>
                         }
                     </select>
-                </div>
-     
-                <div class="col-md-4">
+                </div>      
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
                     <label class="form-label">Affected</label>
                     <select class="form-select" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
                         <option value=0>No</option>
                         <option value=1>Yes</option>
                         <option value=2 selected>Don't know</option>
                     </select>
-                    
+
                 </div>
+                <div class="col-md-3">
+                    <label class="form-label">Alive</label>
+                    <select class="form-select" asp-for="@Model.relativeDetails.RelAlive" name="RelAlive">
+                        <option value=0>No</option>
+                        <option value=1>Yes</option>
+                        <option value=2 selected>Don't know</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Notes for Cancer Registries:</label>
+                    <textarea name="Notes" asp-for=@Model.relativeDetails.Notes class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-6">
                     <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
                 </div>
-                
             </div>
         </form>
 

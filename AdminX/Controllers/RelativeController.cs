@@ -169,7 +169,8 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1,
             string forename2, string surname, string relation, string sDOB, string sDOD,
-            int isAffected, string sex)
+            int isAffected, string sex, string? RelAKA, string? RelSurnameBirth, string? RelSurnamePrevious, string RelAdd1, string? RelAdd2,
+            string? RelAdd3, string? RelAdd4, string? RelTel, string? RelSalutation, string? RelNHSNo, string? RelPC1, string? DeathAge, string? RelAlive, string? Notes)
         {
             try
             {
@@ -202,12 +203,13 @@ namespace AdminX.Controllers
                 }
 
                 int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
-                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex);
+                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, RelAKA, 0,0,0,0,0, RelSurnameBirth, RelSurnamePrevious,
+                    RelAdd1, RelAdd2, RelAdd3, RelAdd4, RelTel, RelSalutation, RelNHSNo, RelPC1, DeathAge, RelAlive, Notes);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
 
                 var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
-
+                TempData["SuccessMessage"] = "New relative added";
                 return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.MPI });
             }
             catch (Exception ex)
