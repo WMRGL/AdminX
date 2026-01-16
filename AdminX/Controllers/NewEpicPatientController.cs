@@ -106,9 +106,9 @@ namespace AdminX.Controllers
 
                     List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(pedno); //get the next CGU point number
                     int patientNumber = patList.Count();
-                                      
 
-                    if (_patientData.GetPatientDetailsByCGUNo(pedno + "." + patientNumber.ToString()) == null)
+                    Patient pat = await _patientData.GetPatientDetailsByCGUNo(pedno + "." + patientNumber.ToString());
+                    if (pat == null)
                     {
                         cguNumber = pedno + "." + patientNumber.ToString();
                     }

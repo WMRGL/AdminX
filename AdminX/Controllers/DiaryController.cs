@@ -145,7 +145,11 @@ namespace AdminX.Controllers
                 string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 var referral = await _referralData.GetReferralDetails(refID);
 
-                _dvm.patient = await _patientData.GetPatientDetails(referral.MPI);                
+                _dvm.patient = await _patientData.GetPatientDetails(referral.MPI);   
+                
+                if(diaryAction == null) { diaryAction = ""; }
+                if (docCode == null) { docCode = ""; }
+                if (diaryText == null) { diaryText = ""; }
 
                 int success = _crud.CallStoredProcedure("Diary", "Create", refID, _dvm.patient.MPI, 0, diaryAction, docCode, "", diaryText, User.Identity.Name, diaryDate, null, false, false);
 

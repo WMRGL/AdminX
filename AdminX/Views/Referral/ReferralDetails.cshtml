@@ -550,22 +550,25 @@
                                 </div>
 
                                 <div class="row mb-2 g-2">
-                                    @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
+                                    @if(Model.icpGeneral != null)
                                     {
-                                        <div class="col-md-2">Waiting List Details:</div>
-                                        @if(Model.icpGeneral.ConsWLAdded)
+                                        @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
                                         {
-                                            <div class="row">
-                                                <div class="col-md-2">Consultant:</div>
-                                                <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
-                                            </div>
-                                        }
-                                        @if(Model.icpGeneral.GCWLAdded)
-                                        {
-                                            <div class="row">
-                                                <div class="col-md-2">GC:</div>
-                                                <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
-                                            </div>
+                                            <div class="col-md-2">Waiting List Details:</div>
+                                            @if(Model.icpGeneral.ConsWLAdded)
+                                            {
+                                                <div class="row">
+                                                    <div class="col-md-2">Consultant:</div>
+                                                    <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
+                                                </div>
+                                            }
+                                            @if(Model.icpGeneral.GCWLAdded)
+                                            {
+                                                <div class="row">
+                                                    <div class="col-md-2">GC:</div>
+                                                    <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
+                                                </div>
+                                            }
                                         }
                                     }
                                 </div>

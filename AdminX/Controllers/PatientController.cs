@@ -125,7 +125,7 @@ namespace AdminX.Controllers
 
                 _pvm.patientsList = new List<Patient>(); //because null
 
-                if (_pvm.patient.CGU_No != ".")
+                if (_pvm.patient.CGU_No != "." && _pvm.patient.CGU_No != "" && _pvm.patient.CGU_No != null)
                 {
                     _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
 
@@ -483,10 +483,11 @@ namespace AdminX.Controllers
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
+                if (nhsno != null) { nhsno = nhsno.Replace(" ", ""); }
                 int day = dob.Day;
                 int month = dob.Month;
 
-                var patient = _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
+                var patient = await _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
 
                 if (patient != null)
                 {
@@ -590,6 +591,8 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
 
+                if (nhsno != null) { nhsno = nhsno.Replace(" ", ""); }
+
                 _pvm.patient = await _patientData.GetPatientDetails(mpi);
 
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno.Replace(" ", ""),
@@ -656,55 +659,64 @@ namespace AdminX.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateCGUNumber(int mpi, string newFileNumber)
         {
-
-            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
-
-            List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
-
-            int patientNumber = patList.Count();
-
-            string cguNumber = "";
-            string sMessage = "";
-            bool isSuccess = false;
-            int sourceDCTM = 0;
-            int destDCTM = 0;
-
-            Patient patToMergeTo = await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString());
-
-            if (patToMergeTo == null)
+            try
             {
-                var pat = await _patientData.GetPatientDetails(mpi);
-                sourceDCTM = pat.Patient_Dctm_Sts;
+                _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+                string staffCode = _pvm.staffMember.STAFF_CODE;
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-                if (_pedigreeData.GetPedigree(newFileNumber) != null)
+                List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
+
+                int patientNumber = patList.Count();
+
+                string cguNumber = "";
+                string sMessage = "";
+                bool isSuccess = false;
+                int sourceDCTM = 0;
+                int destDCTM = 0;
+
+                Patient patToMergeTo = await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString());
+
+                if (patToMergeTo == null)
                 {
-                    var ped = await _pedigreeData.GetPedigree(newFileNumber);
-                    destDCTM = ped.File_Dctm_Sts;
-                }
+                    var pat = await _patientData.GetPatientDetails(mpi);
+                    sourceDCTM = pat.Patient_Dctm_Sts;
 
-                if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
-                {
-                    int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
+                    var destPed = await _pedigreeData.GetPedigree(newFileNumber);
 
-                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+                    if (destPed != null)
+                    {
+                        var ped = await _pedigreeData.GetPedigree(newFileNumber);
+                        destDCTM = ped.File_Dctm_Sts;
+                    }
 
-                    sMessage = "CGU number updated, please check the new file for integrity.";
-                    isSuccess = true;
+                    if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
+                    {
+                        int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
+
+                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
+
+                        sMessage = "CGU number updated, please check the new file for integrity.";
+                        isSuccess = true;
+                    }
+                    else
+                    {
+                        sMessage = "Destination file is not electronic.";
+                        isSuccess = false;
+                    }
                 }
                 else
                 {
-                    sMessage = "Destination file is not electronic.";
-                    isSuccess = false;
+                    sMessage = "Destination file number unavailable, please check the integrity of the file you are merging into.";
                 }
+
+                return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
             }
-            else
+            catch(Exception ex)
             {
-                sMessage = "Destination file number unavailable, please check the integrity of the file you are merging into.";
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
             }
 
-            return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
         }
 
         [Authorize]
