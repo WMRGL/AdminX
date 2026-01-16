@@ -50,7 +50,7 @@ namespace AdminX.Meta
 
         public Task<int> PatientAssignCGUNumber(int mpi, string cguno, string sLogin);
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway,
+        public int EpicReferralStaging(int id, string epicPatID, string epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway,
             string? refStatus, DateTime createdDate);
 
         public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0);
@@ -472,7 +472,7 @@ namespace AdminX.Meta
             return success;
         }
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway, 
+        public int EpicReferralStaging(int id, string epicPatID, string epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway, 
             string? refStatus, DateTime createdDate)
         {
             int success = 0;
@@ -489,7 +489,7 @@ namespace AdminX.Meta
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
             cmd.Parameters.Add("@PatientID", SqlDbType.VarChar).Value = epicPatID;
-            cmd.Parameters.Add("@ReferralID", SqlDbType.Int).Value = epicRefID;
+            cmd.Parameters.Add("@ReferralID", SqlDbType.VarChar).Value = epicRefID;
             cmd.Parameters.Add("@ReferralDate", SqlDbType.DateTime).Value = referralDate;
             cmd.Parameters.Add("@ReferredBy", SqlDbType.VarChar).Value = refBy;
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
