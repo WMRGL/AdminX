@@ -79,6 +79,7 @@ namespace AdminX.Controllers
                 var rel = await _relativeData.GetRelationsList();
                 _rvm.relationList = rel.OrderBy(r => r.ReportOrder).ToList();
                 _rvm.genderList = await _relativeData.GetGenderList();
+                _rvm.titleList = await _titleData.GetTitlesList();
 
                 return View(_rvm);
             }
@@ -89,8 +90,11 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, string? title, string forename1, string? forename2, string surname, string relation, string dob, string dod,
-            int isAffected, string sex, string? prevSurname)
+        public async Task<IActionResult> Edit(int id, int wmfacsid, string title, string forename1,
+            string forename2, string surname, string relation, string sDOB, string sDOD, int RelAffected, string sex, string? RelAKA,
+            string? RelSurnameBirth, string? RelSurnamePrevious, string RelAdd1, string? RelAdd2, string? RelAdd3, string? RelAdd4,
+            string? RelTel, string? RelSalutation, string? RelNHSNo, string? RelPC1, string? DeathAge, string? RelAlive, string? Notes,
+            string? MatPat, string? RelOTher)
         {
             try
             {
@@ -101,18 +105,18 @@ namespace AdminX.Controllers
                 DateTime birthDate = new DateTime();
                 DateTime deathDate = new DateTime();
 
-                if (dob != null)
+                if (sDOB != null)
                 {
-                    birthDate = DateTime.Parse(dob);
+                    birthDate = DateTime.Parse(sDOB);
                 }
                 else
                 {
                     birthDate = DateTime.Parse("1900-01-01");
                 }
 
-                if (dod != null)
+                if (sDOD != null)
                 {
-                    deathDate = DateTime.Parse(dod);
+                    deathDate = DateTime.Parse(sDOD);
                 }
                 else
                 {
@@ -129,11 +133,12 @@ namespace AdminX.Controllers
                     forename2 = "";
                 }
 
-                int success = _crud.CallStoredProcedure("Relative", "Edit", id, isAffected, 0, title, forename1, forename2, surname,
-                        User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, prevSurname);
+                int success = _crud.CallStoredProcedure("Relative", "Edit", id, RelAffected, 0, title, forename1, forename2, surname,
+                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, RelAKA, 0, 0, 0, 0, 0, RelSurnameBirth, RelSurnamePrevious,
+                    RelAdd1, RelAdd2, RelAdd3, RelAdd4, RelTel, RelSalutation, RelNHSNo, RelPC1, DeathAge, RelAlive, Notes, MatPat, RelOTher);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-edit(SQL)" }); }
-
+                TempData["SuccessMessage"] = "Relative details updated";
                 return RedirectToAction("RelativeDetails", "Relative", new { id = id });
             }
             catch (Exception ex)
@@ -168,7 +173,7 @@ namespace AdminX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> AddNew(int wmfacsid, string title, string forename1,
-            string forename2, string surname, string relation, string sDOB, string sDOD, int isAffected, string sex, string? RelAKA, 
+            string forename2, string surname, string relation, string sDOB, string sDOD, int RelAffected, string sex, string? RelAKA, 
             string? RelSurnameBirth, string? RelSurnamePrevious, string RelAdd1, string? RelAdd2, string? RelAdd3, string? RelAdd4, 
             string? RelTel, string? RelSalutation, string? RelNHSNo, string? RelPC1, string? DeathAge, string? RelAlive, string? Notes,
             string? MatPat, string? RelOTher)
@@ -203,7 +208,7 @@ namespace AdminX.Controllers
                     forename2 = "";
                 }
 
-                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, isAffected, 0, title, forename1, forename2, surname,
+                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, RelAffected, 0, title, forename1, forename2, surname,
                     User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, RelAKA, 0,0,0,0,0, RelSurnameBirth, RelSurnamePrevious,
                     RelAdd1, RelAdd2, RelAdd3, RelAdd4, RelTel, RelSalutation, RelNHSNo, RelPC1, DeathAge, RelAlive, Notes, MatPat, RelOTher);
 
