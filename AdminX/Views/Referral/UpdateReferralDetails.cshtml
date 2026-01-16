@@ -76,7 +76,7 @@
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="pathway">Pathway</label>
                                         @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
-                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>                                            
+                                        <select id="ddlPathway" name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
                                             @foreach (var item in Model.pathways)
                                             {
                                                 <option value=@item>@item</option>
@@ -170,7 +170,7 @@
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="rclass">Class</label>
                                         <select id="rclass" name="RefClass" class="form-select">
-                                            <option selected="">@Model.referral.RefClass</option>
+                                            @*<option selected="">@Model.referral.RefClass</option>*@
                                             <option value="Urgent">Urgent</option>
                                             <option value="Fast Track">Fast Track</option>
                                             <option value="Routine">Routine</option>
@@ -424,19 +424,21 @@
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="pathway">Pathway</label>
                                         @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
-                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>                                            
+                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
                                             @foreach (var item in Model.pathways)
                                             {
                                                 <option value=@item>@item</option>
                                             }
                                         </select>
-
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="spathway">Sub Pathway</label>
-                                        <select id="spathway" name="Pathway_Subset" class="form-select">
-                                            <option selected></option>
-                                            <option value=""></option>
+                                        <select id="spathway" name="Pathway_Subset" class="form-select" asp-for=@Model.referral.Pathway_Subset>                                            
+                                            <option value="" selected>Select...</option>
+                                            @foreach(var item in Model.subPathways)
+                                            {
+                                                <option value=@item.Subset>@item.Subset</option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
@@ -596,6 +598,16 @@
 </div>
 
 <script>
+
+    if("@Model.referral.PATHWAY" == ("General   ")) 
+    {
+        
+    }
+    else
+    {
+        
+    }
+
     let refCode = document.getElementById("referrerCode");
     let facilityDetails = document.getElementById("facilityFullDetails");
 

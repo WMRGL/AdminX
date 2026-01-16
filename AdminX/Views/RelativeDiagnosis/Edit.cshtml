@@ -30,19 +30,19 @@
                     <label>Reported Diagnosis:</label>
                 </div>
                 <div class="col-md-3">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Diagnosis)
+                    <input class="w-100" type="text" name="diagnosis" asp-for=@Model.relativesDiagnosis.Diagnosis />
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Age:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.AgeDiag)
+                    <input class="w-100" type="text" name="age" asp-for=@Model.relativesDiagnosis.AgeDiag />
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Hospital(s):</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Hospital)
+                    <input class="w-100" type="text" name="hospital" asp-for=@Model.relativesDiagnosis.Hospital />
                 </div>
             </div>
 
@@ -54,7 +54,7 @@
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.CRegCode)
+                    <input class="w-100" type="text" name="cRegCode" asp-for=@Model.relativesDiagnosis.CRegCode />
                 </div>
                 <div class="col-md-2" class="text-right">
                     <label>
@@ -62,13 +62,19 @@
                     </label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.DateReq)
+                    <input class="w-100" type="date" name="dateRequested" asp-for=@Model.relativesDiagnosis.DateReq />
                 </div>
                 <div class="col-md-2" class="text-right">
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Cons)
+                    <select class="w-100" id="ddlCons" name="consultant" asp-for=@Model.relativesDiagnosis.Cons>
+                        <option value="">select...</option>
+                        @foreach (var s in Model.consultantList)
+                        {
+                            <option value="@s.STAFF_CODE">@s.NAME</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -136,7 +142,13 @@
                     <label>Site (topography)</label>
                 </div>
                 <div class="col-md-2">
-                    
+                    <select class="w-100" name="siteCode" asp-for=@Model.relativesDiagnosis.SiteCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourSiteList)
+                        {
+                            <option value=@item.SiteCode>@item.Site</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -144,7 +156,13 @@
                     <label>Laterality (side):</label>
                 </div>
                 <div class="col-md-2">
-                   
+                    <select class="w-100" name="latCode" asp-for=@Model.relativesDiagnosis.LatCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourLatList)
+                        {
+                            <option value=@item.LatCode>@item.Lat</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Grade/stage:</label>
@@ -177,7 +195,13 @@
                     <label>Histology (morphology):</label>
                 </div>
                 <div class="col-md-2">
-                    
+                    <select class="w-100" name="morphCode" asp-for=@Model.relativesDiagnosis.MorphCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourMorphList)
+                        {
+                            <option value=@item.MorphCode>@item.Morph</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -191,7 +215,7 @@
                     <label>Comments:</label>
                 </div>
                 <div class="col-md-2">
-                    <textarea name="sNotes"></textarea>
+                    <textarea name="notes" asp-for=@Model.relativesDiagnosis.Notes></textarea>
                 </div>
             </div>
 

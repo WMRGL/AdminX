@@ -28,12 +28,7 @@
                 @Model.patient.ADDRESS4
                 @Model.patient.POSTCODE
             </div>
-            <div class="col-md-1">
-                <label class="text-dark">Indication</label>
-            </div>
-            <div class="col-md-4">
-                @Model.referral.INDICATION
-            </div>
+            
         </div>
 
 
@@ -80,7 +75,34 @@
                     }
                 </select>
             </div>         
-        </div>   
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <label class="form-label">Indication</label>            
+                <select class="form-select" name="indication" asp-for=@Model.referral.INDICATION>
+                    @foreach (var item in Model.indicationList)
+                    {
+                        <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="mb-3 col-md-4">
+            <label class="form-label" for="referrerCode">Referrer Code</label>
+            <select id="referrerCode" name="referrerCode" class="form-select js-choice">
+                <option selected="">@Model.referral.ReferrerCode</option>
+                @foreach (var item in Model.referrers)
+                {
+                    <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                }
+            </select>
+            </div>
+            
+        </div>        
+
 
         <div class="row mb-5">          
             <div class="row ">
@@ -89,6 +111,8 @@
                     <button type="button" id="btnSubmit" class="btn btn-outline-primary">Confirm Referral</button>
                 </div>
             </div>
+        </div>
+
         </form>
     </div>
 </div>
