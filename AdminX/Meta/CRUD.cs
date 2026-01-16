@@ -11,7 +11,9 @@ namespace AdminX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "");
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", string? string9 = "",
+            string? string10 = "", string? string11="", string? string12="", string? string13="", string? string14 = "", string? string15="", string? string16 = "",
+            string? string17 = "", string? string18="", string? string19="", string? string20 = "", string? string21 = "");
 
         public int PatientDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
@@ -69,7 +71,9 @@ namespace AdminX.Meta
             string string1, string string2, string string3, string text, string sLogin,
             DateTime? dDate1 = null, DateTime? dDate2 = null, bool? bool1 = false, bool? bool2 = false,
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
-            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "")
+            float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", string? string9 = "",
+            string? string10 = "", string? string11 = "", string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "",
+            string? string17 = "", string? string18 = "", string? string19 = "", string? string20 = "", string? string21 = "")
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -119,6 +123,19 @@ namespace AdminX.Meta
             {
                 cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             }
+            cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;
+            cmd.Parameters.Add("@string10", SqlDbType.VarChar).Value = string10;
+            cmd.Parameters.Add("@string11", SqlDbType.VarChar).Value = string11;
+            cmd.Parameters.Add("@string12", SqlDbType.VarChar).Value = string12;
+            cmd.Parameters.Add("@string13", SqlDbType.VarChar).Value = string13;
+            cmd.Parameters.Add("@string14", SqlDbType.VarChar).Value = string14;
+            cmd.Parameters.Add("@string15", SqlDbType.VarChar).Value = string15;
+            cmd.Parameters.Add("@string16", SqlDbType.VarChar).Value = string16;
+            cmd.Parameters.Add("@string17", SqlDbType.VarChar).Value = string17;
+            cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
+            cmd.Parameters.Add("@string19", SqlDbType.VarChar).Value = string19;
+            cmd.Parameters.Add("@string20", SqlDbType.VarChar).Value = string20;
+            cmd.Parameters.Add("@string21", SqlDbType.VarChar).Value = string21;
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
@@ -345,12 +362,16 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
             cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
             cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@text", SqlDbType.VarChar).Value = text;
             cmd.Parameters.Add("@string4", SqlDbType.VarChar).Value = string4;
             cmd.Parameters.Add("@string5", SqlDbType.VarChar).Value = string5;
             cmd.Parameters.Add("@string6", SqlDbType.VarChar).Value = string6;
             cmd.Parameters.Add("@string7", SqlDbType.VarChar).Value = string7;
+            cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
+            cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
             cmd.Parameters.Add("@bool1", SqlDbType.Bit).Value = bool1;
             cmd.Parameters.Add("@bool2", SqlDbType.Bit).Value = bool2;
+            cmd.Parameters.Add("@bool3", SqlDbType.Bit).Value = bool3;
             cmd.Parameters.Add("@string8", SqlDbType.VarChar).Value = string8;
             cmd.Parameters.Add("@string9", SqlDbType.VarChar).Value = string9;
             cmd.Parameters.Add("@string10", SqlDbType.VarChar).Value = string10;
@@ -364,6 +385,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
             cmd.Parameters.Add("@string19", SqlDbType.VarChar).Value = string19;
             cmd.Parameters.Add("@string20", SqlDbType.VarChar).Value = string20;
+            cmd.Parameters.Add("@int6", SqlDbType.Int).Value = int6;
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
