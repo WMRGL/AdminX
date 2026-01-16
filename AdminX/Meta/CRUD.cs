@@ -13,7 +13,7 @@ namespace AdminX.Meta
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
             float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", string? string9 = "",
             string? string10 = "", string? string11="", string? string12="", string? string13="", string? string14 = "", string? string15="", string? string16 = "",
-            string? string17 = "", string? string18="", string? string19="");
+            string? string17 = "", string? string18="", string? string19="", string? string20 = "", string? string21 = "");
 
         public int PatientDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
@@ -73,7 +73,7 @@ namespace AdminX.Meta
             int? int4 = 0, int? int5 = 0, int? int6 = 0, string? string4 = "", string? string5 = "", string? string6 = "",
             float? f1 = 0, float? f2 = 0, float? f3 = 0, float? f4 = 0, float? f5 = 0, string? string7 = "", string? string8 = "", string? string9 = "",
             string? string10 = "", string? string11 = "", string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "",
-            string? string17 = "", string? string18 = "", string? string19 = "")
+            string? string17 = "", string? string18 = "", string? string19 = "", string? string20 = "", string? string21 = "")
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -134,6 +134,8 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string17", SqlDbType.VarChar).Value = string17;
             cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
             cmd.Parameters.Add("@string19", SqlDbType.VarChar).Value = string19;
+            cmd.Parameters.Add("@string20", SqlDbType.VarChar).Value = string20;
+            cmd.Parameters.Add("@string21", SqlDbType.VarChar).Value = string21;
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
