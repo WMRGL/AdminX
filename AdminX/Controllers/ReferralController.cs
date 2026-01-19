@@ -196,6 +196,7 @@ namespace AdminX.Controllers
                 var indication = await _indicationData.GetDiseaseList();
                 _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
+                _rvm.subPathways = await _pathwayData.GetSubPathwayList();
 
                 if(_rvm.patient.PtAreaCode == null)
                 {
@@ -216,7 +217,7 @@ namespace AdminX.Controllers
                     }
                     _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
                 }
-
+                _rvm.referral.PATHWAY = _rvm.referral.PATHWAY.Trim(); //because it has stupid trailing spaces
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
@@ -477,6 +478,10 @@ namespace AdminX.Controllers
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 _rvm.pathways = new List<string>();
+                var referrers = await _externalClinicianData.GetClinicianList();
+                _rvm.referrers = referrers.OrderBy(r => r.LAST_NAME).ToList();
+                var indication = await _indicationData.GetDiseaseList();
+                _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
                 List<Pathway> pathwayList = await _pathwayData.GetPathwayList();
                 foreach (var p in pathwayList)
                 {
@@ -501,13 +506,13 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin)
+        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication)
         {
             try
             {
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
 
-                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin);
+                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin, referrerCode, indication);
 
                 if (success != 1)
                 {

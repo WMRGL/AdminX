@@ -63,7 +63,7 @@ namespace AdminX.Controllers
                     fileToUpload.FileName.Substring(fileToUpload.FileName.IndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.IndexOf("."));
 
 
-                string targetFileName = _constantsData.GetConstant("FilePathEDMS", 1) + "\\" + destFilename;
+                string targetFileName = await _constantsData.GetConstant("FilePathEDMS", 1) + "\\" + destFilename;
 
                 string sMessage = "";
                 bool isSuccess = false;

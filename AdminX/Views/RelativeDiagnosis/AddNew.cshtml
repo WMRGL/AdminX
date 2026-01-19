@@ -73,7 +73,7 @@
                 <div class="col-md-2">
                     <select class="w-100" id="ddlCons" name="consultant">
                         <option value="">select...</option>
-                        @foreach (var s in Model.clinicianList)
+                        @foreach (var s in Model.consultantList)
                         {
                             <option value="@s.STAFF_CODE">@s.NAME</option>
                         }

@@ -108,6 +108,7 @@ namespace ClinicX.Controllers
                 _rdvm.tumourSiteList = await _relativeDiagnosisData.GetTumourSiteList();
                 _rdvm.tumourLatList = await _relativeDiagnosisData.GetTumourLatList();
                 _rdvm.tumourMorphList = await _relativeDiagnosisData.GetTumourMorphList();
+                _rdvm.consultantList = await _staffUser.GetConsultantsList();
 
                 return View(_rdvm);
             }
@@ -118,7 +119,8 @@ namespace ClinicX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int tumourID, string? consent="", DateTime? dateReceived=null, string? confirmed="",
+        public async Task<IActionResult> Edit(int tumourID, string diagnosis, string? age, string? hospital, string? cRegCode, DateTime? dateRequested,
+            string? consultant, string? consent="", DateTime? dateReceived=null, string? confirmed="",
             DateTime? confDiagDate=null, string? confDiagAge="", string? siteCode="", string? latCode="", string? grade="", 
             string? dukes="", string? morphCode="", string? histologyNumber="", string? notes="")
         {
@@ -132,8 +134,8 @@ namespace ClinicX.Controllers
                 string data = "ConfDiagAge:" + confDiagAge + ",Grade:" + grade + ",Dukes:" + dukes + ",HistologyNumber:" + histologyNumber;
                            
 
-                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, data, notes, User.Identity.Name, dateReceived, confDiagDate,
-                    false, false, 0, 0, 0, siteCode, latCode, morphCode);
+                int success = _crud.CallStoredProcedure("RelativeDiagnosis", "Edit", tumourID, 0, 0, consent, confirmed, diagnosis, notes, User.Identity.Name, dateReceived, confDiagDate,
+                    false, false, 0, 0, 0, siteCode, latCode, morphCode, 0,0,0,0,0,age,hospital,confDiagAge,grade,dukes,histologyNumber,cRegCode, consultant);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiagnosis-edit(SQL)" }); }
 

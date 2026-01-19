@@ -48,7 +48,7 @@ namespace AdminX.Models
         [Key]
         public int ID { get; set; }
         public string PatientID { get; set; }
-        public int ReferralID { get; set; }
+        public string ReferralID { get; set; }
         public DateTime ReferralDate { get; set; }
         public string? ReferredBy { get; set; }
         public string? ReferredTo { get; set; }
