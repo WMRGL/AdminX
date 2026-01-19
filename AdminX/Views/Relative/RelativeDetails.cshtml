@@ -15,88 +15,234 @@
 }
 
 
+<div class="row">
+	<div class="col-12 col-lg-12 col-xxl-12 d-flex">
+		<div class="card flex-fill">
+            <div class="card-header">
+                <h5 class="card-title text-dark">
+                    Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
+                </h5>
+            </div>
+			<table class="table table-borderless my-0">
+				
+				<tbody>
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+									<strong>Title</strong>
+									<div class="text-muted">
+                                        @Model.relativeDetails.RelTitle
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+							<strong>Firstname</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelForename1
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+							<strong>MiddleName</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelForename2
+							</div>
+						</td>
+						<td>
+							<div class="d-flex flex-column w-100">
+                                <strong>Lastname</strong>
+                                <div class="text-muted">
+                                    @Model.relativeDetails.RelSurname
+                                </div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+                                    <strong>Salutation</strong>
+									<div class="text-muted">
+                                        @Model.relativeDetails.RelSalutation
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Also Know As</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelAKA
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>Surname at Birth</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelSurnameBirth
+							</div>
+						</td>
+						<td>
+							<div class="d-flex flex-column w-100">
+                                <strong>Previous Names</strong>
+                                <div class="text-muted">
+                                    @Model.relativeDetails.RelSurnamePrevious
+                                </div>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+                                    <strong>Address </strong>
+									<div class="text-muted">
+                                        @Model.relativeDetails.RelAdd1 @Model.relativeDetails.RelAdd2 <br />
+                                        @Model.relativeDetails.RelAdd3 @Model.relativeDetails.RelAdd4 <br />
+                                        @Model.relativeDetails.RelPC1
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Telephone</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelTel
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>NHS No</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelNHSNo
+							</div>
+						</td>
+						<td>
+							<div class="d-flex flex-column w-100">
+                                <strong>DOB</strong>
+                                <div class="text-muted">
+                                    @Html.DisplayFor(model => model.relativeDetails.DOB)
+                                </div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+                                    <strong>DOD (if deceased) </strong>
+									<div class="text-muted">
+                                        @if (Model.relativeDetails.RelAlive == "No")
+                                        {
+                                            <p>
+                                                @if (Model.relativeDetails.DOD != null && Model.relativeDetails.DOD != DateTime.Parse("1900-01-01"))
+                                                {
+                                                    @Html.DisplayFor(model => model.relativeDetails.DOD)
+                                                }
+                                                else
+                                                {
+                                                    <span>Not known</span>
+                                                }
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p></p>
+                                        }
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Death Age</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.DeathAge
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>Gender</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.Sex
+							</div>
+						</td>
+						<td>
+							<div class="d-flex flex-column w-100">
+                                <strong>Relation to Proband</strong>
+                                <div class="text-muted">
+                                    @Model.relativeDetails.RelCode
+                                </div>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<div class="d-flex">
+								
+								<div class="flex-grow-1 ms-3">
+                                    <strong>Other, if not list </strong>
+									<div class="text-muted">
+                                        @if (Model.relativeDetails.RelOTher != null)
+                                        {
+                                            @Model.relativeDetails.RelOTher
+                                        }
+                                        else
+                                        {
+                                            <span>N/A</span>
+                                        }
+									</div>
+								</div>
+							</div>
+						</td>
+						<td class="d-none d-xxl-table-cell">
+                            <strong>Affected</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelAffected
+							</div>
+						</td>
+						<td class="d-none d-xl-table-cell">
+                            <strong>Alive</strong>
+							<div class="text-muted">
+                                @Model.relativeDetails.RelAlive
+							</div>
+						</td>
+						<td>
+							<div class="d-flex flex-column w-100">
+                                <strong>Maternal or Paternal</strong>
+                                <div class="text-muted">
+                                    @Model.relativeDetails.MatPat
+                                </div>
+							</div>
+						
+					</tr>
+                    <tr>
+                        <td class="d-none d-xxl-table-cell">
+                            <strong>Notes for Cancer Registries:</strong>
+                            <div class="text-muted">
+                                @Model.relativeDetails.Notes
+                            </div>
+                        </td>
+                        <td class="d-none d-xxl-table-cell">
+                            <a type="button" class="btn btn-default btn-primary" asp-controller="Relative"
+                            asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
+                        </td>
+                        <td class="d-none d-xl-table-cell">
+                            <a type="button" class="btn btn-default btn-outline-primary ms-7" 
+                            asp-controller="LetterMenu" asp-action="Index"
+                            asp-route-id="@Model.relativeDetails.relsid"
+                            asp-route-isRelative="true">Send Letter</a>
+                        </td>
+                       
+                    </tr>
+					
+				</tbody>
+			</table>
 
-
-
-
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title text-dark">
-            Relative Details for @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
-        </h5>
-    </div>
-    <div class="card-body">
-        <ul class="timeline mt-2 mb-0">
-            <li class="timeline-item">
-                <strong>FullName:</strong>
-                <p>
-                    @Html.DisplayFor(model => model.relativeDetails.RelTitle) @Html.DisplayFor(model => model.relativeDetails.RelForename1) @Html.DisplayFor(model => model.relativeDetails.RelForename2) @Html.DisplayFor(model => model.relativeDetails.RelSurname)
-                    @if (Model.relativeDetails.RelSurnameBirth != null)
-                    {
-                        <span>(was </span> 
-                        @Model.relativeDetails.RelSurnameBirth
-                    
-                        <span>)</span>
-                    }
-                </p>
-            </li>
-            <li class="timeline-item">
-                <strong> Relation to Proband</strong>
-                <p>
-                    @Html.DisplayFor(model => model.relativeDetails.Relation)
-                </p>
-            </li>
-            <li class="timeline-item">
-                <strong>DOB</strong>
-                <p>
-                    @if (Model.relativeDetails.DOB != null)
-                    {
-                        @Html.DisplayFor(model => model.relativeDetails.DOB)
-                    }
-                    else
-                    {
-                        <span>Not known</span>
-                    }
-                </p>
-            </li>
-            <li class="timeline-item">
-                @if (Model.relativeDetails.RelAlive == "No")
-                {
-                    <strong>Signed in</strong>
-            <p>
-                @if (Model.relativeDetails.DOD != null && Model.relativeDetails.DOD != DateTime.Parse("1900-01-01"))
-                {
-                    @Html.DisplayFor(model => model.relativeDetails.DOD)
-                }
-                else
-                {
-                    <span>Not known</span>
-                }
-            </p>
-        }
-        else
-        {
-          <p></p>
-        }
-                
-            </li>
-            <li class="timeline-item">
-                <strong>Sex</strong>
-                <p>
-                    @Html.DisplayFor(model => model.relativeDetails.Sex)
-                </p>
-            </li>
-            <li class="timeline-item">
-                <strong>Affected</strong>
-                <p>
-                    @Html.DisplayFor(model => model.relativeDetails.RelAffected)
-                </p>
-            </li>
-        </ul>
-        <a type="button" class="btn btn-default btn-primary" asp-controller="Relative" asp-action="Edit" asp-route-id="@Model.relativeDetails.relsid">Edit</a>
-        <a type="button" class="btn btn-default btn-outline-primary ms-7" asp-controller="LetterMenu" asp-action="Index" asp-route-id="@Model.relativeDetails.relsid" asp-route-isRelative="true">Send Letter</a>
-
-    </div>
+		</div>
+	</div>
+	
 </div>
 
 
