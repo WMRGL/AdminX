@@ -665,7 +665,7 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-                List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(newFileNumber); //get the next CGU point number
+                List<Patient> patList = await _patientSearchData.GetPatientsListByPedNo(newFileNumber); //get the next CGU point number
 
                 int patientNumber = patList.Count();
 
