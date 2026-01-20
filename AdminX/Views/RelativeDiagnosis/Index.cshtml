@@ -20,26 +20,23 @@
 
 
 
-<div class="container">
+<div class="card">
     @*<div class="row mb-5 g-5">
         <div class="col-md-2">            
             <a type="button" class="btn btn-default btn_primary" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
         </div>        
     </div>*@
 
-    <div class="row mb-5">
-        <hr />
-    </div>
 
     @if (Model.relativesDiagnosisList.Count() > 0)
     {
-        <div class="row mb-5 g-5">
-            <h1>Diagnoses for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h1>
+        <div class="card-header">  
+            <h5 class="card-title text-dark">Diagnoses for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h5>
         </div>
 
-        <div class="row mb-5 g-5">
-            <table class="table">
-                <thead>
+        <div class="card-body">
+            <table class="table table-bordered table-hover table-striped defaultTable">
+                <thead class="table-dark">
                     <tr>
                         <th></th>
                         <th>Diagnosis</th>
@@ -74,9 +71,12 @@
     }
     else
     {
-        <h1>No diagnosis exists for this relative</h1>
+        <div class="card-body">
+            <h1>No diagnosis exists for this relative</h1>
+        </div>
+        
     }
-    <div class=row mb-5 g-5>
+    <div class="m-3">
         <div class="col-md-2">
             <div col-md-2>
                 @*<button id="btnAddNew" class="btn btn-default btn_primary">Add New</button>*@
