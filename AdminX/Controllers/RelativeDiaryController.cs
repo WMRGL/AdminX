@@ -141,7 +141,7 @@ namespace AdminX.Controllers
                     null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
-
+                TempData["SuccessMessage"] = "Relative Diary entry updated successfully.";
                 return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
             }
             catch (Exception ex)
