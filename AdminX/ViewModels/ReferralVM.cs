@@ -43,6 +43,8 @@ namespace AdminX.ViewModels
         public string icpGeneralAction1 { get; set; }
         public string icpGeneralAction2 { get; set; }
         public string waitingListDetails { get; set; }
+        public ExternalClinician GP { get; set; }
+        public ExternalFacility GPFacility { get; set; }
 
     }
 }

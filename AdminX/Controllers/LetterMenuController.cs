@@ -200,7 +200,7 @@ namespace AdminX.Controllers
                 {                    
                     string qrCode = "";
 
-                    if(_mirrorData.GetPhenotipsPatientByID(mpi) != null)
+                    if(await _mirrorData.GetPhenotipsPatientByID(mpi) != null)
                     {
                         //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
                         string ppqType = "";
