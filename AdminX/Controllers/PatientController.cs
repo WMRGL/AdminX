@@ -411,14 +411,14 @@ namespace AdminX.Controllers
 
                 if (fileNumber == null || fileNumber == "")
                 {
-                    cguNumber = _pedigreeData.GetNextPedigreeNumber() + ".0";
+                    cguNumber = await _pedigreeData.GetNextPedigreeNumber() + ".0";
                 }
                 else
                 {
                     List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
                     int patientNumber = patList.Count();
 
-                    if (_patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    if (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
                     {
                         cguNumber = fileNumber + "." + patientNumber.ToString();
                     }
