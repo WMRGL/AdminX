@@ -151,11 +151,17 @@
                         <div class="row">
                             <div class="col-md-10">
                                 <label class="form-label" for="refDate">Referring Clinician</label>
-                                <select class="form-select" id="ddlRefPhys" name="refPhys">
+                                <select class="form-select js-choice" id="ddlRefPhys" name="refPhys">
                                     <option value=@Model.patient.GP_Code selected>Use Patient's GP (@Model.patient.GP - @Model.patient.GP_Facility)</option>
-                                    @foreach (var item in Model.referrers)
+                                    @if(Model.referrers != null)
                                     {
-                                        <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>
+                                        @foreach (var item in Model.referrers)
+                                        {
+                                            if (@item != null) @*because apparently some of them are null... somehow! And it's making the program throw a fit.*@
+                                            {
+                                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY, @item.CITY</option>                                                
+                                            }                                            
+                                        }
                                     }
                                 </select>
                             </div>

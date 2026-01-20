@@ -129,9 +129,10 @@
 
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="referrerCode">Referrer Code</label>
-                                        <select id="referrerCode" name="ReferrerCode" class="form-select">
+                                        <label class="form-label" for="referrerCodeC">Referrer Code</label>
+                                        <select id="referrerCodeC" name="ReferrerCode" class="form-select">
                                             <option selected="">@Model.referral.ReferrerCode</option>
+                                            <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
                                             @foreach (var item in Model.referrers)
                                             {
                                                 <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
@@ -140,8 +141,8 @@
                                     </div>
 
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="facilityFullDetails">Facility Details</label>
-                                        <input type="text" class="form-control" id="facilityFullDetails" readonly>
+                                        <label class="form-label" for="facilityFullDetailsC">Facility Details</label>
+                                        <input type="text" class="form-control" id="facilityFullDetailsC" readonly>
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="comment">Comment</label>
@@ -181,18 +182,18 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockstart">Clock Start</label>
-                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate" onchange="CalculateClockAge()">
+                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDateC" onchange="CalculateClockAge()">
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputState">Clock Stop</label>
-                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate" onchange="CalculateClockAge()">
+                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDateC" onchange="CalculateClockAge()">
                                     </div>
-                                    @*
+                                    
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockage">Clock Age</label>
-                                        <input type="text" class="form-control" id="clockage" value="" readonly>
+                                        <label class="form-label" for="clockageC">Clock Age</label>
+                                        <input type="text" class="form-control" id="clockageC" value="" readonly>
 
-                                    </div>*@
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
@@ -479,9 +480,10 @@
 
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="referrerCode">Referrer Code</label>
-                                        <select id="referrerCode" name="ReferrerCode" class="form-select">
+                                        <label class="form-label" for="referrerCodeG">Referrer Code</label>
+                                        <select id="referrerCodeG" name="ReferrerCode" class="form-select js-choice">
                                             <option selected="">@Model.referral.ReferrerCode</option>
+                                            <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
                                             @foreach (var item in Model.referrers)
                                             {
                                                 <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
@@ -490,8 +492,8 @@
                                     </div>
 
                                     <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="facilityFullDetails">Facility Details</label>
-                                        <input type="text" class="form-control" id="facilityFullDetails" readonly>
+                                        <label class="form-label" for="facilityFullDetailsG">Facility Details</label>
+                                        <input type="text" class="form-control" id="facilityFullDetailsG" readonly>
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="comment">Comment</label>
@@ -531,16 +533,16 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="clockstart">Clock Start</label>
-                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate" onchange="CalculateClockAge()">
+                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDateG" onchange="CalculateClockAge()">
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="inputState">Clock Stop</label>
-                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate" onchange="CalculateClockAge()">
+                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDateG" onchange="CalculateClockAge()">
                                     </div>
-                                    @*<div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockage">Clock Age</label>
-                                        <input type="text" class="form-control" id="clockage" value="" readonly>
-                                    </div>*@
+                                    <div class="mb-3 col-md-4">
+                                        <label class="form-label" for="clockageG">Clock Age</label>
+                                        <input type="text" class="form-control" id="clockageG" value="" readonly>
+                                    </div>
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col-md-3">
@@ -599,116 +601,154 @@
 
 <script>
 
-    if("@Model.referral.PATHWAY" == ("General   ")) 
+    var refCode;
+    var facilityDetails;
+   
+    if("@Model.referral.PATHWAY".startsWith("General"))
     {
+        refCode = document.getElementById("referrerCodeG");
+        facilityDetails = document.getElementById("facilityFullDetailsG");
         
     }
     else
     {
+        refCode = document.getElementById("referrerCodeC");
+        facilityDetails = document.getElementById("facilityFullDetailsC");        
+    }
+
+
         
-    }
 
-    let refCode = document.getElementById("referrerCode");
-    let facilityDetails = document.getElementById("facilityFullDetails");
+    
 
-    let facilityCodeArray = [];
-    let facilityNameArray = [];
-    let facilityAddressArray = [];
-    let facilityCityArray = [];
-    let facilityStateArray = [];
-    let facilityPostcodeArray = [];
-    let referrerCodes = [];
-    let facCodeArray = [];
-    var facCode;
+        function updateFacility() 
+        {
+            var facilityCodeArray = [];
+            var facilityNameArray = [];
+            var facilityAddressArray = [];
+            var facilityCityArray = [];
+            var facilityStateArray = [];
+            var facilityPostcodeArray = [];
+            var referrerCodes = [];
+            var facCodeArray = [];
+            var facCode;
+                        
 
-    @foreach (var item in Model.facilities)
-    {
-        @:facilityCodeArray.push("@item.MasterFacilityCode");
-        @:facilityNameArray.push("@item.NAME");
-        @:facilityAddressArray.push("@item.ADDRESS");
-        @:facilityCityArray.push("@item.CITY");
-        @:facilityStateArray.push("@item.STATE");
-        @:facilityPostcodeArray.push("@item.ZIP");
-    }
+            if(refCode.value == "@Model.patient?.GP_Code")
+            {
+                let fullDetails = "@Model.GPFacility.NAME" + ", " +
+                    "@Model.GPFacility.ADDRESS" + ", " +
+                    "@Model.GPFacility.CITY" + ", " +
+                    "@Model.GPFacility.STATE" + " " +
+                    "@Model.GPFacility.ZIP";               
 
-
-
-    @foreach (var item in Model.referrers)
-    {
-        @:referrerCodes.push("@item.MasterClinicianCode");
-        @:facCodeArray.push("@item.MasterFacilityCode");
-    }
-
-        function updateFacility() {
-
-            for (var i in referrerCodes) {
-                if (referrerCodes[i] == refCode.value) {
-                    facCode = facCodeArray[i];
-                }
+                facilityDetails.value = fullDetails;                               
             }
+            else
+            {
+                @foreach (var item in Model.facilities)
+                {
+                    @:facilityCodeArray.push("@item.MasterFacilityCode");
+                    @:facilityNameArray.push("@item.NAME");
+                    @:facilityAddressArray.push("@item.ADDRESS");
+                    @:facilityCityArray.push("@item.CITY");
+                    @:facilityStateArray.push("@item.STATE");
+                    @:facilityPostcodeArray.push("@item.ZIP");
+                }
 
-            facilityDetails.value = "";
+                @foreach (var item in Model.referrers)
+                {
+                    @:referrerCodes.push("@item.MasterClinicianCode");
+                    @:facCodeArray.push("@item.MasterFacilityCode");
+                }
 
-            for (var i in facilityCodeArray) {
-                if (facilityCodeArray[i] == facCode) {
-                    let fullDetails = facilityNameArray[i] + ", " +
+                for (var i in referrerCodes) 
+                {
+                    if (referrerCodes[i] == refCode.value) 
+                    {
+                        facCode = facCodeArray[i];
+                    }
+                }
+
+                facilityDetails.value = "";
+
+                for (var i in facilityCodeArray) 
+                {
+                    if (facilityCodeArray[i] == facCode) 
+                    {
+                        let fullDetails = facilityNameArray[i] + ", " +
                         facilityAddressArray[i] + ", " +
                         facilityCityArray[i] + ", " +
                         facilityStateArray[i] + " " +
                         facilityPostcodeArray[i];
 
-                    facilityDetails.value = fullDetails.replace("&#x27;", "'");
+                        facilityDetails.value = fullDetails.replace("&#x27;", "'");
+                    }
                 }
-            }
+            
+                let selectedReferrerCode = refCode.value;
 
 
-            /*
-            let selectedReferrerCode = refCode.value;
-
-
-            let associatedFacilityIndex = -1;
-            for (let i = 0; i < referrerCodes.length; i++)
-            {
-                if (referrerCodes[i] === selectedReferrerCode)
+                let associatedFacilityIndex = -1;
+                for (let i = 0; i < referrerCodes.length; i++)
                 {
-                    associatedFacilityIndex = i;
-                    break;
+                    if (referrerCodes[i] === selectedReferrerCode)
+                    {
+                        associatedFacilityIndex = i;
+                        break;
+                    }
                 }
-            }
 
-            if (associatedFacilityIndex !== -1)
-            {
-                let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
+                if (associatedFacilityIndex !== -1)
+                {
+                    let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
                     facilityAddressArray[associatedFacilityIndex] + ", " +
                     facilityCityArray[associatedFacilityIndex] + ", " +
                     facilityStateArray[associatedFacilityIndex] + " " +
                     facilityPostcodeArray[associatedFacilityIndex];
-
-                facilityDetails.value = fullDetails;
-            }
-            else
-            {
-                facilityDetails.value = "";
-            }
-            */
+                        
+                    facilityDetails.value = fullDetails;
+                }
+                else
+                {
+                    facilityDetails.value = "";
+                }
+            }            
         }
 
-    function CalculateClockAge() {
-        var clockStart = Date.parse(document.getElementById("ClockStartDate").value);
-        var clockStop = Date.parse(document.getElementById("ClockStopDate").value);
+    function CalculateClockAge() 
+    {
+        var clockStart;
+        var clockStop;
+        var clockAgeTotal;
+
+        if("@Model.referral.PATHWAY".startsWith("General"))
+        {
+            clockStart = Date.parse(document.getElementById("ClockStartDateG").value);
+            clockStop = Date.parse(document.getElementById("ClockStopDateG").value);
+            clockAgeTotal = document.getElementById("clockageG");
+        }
+        else
+        {
+            clockStart = Date.parse(document.getElementById("ClockStartDateC").value);
+            clockStop = Date.parse(document.getElementById("ClockStopDateC").value);
+            clockAgeTotal = document.getElementById("clockageC");
+        }
+        
         var clockAge;
-        var today = new Date();
+        var today = new Date();        
 
 
-        if (clockStop != null) {
+        if (isNaN(clockStop)) 
+        {   
+            clockAge = today - clockStart;            
+        }
+        else 
+        {   
             clockAge = clockStop - clockStart;
         }
-        else {
-            clockAge = today - clockStart;
-        }
-
         var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
-        document.getElementById("clockage").value = clockAgeDays + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
+        clockAgeTotal.value = Math.floor(clockAgeDays) + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
     }
 
     refCode.addEventListener("change", updateFacility);

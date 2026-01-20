@@ -1766,21 +1766,28 @@ namespace AdminX.Controllers
                     signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
                 }
 
-                if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
-                {
-                    if (qrCodeText != "")
-                    {
-                        CreateQRImageFile(qrCodeText, user);
+                string phenotipsAvailable = _constantsData.GetConstant("PhenotipsURL", 2);
 
-                        spacer = section.AddParagraph();
-                        Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
-                            "receive an emailed link, let us know by contacting the department using the details above.");
-                        spacer = section.AddParagraph();
-                        Paragraph contentQR = section.AddParagraph();
-                        MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
-                        imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
-                        imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
-                        contentQR.Format.Alignment = ParagraphAlignment.Center;
+                if (phenotipsAvailable == "1")
+                {
+                    if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
+                    {
+                        /*
+                        if (qrCodeText != "")
+                        {
+                            CreateQRImageFile(qrCodeText, user);
+
+                            spacer = section.AddParagraph();
+                            Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
+                                "receive an emailed link, let us know by contacting the department using the details above.");
+                            spacer = section.AddParagraph();
+                            Paragraph contentQR = section.AddParagraph();
+                            MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
+                            imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
+                            imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
+                            contentQR.Format.Alignment = ParagraphAlignment.Center;
+                        }
+                        */
                     }
                 }
 

@@ -109,7 +109,10 @@
                         <option value="">Select</option>                        
                         @foreach (var item in Model.clinicianList)
                         {
-                            <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                            @if(item != null)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                            }
                         }
                     </select>
                 </div>
@@ -260,9 +263,12 @@
             clinList.remove(i);
         }
 
-        clinCodeArray.push("@Model.patGP.MasterClinicianCode");
-        clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME" );
-        clinDeptArray.push("@Model.patGP.FACILITY");
+        @if (Model.patGP != null) //because there's ALWAYS A FUCKING NULL!!!!!!!!!!!!!
+        {
+            @:clinCodeArray.push("@Model.patGP.MasterClinicianCode");
+            @:clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME");
+            @:clinDeptArray.push("@Model.patGP.FACILITY");
+        }
 
         if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
         {

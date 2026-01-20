@@ -197,8 +197,10 @@ namespace AdminX.Controllers
                 _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
                 _rvm.subPathways = await _pathwayData.GetSubPathwayList();
+                _rvm.GP = await _externalClinicianData.GetClinicianDetails(_rvm.patient.GP_Code);
+                _rvm.GPFacility = await _externalFacilityData.GetFacilityDetails(_rvm.patient.GP_Facility_Code);
 
-                if(_rvm.patient.PtAreaCode == null)
+                if (_rvm.patient.PtAreaCode == null)
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id=_rvm.patient.MPI, message="You need to assign an area code before processing the referral.", success=false });
                 }
@@ -428,6 +430,8 @@ namespace AdminX.Controllers
                 _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
                 _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.GP = await _externalClinicianData.GetClinicianDetails(_rvm.patient.GP_Code);
+                _rvm.GPFacility = await _externalFacilityData.GetFacilityDetails(_rvm.patient.GP_Facility_Code);
 
                 return View(_rvm);
             }
