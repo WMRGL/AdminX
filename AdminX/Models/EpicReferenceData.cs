@@ -48,8 +48,8 @@ namespace AdminX.Models
         [Key]
         public int ID { get; set; }
         public string PatientID { get; set; }
-        public string ReferralID { get; set; }
-        //public int ReferralID { get; set; }
+        //public string ReferralID { get; set; }
+        public int ReferralID { get; set; }
         public DateTime ReferralDate { get; set; }
         public string? ReferredBy { get; set; }
         public string? ReferredTo { get; set; }
@@ -71,8 +71,8 @@ namespace AdminX.Models
         [Key]
         public int ID { get; set; }
         public int? MPI { get; set; }
-        public string? ExternalReferralID { get; set; }
-        //public int? ExternalReferralID { get; set; }
+        //public string? ExternalReferralID { get; set; }
+        public int? ExternalReferralID { get; set; }
         public DateTime ReferralDate { get; set; }
         public DateTime? ClockStartDate { get; set; }
         public DateTime? ClockStopDate { get; set; }
