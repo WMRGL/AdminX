@@ -11,7 +11,7 @@
     buttonList.Add(Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }));
     buttonList.Add(Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1" }));
     
-    @*if (Model.staffMember.POSITION == "Admin Team Leader" || Model.staffMember.POSITION == "Admin Manager" || Model.staffMember.POSITION == "System Developer")*@
+    // @if (Model.staffMember.POSITION == "Admin Team Leader" || Model.staffMember.POSITION == "Admin Manager" || Model.staffMember.POSITION == "System Developer")
     @if(Model.canDeleteICP)
     {
         var postUrl = Url.Action("MarkReferralDeleted", "Referral");
