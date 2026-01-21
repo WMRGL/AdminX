@@ -126,7 +126,7 @@ namespace AdminX.Controllers
                     }
 
 
-                    return RedirectToAction("PatientDetails", "Patient", new { id = mpiFrom, message = sMessage, success = isSuccess });
+                    return RedirectToAction("PatientDetails", "Patient", new { id = mpiTo, message = sMessage, success = isSuccess });
                 }
                 else
                 {
