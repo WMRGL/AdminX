@@ -366,31 +366,14 @@ namespace AdminX.Controllers
                      int6: null, int7: null, int8: null
                  );
 
+                var statusDto = await _referralData.GetDeletionStatusAsync(mpi, refid);
 
-
-
-                //string query = "Select top 1 DeleteReason, DeleteStatus from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
-                string query = "Select top 1 DeleteReason, DeleteStatus from [DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
-                string readerObjString = "";
-                int deleteStatus = 0;
-                SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(query, conn);
-                SqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read())
+                return RedirectToAction("PatientDetails", "Patient", new
                 {
-                    if (!reader.IsDBNull(0))
-                    {
-                        readerObjString = reader.GetString(0);
-                        deleteStatus = reader.GetInt16(1);
-                    }
-                }
-                conn.Close();
-
-                bool deleteSuccess = false;
-                if (deleteStatus == 1) { deleteSuccess = true; }
-
-                return RedirectToAction("PatientDetails", "Patient", new { id = mpi, message = readerObjString, success = deleteSuccess });
+                    id = mpi,
+                    message = statusDto.Reason,
+                    success = statusDto.IsDeleted
+                });
             }
             catch (Exception ex)
             {
