@@ -369,7 +369,8 @@ namespace AdminX.Controllers
 
 
 
-                string query = "Select top 1 DeleteReason, DeleteStatus from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
+                //string query = "Select top 1 DeleteReason, DeleteStatus from [Clinical_Dev].[dbo].[DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
+                string query = "Select top 1 DeleteReason, DeleteStatus from [DeletedReferrals] where mpi = " + mpi + " and RefID = " + refid + " order by DeletedRefId desc";
                 string readerObjString = "";
                 int deleteStatus = 0;
                 SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
