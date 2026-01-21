@@ -96,7 +96,7 @@
                 <option selected="">@Model.referral.ReferrerCode</option>
                 @foreach (var item in Model.referrers)
                 {
-                    <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY</option>
+                    <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>
                 }
             </select>
             </div>
