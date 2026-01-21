@@ -233,6 +233,10 @@
                             <th>Letter To</th>
                             <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
                             <th>Status</th>
+                            <th>Approved Date</th>
+                            <th>Days since Approved</th>
+                            <th>Consultant</th>
+                            <th>Enclosure</th>
                             <th>Comments</th>
                         </tr>
                     </thead>
@@ -247,13 +251,33 @@
                                     <td>@item.LetterTo</td>
                                     @if (@item.DateDictated.HasValue)
                                     {
-                                        <td>@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
+                                        <td data-sort="@item.DateDictated.Value.ToString("yyyy-MM-dd")">@item.DateDictated.Value.ToString("dd/MM/yyyy")</td>
                                     }
                                     else
                                     {
                                         <td></td>
                                     }
                                     <td>@item.Status</td>
+                                    @if (item.ApprovedDate.HasValue)
+                                    {
+                                        <td data-sort="@item.ApprovedDate.Value.ToString("yyyy-MM-dd")">@item.ApprovedDate.Value.ToString("dd/MM/yyyy")</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    <td>
+                                        @(item.ApprovedDate.HasValue ? (DateTime.Now - item.ApprovedDate.Value).Days : 0) days ago
+                                    </td>
+                                    <td>@item.Consultant</td>
+                                    @if (item.Enclosures != "")
+                                    {
+                                        <td>@item.Enclosures</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
                                     <td>@item.Comments</td>
                                 </tr>
                             }
