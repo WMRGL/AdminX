@@ -169,8 +169,8 @@ namespace AdminX.Controllers
 
                 List<Referral> referrals = await _referralData.GetReferralsList(id);
                 _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
-                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active").ToList();
-                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete").ToList();
+                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active" && !r.logicaldelete).ToList();
+                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete" && !r.logicaldelete).ToList();
                 _pvm.tempReges = await _referralData.GetTempRegList(id);
                 _pvm.appointments = await _appointmentData.GetAppointmentListByPatient(id);
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
