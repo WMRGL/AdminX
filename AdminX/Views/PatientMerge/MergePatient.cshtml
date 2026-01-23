@@ -52,6 +52,14 @@
                         <label>@Model.patientFrom.SOCIAL_SECURITY</label>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>CGU Number:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientFrom.CGU_No</label>
+                    </div>
+                </div>
             </div>
             <div class="col-md-6">
             @if (Model.patientTo != null)
@@ -90,7 +98,15 @@
                         <label>@Model.patientTo.SOCIAL_SECURITY</label>
                     </div>
                 </div>
-                <div class="row mb-5 g-5">                
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>CGU Number:</label>
+                    </div>
+                    <div class="col-md-8">
+                        <label>@Model.patientTo.CGU_No</label>
+                    </div>
+                </div>
+                <div class="row mt-3">                
                     <input name="mpiTo" asp-for=@Model.patientTo.MPI hidden />
                     <button type="submit" class="btn btn-primary">Merge Patients</button>
                 </div>            
