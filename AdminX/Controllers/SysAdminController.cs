@@ -228,7 +228,7 @@ namespace AdminX.Controllers
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("StaffMember", "Edit", 0, 0, 0, staffCode, title, firstname, lastname, User.Identity.Name, startDate, endDate,
-                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type);
+                isSupervisor.GetValueOrDefault(), isSystemAdministrator.GetValueOrDefault(), false, 0, 0, 0, role, team, type, gmcNumber);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
