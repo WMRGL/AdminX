@@ -3,6 +3,7 @@ using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authentication;
+using AdminX.Meta;
 
 namespace AdminX.Controllers
 {
@@ -20,9 +21,11 @@ namespace AdminX.Controllers
 		private readonly IReviewDataAsync _reviewData;
         private readonly IDictatedLetterDataAsync _dictatedLetterData;
         private readonly IPAddressFinder _ip;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IReferralDataAsync _referralData;
 
-		public HomeController(IConfiguration config, IStaffUserDataAsync staffUser, IVersionData version, INotificationDataAsync notification, IAuditServiceAsync audit, IClinicDataAsync clinic,
-            ITriageDataAsync triage, IReviewDataAsync review, IDictatedLetterDataAsync dictatedLetter)
+        public HomeController(IConfiguration config, IStaffUserDataAsync staffUser, IVersionData version, INotificationDataAsync notification, IAuditServiceAsync audit, IClinicDataAsync clinic,
+            ITriageDataAsync triage, IReviewDataAsync review, IDictatedLetterDataAsync dictatedLetter, IPatientDataAsync epicPat, IReferralDataAsync epicRef)
         {
             //_clinContext = context;
             _config = config;
@@ -36,6 +39,8 @@ namespace AdminX.Controllers
             _reviewData = review;
 			_dictatedLetterData = dictatedLetter;
             _ip = new IPAddressFinder(HttpContext);
+            _patientData = epicPat;
+            _referralData = epicRef;
 		}
 
         public async Task<IActionResult> Index()
@@ -68,6 +73,10 @@ namespace AdminX.Controllers
                     _hvm.reviewOutcomes = rev.Count();
                     var dl = await _dictatedLetterData.GetDictatedLettersListFull();
                     _hvm.dictatedLetters = dl.Count();
+                    var nep = await _patientData.GetPatientsWithoutCGUNumbers();
+                    _hvm.newEpicPatients = nep.Count();
+                    var ner = await _referralData.GetUnassignedReferrals();
+                    _hvm.newEpicReferrals = ner.Count();
 
 					return View(_hvm);
                 }

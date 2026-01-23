@@ -16,6 +16,8 @@ namespace AdminX.ViewModels
         public int triageOutcomes { get; set; }
         public int reviewOutcomes { get; set; }
         public int dictatedLetters { get; set; }
+        public int newEpicPatients { get; set; }
+        public int newEpicReferrals { get; set; }
         public List<StaffMember> dutyClinicianList { get; set; }
     }
 }
