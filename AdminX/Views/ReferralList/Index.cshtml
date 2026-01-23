@@ -17,6 +17,7 @@
                 <thead class="table-dark">
                     <tr>
                         <th>CGU number</th>
+                        <th>NHS Number</th>
                         <th>Patient Name</th>
                         <th>Pathway</th>
                         <th>Referral type</th>
@@ -29,6 +30,7 @@
                     {
                         <tr>
                             <td><a asp-controller="Referral" asp-action="ProcessNewReferral" asp-route-refID=@item.refid>@item.CGU_No</a></td>
+                            <td>@item.NHSNo</td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
                             <td>@item.PATHWAY</td>
                             <td>@item.RefType</td>
