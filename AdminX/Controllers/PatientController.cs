@@ -141,7 +141,7 @@ namespace AdminX.Controllers
 
                                 while (updateStatus < 5) //cycle through them all until they hit 5
                                 {
-                                    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID, item.ReferralDate, item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
+                                    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
                                         item.CreatedDate.GetValueOrDefault());
 
                                     var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);

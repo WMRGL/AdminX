@@ -19,7 +19,7 @@ namespace AdminX.Meta
         }
         public async Task<List<EpicReferralStaging>> GetParkedReferralUpdates(string epicID)
         {
-            IQueryable<EpicReferralStaging> stagedRefs = _context.EpicReferralStaging.Where(r => r.PatientID == epicID && r.UpdateSts < 5).OrderBy(r => r.CreatedDate);
+            IQueryable<EpicReferralStaging> stagedRefs = _context.EpicReferralStaging.Where(r => r.PatientID == epicID && r.UpdateSts < 5 && r.ReferralID != null).OrderBy(r => r.CreatedDate);
 
             return await stagedRefs.ToListAsync();
         }

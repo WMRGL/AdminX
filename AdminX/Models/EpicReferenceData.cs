@@ -49,8 +49,8 @@ namespace AdminX.Models
         public int ID { get; set; }
         public string PatientID { get; set; }
         //public string ReferralID { get; set; }
-        public int ReferralID { get; set; }
-        public DateTime ReferralDate { get; set; }
+        public int? ReferralID { get; set; } //because yet more stupid fucking nulls!!!
+        public DateTime? ReferralDate { get; set; }
         public string? ReferredBy { get; set; }
         public string? ReferredTo { get; set; }
         public string? Urgency { get; set; }
