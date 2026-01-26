@@ -698,6 +698,8 @@ namespace AdminX.Controllers
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
 
+            if(notes == null) { notes = ""; }
+
             int iSuccess = _crud.SysAdminCRUD("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, locationCode, "", "");
 

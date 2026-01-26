@@ -5,13 +5,40 @@
 }
 
 @{
+    var buttonList = new List<object>();
+
+    buttonList.Add(Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.triage.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    buttonList.Add(Html.ActionLink("Triage List", "Index", "Triage", new { }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    buttonList.Add(Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new { }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target = "_blank" }));
+
+    @*
     ViewBag.HomeButton = new[]
     {
         Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.triage.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
         Html.ActionLink("Triage List", "Index", "Triage", new {  }, new { @class = "btn btn-light bg-white me-2 m-1" }),
         Html.ActionLink("EDMS (GEMR)", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEDMS", target="_blank" }),
         
-    };
+    };*@
+
+    @if (Model.canDeleteICP)
+    {        
+        var postUrl = Url.Action("ResetICP", "Triage");
+        var icpid = Model.triage.ICPID;
+        var mpi = Model.triage.MPI;
+
+
+        string icpResetForm = "<form method='post' action='" + postUrl + "' class='d-inline'>" +
+                            "<input type='hidden' name='icpid' value='" + icpid + "' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi + "' />" +
+
+                            "<button type='submit' class='btn btn-warning me-2 m-1'>Reset ICP</button>" +
+                            "</form>";
+
+        buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(icpResetForm));
+
+    }
+
+    ViewBag.HomeButton = buttonList;
 }
 
 

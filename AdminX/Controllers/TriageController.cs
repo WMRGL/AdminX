@@ -29,9 +29,11 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly LetterController _lc;
         private readonly IDocumentsDataAsync _docData;
+        private readonly IConstantsDataAsync _constantsData;
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUser, IPathwayDataAsync pathway, IReferralDataAsync referral, ITriageDataAsync triage, IDiaryDataAsync diary,
-            IRelativeDataAsync relative, IExternalClinicianDataAsync extClinician, IICPActionDataAsync icpAction, ICRUD crud, IAuditServiceAsync audit, LetterController lc, IDocumentsDataAsync doc)
+            IRelativeDataAsync relative, IExternalClinicianDataAsync extClinician, IICPActionDataAsync icpAction, ICRUD crud, IAuditServiceAsync audit, LetterController lc, IDocumentsDataAsync doc,
+            IConstantsDataAsync constantsData)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
@@ -50,6 +52,7 @@ namespace AdminX.Controllers
             _ip = new IPAddressFinder(HttpContext);
             _lc = lc;
             _docData = doc;
+            _constantsData = constantsData;
         }
 
         [Authorize]
@@ -113,6 +116,13 @@ namespace AdminX.Controllers
                 _ivm.clinicians = await _clinicianData.GetClinicianList(); 
                 _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY != null).ToList();
                 _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY.Contains("Genetics")).ToList();
+
+                string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
+
+                if (canDeleteICP.ToUpper().Contains(User.Identity.Name.ToUpper()))
+                {
+                    _ivm.canDeleteICP = true;
+                }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {
@@ -310,6 +320,37 @@ namespace AdminX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Triage-hbeTriage" });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetICP(int icpid, int mpi)
+        {
+            try
+            {
+                string login = User.Identity?.Name ?? "Unknown";
+
+
+                int success = _crud.TriageDetail(
+                     sType: "Triage",
+                     sOperation: "Reset ICP",
+                     sLogin: login,
+                     int1: icpid,
+                     int2: 0, int3: 0,
+                     string1: "", string2: "", string3: "", string4: "", string5: "", string6: ""
+                 );
+
+
+                return RedirectToAction("PatientDetails", "Patient", new
+                {
+                    id = mpi,
+                    message = "ICP has been reset",
+                    success = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MarkReferralDeleted" });
             }
         }
     }

@@ -15,6 +15,7 @@
     @if(Model.canDeleteICP)
     {
         var postUrl = Url.Action("MarkReferralDeleted", "Referral");
+        //var postUrl2 = Url.Action("ResetICP", "Referral");
         var refId = Model.referral.refid;
         var mpi = Model.patient.MPI;
 
@@ -28,7 +29,22 @@
                             "<button type='submit' class='btn btn-danger me-2 m-1'>Delete Referral</button>" +
                             "</form>";
 
+        @*
+        string icpResetForm = "<form method='post' action='" + postUrl2 + "' class='d-inline'>" +
+                            "<input type='hidden' name='refid' value='" + refId + "' />" +
+
+
+                            "<input type='hidden' name='logicaldelete' value='true' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi + "' />" +
+
+                            "<button type='submit' class='btn btn-warning me-2 m-1'>Reset ICP</button>" +
+                            "</form>";
+
+        *@
+                            
         buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(deleteForm));
+        //buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(icpResetForm));
+
     }
 
     ViewBag.HomeButton = buttonList;
@@ -532,55 +548,70 @@
 
                             @if (Model.referral.PATHWAY.Contains("General"))
                             {
-                                <div class="row mb-2 g-2">
-                                    <div class="col-md-2">Treatment pathway:</div>
-                                    <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>                                    
-                                </div>
-                                
-                                <div class="row mb-2 g-2">
-                                    <div class="col-md-2">CLICS pathway:</div>
-                                    @if (Model.referral.Clics == "CLICS")
-                                    {
-                                        <div class="col-md-2">Yes</div>
-                                    }
-                                    else
-                                    {
-                                        <div class="col-md-2">No</div>
-                                    }
-                                </div>
-
-                                <div class="row mb-2 g-2">
-                                    @if(Model.icpGeneral != null)
-                                    {
-                                        @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
+                                @if(Model.icpGeneral != null)
+                                {
+                                    <div class="row mb-2 g-2">
+                                        <div class="col-md-2">Treatment pathway:</div>
+                                        <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>                                    
+                                    </div>
+                                    
+                                    <div class="row mb-2 g-2">
+                                        <div class="col-md-2">CLICS pathway:</div>
+                                        @if (Model.referral.Clics == "CLICS")
                                         {
-                                            <div class="col-md-2">Waiting List Details:</div>
-                                            @if(Model.icpGeneral.ConsWLAdded)
+                                            <div class="col-md-2">Yes</div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-2">No</div>
+                                        }
+                                    </div>
+
+                                    <div class="row mb-2 g-2">
+                                        @if(Model.icpGeneral != null)
+                                        {
+                                            @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
                                             {
-                                                <div class="row">
-                                                    <div class="col-md-2">Consultant:</div>
-                                                    <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
-                                                </div>
-                                            }
-                                            @if(Model.icpGeneral.GCWLAdded)
-                                            {
-                                                <div class="row">
-                                                    <div class="col-md-2">GC:</div>
-                                                    <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
-                                                </div>
+                                                <div class="col-md-2">Waiting List Details:</div>
+                                                @if(Model.icpGeneral.ConsWLAdded)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-md-2">Consultant:</div>
+                                                        <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
+                                                    </div>
+                                                }
+                                                @if(Model.icpGeneral.GCWLAdded)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-md-2">GC:</div>
+                                                        <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
+                                                    </div>
+                                                }
                                             }
                                         }
-                                    }
-                                </div>
-                                
+                                    </div>
+                                }
+                                else
+                                {
+                                    <h5>Not yet triaged</h5>
+                                }
+
                             }
+                            
 
                             @if (Model.referral.PATHWAY.Contains("Cancer"))
                             {
-                                <div class="row mb-2 g-2">
-                                    <div class="col-md-2">Action on Referral Letter:</div>
-                                    <div class="col-md-10">@Model.icpCancerAction</div>
-                                </div>
+                                @if(Model.icpCancer != null)
+                                {
+                                    <div class="row mb-2 g-2">
+                                        <div class="col-md-2">Action on Referral Letter:</div>
+                                        <div class="col-md-10">@Model.icpCancerAction</div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <h5>Not yet triaged</h5>
+                                }
                             }
 
                         }

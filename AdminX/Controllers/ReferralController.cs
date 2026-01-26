@@ -6,6 +6,7 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System;
 
 
 namespace AdminX.Controllers
@@ -90,6 +91,7 @@ namespace AdminX.Controllers
                 _rvm.ClinicList = clinicList.Where(a => a.ReferralRefID == refID).Distinct().ToList();
                 _rvm.ICPDetails = await _triageData.GetICPDetailsByRefID(refID);                
                 _rvm.relatedICP = await _triageData.GetTriageDetails(_rvm.ICPDetails.ICPID); //because ICP and Triage are different, apparently
+                
                 string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
                 if(canDeleteICP.ToUpper().Contains(User.Identity.Name.ToUpper()))
@@ -380,6 +382,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MarkReferralDeleted" });
             }
         }
+               
 
         [HttpGet]
         [Authorize]

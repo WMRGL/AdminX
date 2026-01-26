@@ -27,5 +27,6 @@ namespace AdminX.ViewModels
         public bool isICPTriageStarted { get; set; }
         public int referralAgeDays { get; set; }
         public int referralAgeWeeks { get; set; }
+        public bool canDeleteICP { get; set; }
     }
 }
