@@ -45,6 +45,16 @@
                     <h5>Referral Details</h5>
                     <div class="row">
                         <div class="mb-3 col-md-3">
+                            <label class="form-label" for="refPathway">Pathway</label>
+                            <select class="form-select" id="refPathway" name="refPathway">
+                                <option value="" selected>Select</option>
+                                @foreach (var item in Model.pathways)
+                                {
+                                    <option value=@item>@item</option>
+                                }
+                            </select>
+                        </div>                        
+                        <div class="mb-3 col-md-3">
                             <label class="form-label" for="type">Type</label>
                             <select class="form-select" id="type" name="refType">
                                 @foreach (var item in Model.activities)
@@ -57,16 +67,7 @@
                             <label class="form-label" for="refDate">Date</label>
                             <input type="date" class="form-control" id="refDate" name="refDate" required />
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label class="form-label" for="refPathway">Pathway</label>
-                            <select class="form-select" id="refPathway" name="refPathway">
-                                <option value="" selected>Select</option>
-                                @foreach (var item in Model.pathways)
-                                {
-                                    <option value=@item>@item</option>
-                                }
-                            </select>
-                        </div>
+                        
                         <div class="mb-3 col-md-3">
                             <label class="form-label" for="refPathway">Sub-Pathway (if applicable)</label>
                             <select class="form-select" id="refPathway" name="subPathway">
