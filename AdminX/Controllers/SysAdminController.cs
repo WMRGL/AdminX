@@ -421,7 +421,7 @@ namespace AdminX.Controllers
 
             string clinCode = lastName + firstName.Substring(0, 1);
             
-            if(_clinicianData.GetClinicianDetails(clinCode) != null)
+            if(await _clinicianData.GetClinicianDetails(clinCode) != null)
             {
                 int i = 1;
 

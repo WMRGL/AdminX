@@ -400,7 +400,7 @@
                                         <label class="form-label" for="rdate">Referral Date</label>
                                         @if (Model.referral.RefDate != null)
                                         {
-                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate" readonly>
+                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate">
 
                                         }
                                     </div>
@@ -621,100 +621,71 @@
 
     
 
-        function updateFacility() 
+       function updateFacility() {
+        if (!refCode || !facilityDetails) return;
+
+        var facilityCodeArray = [];
+        var facilityNameArray = [];
+        var facilityAddressArray = [];
+        var facilityCityArray = [];
+        var facilityStateArray = [];
+        var facilityPostcodeArray = [];
+
+        var referrerCodes = [];
+        var facCodeArray = []; // Maps Referrer -> Facility Code
+        var facCode;
+
+        // Populate Data Arrays
+        @foreach (var item in Model.facilities)
         {
-            var facilityCodeArray = [];
-            var facilityNameArray = [];
-            var facilityAddressArray = [];
-            var facilityCityArray = [];
-            var facilityStateArray = [];
-            var facilityPostcodeArray = [];
-            var referrerCodes = [];
-            var facCodeArray = [];
-            var facCode;
-                        
+                @:facilityCodeArray.push("@item.MasterFacilityCode");
+                @:facilityNameArray.push("@item.NAME");
+                @:facilityAddressArray.push("@item.ADDRESS");
+                @:facilityCityArray.push("@item.CITY");
+                @:facilityStateArray.push("@item.STATE");
+                @:facilityPostcodeArray.push("@item.ZIP");
+        }
 
-            if(refCode.value == "@Model.patient?.GP_Code")
-            {
-                let fullDetails = "@Model.GPFacility.NAME" + ", " +
-                    "@Model.GPFacility.ADDRESS" + ", " +
-                    "@Model.GPFacility.CITY" + ", " +
-                    "@Model.GPFacility.STATE" + " " +
-                    "@Model.GPFacility.ZIP";               
+        @foreach (var item in Model.referrers)
+        {
+                @:referrerCodes.push("@item.MasterClinicianCode");
+                @:facCodeArray.push("@item.MasterFacilityCode");
+        }
 
-                facilityDetails.value = fullDetails;                               
+        // Handle GP Selection
+        if (refCode.value == "@Model.patient?.GP_Code") {
+            let fullDetails = "@Model.GPFacility.NAME" + ", " +
+                "@Model.GPFacility.ADDRESS" + ", " +
+                "@Model.GPFacility.CITY" + ", " +
+                "@Model.GPFacility.STATE" + " " +
+                "@Model.GPFacility.ZIP";
+
+            facilityDetails.value = fullDetails;
+        }
+        else {
+           
+            for (var i in referrerCodes) {
+                if (referrerCodes[i] == refCode.value) {
+                    facCode = facCodeArray[i];
+                    break;
+                }
             }
-            else
-            {
-                @foreach (var item in Model.facilities)
-                {
-                    @:facilityCodeArray.push("@item.MasterFacilityCode");
-                    @:facilityNameArray.push("@item.NAME");
-                    @:facilityAddressArray.push("@item.ADDRESS");
-                    @:facilityCityArray.push("@item.CITY");
-                    @:facilityStateArray.push("@item.STATE");
-                    @:facilityPostcodeArray.push("@item.ZIP");
-                }
 
-                @foreach (var item in Model.referrers)
-                {
-                    @:referrerCodes.push("@item.MasterClinicianCode");
-                    @:facCodeArray.push("@item.MasterFacilityCode");
-                }
-
-                for (var i in referrerCodes) 
-                {
-                    if (referrerCodes[i] == refCode.value) 
-                    {
-                        facCode = facCodeArray[i];
-                    }
-                }
-
-                facilityDetails.value = "";
-
-                for (var i in facilityCodeArray) 
-                {
-                    if (facilityCodeArray[i] == facCode) 
-                    {
-                        let fullDetails = facilityNameArray[i] + ", " +
+            facilityDetails.value = ""; 
+            for (var i in facilityCodeArray) {
+                if (facilityCodeArray[i] == facCode) {
+                    let fullDetails = facilityNameArray[i] + ", " +
                         facilityAddressArray[i] + ", " +
                         facilityCityArray[i] + ", " +
                         facilityStateArray[i] + " " +
                         facilityPostcodeArray[i];
 
-                        facilityDetails.value = fullDetails.replace("&#x27;", "'");
-                    }
+                    facilityDetails.value = fullDetails.replace("&#x27;", "'");
+                    break;
                 }
-            
-                let selectedReferrerCode = refCode.value;
-
-
-                let associatedFacilityIndex = -1;
-                for (let i = 0; i < referrerCodes.length; i++)
-                {
-                    if (referrerCodes[i] === selectedReferrerCode)
-                    {
-                        associatedFacilityIndex = i;
-                        break;
-                    }
-                }
-
-                if (associatedFacilityIndex !== -1)
-                {
-                    let fullDetails = facilityNameArray[associatedFacilityIndex] + ", " +
-                    facilityAddressArray[associatedFacilityIndex] + ", " +
-                    facilityCityArray[associatedFacilityIndex] + ", " +
-                    facilityStateArray[associatedFacilityIndex] + " " +
-                    facilityPostcodeArray[associatedFacilityIndex];
-                        
-                    facilityDetails.value = fullDetails;
-                }
-                else
-                {
-                    facilityDetails.value = "";
-                }
-            }            
+            }
         }
+    }
 
     function CalculateClockAge() 
     {
