@@ -15,92 +15,107 @@
     };
 }
 
-<div class="card flex-fill">
-    <div class="card flex-fill">
-		<h5 class="card-title text-dark mb-0">Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h5>
+<div class="card">
+    <div class="card-header">
+		<h5 class="card-title text-dark">Details for @Model.clinician.TITLE @Model.clinician.FIRST_NAME @Model.clinician.NAME (@Model.clinician.MasterClinicianCode)</h5>
 	</div>
-    <form asp-action="ClinicianDetails">
-    	
-        <div class="d-flex">
-		    <div class="flex-grow-1 ms-3">
-			    <strong>Clinician Code</strong>
-			    <div class="text-muted">
-                    <input name="clinCode" asp-for=@Model.clinician.MasterClinicianCode readonly />
+    <div class="card-body">
+        <form asp-action="ClinicianDetails">
+
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <label class="col-form-label text-sm-end">Clinician Code</label>
+                    
+                </div>
+                <div class="col-md-11">
+                    <input class="form-control" name="clinCode" asp-for=@Model.clinician.MasterClinicianCode readonly />
                 </div>
             </div>
-        </div>
-        
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Name</strong>
-            	<div class="text-muted">
-                    <select name="title" asp-for=@Model.clinician.TITLE>
+
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <label class="col-form-label text-sm-end">Name</label>
+                    
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="title" asp-for=@Model.clinician.TITLE>
                         <option value="">Select ...</option>
-                        @foreach(var item in Model.titles)
+                        @foreach (var item in Model.titles)
                         {
                             <option value=@item.Title>@item.Title</option>
                         }
                     </select>
-                    <input name="firstName" asp-for=@Model.clinician.FIRST_NAME />
-                    <input name="lastName" asp-for=@Model.clinician.NAME />                              
-    		    </div>
-            </div>
-        </div>
-        
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Speciality</strong>
-            	<div class="text-muted">
-                    <input name="speciality" asp-for=@Model.clinician.SPECIALITY />
+                   
                 </div>
-                <strong>Position</strong>
-        	    <div class="text-muted">
-                    <input name="position" asp-for=@Model.clinician.POSITION />
+                <div class="col-md-4">
+                    <input class="form-control" name="firstName" asp-for=@Model.clinician.FIRST_NAME />
+                </div>
+                <div class="col-md-4">
+                    <input class="form-control" name="lastName" asp-for=@Model.clinician.NAME />
                 </div>
             </div>
-        </div>
-		
-        				    	
-        <div class="flex-grow-1 ms-3">
-			<strong>Facility</strong>
-			<div class="text-muted">
-			    <select name="facility" asp-for=@Model.clinician.FACILITY>
-                    <option value="">Select ...</option>
-                    @foreach(var item in Model.facilities)
-                    {
-                        <option value=@item.MasterFacilityCode>@item.NAME</option>
-                    }
-                </select>
-            </div>
-        </div>
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Active</strong>
-                <div class="text-muted">
-                    <select name="isActive" asp-for=@Model.clinician.NON_ACTIVE>
-                        <option value=0>Yes</option>
-                        <option value=-1>No</option>
-                    </select>        
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <label class="col-form-label">Speciality</label>
+                </div>
+                <div class="col-md-11">
+                    <input name="speciality" class="form-control" asp-for=@Model.clinician.SPECIALITY />
                 </div>
             </div>
-        </div>
 
-        <div class="d-flex">
-            <div class="flex-grow-1 ms-3">
-                <strong>Is GP</strong>
-        		<div class="text-muted">
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <label class="col-form-label">Position</label>
+                </div>
+                <div class="col-md-11">
+                    <input name="position" class="form-control" asp-for=@Model.clinician.POSITION />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-1">
+                    <label class="col-form-label">Facility</label>
+                </div>
+                <div class="col-md-11">
                     <div class="text-muted">
-                        <select name="isGP" asp-for=@Model.clinician.Is_Gp>
+                        <select class="form-select js-choice" name="facility" asp-for=@Model.clinician.FACILITY>
+                            <option value="">Select ...</option>
+                            @foreach (var item in Model.facilities)
+                            {
+                                <option value=@item.MasterFacilityCode>@item.NAME</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Active</label>
+                    <div class="text-muted">
+                        <select class="form-select" name="isActive" asp-for=@Model.clinician.NON_ACTIVE>
+                            <option value=0>Yes</option>
+                            <option value=-1>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Is GP</label>
+                    <div class="text-muted">
+                        <select name="isGP" class="form-select" asp-for=@Model.clinician.Is_Gp>
                             <option value=0>No</option>
                             <option value=-1>Yes</option>
                         </select>
                     </div>
                 </div>
             </div>
-        </div>
-	        	
 
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+            
+
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+
+    </div>
 </div>
