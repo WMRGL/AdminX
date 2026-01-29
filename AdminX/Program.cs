@@ -3,6 +3,7 @@ using AdminX.Data;
 using AdminX.Meta;
 using APIControllers.Controllers;
 using APIControllers.Data;
+using Audit.Core;
 using Audit.Core.Providers; 
 using Audit.EntityFramework;
 using Audit.EntityFramework.Providers;
@@ -25,7 +26,7 @@ builder.Services.AddDbContext<LabContext>(options => options.UseSqlServer(config
 builder.Services.AddDbContext<APIContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DocumentContext>(options => options.UseSqlServer(config.GetConnectionString("ConString")));
 builder.Services.AddDbContext<DQContext>(options => options.UseSqlServer(config.GetConnectionString("DQLab")));
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICaseloadDataAsync, CaseloadDataAsync>();
 builder.Services.AddScoped<IStaffUserDataAsync, StaffUserDataAsync>();
 builder.Services.AddScoped<INotificationDataAsync, NotificationDataAsync>();
@@ -158,6 +159,17 @@ app.MapControllerRoute(
     //pattern: "{controller=Login}/{action=UserLogin}/{id?}");
     pattern: "{controller=Home}/{action=Index}");
 
+
+var httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+
+Audit.Core.Configuration.AddCustomAction(ActionType.OnScopeCreated, scope =>
+{
+    var context = httpContextAccessor.HttpContext;
+    if (context?.User?.Identity?.IsAuthenticated == true)
+    {
+        scope.Event.Environment.UserName = context.User.Identity.Name;
+    }
+});
 
 Audit.Core.Configuration.Setup()
     .UseConditional(c => c
