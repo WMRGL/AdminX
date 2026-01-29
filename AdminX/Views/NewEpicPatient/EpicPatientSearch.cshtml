@@ -45,6 +45,18 @@
         {
             <h3 class="card-header">No patient/family matches - <a type="button" class="btn btn-outline-primary" asp-controller="NewEpicPatient" asp-action="AssignCGUNumber" asp-route-id=@Model.patient.MPI>Generate New CGU Number</a></h3>
         }
+        <div class="card-body">
+
+            <form asp-action="AssignCGUNumber">
+                <input name="id" asp-for=@Model.patient.MPI hidden/>
+            
+                <h4>Enter CGU number to use a family not listed in the search results</h4>
+            
+                <input name="fileNumber" />
+
+                <button type="submit" class="btn btn-outline-primary">Use this file number</button>
+            </form>
+
 
             @if (Model.relativeSearchResultsList.Count() > 0)
             {

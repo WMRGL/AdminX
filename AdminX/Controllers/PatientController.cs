@@ -793,6 +793,7 @@ namespace AdminX.Controllers
             _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
             _pvm.referralsList = await _referralData.GetReferralsList(id);
             _pvm.epicReferrals = await _epicReferralReferenceData.GetEpicReferralsList(id);
+            //_pvm.epicReferrals = new List<EpicReferralReference>();
 
             return View(_pvm);
         }
