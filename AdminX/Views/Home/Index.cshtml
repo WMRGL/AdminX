@@ -59,9 +59,10 @@
 *@
 
 <div class="row">
+   @if (Model.dutyClinicianList.Count < 0)
+        {
     <div class="col-sm-3">
-        @if (Model.dutyClinicianList.Count > 0)
-        {    
+            
             <div class="col-sm-12 col-xl-12">
                 <div class="card">
                     <div class="card-body">
@@ -72,60 +73,117 @@
                     </div>
                 </div>
             </div>
-        }
+      
     </div>
-    <div class="col-sm-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col mt-0">
-                        <h5 class="card-title">New Epic Patients:</h5>
-                    </div>
-                    <div class="col-auto mt-0">
-                        <h1>@Model.newEpicPatients</h1>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="NewEpicPatient" asp-action="Index">New Patients</a></span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col mt-0">
-                        <h5 class="card-title">New Epic Referrals:</h5>
-                    </div>
-                    <div class="col-auto mt-0">
-                        <h1>@Model.newEpicReferrals</h1>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="ReferralList" asp-action="Index">New Referrals</a></span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col mt-0">
-                        <h5 class="card-title">Awaiting Triage:</h5>
-                    </div>
-                    <div class="col-auto mt-0">
-                        <h1>@Model.triageOutcomes</h1>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a></span>
-                </div>
-            </div>
-        </div>
 
-    </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">New Epic Patients:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.newEpicPatients</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="NewEpicPatient" asp-action="Index">New Patients</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">New Epic Referrals:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.newEpicReferrals</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="ReferralList" asp-action="Index">New Referrals</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">Awaiting Triage:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.triageOutcomes</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    } else
+    {
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">New Epic Patients:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.newEpicPatients</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="NewEpicPatient" asp-action="Index">New Patients</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">New Epic Referrals:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.newEpicReferrals</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="ReferralList" asp-action="Index">New Referrals</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col mt-0">
+                            <h5 class="card-title">Awaiting Triage:</h5>
+                        </div>
+                        <div class="col-auto mt-0">
+                            <h1>@Model.triageOutcomes</h1>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted"><a type="button" class="btn btn-lg btn-outline-primary" asp-controller="Triage" asp-action="Index">Awaiting Triage</a></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+
 </div>
 
 
