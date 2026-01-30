@@ -221,7 +221,6 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    // General
                     _CRUD.ReferralDetail(
                         sType: "Referral",
                         sOperation: "Update",
