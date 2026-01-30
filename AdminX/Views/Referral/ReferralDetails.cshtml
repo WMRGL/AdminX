@@ -129,12 +129,31 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="flex-grow-1 ms-3">
-                                            <strong>Pathway</strong>
-                                            <div class="text-muted">
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Pathway</strong>
+                                        <div class="text-muted">
+                                            @if (string.IsNullOrEmpty(Model.referral.PATHWAY))
+                                            {
+                                                <form asp-controller="Referral" asp-action="SetPathway" method="post" class="row g-2 align-items-center">
+                                                    <input type="hidden" name="refID" value="@Model.referral.refid" />
+                                                    <div class="col-auto">
+                                                        <select name="pathway" class="form-select form-select-sm" required>
+                                                            <option value="" disabled selected>-- Assign --</option>
+                                                            @foreach (var p in Model.pathways)
+                                                            {
+                                                                <option value="@p">@p</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                                    </div>
+                                                </form>
+                                            }
+                                            else
+                                            {
                                                 @Model.referral.PATHWAY
-                                            </div>
+                                            }
                                         </div>
                                     </td>
                                 </tr>
@@ -546,73 +565,78 @@
                         {
                             <h4>ICP Details</h4>
 
-                            @if (Model.referral.PATHWAY.Contains("General"))
+                            @if (Model.referral.PATHWAY != null)
                             {
-                                @if(Model.icpGeneral != null)
+                                @if (Model.referral.PATHWAY.Contains("General"))
                                 {
-                                    <div class="row mb-2 g-2">
-                                        <div class="col-md-2">Treatment pathway:</div>
-                                        <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>                                    
-                                    </div>
-                                    
-                                    <div class="row mb-2 g-2">
-                                        <div class="col-md-2">CLICS pathway:</div>
-                                        @if (Model.referral.Clics == "CLICS")
-                                        {
-                                            <div class="col-md-2">Yes</div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-md-2">No</div>
-                                        }
-                                    </div>
+                                    @if (Model.icpGeneral != null)
+                                    {
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">Treatment pathway:</div>
+                                            <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>
+                                        </div>
 
-                                    <div class="row mb-2 g-2">
-                                        @if(Model.icpGeneral != null)
-                                        {
-                                            @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">CLICS pathway:</div>
+                                            @if (Model.referral.Clics == "CLICS")
                                             {
-                                                <div class="col-md-2">Waiting List Details:</div>
-                                                @if(Model.icpGeneral.ConsWLAdded)
+                                                <div class="col-md-2">Yes</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-2">No</div>
+                                            }
+                                        </div>
+
+                                        <div class="row mb-2 g-2">
+                                            @if (Model.icpGeneral != null)
+                                            {
+                                                @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
                                                 {
-                                                    <div class="row">
-                                                        <div class="col-md-2">Consultant:</div>
-                                                        <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
-                                                    </div>
-                                                }
-                                                @if(Model.icpGeneral.GCWLAdded)
-                                                {
-                                                    <div class="row">
-                                                        <div class="col-md-2">GC:</div>
-                                                        <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
-                                                    </div>
+                                                    <div class="col-md-2">Waiting List Details:</div>
+                                                    @if (Model.icpGeneral.ConsWLAdded)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-2">Consultant:</div>
+                                                            <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
+                                                        </div>
+                                                    }
+                                                    @if (Model.icpGeneral.GCWLAdded)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-2">GC:</div>
+                                                            <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
+                                                        </div>
+                                                    }
                                                 }
                                             }
-                                        }
-                                    </div>
-                                }
-                                else
-                                {
-                                    <h5>Not yet triaged</h5>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h5>Not yet triaged</h5>
+                                    }
+
                                 }
 
+
+                                @if (Model.referral.PATHWAY.Contains("Cancer"))
+                                {
+                                    @if (Model.icpCancer != null)
+                                    {
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">Action on Referral Letter:</div>
+                                            <div class="col-md-10">@Model.icpCancerAction</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h5>Not yet triaged</h5>
+                                    }
+                                }
                             }
+
                             
-
-                            @if (Model.referral.PATHWAY.Contains("Cancer"))
-                            {
-                                @if(Model.icpCancer != null)
-                                {
-                                    <div class="row mb-2 g-2">
-                                        <div class="col-md-2">Action on Referral Letter:</div>
-                                        <div class="col-md-10">@Model.icpCancerAction</div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <h5>Not yet triaged</h5>
-                                }
-                            }
 
                         }
                         else
