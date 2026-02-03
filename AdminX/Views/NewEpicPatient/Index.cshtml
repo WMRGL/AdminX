@@ -17,6 +17,8 @@
                         <th>Date of Birth</th>
                         <th>NHS Number</th>
                         <th>Epic ID</th>
+                        <th>Pathway</th>
+                        <th>Referral Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,6 +37,13 @@
                             }
                             <td>@item.SOCIAL_SECURITY</td>
                             <td>@item.ExternalID</td>
+                            <td>@item.PATHWAY</td>
+                            <td data-order="@(item.REFERRAL_DATE.HasValue? item.REFERRAL_DATE.Value.ToString("yyyyMMdd") : "0")">
+                                @if (item.REFERRAL_DATE.HasValue)
+                                {
+                                    @item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>

@@ -413,11 +413,16 @@ namespace AdminX.Meta
 
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode)
         {
+            string safeFirst = (firstName ?? "").Replace("'", "''");
+            string safeLast = (lastName ?? "").Replace("'", "''");
+
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
+
             SqlCommand cmd = new SqlCommand("Insert into dbo.PatientSearches (Firstname, Lastname, DOB, PostCode, NHSNo, SearchBy, SearchDate, SearchType) values ('"
-                + firstName + "', '" + lastName + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" +
+                + safeFirst + "', '" + safeLast + "', '" + dob.ToString("yyyy-MM-dd") + "', '" + postCode + "', '" + nhsNo + "', '" + staffCode + "', '" +
                 DateTime.Today.ToString("yyyy-MM-dd") + "', 'NewPatientSearch')", conn);
+
             cmd.ExecuteNonQuery();
             conn.Close();
         }
