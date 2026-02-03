@@ -92,6 +92,46 @@
        
     </div>
 </div>
+
+@if (ViewBag.RecentPatients != null)
+{
+    <div class="card mt-4 mb-4 shadow-sm">
+        <div class="card-header ">
+            <h5 class="card-title text-dark"><i class="fas fa-history me-2"></i>Recently Viewed Patients</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-responsive table-bordered table-striped defaultTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>NHS Number</th>
+                        <th>Name</th>
+                        <th>Date of Birth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var patient in (List<Patient>)ViewBag.RecentPatients)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("PatientDetails", "Patient", new { id = patient.MPI })"> @patient.CGU_No</a>
+                            </td>
+                            <td> @patient.SOCIAL_SECURITY</td>
+                            <td> @patient.FIRSTNAME @patient.LASTNAME</td>
+
+                            <td data-order="@(patient.DOB.HasValue? patient.DOB.Value.ToString("yyyyMMdd") : "0")">
+                                @(patient.DOB.HasValue? patient.DOB.Value.ToString("dd/MM/yyyy") : "Unknown")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+           </table>
+        </div>
+    </div>
+}
+
+
+
 @*
 <div class="container card">
     <div class="row mb-5 mt-2 g-2">
@@ -191,6 +231,8 @@
 
 </div>
 *@
+
+
 <script>
     function ClearForm() 
     {

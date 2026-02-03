@@ -112,6 +112,7 @@ builder.Services.AddControllersWithViews(options =>
 {
     // Adds auditing to ALL controllers automatically
      //THIS IS CAUSING THE WHOLE THING TO THROW A FIT IN LIVE - check with Isaiah to see what's required to be added
+     // Hi Martin this buggy feature has been fixed....
     options.Filters.Add(new AuditAttribute()
     {
         IncludeHeaders = true,
@@ -173,7 +174,6 @@ Audit.Core.Configuration.AddCustomAction(ActionType.OnScopeCreated, scope =>
 
 Audit.Core.Configuration.Setup()
     .UseConditional(c => c
-        // 1. HANDLE DATABASE CHANGES (Insert/Update/Delete triggered by SaveChanges)
         .When(ev => ev is AuditEventEntityFramework,
             new EntityFrameworkDataProvider(ef => ef
                 .UseDbContext<AdminContext>()
@@ -192,26 +192,23 @@ Audit.Core.Configuration.Setup()
                 .IgnoreMatchedProperties(true)
             )
         )
-        // 2. HANDLE MVC ACTIONS (Search, View, Get triggered by Controller)
         .When(ev => ev is AuditEventMvcAction,
             new DynamicAsyncDataProvider(d => d
                 .OnInsert(async ev =>
                 {
-                    // We need to manually resolve the DbContext to save this "View" event
                     using (var scope = app.Services.CreateScope())
                     {
                         var ctx = scope.ServiceProvider.GetRequiredService<AdminContext>();
-                        var mvcData = ev.GetMvcAuditAction(); // Helper to get MVC specific data
+                        var mvcData = ev.GetMvcAuditAction(); 
 
                         var log = new AdminX.Models.AuditLog
                         {
                             UserId = ev.Environment.UserName ?? "Anonymous",
                             EventType = ev.EventType, 
                             DateTime = DateTime.UtcNow,
-                            TableName = mvcData.ControllerName, // Treat Controller as the "Table"
-                            Action = mvcData.ActionName,        // Treat Action as the "Action" (Search/Index)
+                            TableName = mvcData.ControllerName, 
+                            Action = mvcData.ActionName,        
 
-                            // Save the Search Parameters (e.g. query strings) into NewValues
                             NewValues = mvcData.ActionParameters != null
                                         ? System.Text.Json.JsonSerializer.Serialize(mvcData.ActionParameters)
                                         : null,

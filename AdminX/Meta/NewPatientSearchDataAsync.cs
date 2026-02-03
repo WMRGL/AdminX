@@ -1,7 +1,12 @@
 ﻿using AdminX.Data;
 using AdminX.Models;
-using System.Data;
+using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Data;
 
 namespace AdminX.Meta
 {
@@ -9,14 +14,17 @@ namespace AdminX.Meta
     {
         public Task<int> GetPatientSearchID(string staffCode);
         public Task<List<PatientSearchResults>> GetPatientSearchResults(int searchID);
+        public Task<List<Patient>> GetRecentlyViewedPatients(string username);
     }
     public class NewPatientSearchDataAsync : INewPatientSearchDataAsync
     {
         private readonly AdminContext _adminContext;
+        private readonly ClinicalContext _clinContext;
 
-        public NewPatientSearchDataAsync(AdminContext adminContext)
+        public NewPatientSearchDataAsync(AdminContext adminContext, ClinicalContext clinContext)
         {
             _adminContext = adminContext;
+            _clinContext = clinContext;
         }
 
         public async Task<int> GetPatientSearchID(string staffCode)
@@ -31,6 +39,60 @@ namespace AdminX.Meta
             IQueryable<PatientSearchResults> results = _adminContext.PatientSearchResults.Where(s => s.SearchID == searchID);
 
             return await results.ToListAsync();
+        }
+
+        public async Task<List<Patient>> GetRecentlyViewedPatients(string username)
+        {
+            var logs = await _adminContext.AuditLogs
+                .Where(l => l.TableName == "Patient"       
+                         && l.Action == "PatientDetails"    
+                         && l.UserId == username
+                         && !string.IsNullOrEmpty(l.NewValues))
+                .OrderByDescending(l => l.DateTime)
+                .Take(10)
+                .ToListAsync();
+
+            var recentPatients = new List<Patient>();
+            var patientIds = new List<int>();
+
+            foreach (var log in logs)
+            {
+                try
+                {
+                    var json = JObject.Parse(log.NewValues);
+                    if (json["id"] != null && int.TryParse(json["id"].ToString(), out int mpi))
+                    {
+                        if (!patientIds.Contains(mpi)) 
+                        {
+                            patientIds.Add(mpi);
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            if (!patientIds.Any()) return recentPatients;
+
+            var patients = await _clinContext.Patients
+                .Where(p => patientIds.Contains(p.MPI))
+                .Select(p => new Patient
+                {
+                    MPI = p.MPI,
+                    FIRSTNAME = p.FIRSTNAME,
+                    LASTNAME = p.LASTNAME,
+                    CGU_No = p.CGU_No,
+                    DOB = p.DOB,
+                    SOCIAL_SECURITY = p.SOCIAL_SECURITY
+                })
+                .ToListAsync();
+
+            foreach (var id in patientIds)
+            {
+                var match = patients.FirstOrDefault(p => p.MPI == id);
+                if (match != null) recentPatients.Add(match);
+            }
+
+            return recentPatients;
         }
     }
 }
