@@ -513,7 +513,7 @@ namespace AdminX.Controllers
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
                         lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
                         null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
-                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity);
+                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }                
@@ -582,8 +582,8 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
-            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile,
-            bool isInterpreterRequired, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile, string language,
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
         {
             try
             {
@@ -594,11 +594,11 @@ namespace AdminX.Controllers
                 if (nhsno != null) { nhsno = nhsno.Replace(" ", ""); }
 
                 _pvm.patient = await _patientData.GetPatientDetails(mpi);
-
+                bool interpreterBool = (isInterpreterReqd == "Yes");
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno.Replace(" ", ""),
-                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
+                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, interpreterBool,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
-                    GenderIdentity);
+                    GenderIdentity, language);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
