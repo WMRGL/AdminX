@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.patientList)
+                    @foreach (var item in Model.epicpatientList)
                     {
                         <tr>
                             <td><a type="button" class="btn btn-primary" asp-controller="NewEpicPatient" asp-action="EpicPatientSearch" asp-route-id=@item.MPI>Select Patient</a></td>
