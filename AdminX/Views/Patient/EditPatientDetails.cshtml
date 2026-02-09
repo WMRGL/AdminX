@@ -351,7 +351,7 @@
             document.getElementById("IsConsentToEmail").value = "false";
         }
     }
-    
+    @*
     function ShowGPList()
     {
         var _practice = document.getElementById("ddlGPPractice");
@@ -393,6 +393,53 @@
 
         //_gp.value = "@Model.patient.GP_Code";
     }
+    *@
+
+        async function ShowGPList()
+    {
+        var _practice = document.getElementById("ddlGPPractice");
+        var _gp = document.getElementById("ddlGP");
+        var practiceCode = _practice.value;
+
+        _gp.innerHTML = "";
+
+        if (!practiceCode) {
+            
+            return;
+        }
+
+        try {
+            var loadingOpt = document.createElement('option');
+            loadingOpt.text = "Loading GPs...";
+            _gp.appendChild(loadingOpt);
+
+          
+            const response = await fetch(`/Patient/GetGPsByPractice?practiceCode=${practiceCode}`);
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+
+            _gp.innerHTML = "";
+
+            var defaultOpt = document.createElement('option');
+            defaultOpt.value = "";
+            defaultOpt.text = "Select...";
+            _gp.appendChild(defaultOpt);
+
+            data.forEach(item => {
+                var opt = document.createElement('option');
+                opt.value = item.value;
+                opt.text = item.text;
+                _gp.appendChild(opt);
+            });
+
+        } catch (error) {
+            console.error('Error fetching GPs:', error);
+            _gp.innerHTML = "<option>Error loading list</option>";
+        }
+    }
+
 
     function GetCountyFromCity()
     {

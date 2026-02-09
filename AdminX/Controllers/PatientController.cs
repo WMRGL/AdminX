@@ -545,6 +545,22 @@ namespace AdminX.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetGPsByPractice(string practiceCode)
+        {
+            
+            var gpList = await _gpData.GetGPsByPracticeCode(practiceCode);
+
+            var result = gpList.Select(x => new
+            {
+                Value = x.MasterClinicianCode,
+                Text = $"{x.TITLE} {x.FIRST_NAME} {x.NAME} ({x.MasterClinicianCode})"
+            });
+
+            return Json(result);
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> EditPatientDetails(int mpi, string? message, bool? success)
