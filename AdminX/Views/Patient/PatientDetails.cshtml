@@ -657,15 +657,17 @@
                                             <div class="flex-grow-1 ms-3">
                                                 @if (Model.patient.DECEASED == -1)
                                                 {
-                                                    <strong>Date of Death:</strong>
-                                                    <div class="text-muted">
-                                                        @if (Model.patient.DECEASED_DATE != null)
-                                                        {
-                                                            @Model.patient.DECEASED_DATE
-                                                        }
-                                                        <br />
-                                                        <strong>Died Age:</strong> @Model.diedage
+                                                    <div class="deceased-info text-danger">
+                                                        <strong>Date of Death:</strong>
+                                                        <div class="text-muted">
+                                                            @if (Model.patient.DECEASED_DATE != null)
+                                                            {
+                                                                <span class="text-danger">@Model.patient.DECEASED_DATE.Value.ToString("dd/MM/yyyy")</span>
 
+                                                            }
+                                                            <br />
+                                                            <strong class="text-danger">Died Age:</strong> <span class="text-danger">@Model.diedage</span>
+                                                        </div>
                                                     </div>
                                                 }
                                                 else
