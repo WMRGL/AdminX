@@ -73,7 +73,7 @@ namespace AdminX.Controllers
 
                 List<PatientSearchResults> searchResults = await _searchData.GetPatientSearchResults(searchID);
 
-                _epvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").Where(p => p.MPI != id).ToList();
+                _epvm.patientSearchResultsList = searchResults.Where(r => r.ResultSource == "Patient").Where(p => p.MPI != id && p.CGUNo != ".").ToList();
                 _epvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
                 _epvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
 
@@ -102,7 +102,16 @@ namespace AdminX.Controllers
                 }
                 else
                 {
-                    string pedno = fileNumber.Substring(0, fileNumber.IndexOf("."));
+                    string pedno = "";
+
+                    if (fileNumber.Contains("."))
+                    {
+                        pedno = fileNumber.Substring(0, fileNumber.IndexOf("."));
+                    }
+                    else
+                    {
+                        pedno = fileNumber;
+                    }
 
                     List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(pedno); //get the next CGU point number
                     int patientNumber = patList.Count();
