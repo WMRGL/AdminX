@@ -6,6 +6,7 @@ namespace AdminX.ViewModels
     public class NewEpicPatientVM
     {
         public List<Patient> patientList { get; set; }
+        public List<EpicPatientDTO> epicpatientList { get; set; }
         public List<PatientSearchResults> patientSearchResultsList { get; set; }
         public List<PatientSearchResults> relativeSearchResultsList { get; set; }
         public List<PatientSearchResults> pedigreeSearchResultsList { get; set; }

@@ -1,4 +1,5 @@
-﻿using AdminX.Meta;
+﻿using AdminX.Data;
+using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
@@ -6,7 +7,9 @@ using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using PdfSharp.Snippets.Drawing;
 using System;
+using System.Numerics;
 
 
 namespace AdminX.Controllers
@@ -84,7 +87,9 @@ namespace AdminX.Controllers
 
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Referral", "RefID=" + refID.ToString(), _ip.GetIPAddress());
-                _rvm.pathways = new List<string> { "Cancer", "General" };
+                _rvm.pathways = new List<string>();
+                List<Pathway> pathways = await _pathwayData.GetPathwayList();
+                foreach (var item in pathways) { _rvm.pathways.Add(item.CGU_Pathway.Trim()); }
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 var clinicList = await _clinicData.GetClinicByPatientsList(_rvm.referral.MPI);
@@ -167,6 +172,94 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> SetPathway(int refID, string pathway)
+        {
+            try
+            {
+                var r = await _referralData.GetReferralDetails(refID);
+                string login = User.Identity?.Name ?? "Unknown";
+
+           
+                if (pathway.Trim() == "Cancer")
+                {
+                    _CRUD.ReferralDetail(
+                         sType: "Referral",
+                         sOperation: "Update",
+                         sLogin: login,
+                         int1: refID,
+                         string1: r.RefType,
+                         string2: r.INDICATION,
+                         text: r.REASON_FOR_REFERRAL,
+                         string3: pathway, 
+                         string4: r.UBRN,
+                         string5: r.Pathway_Subset,
+                         string6: r.PATIENT_TYPE_CODE,
+                         string7: r.GC_CODE,
+                         string8: r.AdminContact,
+                         string9: r.ReferringClinician, 
+                         string10: r.PREGNANCY,
+                         string11: r.RefClass,
+                         string12: r.COMPLETE,
+                         dDate1: r.ClockStartDate,
+                         dDate2: r.ClockStopDate,
+                         string13: r.Status_Admin,
+                         string14: r.RefReason, 
+                         int2: r.RefFHF,
+                         int3: r.RefReasonAff,
+                         int4: r.OthReason1Aff,
+                         int5: r.OthReason2Aff,
+                         int6: r.OthReason3Aff,
+                         int7: r.OthReason4Aff,
+                         int8: r.RefSympt,
+                         string15: r.OthReason1,
+                         string16: r.OthReason2,
+                         string17: r.OthReason3,
+                         string18: r.OthReason4
+                     );
+                }
+                else
+                {
+                    _CRUD.ReferralDetail(
+                        sType: "Referral",
+                        sOperation: "Update",
+                        sLogin: login,
+                        int1: r.refid,
+                        int2: null,
+                        int3: null,
+                        int4: null,
+                        int5: null,
+                        int6: null,
+                        int7: null,
+                        int8: null,
+                        string1: r.RefType,
+                        string2: r.INDICATION,
+                        text: r.REASON_FOR_REFERRAL,
+                        string3: pathway,
+                        string4: r.UBRN,
+                        string5: r.Pathway_Subset,
+                        string6: r.PATIENT_TYPE_CODE,
+                        string7: r.GC_CODE,
+                        string8: r.AdminContact,
+                        string9: r.ReferrerCode,
+                        string10: r.PREGNANCY,
+                        string11: r.RefClass,
+                        string12: r.COMPLETE,
+                        dDate1: r.ClockStartDate,
+                        dDate2: r.ClockStopDate,
+                        string13: r.Status_Admin
+                   );
+                }
+
+                return RedirectToAction("ReferralDetails", new { refID = refID });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "SetPathway" });
+            }
+        }
+
 
         [HttpGet]
         [Authorize]
@@ -221,7 +314,10 @@ namespace AdminX.Controllers
                     }
                     _rvm.clockAgeWeeks = (int)Math.Floor((double)_rvm.clockAgeDays / 7);
                 }
-                _rvm.referral.PATHWAY = _rvm.referral.PATHWAY.Trim(); //because it has stupid trailing spaces
+                if (_rvm.referral.PATHWAY != null)
+                {
+                    _rvm.referral.PATHWAY = _rvm.referral.PATHWAY.Trim(); //because it has stupid trailing spaces
+                }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
             {

@@ -47,7 +47,7 @@ namespace AdminX.Controllers
             {
                 string staffCode = await _staffUserData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Epic Patients", "", _ip.GetIPAddress());
-                _epvm.patientList = await _patientData.GetPatientsWithoutCGUNumbers();
+                _epvm.epicpatientList = await _patientData.GetEpicPatientsWithReferralDetails();
 
                 return View(_epvm);
             }

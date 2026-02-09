@@ -86,7 +86,11 @@
                             <div class=" d-none d-xxl-table-cell">
                                 <strong>Action</strong>
                                 <div class="text-muted">
-                                    @Model.diary.DiaryAction - @Model.defaultAction.Action
+                                    @if (Model.diary.DiaryAction != null)
+                                    {
+                                      @Model.diary.DiaryAction <span>-</span> @Model.defaultAction.Action
+
+                                    }
                                 </div>
                                 
 							</div>

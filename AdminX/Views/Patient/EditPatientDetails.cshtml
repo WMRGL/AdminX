@@ -110,8 +110,8 @@
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Interpreter required</label>
                         <select class="form-select" name="isInterpreterReqd">
-                            <option value="false">No</option>
-                            <option value="true">Yes</option>
+                            <option value="No" selected="@(Model.patient.IsInterpreterReqd == "No" ? "selected" : null)">No</option>
+                            <option value="Yes" selected="@(Model.patient.IsInterpreterReqd == "Yes" ? "selected" : null)">Yes</option>
                         </select>
 
                     </div>

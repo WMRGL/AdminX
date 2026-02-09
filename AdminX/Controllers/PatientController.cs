@@ -409,19 +409,28 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";                
 
-                if (fileNumber == null || fileNumber == "")
+               if (string.IsNullOrEmpty(fileNumber))
                 {
                     cguNumber = await _pedigreeData.GetNextPedigreeNumber() + ".0";
                 }
                 else
                 {
-                    List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
-                    int patientNumber = patList.Count();
+                    //List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
+                    //int patientNumber = patList.Count();
 
-                    if (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    int patientNumber = 0;
+
+                    while (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) != null)
                     {
-                        cguNumber = fileNumber + "." + patientNumber.ToString();
+                        patientNumber++;
                     }
+
+                    cguNumber = fileNumber + "." + patientNumber.ToString();
+
+                    //if (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
+                    //{
+                    //    cguNumber = fileNumber + "." + patientNumber.ToString();
+                    //}
                 }                
 
                 _pvm.cguNumber = cguNumber;
@@ -513,7 +522,7 @@ namespace AdminX.Controllers
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
                         lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
                         null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
-                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity);
+                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }                
@@ -582,8 +591,8 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
-            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile,
-            bool isInterpreterRequired, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile, string language,
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
         {
             try
             {
@@ -594,11 +603,11 @@ namespace AdminX.Controllers
                 if (nhsno != null) { nhsno = nhsno.Replace(" ", ""); }
 
                 _pvm.patient = await _patientData.GetPatientDetails(mpi);
-
+                bool interpreterBool = (isInterpreterReqd == "Yes");
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno.Replace(" ", ""),
-                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, isInterpreterRequired,
+                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, interpreterBool,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
-                    GenderIdentity);
+                    GenderIdentity, language);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
@@ -665,58 +674,51 @@ namespace AdminX.Controllers
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-                List<Patient> patList = await _patientSearchData.GetPatientsListByPedNo(newFileNumber); //get the next CGU point number
+                int patientNumber = 0;
 
-                int patientNumber = patList.Count();
+                while (await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString()) != null)
+                {
+                    patientNumber++;
+                }
 
-                string cguNumber = "";
+
                 string sMessage = "";
                 bool isSuccess = false;
                 int sourceDCTM = 0;
                 int destDCTM = 0;
 
-                Patient patToMergeTo = await _patientData.GetPatientDetailsByCGUNo(newFileNumber + "." + patientNumber.ToString());
+                var pat = await _patientData.GetPatientDetails(mpi);
+                sourceDCTM = pat.Patient_Dctm_Sts;
 
-                if (patToMergeTo == null)
+                var destPed = await _pedigreeData.GetPedigree(newFileNumber);
+
+                if (destPed != null)
                 {
-                    var pat = await _patientData.GetPatientDetails(mpi);
-                    sourceDCTM = pat.Patient_Dctm_Sts;
+                   
+                    destDCTM = destPed.File_Dctm_Sts;
+                }
 
-                    var destPed = await _pedigreeData.GetPedigree(newFileNumber);
+                if (sourceDCTM <= destDCTM && destPed != null)
+                {
+                    int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
 
-                    if (destPed != null)
-                    {
-                        var ped = await _pedigreeData.GetPedigree(newFileNumber);
-                        destDCTM = ped.File_Dctm_Sts;
-                    }
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
 
-                    if (sourceDCTM <= destDCTM && _pedigreeData.GetPedigree(newFileNumber) != null)
-                    {
-                        int success = _crud.CallStoredProcedure("Patient", "ChangeFileNumber", mpi, patientNumber, destDCTM, newFileNumber, "", "", "", User.Identity.Name);
-
-                        if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-ChangeCGUNo(SQL)" }); }
-
-                        sMessage = "CGU number updated, please check the new file for integrity.";
-                        isSuccess = true;
-                    }
-                    else
-                    {
-                        sMessage = "Destination file is not electronic.";
-                        isSuccess = false;
-                    }
+                    sMessage = "CGU number updated, please check the new file for integrity.";
+                    isSuccess = true;
                 }
                 else
                 {
-                    sMessage = "Destination file number unavailable, please check the integrity of the file you are merging into.";
+                    sMessage = "Destination file is not electronic or does not exist.";
+                    isSuccess = false;
                 }
 
                 return RedirectToAction("PatientDetails", new { id = mpi, message = sMessage, success = isSuccess });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditPatientDetails" });
             }
-
         }
 
         [Authorize]
