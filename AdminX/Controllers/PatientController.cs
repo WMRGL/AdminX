@@ -135,6 +135,8 @@ namespace AdminX.Controllers
 
                         if (_pvm.epicReferralStaging.Count > 0)
                         {
+                            _pvm.epicReferralStaging = _pvm.epicReferralStaging.OrderBy(r => r.UpdateSts).ToList();
+
                             foreach (var item in _pvm.epicReferralStaging)
                             {
                                 var updateStatus = item.UpdateSts;
