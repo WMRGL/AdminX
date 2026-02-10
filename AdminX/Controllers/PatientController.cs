@@ -487,10 +487,16 @@ namespace AdminX.Controllers
             string language, bool isInterpreterReqd, bool isConsentToEmail, string postcode, string address1, string address2, string address3, string address4, string areaCode,
             string gpCode, string gpFacilityCode, string email, string prevName, string maidenName, string preferredName, string ethnicCode, string sex,
             string middleName, string tel, string workTel, string mobile, string cguNumber, DateTime? startDate, DateTime? endDate, string? SALUTATION,
-            string GenderIdentity)
+            string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
         {
             try
             {
+                string deceased = Request.Form["DECEASED"];
+                bool deseasedStatus = false;
+                if (deceased == "1")
+                {
+                    deseasedStatus = true;
+                }
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
@@ -522,9 +528,9 @@ namespace AdminX.Controllers
                     if (middleName != null) { middleName = textInfo.ToTitleCase(middleName); }
 
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
-                        lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, 
-                        null, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
-                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language);
+                        lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob,
+                        DECEASED_DATE, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
+                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language, DECEASED);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }                
@@ -609,11 +615,19 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
-            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string mobile, string language,
-            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string GenderIdentity)
+            string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string PtTelMobile, string language,
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
         {
             try
             {
+
+                string deceased = Request.Form["DECEASED"];
+                bool deseasedStatus = false;
+                if (deceased == "1")
+                {
+                    deseasedStatus = true;
+                }
+
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
@@ -623,9 +637,9 @@ namespace AdminX.Controllers
                 _pvm.patient = await _patientData.GetPatientDetails(mpi);
                 bool interpreterBool = (isInterpreterReqd == "Yes");
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno.Replace(" ", ""),
-                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, null, maidenName, interpreterBool,
-                    isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, mobile, areaCode, null, SALUTATION,
-                    GenderIdentity, language);
+                    postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, DECEASED_DATE, maidenName, interpreterBool,
+                    isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, PtTelMobile, areaCode, null, SALUTATION,
+                    GenderIdentity, language, deseasedStatus);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
