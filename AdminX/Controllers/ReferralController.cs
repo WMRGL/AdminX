@@ -353,6 +353,11 @@ namespace AdminX.Controllers
             {
                 string login = User.Identity?.Name ?? "Unknown";
 
+                if(UBRN != null)
+                {
+                    UBRN = UBRN.Replace(" ", "");
+                }
+
                 if (PATHWAY.Trim() == "Cancer")
                 {
                     int success = _CRUD.ReferralDetail(
