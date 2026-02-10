@@ -99,8 +99,20 @@
                         <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.dob>
                     </div>
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="dob">Date of death (if applicable)</label>
-                        <input type="date" name="dod" class="form-control" id="dob" placeholder="Date of death (if applicable)">
+                        <label class="form-label" for="dod">Date of death (if applicable)</label>
+                        <input type="date" name="DECEASED_DATE" class="form-control" id="dod"
+                               placeholder="Date of death (if applicable)"
+                               asp-for="@Model.patient.DECEASED_DATE"
+                               onchange="CheckDeceasedStatus()">
+
+                        <div id="deceasedContainer" hidden>
+                            <label class="form-label" for="chkDeceased">Confirm Deceased</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="chkDeceased" name="DECEASED" value="1"
+                                       @(Model.patient.DECEASED == 1 ? "checked" : "") />
+                                <label class="form-check-label" for="chkDeceased">Patient is Deceased</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="nhsno">NHS Number</label>
@@ -434,6 +446,33 @@
             }
         }
     }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            CheckDeceasedStatus();
+        });
+
+        function CheckDeceasedStatus() {
+            var dodInput = document.getElementById("dod");
+            var deceasedContainer = document.getElementById("deceasedContainer");
+            var deceasedCheckbox = document.getElementById("chkDeceased");
+
+            if (dodInput.value) {
+
+                deceasedContainer.hidden = false;
+
+
+                deceasedCheckbox.setAttribute("required", "");
+
+
+                deceasedCheckbox.checked = true;
+            } else {
+                deceasedContainer.hidden = true;
+
+                deceasedCheckbox.removeAttribute("required");
+
+                deceasedCheckbox.checked = false;
+            }
+        }
 
 
 </script>
