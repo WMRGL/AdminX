@@ -102,14 +102,14 @@
                         <label class="form-label" for="dod">Date of death (if applicable)</label>
                         <input type="date" name="DECEASED_DATE" class="form-control" id="dod"
                                placeholder="Date of death (if applicable)"
-                               asp-for="@Model.patient.DECEASED_DATE"
+                               
                                onchange="CheckDeceasedStatus()">
 
                         <div id="deceasedContainer" hidden>
                             <label class="form-label" for="chkDeceased">Confirm Deceased</label>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="chkDeceased" name="DECEASED" value="1"
-                                       @(Model.patient.DECEASED == 1 ? "checked" : "") />
+                                      />
                                 <label class="form-check-label" for="chkDeceased">Patient is Deceased</label>
                             </div>
                         </div>
@@ -447,32 +447,32 @@
         }
     }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            CheckDeceasedStatus();
-        });
+    document.addEventListener('DOMContentLoaded', function() {
+        CheckDeceasedStatus();
+    });
 
-        function CheckDeceasedStatus() {
-            var dodInput = document.getElementById("dod");
-            var deceasedContainer = document.getElementById("deceasedContainer");
-            var deceasedCheckbox = document.getElementById("chkDeceased");
+    function CheckDeceasedStatus() {
+        var dodInput = document.getElementById("dod");
+        var deceasedContainer = document.getElementById("deceasedContainer");
+        var deceasedCheckbox = document.getElementById("chkDeceased");
 
-            if (dodInput.value) {
+        if (dodInput.value) {
+        
+            deceasedContainer.hidden = false;
 
-                deceasedContainer.hidden = false;
+          
+            deceasedCheckbox.setAttribute("required", "");
 
+           
+            deceasedCheckbox.checked = true;
+        } else {
+            deceasedContainer.hidden = true;
 
-                deceasedCheckbox.setAttribute("required", "");
+            deceasedCheckbox.removeAttribute("required");
 
-
-                deceasedCheckbox.checked = true;
-            } else {
-                deceasedContainer.hidden = true;
-
-                deceasedCheckbox.removeAttribute("required");
-
-                deceasedCheckbox.checked = false;
-            }
+            deceasedCheckbox.checked = false;
         }
+    }
 
 
 </script>

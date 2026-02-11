@@ -530,7 +530,7 @@ namespace AdminX.Controllers
                     int success = _crud.PatientDetail("Patient", "Create", User.Identity.Name, 0, title, firstname, "", 
                         lastname, nhsno, postcode, gpCode, address1, address2, address3, address4, email, prevName, dob,
                         DECEASED_DATE, maidenName, isInterpreterReqd, isConsentToEmail, preferredName, ethnicCode, sex, middleName, 
-                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language, DECEASED);
+                        tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language, deseasedStatus);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
                 }                
@@ -563,7 +563,7 @@ namespace AdminX.Controllers
             var result = gpList.Select(x => new
             {
                 Value = x.MasterClinicianCode,
-                Text = $"{x.TITLE} {x.FIRST_NAME} {x.NAME} ({x.MasterClinicianCode})"
+                Text = $"{x.TITLE} {x.FIRST_NAME} {x.LAST_NAME} ({x.MasterClinicianCode})"
             });
 
             return Json(result);
