@@ -91,7 +91,7 @@
 
         <div class="row mb-3">
             <div class="mb-3 col-md-4">
-            <label class="form-label" for="referrerCode">Referrer Code</label>
+                    <label class="form-label" for="referrerCode">Referrer Code</label> <button class="btn btn-outline-primary" type="button" onclick="SetToGP()">Use GP</button>
             <select id="referrerCode" name="referrerCode" class="form-select js-choice">
                 <option selected="">@Model.referral.ReferrerCode</option>
                 @foreach (var item in Model.referrers)
@@ -202,5 +202,16 @@
 
         return 1;
     }   
+
+    function SetToGP()
+    {
+        var _referrerList = document.getElementById("referrerCode");
+        
+        const newCode = "@Model.patient.GP_Code";
+
+        _referrerList.value = newCode;
+
+        _referrerList.choices.setChoiceByValue(newCode);
+    }
 
 </script>
