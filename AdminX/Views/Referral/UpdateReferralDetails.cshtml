@@ -130,6 +130,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="referrerCodeC">Referrer Code</label>
+                                        <button type="button" class="btn btn-outline-primary" onclick="SetToGP('cancer')">Use GP</button>
                                         <select id="referrerCodeC" name="ReferrerCode" class="form-select js-choice">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
@@ -481,6 +482,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="referrerCodeG">Referrer Code</label>
+                                        <button class="btn btn-outline-primary" type="button" onclick="SetToGP('general')">Use GP</button>
                                         <select id="referrerCodeG" name="ReferrerCode" class="form-select js-choice">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
@@ -722,10 +724,34 @@
         clockAgeTotal.value = Math.floor(clockAgeDays) + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
     }
 
+    function SetToGP(pathway)
+    {
+        var _referrerList;        
+
+        if(pathway == "cancer")
+        {
+            _referrerList = document.getElementById("referrerCodeC");            
+        }
+        else
+        {
+            _referrerList = document.getElementById("referrerCodeG");           
+        }
+
+        const newCode = "@Model.patient.GP_Code";               
+
+        _referrerList.value = newCode;
+                
+        _referrerList.choices.setChoiceByValue(newCode);
+        updateFacility();
+
+    }
+        
+
     refCode.addEventListener("change", updateFacility);
 
     updateFacility();
     CalculateClockAge();
+    
 </script>
 
 @section Scripts {

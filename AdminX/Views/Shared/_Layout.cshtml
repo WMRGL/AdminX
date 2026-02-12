@@ -206,7 +206,7 @@
             // choice js
             const elements = document.querySelectorAll('.js-choice');
             elements.forEach(function(element) {
-            new Choices(element);
+            element.choices = new Choices(element, {searchEnabled: true, shouldSort: false});
           });
 
           // toastr js
