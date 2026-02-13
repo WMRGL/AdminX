@@ -90,31 +90,30 @@
                         <input type="text" name="preferredName" class="form-control" id="preferredName" placeholder="Preferred Name" asp-for=@Model.patient.PtAKA>
                     </div>
                     <div class="mb-3 col-md-3">
+                        <label class="form-label" for="previousName">Previous Name</label>
+                        <input type="text" name="prevName" class="form-control" id="previousName" placeholder="Previous Name" asp-for=@Model.patient.PREVIOUS_NAME>
+                    </div>
+                    <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Date of Birth</label>
                         <input type="date" name="dob" class="form-control" id="dob" placeholder="Date of Birth" asp-for=@Model.patient.DOB>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dod">Date of death (if applicable)</label>
-                        <input type="date" name="DECEASED_DATE" class="form-control" id="dod"
-                               placeholder="Date of death (if applicable)"
-                               asp-for="@Model.patient.DECEASED_DATE"
-                               onchange="CheckDeceasedStatus()">
-
-                    <div  id="deceasedContainer" hidden>
-                        <label class="form-label" for="chkDeceased">Confirm Deceased</label>
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="chkDeceased" name="DECEASED" value="1"
-                                   @(Model.patient.DECEASED == 1 ? "checked" : "") />
-                            <label class="form-check-label" for="chkDeceased">Patient is Deceased</label>
+                        <input type="date" name="DECEASED_DATE" class="form-control" id="dod" placeholder="Date of death (if applicable)" asp-for="@Model.patient.DECEASED_DATE" onchange="CheckDeceasedStatus()">
+                        <div  id="deceasedContainer" hidden>
+                            <label class="form-label" for="chkDeceased">Confirm Deceased</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="chkDeceased" name="DECEASED" value="1" @(Model.patient.DECEASED == 1 ? "checked" : "") />
+                                <label class="form-check-label" for="chkDeceased">Patient is Deceased</label>
+                            </div>
                         </div>
-                    </div>
-                    </div>
+                    </div>                    
+                </div>
+                <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="nhsno">NHS Number</label>
                         <input type="text" name="nhsno" class="form-control" id="nhsno" asp-for=@Model.patient.SOCIAL_SECURITY>
                     </div>
-                </div>
-                <div class="row">
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="language">Primary Language (if not English)</label>
                         <input type="text" name="language" class="form-control" id="language" asp-for=@Model.patient.PrimaryLanguage>
@@ -137,17 +136,7 @@
                                 <option value=@item.EthnicCode>@item.Ethnic</option>
                             }
                         </select>
-                    </div>
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label" for="sex">Sex</label>
-                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
-                            <option value="" selected>Select...</option>
-                            @foreach (var item in Model.genders)
-                            {
-                                <option value=@item.Sex>@item.Sex</option>
-                            }
-                        </select>
-                    </div>
+                    </div>                    
                 </div>
                 <div class="row">
                     <div class="mb-3 col-md-3">
@@ -163,6 +152,16 @@
                     <div class="mb-3 col-md-3" >
                         <label class="form-label" for="ddlGPPractice">Salutation</label>
                         <input type="text" name="SALUTATION" class="form-control" id="SALUTATION" placeholder="Salutation" asp-for=@Model.patient.SALUTATION>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="sex">Sex</label>
+                        <select class="form-select" name="sex" asp-for=@Model.patient.SEX>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.genders)
+                            {
+                                <option value=@item.Sex>@item.Sex</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="ethnic">Gender Identity</label>
