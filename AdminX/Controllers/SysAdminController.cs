@@ -419,7 +419,14 @@ namespace AdminX.Controllers
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
-            string clinCode = lastName + firstName.Substring(0, 1);
+            string clinCode = lastName;
+
+            if(clinCode.Length >= 7)
+            {
+                clinCode = clinCode.Substring(0, 6);
+            }
+
+            clinCode = clinCode + firstName.Substring(0, 1);
             
             if(await _clinicianData.GetClinicianDetails(clinCode) != null)
             {
