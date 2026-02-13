@@ -37,6 +37,25 @@ namespace AdminX.Meta
         public async Task<List<PatientSearchResults>> GetPatientSearchResults(int searchID)
         {
             IQueryable<PatientSearchResults> results = _adminContext.PatientSearchResults.Where(s => s.SearchID == searchID);
+            var mpis = results.Where(r => r.MPI.HasValue).Select(r => r.MPI.Value).ToList();
+
+            if (mpis.Any())
+            {
+                var addresses = _clinContext.Patients.Where(p => mpis.Contains(p.MPI))
+                    .Select(p => new { p.MPI, p.ADDRESS1, p.ADDRESS2, p.ADDRESS3, p.ADDRESS4 }).ToList();
+
+                foreach (var result in results)
+                {
+                    if (result.MPI.HasValue)
+                    {
+                        var match = addresses.FirstOrDefault(a => a.MPI == result.MPI.Value);
+                        if (match != null)
+                        {
+                            result.Address = match.ADDRESS1;
+                        }
+                    }
+                }
+            }
 
             return await results.ToListAsync();
         }

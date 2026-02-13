@@ -72,8 +72,9 @@
 
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="doSearch">Search</button>
-                <a type="button" class="btn btn-dark float-end" asp-controller="PatientSearch" asp-action="NewPatientSearch">Clear</a>
+                <a type="button" class="btn btn-dark " asp-controller="PatientSearch" asp-action="NewPatientSearch">Clear</a>
+                <button type="submit" class="btn btn-primary float-end" id="doSearch">Search</button>
+
             </form>
         </div>
     </div>
@@ -94,6 +95,7 @@
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Date of Birth</th>
+                                <th>Address</th>
                                 <th>PostCode</th>
                                 <th>NHS Number</th>
                             </tr>
@@ -113,6 +115,7 @@
                                     {
                                         <td></td>
                                     }
+                                    <td>@item.Address</td>
                                     <td>@item.PostCode</td>
                                     <td>@item.NHSNo</td>
                                 </tr>
@@ -140,6 +143,7 @@
                                 <th>First Name</th>
                                 <th>Last Name</th>
                                 <th>Date of Birth</th>
+                                <th>Address</th>
                                 <th>PostCode</th>
                                 <th>NHS Number</th>
                             </tr>
@@ -159,6 +163,7 @@
                                     {
                                         <td></td>
                                     }
+                                    <td>@item.Address</td>
                                     <td>@item.PostCode</td>
                                     <td>@item.NHSNo</td>
                                 </tr>

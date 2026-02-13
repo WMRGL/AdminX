@@ -38,6 +38,9 @@ namespace AdminX.Models
         public string ResultSource { get; set; }
         public int? RelsID { get; set; }
         public int? InternalIndividualID { get; set; }
+        [NotMapped]
+        public string? Address { get; set; }
+
     }
 
     [Table("View_DictatedLettersReport_Clinicians", Schema = "dbo")]
