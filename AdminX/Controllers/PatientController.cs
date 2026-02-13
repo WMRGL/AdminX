@@ -322,42 +322,42 @@ namespace AdminX.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PatientDetails(bool? DECEASED, DateTime? DECEASED_DATE, int mpi, bool? isSuccess, string? sMessage)
-        {
-            string deceased = Request.Form["DECEASED"];
-            string interpreterRequired = Request.Form["IsInterpreterReqd"];
-            string language = Request.Form["LanguageName"];
-            bool deseasedStatus = false;
-            bool interpreter = false;
-            if (deceased == "on")
-            {
-                deseasedStatus = true;
-            }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> PatientDetails(bool? DECEASED, DateTime? DECEASED_DATE, int mpi, bool? isSuccess, string? sMessage)
+        //{
+        //    string deceased = Request.Form["DECEASED"];
+        //    string interpreterRequired = Request.Form["IsInterpreterReqd"];
+        //    string language = Request.Form["LanguageName"];
+        //    bool deseasedStatus = false;
+        //    bool interpreter = false;
+        //    if (deceased == "on")
+        //    {
+        //        deseasedStatus = true;
+        //    }
 
-            if (interpreterRequired == "on")
-            {
-                interpreter = true;
-            }
+        //    if (interpreterRequired == "on")
+        //    {
+        //        interpreter = true;
+        //    }
 
-            if (language == null)
-            {
-                _pvm.patient = await _patientData.GetPatientDetails(mpi);
-                language = _pvm.patient.PrimaryLanguage;
-            }
+        //    if (language == null)
+        //    {
+        //        _pvm.patient = await _patientData.GetPatientDetails(mpi);
+        //        language = _pvm.patient.PrimaryLanguage;
+        //    }
 
-            _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
-            string staffCode = _pvm.staffMember.STAFF_CODE;
-            _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
+        //    _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
+        //    string staffCode = _pvm.staffMember.STAFF_CODE;
+        //    _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");
 
-            int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", language, "", "", User.Identity.Name, DECEASED_DATE, null, deseasedStatus, interpreter);
+        //    int success = _crud.CallStoredProcedure("Patient", "Update", mpi, 0, 0, "", language, "", "", User.Identity.Name, DECEASED_DATE, null, deseasedStatus, interpreter);
 
-            if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
+        //    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "PatientDetails-edit(SQL)" }); }
 
-            TempData["SuccessMessage"] = "Patient details updated successfully";
-            return RedirectToAction("PatientDetails", new { id = mpi });
-        }
+        //    TempData["SuccessMessage"] = "Patient details updated successfully";
+        //    return RedirectToAction("PatientDetails", new { id = mpi });
+        //}
 
         public static string CalculateAge(DateTime dob)
         {
@@ -594,9 +594,12 @@ namespace AdminX.Controllers
                 _pvm.genders = await _genderData.GetGenderList();
                 _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();
                 var ptareaCodes = await _areaNamesData.GetAreaNames();
+                if (ptareaCodes is not null && _pvm.patient.PtAreaName != null)
+                {
+                    int areaID = ptareaCodes.First(a => a.AreaName == _pvm.patient.PtAreaName).AreaID;
+                    _pvm.selectedAreaID = areaID;
 
-                int areaID = ptareaCodes.First(a => a.AreaName == _pvm.patient.PtAreaName).AreaID;
-                _pvm.selectedAreaID = areaID;
+                }
 
                 if (success.HasValue)
                 {
