@@ -3,7 +3,7 @@
     ViewData["Title"] = "Admin-X - Select Family File";
 }
 
-<div class="container">
+<div class="">
     <div class="row mb-5 g-5">
         <h1>Select Family File</h1>
     </div>
@@ -11,75 +11,90 @@
     
 
     <div class="row mb-5 g-5">
-        <form asp-action="SelectFile">
-            <div id="metadata" hidden>
-                <input name="firstname" asp-for=@Model.forenameSearch />
-                <input name="lastname" asp-for=@Model.surnameSearch />
-                <input name="dob" asp-for=@Model.dobSearch />
-                <input name="postcode" asp-for=@Model.postcodeSearch />
-                <input name="nhs" asp-for=@Model.nhsNoSearch />
-            </div>
-            <div class="col-md-2">
-                <label>Enter File Number:</label>
-            </div>
-            <div class="col-md-4">
-                <input type="text" name="fileNumber" />
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-outline-primary" >Search</button>
-            </div>
-        </form>
+        
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <form asp-action="SelectFile">
+                <div id="metadata" hidden>
+                    <input name="firstname" asp-for=@Model.forenameSearch />
+                    <input name="lastname" asp-for=@Model.surnameSearch />
+                    <input name="dob" asp-for=@Model.dobSearch />
+                    <input name="postcode" asp-for=@Model.postcodeSearch />
+                    <input name="nhs" asp-for=@Model.nhsNoSearch />
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label>Enter File Number:</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" name="fileNumber" />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-body">
+            @if (Model.patientsList.Count() > 0)
+            {
+                <table class="table table-responsive table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>CGU Number</th>
+                            <th>Name</th>
+                            <th>DOB</th>
+                            <th>Address</th>
+                            <th>Postcode</th>
+                            <th>NHS Number</th>
+                            <th>Add to File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.patientsList)
+                        {
+                            <tr>
+                                <td>@item.CGU_No</td>
+                                <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                                <td>@item.ADDRESS1 @item.ADDRESS2 @item.ADDRESS3 @item.ADDRESS4</td>
+                                <td>@item.POSTCODE</td>
+                                <td>@item.SOCIAL_SECURITY</td>
+                                <td class="text-nowrap">
+                                    <form asp-controller="Patient" asp-action="AddNew">
+                                        <div class="row mb-5 g-5">
+                                            <div id="metadata2" hidden>
+                                                <input name="firstname" asp-for=@Model.forenameSearch />
+                                                <input name="lastname" asp-for=@Model.surnameSearch />
+                                                <input name="dob" asp-for=@Model.dobSearch />
+                                                <input name="postcode" asp-for=@Model.postcodeSearch />
+                                                <input name="nhs" asp-for=@Model.nhsNoSearch />
+                                                <input name="cguNumber" asp-for=@Model.cguNumberSearch />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <a type="button" class="btn btn-outline-primary btn-lg" asp-controller="Patient" asp-action="AddNew" asp-route-fileNumber=@Model.cguNumberSearch
+                                                   asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd")
+                                                   asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch id="newPtNew">Add Patient To File</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+
+
+            }
+        </div>
     </div>
 
     <div class="table">
-        @if(Model.patientsList.Count() > 0)
-        {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>CGU Number</th>
-                        <th>Name</th>
-                        <th>DOB</th>
-                        <th>Address</th>
-                        <th>Postcode</th>
-                        <th>NHS Number</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(var item in Model.patientsList)
-                    {
-                        <tr>
-                            <td>@item.CGU_No</td>
-                            <td>@item.FIRSTNAME @item.LASTNAME</td>
-                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
-                            <td>@item.ADDRESS1 @item.ADDRESS2 @item.ADDRESS3 @item.ADDRESS4</td>
-                            <td>@item.POSTCODE</td>
-                            <td>@item.SOCIAL_SECURITY</td>
-                        </tr>
-                    }
-
-                </tbody>
-            </table>
-
-
-            <form asp-controller="Patient" asp-action="AddNew">
-                <div class="row mb-5 g-5">
-                    <div id="metadata2" hidden>
-                        <input name="firstname" asp-for=@Model.forenameSearch />
-                        <input name="lastname" asp-for=@Model.surnameSearch />
-                        <input name="dob" asp-for=@Model.dobSearch />
-                        <input name="postcode" asp-for=@Model.postcodeSearch />
-                        <input name="nhs" asp-for=@Model.nhsNoSearch />
-                        <input name="cguNumber" asp-for=@Model.cguNumberSearch />
-                    </div>
-                    <div class="col-md-4">
-                        <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="AddNew" asp-route-fileNumber=@Model.cguNumberSearch
-                           asp-route-firstname=@Model.forenameSearch asp-route-lastname=@Model.surnameSearch asp-route-dob=@Model.dobSearch.ToString("yyyy-MM-dd")
-                           asp-route-postcode=@Model.postcodeSearch asp-route-nhs=@Model.nhsNoSearch id="newPtNew">Add Patient To File</a>
-                    </div>
-                </div>
-            </form>            
-        }
+       
         
 
     </div>
