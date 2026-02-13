@@ -75,5 +75,6 @@ namespace AdminX.ViewModels
         public EpicReferralReference epicReferral { get; set; }
         public List<EpicReferralStaging> epicReferralStaging { get; set; }
         public List<EpicReferralReference> epicReferrals { get; set; }
+        public int selectedAreaID { get; set; }
     }
 }

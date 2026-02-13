@@ -94,6 +94,7 @@
                     <label class="form-label" for="referrerCode">Referrer Code</label> <button class="btn btn-outline-primary" type="button" onclick="SetToGP()">Use GP</button>
             <select id="referrerCode" name="referrerCode" class="form-select js-choice">
                 <option selected="">@Model.referral.ReferrerCode</option>
+                <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
                 @foreach (var item in Model.referrers)
                 {
                     <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>

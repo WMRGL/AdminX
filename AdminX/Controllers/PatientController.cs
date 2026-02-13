@@ -593,6 +593,10 @@ namespace AdminX.Controllers
                 _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = await _genderData.GetGenderList();
                 _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();
+                var ptareaCodes = await _areaNamesData.GetAreaNames();
+
+                int areaID = ptareaCodes.First(a => a.AreaName == _pvm.patient.PtAreaName).AreaID;
+                _pvm.selectedAreaID = areaID;
 
                 if (success.HasValue)
                 {

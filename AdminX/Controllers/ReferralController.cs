@@ -570,7 +570,7 @@ namespace AdminX.Controllers
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 _rvm.pathways = new List<string>();
-                var referrers = await _externalClinicianData.GetClinicianList();
+                var referrers = await _externalClinicianData.GetClinicianList();                
                 _rvm.referrers = referrers.OrderBy(r => r.LAST_NAME).ToList();
                 var indication = await _indicationData.GetDiseaseList();
                 _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
