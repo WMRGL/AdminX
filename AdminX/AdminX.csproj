@@ -56,9 +56,7 @@
 
   <ItemGroup>
     <Reference Include="APIControllers">
-
-      <HintPath>..\..\C# Libraries\APIControllers.dll</HintPath>
-
+      <HintPath>..\..\..\C# Libraries\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
       <HintPath>..\..\..\C# Libraries\ClinicalXPDataConnections.dll</HintPath>

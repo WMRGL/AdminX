@@ -1,18 +1,20 @@
-﻿using ClinicalXPDataConnections.ViewModels;
-using ClinicalXPDataConnections.Data;
-using ClinicalXPDataConnections.Models;
+﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
-using System.Text.RegularExpressions;
+using ClinicalXPDataConnections.Models;
+using ClinicalXPDataConnections.ViewModels;
 using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 using System.Drawing;
-using MigraDoc.DocumentObjectModel.Tables;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 
-namespace AdminX.Controllers
+namespace ClinicalXPDataConnections.Meta
 {
 
     public class LetterControllerLOCAL
@@ -51,7 +53,7 @@ namespace AdminX.Controllers
             _leafletData = new LeafletData(_docContext);
             _alertData = new AlertData(_clinContext);
         }
-               
+
 
         //Creates a preview of the DOT letter
         public void PrintDOTPDF(int dID, string user, bool isPreview)
@@ -80,17 +82,17 @@ namespace AdminX.Controllers
 
             spacer = section.AddParagraph();
 
-            Table table = section.AddTable();
-            Column contactInfo = table.AddColumn();
+            MigraDoc.DocumentObjectModel.Tables.Table table = section.AddTable();
+            MigraDoc.DocumentObjectModel.Tables.Column contactInfo = table.AddColumn();
             contactInfo.Format.Alignment = ParagraphAlignment.Left;
-            Column ourAddressInfo = table.AddColumn();
+            MigraDoc.DocumentObjectModel.Tables.Column ourAddressInfo = table.AddColumn();
             ourAddressInfo.Format.Alignment = ParagraphAlignment.Right;
             table.Rows.Height = 50;
             table.Columns.Width = 250;
-            Row row1 = table.AddRow();
-            row1.VerticalAlignment = VerticalAlignment.Top;
-            Row row2 = table.AddRow();
-            row2.VerticalAlignment = VerticalAlignment.Center;
+            MigraDoc.DocumentObjectModel.Tables.Row row1 = table.AddRow();
+            row1.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Top;
+            MigraDoc.DocumentObjectModel.Tables.Row row2 = table.AddRow();
+            row2.VerticalAlignment = MigraDoc.DocumentObjectModel.Tables.VerticalAlignment.Center;
 
             string clinicianHeader = $"Consultant: {_lvm.dictatedLetter.Consultant}" + System.Environment.NewLine + $"Genetic Counsellor: {_lvm.dictatedLetter.GeneticCounsellor}";
 
@@ -134,19 +136,86 @@ namespace AdminX.Controllers
             spacer = section.AddParagraph();
             Paragraph contentSalutation = section.AddParagraph($"Dear {_lvm.dictatedLetter.LetterToSalutation}");
             spacer = section.AddParagraph();
-            Paragraph contentLetterRe = section.AddParagraph();
-            contentLetterRe.AddFormattedText(_lvm.dictatedLetter.LetterRe, TextFormat.Bold);
-            spacer = section.AddParagraph();
+            if (_lvm.dictatedLetter.LetterRe != null)
+            {
+                Paragraph contentLetterRe = section.AddParagraph();
+                contentLetterRe.AddFormattedText(_lvm.dictatedLetter.LetterRe, TextFormat.Bold);
+                spacer = section.AddParagraph();
+                
+            }
             Paragraph contentSummary = section.AddParagraph();
-            contentSummary.AddFormattedText(_lvm.dictatedLetter.LetterContentBold, TextFormat.Bold);
+            string letterContentBold = "";
+            if (_lvm.dictatedLetter.LetterContentBold != null) { letterContentBold = _lvm.dictatedLetter.LetterContentBold; }
+            contentSummary.AddFormattedText(letterContentBold, TextFormat.Bold);
             spacer = section.AddParagraph();
 
             string letterContent = RemoveHTML(_lvm.dictatedLetter.LetterContent);
 
-            Paragraph contentLetterContent = section.AddParagraph(letterContent);
+            //letterContent = letterContent.Replace("newline", System.Environment.NewLine);
+
+
+            //Paragraph contentLetterContent = section.AddParagraph(letterContent);
+            Paragraph contentLetterContent = section.AddParagraph();
+            contentLetterContent.Format.Font.Size = 10;
+
+
+            if (letterContent.Contains("[[strong]]") || letterContent.Contains("<b>")) //This is all required because there's no other way to get the bold text into the letter!!
+            {
+                List<string> letterContentParts = ParseBold(letterContent);
+
+                foreach (var item in letterContentParts)
+                {
+                    if (item.Contains("NOTBOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("NOTBOLD", ""), TextFormat.NotBold);
+                    }
+                    else if (item.Contains("BOLD"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("BOLD", ""), TextFormat.Bold);
+                    }
+                    else
+                    {
+                        contentLetterContent.AddFormattedText(item, TextFormat.NotBold);
+                    }
+                }
+            }
+            else
+            {
+                contentLetterContent.AddFormattedText(letterContent, TextFormat.NotBold);
+            }
+
+            /*
+            if (letterContent.Contains("[[HYPERLINK]]"))
+            {
+                List<string> letterContentParts = letterContent.Split("HYPERLINK]]").ToList();
+
+                foreach (var item in letterContentParts)
+                {
+                    if (item.Contains("[[/HYPERLINK]]"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("[[/HYPERLINK]]", ""), TextFormat.NoUnderline);
+                    }
+                    else if (item.Contains("[[HYPERLINK]]"))
+                    {
+                        contentLetterContent.AddFormattedText(item.Replace("[[HYPERLINK]]", ""), TextFormat.Underline);
+                    }
+                    else
+                    {
+                        contentLetterContent.AddFormattedText(item, TextFormat.NoUnderline);
+                    }
+                }
+            }
+            else
+            {
+                contentLetterContent.AddFormattedText(letterContent, TextFormat.NoUnderline);
+            }
+            */ //can't do this, apparently
+
 
             string signOff = _lvm.dictatedLetter.LetterFrom;
-            string sigFilename = $"{_lvm.staffMember.StaffForename.Replace(" ", "")}{_lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+            StaffMember signatory = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.LetterFromCode);
+
+            string sigFilename = $"{signatory.StaffForename.Replace(" ", "")}{signatory.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
 
 
 
@@ -154,7 +223,7 @@ namespace AdminX.Controllers
             spacer = section.AddParagraph();
 
             Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
-            
+
             spacer = section.AddParagraph();
             Paragraph contentSig = section.AddParagraph();
             if (System.IO.File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
@@ -166,7 +235,7 @@ namespace AdminX.Controllers
 
             int printCount = 1;
 
-            string[] ccs = { "", "", "" };
+            //string[] ccs = { "", "", "" };
 
             List<DictatedLettersCopy> ccList = _dictatedLetterData.GetDictatedLettersCopiesList(_lvm.dictatedLetter.DoTID);
 
@@ -175,19 +244,35 @@ namespace AdminX.Controllers
             {
                 spacer = section.AddParagraph();
                 spacer = section.AddParagraph();
-                Paragraph ccHead = section.AddParagraph("CC:");
+                //Paragraph ccHead = section.AddParagraph("CC:");
+
+                MigraDoc.DocumentObjectModel.Tables.Table tableCCs = section.AddTable();
+                MigraDoc.DocumentObjectModel.Tables.Column ccHead = tableCCs.AddColumn();
+                MigraDoc.DocumentObjectModel.Tables.Column ccAddress = tableCCs.AddColumn();
+                ccHead.Width = 20;
+                ccAddress.Width = 200;
 
                 foreach (var item in ccList)
                 {
+                    MigraDoc.DocumentObjectModel.Tables.Row ccSpacer = tableCCs.AddRow();
+                    ccSpacer.Height = 20;
+                    MigraDoc.DocumentObjectModel.Tables.Row ccRow = tableCCs.AddRow();
+                    ccRow.Height = 120;
+
+                    ccRow.Cells[0].AddParagraph("cc:");
+                    ccRow.Cells[1].AddParagraph(item.CC);
+
+                    /*
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
-                    Paragraph contentCC = section.AddParagraph(item.CC);
+                    Paragraph contentCC = section.AddParagraph("cc:" + item.CC);
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
+                    */
                     printCount = printCount += 1;
                 }
             }
-                        
+
 
             PdfDocumentRenderer pdf = new PdfDocumentRenderer();
             pdf.Document = document;
@@ -202,8 +287,12 @@ namespace AdminX.Controllers
                 string refIDString = _lvm.dictatedLetter.RefID.ToString();
                 string dateTimeString = DateTime.Now.ToString("yyyyMMddHHmmss");
 
+                string edmspath = _constantsData.GetConstant("PrintPathEDMS", 1);
 
-                System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
+
+                System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
+
+                //System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
 
                 /*                 
                 can't actually print it because there's no way to give it your username, so it'll all be under the server's name
@@ -211,7 +300,7 @@ namespace AdminX.Controllers
             }
         }
 
-        public void DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+        public async Task DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
             int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0)
         {
@@ -230,7 +319,7 @@ namespace AdminX.Controllers
             string patAddress = "";
             string salutation = "";
             DateTime patDOB = DateTime.Now; //have to give it an initial value or the program throws a fit
-            if(_lvm.patient.DOB != null) { patDOB = _lvm.patient.DOB.GetValueOrDefault(); } //because you KNOW there's gonna be a null!
+            if (_lvm.patient.DOB != null) { patDOB = _lvm.patient.DOB.GetValueOrDefault(); } //because you KNOW there's gonna be a null!
             string content1 = "";
             string content2 = "";
             string content3 = "";
@@ -242,9 +331,9 @@ namespace AdminX.Controllers
             string signOff = "";
             string sigFilename = "";
             bool hasPhenotipsQRCode = false;
-            
+
             hasPhenotipsQRCode = _lvm.documentsContent.hasPhenotipsPPQ; //because you KNOW there's gonna somehow be a null!
-            
+
             if (docCode.Contains("CF"))
             {
                 DoConsentForm(id, mpi, refID, user, referrer, additionalText, enclosures, reviewAtAge = 0, tissueType, isResearchStudy, isScreeningRels, diaryID, freeText1,
@@ -343,7 +432,10 @@ namespace AdminX.Controllers
 
                 if (_lvm.documentsContent.LetterTo == "RD")
                 {
-                    address = _add.GetAddress("RD", refID);
+                    if (!_lvm.documentsContent.DocCode.Contains("O4")) //because somebody hard-coded this overriding feature in CGU_DB                    
+                    {
+                        address = _add.GetAddress("RD", refID);
+                    }
                 }
 
                 if (_lvm.documentsContent.LetterTo == "GP")
@@ -351,7 +443,7 @@ namespace AdminX.Controllers
                     address = _add.GetAddress("GP", refID);
                 }
 
-                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo")
+                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4"))
                 {
                     ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
                     name = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
@@ -443,7 +535,7 @@ namespace AdminX.Controllers
                 }
 
                 //CTBFol letter
-                if(docCode == "CTBFol")
+                if (docCode == "CTBFol")
                 {
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
@@ -473,7 +565,7 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     content3 = _lvm.documentsContent.Para3 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    signOff = "CGU Booking Centre";                    
+                    signOff = "CGU Booking Centre";
                 }
 
                 //CTB No Response letter
@@ -547,7 +639,7 @@ namespace AdminX.Controllers
                 //Endo letters
                 if (docCode == "EndoAck")
                 {
-                    
+
 
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -912,11 +1004,11 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = additionalText;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -947,13 +1039,13 @@ namespace AdminX.Controllers
 
                     content4 = _lvm.documentsContent.Para4;
 
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent5 = section.AddParagraph(content5);                    
+                    Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -968,13 +1060,13 @@ namespace AdminX.Controllers
                     content3 = _lvm.documentsContent.Para3;
                     content4 = _lvm.documentsContent.Para9;
 
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -991,11 +1083,30 @@ namespace AdminX.Controllers
                     _riskList = _rData.GetRiskListByRefID(refID);
 
                     content1 = _lvm.documentsContent.Para1;
-                    content2 = _lvm.documentsContent.Para2;
-                    content3 = _lvm.documentsContent.Para3;
-                    content4 = _lvm.documentsContent.Para4;
+                    content2 = _lvm.documentsContent.Para7;
+                    //content4 = _lvm.documentsContent.Para3;
 
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    string selectDistrict = "";
+                    string survWhen = "";
+                    int selectTeam = 0;
+
+                    if (selectDistrict == "A45")
+                    {
+                        content3 = _lvm.documentsContent.Para4;
+                    }
+                    else if (selectDistrict == "A47")
+                    {
+                        content3 = _lvm.documentsContent.Para5;
+                    }
+                    else
+                    {
+                        content3 = _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3;
+                    }
+
+                    selectDistrict = _lvm.patient.PtAreaCode;
+
+
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     foreach (var item in _riskList)
                     {
@@ -1024,7 +1135,7 @@ namespace AdminX.Controllers
 
                     }
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     foreach (var item in _riskList)
                     {
@@ -1032,7 +1143,7 @@ namespace AdminX.Controllers
                         string contentSurv = item.SurvSite + " surveillance ";
                         if (item.SurvType != null)
                         {
-                            contentSurv += " by " + item.SurvType; 
+                            contentSurv += " by " + item.SurvType;
                         }
                         contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
 
@@ -1044,9 +1155,9 @@ namespace AdminX.Controllers
                         letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
                     }
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content3);                    
+                    Paragraph letterContent4 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent5 = section.AddParagraph(content4);                    
+                    Paragraph letterContent5 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -1109,7 +1220,7 @@ namespace AdminX.Controllers
                         {
                             contentSurv += " by " + item.SurvType;
                         }
-                        
+
                         contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString();
 
                         if (item.SurvStopAge != null)
@@ -1131,20 +1242,20 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para2;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    
+
                     spacer = section.AddParagraph();
                     if (content2 != null)
                     {
                         Paragraph letterContent2 = section.AddParagraph();
                         letterContent2.AddFormattedText(content2, TextFormat.Bold);
-                        
+
                         spacer = section.AddParagraph();
                     }
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
-                    
+
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = referrerName;
@@ -1152,7 +1263,7 @@ namespace AdminX.Controllers
 
                 //MR01
                 if (docCode == "MR01")
-                {                    
+                {
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para8);
@@ -1194,19 +1305,19 @@ namespace AdminX.Controllers
                     row1_1.Format.Font.Bold = true;
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para5);
-                    
+
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para6 + $" {siteText.ToLower()} " + _lvm.documentsContent.Para7);
-                    
+
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para3);
-                    
+
                     spacer = section.AddParagraph();
 
                     Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
-                    
+
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
@@ -1230,13 +1341,13 @@ namespace AdminX.Controllers
                     content3 = _lvm.documentsContent.Para3;
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
-                    
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
-                    
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
-                    
+
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1260,13 +1371,13 @@ namespace AdminX.Controllers
                     content2 = _lvm.documentsContent.Para3;
                     content3 = _lvm.documentsContent.Para4;
                     content4 = _lvm.documentsContent.Para5;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1281,19 +1392,19 @@ namespace AdminX.Controllers
                     ExternalClinician clin = _externalClinicianData.GetClinicianDetails(clinicianCode);
 
                     content1 = _lvm.documentsContent.Para1;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para4;
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                     content5 = _lvm.documentsContent.Para8;
-                    Paragraph letterContent5 = section.AddParagraph(content5);                    
+                    Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -1315,19 +1426,19 @@ namespace AdminX.Controllers
                     Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para1;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     Paragraph letterContentRecipient = section.AddParagraph();
                     letterContentRecipient.AddFormattedText(recipient, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     content3 = _lvm.documentsContent.Para4;
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para8;
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
 
                     enclosures = "copy of completed consent form (Letter code CF04)";
@@ -1349,16 +1460,16 @@ namespace AdminX.Controllers
                     letterContentCancerSite.Format.Alignment = ParagraphAlignment.Right;
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para1;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     content3 = _lvm.documentsContent.Para3;
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para4;
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
@@ -1373,7 +1484,7 @@ namespace AdminX.Controllers
 
                     Paragraph letterContentPatName = section.AddParagraph();
                     letterContentPatName.AddFormattedText("Re: " + patName + "CGUbo: " + _lvm.patient.CGU_No, TextFormat.Bold);
-                    
+
                     Paragraph letterContentPatDOB = section.AddParagraph();
                     letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy") + "NHS number: " + _lvm.patient.SOCIAL_SECURITY, TextFormat.Bold);
                     spacer = section.AddParagraph();
@@ -1391,7 +1502,7 @@ namespace AdminX.Controllers
                     spacer = section.AddParagraph();
                     Table histoTable = section.AddTable();
                     Column col1 = histoTable.AddColumn();
-                    col1.Width = 250;                    
+                    col1.Width = 250;
                     Column col2 = histoTable.AddColumn();
                     col2.Width = 250;
                     Row hRow1 = histoTable.AddRow();
@@ -1404,7 +1515,7 @@ namespace AdminX.Controllers
                     histoTable.Rows.Height = 20;
 
                     histoTable.SetEdge(0, 0, histoTable.Columns.Count, histoTable.Rows.Count, Edge.Box, BorderStyle.Single, 1, Colors.Black);
-                    
+
                     hRow1.Borders.Bottom.Width = 0.5;
                     hRow4.Borders.Bottom.Width = 0.5;
 
@@ -1419,7 +1530,7 @@ namespace AdminX.Controllers
                     hRow6.Cells[0].AddParagraph("Slide reference(s):");
                     hRow7.Cells[0].AddParagraph("Cellularity:");
                     hRow7.Cells[1].AddParagraph("Tumour content:" + Environment.NewLine + "(if an area of solely 'normal' tissue is not available)");
-                    
+
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para10;
                     Paragraph letterContent3 = section.AddParagraph(content4);
@@ -1443,7 +1554,7 @@ namespace AdminX.Controllers
 
                     Table histoTable2 = section.AddTable();
                     Column col2_1 = histoTable2.AddColumn();
-                    col2_1.Width = 500;                                       
+                    col2_1.Width = 500;
                     Row hRow2_1 = histoTable2.AddRow();
                     Row hRow2_2 = histoTable2.AddRow();
                     Row hRow2_3 = histoTable2.AddRow();
@@ -1467,7 +1578,7 @@ namespace AdminX.Controllers
                     hRow2_1.Cells[0].AddParagraph().AddFormattedText("Details of molecular genetic testing required", TextFormat.Bold);
                     hRow2_1.Height = 10;
                     hRow2_2.Cells[0].AddParagraph("Clinician please detail as appropriate to direct testing at the West Midlands Regional Genetics Laboratory");
-                    hRow2_3.Cells[0].AddParagraph().AddFormattedText("Germline analysis", TextFormat.Bold);                    
+                    hRow2_3.Cells[0].AddParagraph().AddFormattedText("Germline analysis", TextFormat.Bold);
                     hRow2_4.Cells[0].AddParagraph("(where blood or saliva is not available from the affected family member and indirect testing of other family members is not appropriate)");
                     hRow2_4.Height = 30;
                     hRow2_5.Cells[0].AddParagraph("Gene(s) to be analysed for germline variants:");
@@ -1476,7 +1587,7 @@ namespace AdminX.Controllers
                     hRow2_8.Cells[0].AddParagraph("(following a negative germline screen of a gene(s) in which a molecular defect is indicated)");
                     hRow2_9.Cells[0].AddParagraph("Gene(s) to be analysed for somatic variants:");
                     hRow2_10.Cells[0].AddParagraph(somatic).Format.LeftIndent = 2;
-                    hRow2_11.Cells[0].AddParagraph().AddFormattedText("Further patient details and cancer history", TextFormat.Bold);                    ;
+                    hRow2_11.Cells[0].AddParagraph().AddFormattedText("Further patient details and cancer history", TextFormat.Bold); ;
                     if (furtherDetails != null)
                     {
                         hRow2_12.Cells[0].AddParagraph(furtherDetails).Format.LeftIndent = 2;
@@ -1501,27 +1612,27 @@ namespace AdminX.Controllers
                     Paragraph letterContentPatDets = section.AddParagraph(patDets);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para2;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para10;
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
                 //GR01
                 if (docCode == "GR01")
-                {                   
+                {
                     Paragraph letterContentPt = section.AddParagraph();
                     letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para1;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     enclosures = "Consent form (letter code CF01)";
@@ -1553,7 +1664,7 @@ namespace AdminX.Controllers
                 }
 
                 //GenMR01
-                if(docCode == "GenMR01")
+                if (docCode == "GenMR01")
                 {
                     Paragraph letterContentPt = section.AddParagraph();
                     letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
@@ -1580,9 +1691,9 @@ namespace AdminX.Controllers
                 {
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     ccs[0] = gpName;
@@ -1596,15 +1707,15 @@ namespace AdminX.Controllers
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
                     content4 = _lvm.documentsContent.Para4;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);                    
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
-                                        
+
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     //File.Delete($"wwwroot\\Images\\qrCode-{user}.jpg");
                     ccs[0] = referrerName;
@@ -1619,11 +1730,11 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     ccs[0] = referrerName;
 
@@ -1635,11 +1746,11 @@ namespace AdminX.Controllers
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
-                    Paragraph letterContent1 = section.AddParagraph(content1);                    
+                    Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);                    
+                    Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);                    
+                    Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     ccs[0] = referrerName;
                     if (referrerName != gpName)
@@ -1649,7 +1760,7 @@ namespace AdminX.Controllers
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
-                
+
                 if (docCode == "ClicsMR01")
                 {
                     content1 = _lvm.documentsContent.Para1;
@@ -1671,7 +1782,7 @@ namespace AdminX.Controllers
 
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
-                
+
                 if (docCode == "ClicsMR03")
                 {
                     content1 = _lvm.documentsContent.Para5;
@@ -1683,7 +1794,7 @@ namespace AdminX.Controllers
                     content3 = _lvm.documentsContent.Para7;
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    if(additionalText != null && additionalText != "")
+                    if (additionalText != null && additionalText != "")
                     {
                         Paragraph addText = section.AddParagraph(additionalText);
                         spacer = section.AddParagraph();
@@ -1746,12 +1857,12 @@ namespace AdminX.Controllers
                     signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                 }
 
-                if(docCode == "DNMRC")
+                if (docCode == "DNMRC")
                 {
                     Paragraph letterContentPt = section.AddParagraph();
                     letterContentPt.AddFormattedText(patName + ", " + patDOB, TextFormat.Bold);
                     spacer = section.AddParagraph();
-                                        
+
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
@@ -1768,11 +1879,12 @@ namespace AdminX.Controllers
 
                 string phenotipsAvailable = _constantsData.GetConstant("PhenotipsURL", 2);
 
+
                 if (phenotipsAvailable == "1")
                 {
                     if (hasPhenotipsQRCode) //checks for Phenotips QR code flag and creates the QR code if needed
                     {
-                        /*
+
                         if (qrCodeText != "")
                         {
                             CreateQRImageFile(qrCodeText, user);
@@ -1787,7 +1899,6 @@ namespace AdminX.Controllers
                             imgQRCode.ScaleHeight = new Unit(1.5, UnitType.Point);
                             contentQR.Format.Alignment = ParagraphAlignment.Center;
                         }
-                        */
                     }
                 }
 
@@ -1837,7 +1948,7 @@ namespace AdminX.Controllers
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();
-                    Paragraph contentCC = section.AddParagraph("cc:");                    
+                    //Paragraph contentCC = section.AddParagraph("cc:");
 
                     //Add a page for all of the CC addresses (must be declared here or we can't use it)            
                     for (int i = 0; i < ccs.Length; i++)
@@ -1907,7 +2018,7 @@ namespace AdminX.Controllers
 
                 //Finally we set the filename for the output PDF
                 //needs to be: "CaStdLetter"-CGU number-DocCode-Patient/relative ID (usually "[MPI]-0")-RefID-"print count (if CCs present)"-date/time stamp-Diary ID
-                                
+
                 PdfDocumentRenderer pdf = new PdfDocumentRenderer();
                 pdf.Document = document;
                 pdf.RenderDocument();
@@ -1920,8 +2031,6 @@ namespace AdminX.Controllers
                     System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
 
                 }
-
-
             }
         }
 
@@ -2318,8 +2427,11 @@ namespace AdminX.Controllers
 
             if (!isPreview.GetValueOrDefault())
             {
-                System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");                
-            }            
+                //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
+                string edmspath = _constantsData.GetConstant("PrintPathEDMS", 1);
+
+                System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
+            }
         }
 
 
@@ -2333,26 +2445,126 @@ namespace AdminX.Controllers
             }
         }
 
-
         string RemoveHTML(string text)
         {
-
-            text = text.Replace("&nbsp;", System.Environment.NewLine);
+            text = text.Replace("<div>", "");
+            text = text.Replace("</div>", "");
+            text = text.Replace("&nbsp;", "");
             text = text.Replace(System.Environment.NewLine, "newline");
+            text = text.Replace("newlinenewlinenewlinenewlinenewlinenewlinenewlinenewline", System.Environment.NewLine + System.Environment.NewLine); //don't fucking ask!!!
+            text = text.Replace("newlinenewlinenewlinenewlinenewlinenewline", System.Environment.NewLine + System.Environment.NewLine);
+            text = text.Replace("newlinenewlinenewlinenewline", System.Environment.NewLine + System.Environment.NewLine);
+            text = text.Replace("newlinenewline", System.Environment.NewLine);
+            text = text.Replace("newline", " ");
+            
+            text = text.Replace("<div><font face=Arial size=3>", "");
+            text = text.Replace("</font></div>", "");
+            text = text.Replace("<div>&nbsp;</div>", "newlinenewlinenewlinenewline");
+            
+            text = text.Replace("&amp;", "&");
+            //text = text.Replace("&nbsp;", System.Environment.NewLine);
+            
+            //text = Regex.Replace(text, @"<[^>]+>", "").Trim();
+            ////text = Regex.Replace(text, @"\n{2,}", " ");
+            //text = text.Replace("&lt;", "<");
+            //text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
+            text = text.Replace("<p class=\"MsoNormal\">", "");
+            text = text.Replace("</p>", System.Environment.NewLine);
+            text = text.Replace("<o:p></o:p>", "");
+            
+            //text = text.Replace("newlinenewlinenewline", "3 lines " + System.Environment.NewLine + System.Environment.NewLine);            
+            
+            text = text.Replace("<br>", System.Environment.NewLine + System.Environment.NewLine);
+            
+            text = text.Replace("<sup>", "");
+            text = text.Replace("</sup>", " ");
+            text = text.Replace("<font color=\"red\">", "");
+            text = text.Replace("</font>", "");
+            
+            text = text.Replace("<b>", "[[strong]]"); //we have to do this, or the bold tags will get wiped by the "everything" tag
+            text = text.Replace("</b>", "[[/strong]]");
+            if (text.Contains("<span style=\"font-weight: 600;\">")) { text = text.Replace("<span style=\"font-weight: 600;\">", "<strong>"); }
+            text = text.Replace("</span>", "</strong>"); //because there are a million different ways that it can decide to save bold formatting
+            text = text.Replace("<strong>", "[[strong]]");
+            text = text.Replace("</strong>", "[[/strong]]");
+
+            if (text.Contains("<a"))
+            {
+                //text = text.Replace("<a", "[[HYPERLINK]]<a"); //we need to keep the <a so it can get rid of the rest
+                //text = text.Replace("</a>", "[[/HYPERLINK]]");
+                text = Regex.Replace(text, @"<[^>]+>", "").Trim(); //this is the ONLY way to strip out any hyperlink tags!
+            }
+            
+            return text;
+        }
+
+
+        string RemoveHTMLOLD(string text)
+        {
+            text = text.Replace("<div>&nbsp;</div>", "&nbsp;");
+            text = text.Replace("&nbsp;", "newline");
+            //text = text.Replace(System.Environment.NewLine, "newline");
             text = Regex.Replace(text, @"<[^>]+>", "").Trim();
             //text = Regex.Replace(text, @"\n{2,}", " ");
             text = text.Replace("&lt;", "<");
             text = text.Replace("&gt;", ">"); //because sometimes clinicians like to actually use those symbols
-            text = text.Replace("newlinenewline", System.Environment.NewLine);
-            text = text.Replace("newline", "");
+            text = text.Replace("newlinenewline", "newline");
+            //text = text.Replace("newline", "");
             //this is the ONLY way to strip out the excessive new lines!! (and still can't remove all of them)
 
             return text;
         }
 
 
+        List<string> ParseBold(string text)
+        {
+            List<string> newText = new List<string>();
 
-        
+            if (text.Contains("[strong]"))
+            {
+                string[] textBlocks = text.Split("strong]]");
+
+                foreach (var item in textBlocks)
+                {
+                    if (item.Contains("[[/"))
+                    {
+                        newText.Add(item.Replace("[[/", "") + "BOLD ");
+                    }
+                    else if (item.Contains("[["))
+                    {
+                        newText.Add(item.Replace("[[", "") + "NOTBOLD ");
+                    }
+                    else
+                    {
+                        newText.Add(item);
+                    }
+                }
+            }
+
+            if (text.Contains("<b>")) //because sometimes it's <b> and sometimes it's <strong> - don't fucking ask!!!
+            {
+                string[] textBlocks = text.Split("b>");
+
+                foreach (var item in textBlocks)
+                {
+                    if (item.Contains("</"))
+                    {
+                        newText.Add(item.Replace("</", "") + "BOLD ");
+                    }
+                    else if (item.Contains("<"))
+                    {
+                        newText.Add(item.Replace("<", "") + "NOTBOLD ");
+                    }
+                    else
+                    {
+                        newText.Add(item);
+                    }
+                }
+            }
+
+            return newText;
+        }
+
     }
 }
 

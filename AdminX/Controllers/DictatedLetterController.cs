@@ -13,7 +13,7 @@ namespace AdminX.Controllers
 {
     public class DictatedLetterController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext; //these are necessary because we can't debug the letter controller otherwise!!!
         //private readonly DocumentContext _docContext;
         //private readonly AdminContext _adminContext;
         private readonly LetterController _lc;
@@ -33,11 +33,8 @@ namespace AdminX.Controllers
 
         public DictatedLetterController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IActivityDataAsync activity, IDictatedLetterDataAsync dictatedLetter, 
             IExternalClinicianDataAsync externalClinician, IExternalFacilityDataAsync externalFacility, IDictatedLettersReportDataAsync dictatedLettersReport, IAuditServiceAsync audit, 
-            IConstantsDataAsync constants, LetterController letterController)
-        {
-            //_clinContext = clinContext;
-            //_docContext = docContext;
-            //_adminContext = adminContext;
+            IConstantsDataAsync constants, LetterController letterController) //, ClinicalContext clinicalContext, DocumentContext documentContext)
+        {            
             _config = config;
             _crud = new CRUD(_config);
             _lvm = new DictatedLetterVM();
@@ -52,6 +49,8 @@ namespace AdminX.Controllers
             _audit = audit;
             _constantsData = constants;
             _ip = new IPAddressFinder(HttpContext);
+            //_clinContext = clinicalContext;
+            //_docContext = documentContext;
         }
 
         [Authorize]
@@ -375,6 +374,10 @@ namespace AdminX.Controllers
         {
             try
             {
+                //LetterControllerLOCAL lc = new LetterControllerLOCAL(_clinContext, _docContext);
+
+                //lc.PrintDOTPDF(dID, User.Identity.Name, false);
+
                 _lc.PrintDOTPDF(dID, User.Identity.Name, true);
                 //return RedirectToAction("Edit", new { id = dID });
                 return File($"~/DOTLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
@@ -391,7 +394,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> PrintDOT(int dID)
         {
             try
-            {
+            {                
                 _lc.PrintDOTPDF(dID, User.Identity.Name, false);
                 //return RedirectToAction("Edit", new { id = dID });
                 //string user = User.Identity.Name;
