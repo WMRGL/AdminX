@@ -236,7 +236,20 @@ namespace AdminX.Controllers
 
                 if (_pvm.patient.DECEASED == -1)
                 {
-                    _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+                    if (_pvm.patient.DECEASED_DATE == null)
+                    {
+                        return RedirectToAction("EditPatientDetails", new
+                        {
+                            mpi = _pvm.patient.MPI,
+                            message = "Patient is deceased but has no date of death recorded. Please update.",
+                            success = false
+                        });
+                    }
+
+                    if (_pvm.patient.DOB != null)
+                    {
+                        _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+                    }
                 }
                 if (_pvm.patient.DOB != null)
                 {

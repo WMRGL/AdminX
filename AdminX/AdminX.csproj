@@ -61,7 +61,7 @@
 
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\..\..\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>..\..\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 
