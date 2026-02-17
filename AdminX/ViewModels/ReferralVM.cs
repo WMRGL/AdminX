@@ -45,6 +45,7 @@ namespace AdminX.ViewModels
         public string waitingListDetails { get; set; }
         public ExternalClinician GP { get; set; }
         public ExternalFacility GPFacility { get; set; }
+        public string? message { get; set; }
 
     }
 }
