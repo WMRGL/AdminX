@@ -236,7 +236,15 @@ namespace AdminX.Controllers
 
                 if (_pvm.patient.DECEASED == -1)
                 {
-                    _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+
+                    if (_pvm.patient.DOB.HasValue && _pvm.patient.DECEASED_DATE.HasValue)
+                    {
+                        _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+                    }
+                    else
+                    {
+                        _pvm.diedage = "Unknown";
+                    }
                 }
                 if (_pvm.patient.DOB != null)
                 {
@@ -290,6 +298,7 @@ namespace AdminX.Controllers
                     _pvm.isPhenotipsAvailable = true;
                 }
 
+                
                 if (_pvm.isPhenotipsAvailable) 
                 {
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
