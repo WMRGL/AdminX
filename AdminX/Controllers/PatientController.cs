@@ -236,19 +236,14 @@ namespace AdminX.Controllers
 
                 if (_pvm.patient.DECEASED == -1)
                 {
-                    if (_pvm.patient.DECEASED_DATE == null)
-                    {
-                        return RedirectToAction("EditPatientDetails", new
-                        {
-                            mpi = _pvm.patient.MPI,
-                            message = "Patient is deceased but has no date of death recorded. Please update.",
-                            success = false
-                        });
-                    }
 
-                    if (_pvm.patient.DOB != null)
+                    if (_pvm.patient.DOB.HasValue && _pvm.patient.DECEASED_DATE.HasValue)
                     {
                         _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
+                    }
+                    else
+                    {
+                        _pvm.diedage = "Unknown";
                     }
                 }
                 if (_pvm.patient.DOB != null)
@@ -303,6 +298,7 @@ namespace AdminX.Controllers
                     _pvm.isPhenotipsAvailable = true;
                 }
 
+                
                 if (_pvm.isPhenotipsAvailable) 
                 {
                     //if (_api.GetPhenotipsPatientID(id).Result != "")
