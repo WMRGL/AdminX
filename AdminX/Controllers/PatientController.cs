@@ -4,13 +4,14 @@ using AdminX.Models;
 using AdminX.ViewModels;
 using APIControllers.Controllers;
 //using APIControllers.Data;
-//using ClinicalXPDataConnections.Data;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.Controllers
 {
@@ -60,10 +61,9 @@ namespace AdminX.Controllers
             ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
-            IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging, 
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api)
-        {
-            //_clinContext = context;
+            IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api) //, ClinicalContext clinContext)
+        {            
             //_adminContext = adminContext;
             //_documentContext = documentContext;
             //_apiContext = apiContext;
@@ -102,6 +102,7 @@ namespace AdminX.Controllers
             _epicPatientReferenceData = epicPatientReference;
             _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
+            //_clinContext = clinContext;
         }
 
         [Authorize]
@@ -170,9 +171,9 @@ namespace AdminX.Controllers
                 }
 
                 List<Referral> referrals = await _referralData.GetReferralsList(id);
-                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE == "Missing Data").ToList();
-                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE == "Active" && !r.logicaldelete).ToList();
-                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE == "Complete" && !r.logicaldelete).ToList();
+                _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "MISSING DATA").ToList();
+                _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
+                _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
                 _pvm.tempReges = await _referralData.GetTempRegList(id);
                 _pvm.appointments = await _appointmentData.GetAppointmentListByPatient(id);
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
@@ -228,7 +229,7 @@ namespace AdminX.Controllers
                 _pvm.relatives = new List<Relative>();
                 if (_pvm.patient.PEDNO != null)
                 {
-                    var rels = await _relativeData.GetRelativesList(id);
+                    var rels = await _relativeData.GetRelativesList(id);                    
                     _pvm.relatives = rels.Distinct().ToList();
                 }
                 
@@ -879,5 +880,7 @@ namespace AdminX.Controllers
             //Process.Start($"G:\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
             Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
         }
+
+        
     }
 }
