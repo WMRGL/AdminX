@@ -94,8 +94,15 @@ namespace AdminX.Controllers
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
                 var clinicList = await _clinicData.GetClinicByPatientsList(_rvm.referral.MPI);
                 _rvm.ClinicList = clinicList.Where(a => a.ReferralRefID == refID).Distinct().ToList();
-                _rvm.ICPDetails = await _triageData.GetICPDetailsByRefID(refID);                
-                _rvm.relatedICP = await _triageData.GetTriageDetails(_rvm.ICPDetails.ICPID); //because ICP and Triage are different, apparently
+                _rvm.ICPDetails = await _triageData.GetICPDetailsByRefID(refID);      
+                if(_rvm.ICPDetails != null)
+                {
+                    _rvm.relatedICP = await _triageData.GetTriageDetails(_rvm.ICPDetails.ICPID);
+                } else
+                {
+                    _rvm.message = "Patient does not have ICP please email the ICT team";
+                }
+                     //because ICP and Triage are different, apparently
                 
                 string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
