@@ -4,19 +4,21 @@ using AdminX.Models;
 using AdminX.ViewModels;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
+using ClinicalXPDataConnections.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using PdfSharp.Snippets.Drawing;
 using System;
 using System.Numerics;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AdminX.Controllers
 {
     public class ReferralController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;
         //private readonly AdminContext _adminContext;
         //private readonly DocumentContext _documentContext;
         private readonly IConfiguration _config;
@@ -46,9 +48,9 @@ namespace AdminX.Controllers
         public ReferralController(IConfiguration config, IPatientDataAsync patient, IActivityTypeDataAsync activityType, IExternalClinicianDataAsync extClinician, IStaffUserDataAsync staffUser,
             IActivityDataAsync activity, ICRUD crud, IReferralDataAsync referral, IAdminStatusDataAsync adminStatus, IListDiseaseDataAsync listDisease, IClinicDataAsync clinic, IExternalFacilityDataAsync extFacility,
             IReviewDataAsync review, IAuditServiceAsync audit, IDiseaseDataAsync disease, IPathwayDataAsync pathway, IPriorityDataAsync priority, IRefReasonDataAsync refReason, ITriageDataAsync triage,
-            IAreaNamesDataAsync areanames, IConstantsDataAsync constants, IICPActionDataAsync icpActions)
+            IAreaNamesDataAsync areanames, IConstantsDataAsync constants, IICPActionDataAsync icpActions, ClinicalContext context)
         {
-            //_clinContext = context;
+            _clinContext = context;
             //_adminContext = adminContext;
             //_documentContext = documentContext;            
             _config = config;
@@ -618,6 +620,5 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProcessReferral" });
             }
         }
-
     }
 }

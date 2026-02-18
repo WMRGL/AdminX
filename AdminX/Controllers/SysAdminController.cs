@@ -414,32 +414,41 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewClinician(string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
+        public async Task<IActionResult> AddNewClinician(string clinCode, string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
         {
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
 
-            string clinCode = lastName;
-
-            if(clinCode.Length >= 7)
+            if (clinCode == null)
             {
-                clinCode = clinCode.Substring(0, 6);
+                clinCode = lastName;
             }
 
-            clinCode = clinCode + firstName.Substring(0, 1);
-            
-            if(await _clinicianData.GetClinicianDetails(clinCode) != null)
+            if (isGP == 0)
             {
-                int i = 1;
+                if (clinCode.Length >= 7)
+                {
+                    clinCode = clinCode.Substring(0, 6);
+                }
+
+                clinCode = clinCode + firstName.Substring(0, 1);
+
+                if (await _clinicianData.GetClinicianDetails(clinCode) != null)
+                {
+                    int i = 1;
 
                 CheckCode: //to make sure the code is unique
-                if (_clinicianData.GetClinicianDetails(clinCode + i.ToString()) != null)
-                {
-                    i += 1;
-                    goto CheckCode;
+                    string newClinCode = clinCode + i.ToString();
+
+
+                    if (await _clinicianData.GetClinicianDetails(newClinCode) != null)
+                    {
+                        i += 1;
+                        goto CheckCode;
+                    }
+
+                    clinCode = newClinCode;
                 }
-                
-                clinCode = clinCode + i.ToString();
             }
 
             int iSuccess = _crud.SysAdminCRUD("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,

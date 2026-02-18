@@ -23,11 +23,17 @@
         <form asp-action="AddNewClinician">
 
             <div class="mb-3 row">
-                <label class="col-form-label col-sm-1 text-sm-end">Clinician Code</label>
-                <div class="col-sm-11">
-                    <input type="text" name="clinCode" class="form-control">
+                <div class="row">
+                    <label class="col-form-label col-sm-1 text-sm-end">Clinician Code</label>
+                    <div class="col-sm-11">
+                        <input type="text" name="clinCode" class="form-control">
+                    </div>
                 </div>
-            </div>
+                <div class="row">                    
+                        <label class ="col-form-label col-sm-3"> (leave blank to generate one automatically)</label>
+                    
+                </div>
+            </div>            
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-1 text-sm-end">Name</label>
                 <div class="col sm-1">
