@@ -171,11 +171,11 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select">
+                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>
                                             @*<option selected="">@Model.referral.RefClass</option>*@
-                                            <option value="Urgent">Urgent</option>
+                                            <option value="Routine">Routine</option>                                            
                                             <option value="Fast Track">Fast Track</option>
-                                            <option value="Routine">Routine</option>
+                                            <option value="Urgent">Urgent</option>
                                         </select>
 
                                     </div>
@@ -229,7 +229,11 @@
                                                 <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                             }
                                         </select>
-
+                                        <input name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
+                                        <input name="OthReason2" class="form-control" asp-for=@Model.referral.OthReason2>
+                                        <input name="OthReason3" class="form-control" asp-for=@Model.referral.OthReason3>
+                                        <input name="OthReason4" class="form-control" asp-for=@Model.referral.OthReason4>
+                                        @*
                                         <select name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
                                             <option value="">Select</option>
                                             @foreach (var item in Model.referralReasonsList)
@@ -258,6 +262,7 @@
                                                 <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                             }
                                         </select>
+                                        *@
                                     </div>
                                     <div class="mb-3 col-md-2">
                                         <label class="form-label" for="inputZip">Affected?</label><br />
@@ -524,10 +529,10 @@
                                     </div>
                                     <div class="mb-3 col-md-4">
                                         <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>                                            
-                                            <option value="Urgent">Urgent</option>
-                                            <option value="Fast Track">Fast Track</option>
+                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>
                                             <option value="Routine">Routine</option>
+                                            <option value="Fast Track">Fast Track</option>
+                                            <option value="Urgent">Urgent</option>
                                         </select>
 
                                     </div>

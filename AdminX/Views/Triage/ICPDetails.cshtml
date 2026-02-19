@@ -214,7 +214,7 @@
                         <select id="ddlCancerAction" name=action class="form-select">
                             @foreach (var item in @Model.cancerActionsList)
                             {
-                                <option value=@item.ID>@item.Action</option>
+                                <option value=@item.ID>@item.ID - @item.Action</option>
                             }
                         </select>
                     </div>
