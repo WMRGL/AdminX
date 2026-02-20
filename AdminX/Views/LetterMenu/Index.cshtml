@@ -400,9 +400,14 @@
         var staffTypeArray = [];
         var docCodeArray = [];
         var letterFromArray = [];
+        var letterToArray = [];
+        var referrerCodeArray = [];
         var staffName = "";
         var staffCode = "";   
         var letterFromType = "";
+        var letterToType = "";
+        var letterTo = "";
+        var referrerCode;
                 
 
         @foreach (var item in Model.referralList)
@@ -410,6 +415,7 @@
             @:referralArray.push("@item.refid");            
             @:consCodeArray.push("@item.PATIENT_TYPE_CODE");            
             @:gcCodeArray.push("@item.GC_CODE");
+            @:referrerCodeArray.push("@item.ReferrerCode");
         }        
 
         @foreach (var item in Model.staffMemberList)
@@ -424,6 +430,7 @@
         {
             @:docCodeArray.push("@item.DocCode");
             @:letterFromArray.push("@item.LetterFrom");
+            @:letterToArray.push("@item.LetterTo");
         }
 
         for (var k in docCodeArray)
@@ -431,6 +438,7 @@
             if(docCode == docCodeArray[k])
             {
                 letterFromType = letterFromArray[k];
+                letterToType = letterToArray[k];
             }
         }       
 
@@ -438,6 +446,7 @@
         {            
             if(referralArray[i] == refID)
             {
+                referrerCode = referrerCodeArray[i];
                 
                 if(letterFromType == "Cons")
                 {
@@ -462,7 +471,59 @@
             }
         }
 
+        if(letterToType == "PT")
+        {
+            letterTo = "@Model.patient.Title" + " " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + "\n" + 
+            "@Model.patient.ADDRESS1" + "\n";
+            if("@Model.patient.ADDRESS2" != "")
+            {
+                letterTo = letterTo + "@Model.patient.ADDRESS2"  + "\n";
+            }
+            if("@Model.patient.ADDRESS3" != "")
+            {
+                letterTo = letterTo + "@Model.patient.ADDRESS3"  + "\n";
+            }
+            letterTo = letterTo + "@Model.patient.ADDRESS4"  + "\n" + "@Model.patient.POSTCODE";
+        }
+        else if(letterToType == "RD")
+        {
+            var referrerCodeArray2 = [];
+            var referrerNameArray = [];
+            var facilityCodeArray = [];
+            var facilityNameArray = [];
+            var facilityAddressArray = [];
+            var postcodeArray = [];
+
+            @foreach (var item in Model.referrers) //yes, this is the level of obtuseness we need to go through to get the correct data in javascript!!
+            {
+                @:referrerCodeArray2.push("@item.MasterClinicianCode");
+                @:referrerNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                @:facilityCodeArray.push("@item.MasterFacilityCode");
+                @:facilityNameArray.push("@item.FACILITY");
+                @:facilityAddressArray.push("@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.DISTRICT");
+                @:postcodeArray.push("@item.ZIP");                
+            }
+
+            for(var l in referrerCodeArray2)
+            {
+                if(referrerCodeArray2[l] == referrerCode)
+                {
+                    letterTo = referrerNameArray[l] + "\n" + facilityAddressArray[l];
+                    if(postcodeArray[l] != "")
+                    {
+                        letterTo = letterTo + "\n" + postcodeArray[l];
+                    }
+                }
+            }
+        }
+        else if(letterToType == "GP")
+        {
+            letterTo = "@Model.patGP.TITLE" + " " + "@Model.patGP.FIRST_NAME" + " " + "@Model.patGP.LAST_NAME" + "\n" + "@Model.patGP.FACILITY" + "\n"
+            + "@Model.patGP.ADDRESS" + "\n" + "@Model.patGP.CITY" + "\n" + "@Model.patGP.DISTRICT" + "\n" + "@Model.patGP.ZIP";
+        }
+
         document.getElementById("txtLetterFrom").value = staffName.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
+        document.getElementById("txtLetterTo").value = letterTo;
     }
 
     function DoPreview()

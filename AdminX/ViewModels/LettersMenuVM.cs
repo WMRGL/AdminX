@@ -27,5 +27,7 @@ namespace AdminX.ViewModels
         public string letterGroupSelected { get; set; }
         public string letterCodeSelected { get; set; }
         public string loggedOnUser { get; set; }
+
+        public List<ExternalCliniciansAndFacilities> referrers { get; set; }
     }
 }

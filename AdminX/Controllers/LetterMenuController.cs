@@ -31,10 +31,11 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly APIController _api;
         private readonly IPhenotipsMirrorDataAsync _mirrorData;
+        private readonly IExternalFacilityDataAsync _externalFacilityData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs, APIController api)//, ClinicalContext context, DocumentContext documentContext)
+            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData)//, ClinicalContext context, DocumentContext documentContext)
         {
             _config = config;   
             //_context = context;
@@ -57,6 +58,7 @@ namespace AdminX.Controllers
             _api = api;
             _mirrorData = ptmirror;
             _hs = hs;
+            _externalFacilityData = externalFacilityData;
         }
 
         public async Task<IActionResult> Index(int id, bool? isRelative = false, string? letterGroup = "", string? docCode = "")
@@ -101,7 +103,17 @@ namespace AdminX.Controllers
                 _lvm.histoList = clinList.Where(c => c.POSITION.Contains("Histo") || c.SPECIALITY.Contains("Histo")).ToList();
                 _lvm.breastList = clinList.Where(c => c.POSITION.Contains("Breast") || c.SPECIALITY.Contains("Breast")).ToList();
                 _lvm.geneticsList = clinList.Where(c => c.POSITION.Contains("Genetics") || c.SPECIALITY.Contains("Genetics")).ToList();
-                
+                _lvm.referrers = new List<ExternalCliniciansAndFacilities>();
+
+                foreach(var item in _lvm.referralList)
+                {
+                    var referrer = await _clinicianData.GetClinicianDetails(item.ReferrerCode);
+                    var facility = await _externalFacilityData.GetFacilityDetails(referrer.FACILITY);
+                    _lvm.referrers.Add(new ExternalCliniciansAndFacilities { MasterClinicianCode = referrer.MasterClinicianCode, TITLE = referrer.TITLE, FIRST_NAME = referrer.FIRST_NAME,
+                    LAST_NAME = referrer.NAME, MasterFacilityCode = facility.MasterFacilityCode, FACILITY = facility.NAME, ADDRESS = facility.ADDRESS, CITY = facility.CITY,
+                    DISTRICT = facility.DISTRICT, ZIP = facility.ZIP});
+                }
+
 
                 _lvm.staffMemberList = await _staffData.GetStaffMemberListAll();
 
