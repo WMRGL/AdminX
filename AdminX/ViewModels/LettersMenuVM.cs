@@ -24,5 +24,8 @@ namespace AdminX.ViewModels
         public bool isRelative { get; set; }
         public List<StaffMember> staffMemberList { get; set; } 
         public string patientAddress { get; set; }
+        public string letterGroupSelected { get; set; }
+        public string letterCodeSelected { get; set; }
+        public string loggedOnUser { get; set; }
     }
 }

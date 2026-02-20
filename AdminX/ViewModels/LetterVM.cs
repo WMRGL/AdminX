@@ -16,5 +16,6 @@ namespace AdminX.ViewModels
         public ExternalClinician other { get; set; }
         public ExternalFacility facility { get; set; }
         public DictatedLetter dictatedLetter { get; set; }
+        
     }
 }

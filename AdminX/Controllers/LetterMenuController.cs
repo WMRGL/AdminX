@@ -3,7 +3,7 @@ using ClinicalXPDataConnections.Models;
 using AdminX.Meta;
 using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using APIControllers.Data;
+using ClinicalXPDataConnections.Data;
 using APIControllers.Controllers;
 
 namespace AdminX.Controllers
@@ -34,7 +34,7 @@ namespace AdminX.Controllers
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs, APIController api)
+            IAuditServiceAsync audit, HSController hs, APIController api)//, ClinicalContext context, DocumentContext documentContext)
         {
             _config = config;   
             //_context = context;
@@ -59,13 +59,14 @@ namespace AdminX.Controllers
             _hs = hs;
         }
 
-        public async Task<IActionResult> Index(int id, bool? isRelative = false)
+        public async Task<IActionResult> Index(int id, bool? isRelative = false, string? letterGroup = "", string? docCode = "")
         {
             try
             {
                 string staffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Letter Menu", "MPI=" + id.ToString(), _ip.GetIPAddress());
-
+                
+                _lvm.loggedOnUser = staffCode;
                 _lvm.isRelative = isRelative.GetValueOrDefault();
 
                 if (!isRelative.GetValueOrDefault())
@@ -78,6 +79,10 @@ namespace AdminX.Controllers
                     _lvm.relative = await _relData.GetRelativeDetails(id);
                     _lvm.patient = await _patientData.GetPatientDetailsByWMFACSID(_lvm.relative.WMFACSID);
                 }
+
+                if(letterGroup != "") { _lvm.letterGroupSelected = letterGroup; }
+                if(docCode != "") { _lvm.letterCodeSelected = docCode; }
+
                 int mpi = _lvm.patient.MPI;
                 var docList = await _documentsData.GetDocumentsList();
                 _lvm.docsListStandard = docList.Where(d => d.DocGroup == "Standard").ToList();
@@ -155,14 +160,15 @@ namespace AdminX.Controllers
             try
             {
                 int docID = 0;
+                var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
 
                 if (docCode != "HS")
-                {
-                    var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
+                {                    
                     docID = doc.DocContentID;
                 }
                 _lvm.referral = await _referralData.GetReferralDetails(refID);
                 _lvm.patient = await _patientData.GetPatientDetails(_lvm.referral.MPI);
+                
 
                 int mpi = _lvm.patient.MPI;
                 int diaryID = 0;
@@ -210,6 +216,8 @@ namespace AdminX.Controllers
                             qrCode = _api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY).Result;
                         }
                     }
+
+                    
 
                     //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
                     _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,

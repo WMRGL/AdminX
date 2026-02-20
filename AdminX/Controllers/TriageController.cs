@@ -244,18 +244,22 @@ namespace AdminX.Controllers
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-canTriage(SQL)" }); }
                                 
                 int docID = 0;
-                var icpaction = await _icpActionData.GetICPCancerActionsList();
-                docID = icpaction.Where(a => a.ID == action).FirstOrDefault().RelatedLetterID.GetValueOrDefault();
+                var icpactionList = await _icpActionData.GetICPCancerActionsList();
+                var icpAction = icpactionList.FirstOrDefault(a => a.ID == action);
+                bool needsLetter = icpAction.LetterRequired;
+
+                docID = icpAction.RelatedLetterID.GetValueOrDefault();
                 int diaryID = 0;
+                string docCode = "";
 
                 if (docID != 0)
                 {
                     var doc = await _docData.GetDocumentDetails(docID);
-                    string docCode = doc.DocCode;
+                    docCode = doc.DocCode;
                     int successDiary = _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "L", docCode, "", "", User.Identity.Name);
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, docCode);
                     diaryID = diary.DiaryID;
-                }
+                }                
 
                 switch (action)
                 {
@@ -263,16 +267,16 @@ namespace AdminX.Controllers
                         //do nothing
                         break;
                     case 2:                        
-                        _lc.DoPDF(5, mpi, refID, User.Identity.Name, referrer, "", "", 0,"", false, false, diaryID); //send Ack
+                        //_lc.DoPDF(5, mpi, refID, User.Identity.Name, referrer, "", "", 0,"", false, false, diaryID); //send Ack
                         break;
                     case 3:
                         //do nothing //not currently used
                         break;
                     case 4:
-                        _lc.DoPDF(227, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFHAW
+                        //_lc.DoPDF(227, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFHAW
                         break;
                     case 5:
-                        _lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); // send KC
+                        //_lc.DoPDF(156, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); // send KC
                         break;
                     case 6:
                         //do nothing //no letter, patient sent FHF                        
@@ -284,17 +288,21 @@ namespace AdminX.Controllers
                         _crud.CallStoredProcedure("Diary", "Create", refID, mpi, 0, "A", "", "", "", User.Identity.Name, DateTime.Now, null, false, false);
                         break;
                     case 8:
-                        _lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID,"","",0,clinician);//send OOR1 and OOR2 //(out of area)
-                        _lc.DoPDF(183, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                        //_lc.DoPDF(182, mpi, refID, User.Identity.Name, referrer,"","",0,"",false,false,diaryID,"","",0,clinician);//send OOR1 and OOR2 //(out of area)
+                        //_lc.DoPDF(183, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
                         break;
                     case 9:
-                        //send DNMRC //not meet criteria
-                        
-                        _lc.DoPDF(202, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "");
+                        //send DNMRC //not meet criteria                        
+                        //_lc.DoPDF(202, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID, "", "");
                         break;
                     case 10:
-                        _lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFH
+                        //_lc.DoPDF(218, mpi, refID, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID); //send RejFH
                         break;
+                }
+
+                if(needsLetter)
+                {
+                    return RedirectToAction("Index", "LetterMenu", new { id = mpi, isRelative = false, letterGroup = "Standard", docCode = docCode });
                 }
                 
 

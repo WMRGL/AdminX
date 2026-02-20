@@ -46,14 +46,14 @@
                 <input type="hidden"  asp-for=@Model.endDate name="endDate" />
                 <div class="row">
                     <div class="mb-3 col-md-3" hidden>
-                        <label class="form-label" for="inputEmail">CGU Number</label>
+                        <label class="form-label">CGU Number</label>
                         <input name="cguNumber" value="@Model.cguNumber" asp-for="@Model.cguNumber" readonly />
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="mb-3 col-md-3">
-                        <label class="form-label" for="inputEmail">Title</label>
+                        <label class="form-label">Title</label>
                         <select id="ddlTitle" class="form-select" name="title">
                             <option value="" selected></option>                            
                             @foreach(var item in Model.titles)
@@ -214,7 +214,7 @@
                         <input type="text" name="ADDRESS3" class="form-control" id="ADDRESS3" placeholder="CITY">
                     </div>
                     <div class="mb-3 col-md-6">
-                        <label class="form-label" for="EmailemailAddress">Email Address</label>
+                        <label class="form-label" for="EmailAddress">Email Address</label>
                         <input type="text" name="email" class="form-control" id="EmailAddress" placeholder="Email Address" tabindex="8">
                     </div>
                 </div>

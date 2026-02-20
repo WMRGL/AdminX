@@ -32,7 +32,7 @@
     <div class="card-body">
         <form method="post" id="frmDoLetter" asp-action="DoLetter">
             <div class="col-md-2">
-                <input name="docCode" id="txtDocCode" hidden />
+                <input name="docCode" id="txtDocCode"  hidden />
                 <input name="isPreview" id="txtIsPreview" hidden />
                 @if (Model.isRelative)
                 {
@@ -54,7 +54,7 @@
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-end">Select Group</label>
                 <div class="col-sm-10 mb-2">
-                    <select id="letterGroups" class="form-select">
+                    <select id="letterGroups" class="form-select" asp-for=@Model.letterGroupSelected>
                         <option value="">Select Group</option>
                         <option value="Standard">Standard</option>
                         <option value="MEDREC">Medical Records Requests</option>
@@ -211,7 +211,12 @@
         
         if (groupMenu.value == "Standard")
         {
-            standardLetters.hidden = false;            
+            standardLetters.hidden = false;
+            if("@Model.letterCodeSelected" != "")
+            {
+                standardLetters.value = "@Model.letterCodeSelected";
+                SetDoccode();
+            }
         }
 
         if (groupMenu.value == "MEDREC")
@@ -378,53 +383,86 @@
             option.text = clinNameArray[j] + ", " + clinDeptArray[j].replace("&#x27;", "'").replace("&amp;", "&");
             clinList.add(option, 0);
         }
-              
+        SetLetterFromTo();
     }
 
     function SetLetterFromTo()
     {
         var refID = document.getElementById("ddlRefID").value;
+        var docCode = document.getElementById("txtDocCode").value;
 
         var referralArray = [];
-        var staffCodeArray = [];
-        var staffCodeArray2 = [];
+        var staffCodeArray = [];        
+        var consCodeArray = [];
+        var gcCodeArray = [];
         var staffNameArray = []; //using Javascript to get C# data is so annoying!!!
         var staffPositionArray = [];
+        var staffTypeArray = [];
+        var docCodeArray = [];
+        var letterFromArray = [];
         var staffName = "";
-        var staffCode = "";
-        
+        var staffCode = "";   
+        var letterFromType = "";
+                
 
         @foreach (var item in Model.referralList)
         {
-            @:referralArray.push("@item.refid");
-            @:staffCodeArray.push("@item.PATIENT_TYPE_CODE");
-            @:staffNameArray.push("@item.LeadClinician");
-        }
-
-        for (var i in referralArray)
-        {
-            if(referralArray[i] == refID)
-            {
-                staffName = staffNameArray[i];
-                staffCode = staffCodeArray[i];
-            }
-        }
+            @:referralArray.push("@item.refid");            
+            @:consCodeArray.push("@item.PATIENT_TYPE_CODE");            
+            @:gcCodeArray.push("@item.GC_CODE");
+        }        
 
         @foreach (var item in Model.staffMemberList)
         {
-            @:staffCodeArray2.push("@item.STAFF_CODE");
+            @:staffCodeArray.push("@item.STAFF_CODE");
+            @:staffNameArray.push("@item.NAME");
+            @:staffTypeArray.push("@item.CLINIC_SCHEDULER_GROUPS");
             @:staffPositionArray.push("@item.POSITION"); //so fucking annoying!!!
         }
 
-        for (var j in staffPositionArray)
+        @foreach (var item in Model.docContentList) //like, seriously... all this just to get the sender name in there!!!
         {
-            if(staffCodeArray2[j] == staffCode)
+            @:docCodeArray.push("@item.DocCode");
+            @:letterFromArray.push("@item.LetterFrom");
+        }
+
+        for (var k in docCodeArray)
+        {
+            if(docCode == docCodeArray[k])
             {
-                staffName = staffName + "\n" + staffPositionArray[j];
+                letterFromType = letterFromArray[k];
+            }
+        }       
+
+        for (var i in referralArray)
+        {            
+            if(referralArray[i] == refID)
+            {
+                
+                if(letterFromType == "Cons")
+                {
+                    staffCode = consCodeArray[i];
+                }
+                else if(letterFromType == "GC")
+                {
+                    staffCode = gcCodeArray[i];
+                }
+                else
+                {
+                    staffCode = "@Model.loggedOnUser";
+                }
             }
         }
 
-        document.getElementById("txtLetterFrom").value = staffName;
+        for (var j in staffCodeArray)
+        {
+            if(staffCodeArray[j] == staffCode)
+            {
+                staffName = staffNameArray[j] + "\n" + staffPositionArray[j];
+            }
+        }
+
+        document.getElementById("txtLetterFrom").value = staffName.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
     }
 
     function DoPreview()
