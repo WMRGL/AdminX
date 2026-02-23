@@ -100,9 +100,12 @@ namespace AdminX.Controllers
                 if(_rvm.ICPDetails != null)
                 {
                     _rvm.relatedICP = await _triageData.GetTriageDetails(_rvm.ICPDetails.ICPID);
-                } else
+                    _rvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(_rvm.ICPDetails.ICPID);
+                    _rvm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(_rvm.ICPDetails.ICPID);
+                } 
+                else
                 {
-                    _rvm.message = "Patient does not have ICP please email the ICT team";
+                    _rvm.message = "Patient does not have an ICP, or has the wrong one. Please email the ICT team.";
                 }
                      //because ICP and Triage are different, apparently
                 
@@ -113,8 +116,7 @@ namespace AdminX.Controllers
                     _rvm.canDeleteICP = true;
                 }
 
-                _rvm.icpCancer = await _triageData.GetCancerICPDetailsByICPID(_rvm.ICPDetails.ICPID);
-                _rvm.icpGeneral = await _triageData.GetGeneralICPDetailsByICPID(_rvm.ICPDetails.ICPID);
+                
 
                 if(_rvm.icpCancer != null)
                 {

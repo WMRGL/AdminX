@@ -321,10 +321,7 @@
                                             </div>
                                         </td>
                                     }
-                                    <td>
-                                        
-                                    </td>
-                                    
+                                    <td></td>                                    
                                 </tr>
                                 @if (Model.referral.PATHWAY?.Trim() == "Cancer")
                                 {     
@@ -463,8 +460,6 @@
                                                                     }
                                                                 </li>
                                                             }
-                                                            
-
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -486,19 +481,14 @@
                                                     <p>Don't know/unclear</p>
                                                 }
                                             </div>
-
                                         </td>
-
                                     </tr>
                                     }
                                 </tbody>
                             </table>                        
-                        
                         <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@Model.referral.refid" class="btn btn-primary">Edit</a>
-
                     </div>
                 </div>
-
             </div>
             <div class="tab-pane fade" id="appointment" role="tabpanel">
                 <div class="card">
@@ -549,12 +539,7 @@
                                     </tr>
                                 }
                             </tbody>
-
-                        </table>              
-                
-                
-                
-                
+                        </table>                
                     </div>
                 </div>
             </div>
@@ -629,9 +614,7 @@
                                     {
                                         <h5>Not yet triaged</h5>
                                     }
-
                                 }
-
 
                                 @if (Model.referral.PATHWAY.Contains("Cancer"))
                                 {
@@ -648,25 +631,14 @@
                                     }
                                 }
                             }
-
-                            
-
                         }
                         else
                         {
-                            <h4>There is no ICP</h4>
+                            <h4>There is no @Model.referral.PATHWAY ICP</h4>
                         }
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
-
-
-
-
-
-      
 </div>
