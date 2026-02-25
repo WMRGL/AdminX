@@ -9,6 +9,8 @@ namespace AdminX.ViewModels
         public List<StaffMember> staffMembers { get; set; }
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> GCs { get; set; }
+        public List<StaffMember> GAs { get; set; }
+        public List<StaffMember> GenPs { get; set; }
         public List<Triage> triages { get; set; }
         public List<ICPCancer> icpCancerList { get; set; }                
         public Triage triage { get; set; }
@@ -22,11 +24,16 @@ namespace AdminX.ViewModels
         public List<ICPCancerReviewAction> cancerReviewActionsLists { get; set; }        
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }
         public List<ExternalCliniciansAndFacilities> screeningCoordinators { get; set; }
+        public Patient patient { get; set; }
         public List<string> specialities { get; set; }
         public string staffCode { get; set; }
         public bool isICPTriageStarted { get; set; }
         public int referralAgeDays { get; set; }
         public int referralAgeWeeks { get; set; }
         public bool canDeleteICP { get; set; }
+        public DateTime dobAt16 { get; set; }
+        public List<ClinicVenue> clinicalFacilityList { get; set; }
+        public bool isChild { get; set; }
+        public List<Priority> priorities { get; set; }
     }
 }

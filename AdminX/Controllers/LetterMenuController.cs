@@ -5,6 +5,7 @@ using AdminX.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using ClinicalXPDataConnections.Data;
 using APIControllers.Controllers;
+using APIControllers.Data;
 
 namespace AdminX.Controllers
 {
@@ -35,7 +36,7 @@ namespace AdminX.Controllers
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData)//, ClinicalContext context, DocumentContext documentContext)
+            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData)//, ClinicalContext context, DocumentContext documentContext, APIContext apiContext)
         {
             _config = config;   
             //_context = context;

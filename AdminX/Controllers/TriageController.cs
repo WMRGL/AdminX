@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Runtime.InteropServices;
 
 namespace AdminX.Controllers
 {
@@ -30,10 +31,12 @@ namespace AdminX.Controllers
         private readonly LetterController _lc;
         private readonly IDocumentsDataAsync _docData;
         private readonly IConstantsDataAsync _constantsData;
+        private readonly IPatientDataAsync _patientData;
+        private readonly IPriorityDataAsync _priorityData;
 
         public TriageController(IConfiguration config, IStaffUserDataAsync staffUser, IPathwayDataAsync pathway, IReferralDataAsync referral, ITriageDataAsync triage, IDiaryDataAsync diary,
             IRelativeDataAsync relative, IExternalClinicianDataAsync extClinician, IICPActionDataAsync icpAction, ICRUD crud, IAuditServiceAsync audit, LetterController lc, IDocumentsDataAsync doc,
-            IConstantsDataAsync constantsData)
+            IConstantsDataAsync constantsData, IPatientDataAsync patientData, IPriorityDataAsync priorityData)
         {
             //_clinContext = clinContext;
             //_docContext = docContext;
@@ -53,6 +56,8 @@ namespace AdminX.Controllers
             _lc = lc;
             _docData = doc;
             _constantsData = constantsData;
+            _patientData = patientData;
+            _priorityData = priorityData;
         }
 
         [Authorize]
@@ -94,6 +99,15 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - ICP Details", "ID=" + id.ToString(), _ip.GetIPAddress());
 
                 _ivm.triage = await _triageData.GetTriageDetails(id);
+                _ivm.patient = await _patientData.GetPatientDetails(_ivm.triage.MPI);
+                _ivm.dobAt16 = DateTime.Now.AddYears(-16);
+                _ivm.clinicalFacilityList = await _triageData.GetClinicalFacilitiesList();
+                _ivm.clinicalFacilityList = _ivm.clinicalFacilityList.OrderBy(f => f.NAME).ToList();
+                _ivm.consultants = await _staffUser.GetConsultantsList();
+                _ivm.GCs = await _staffUser.GetGCList();
+                var priotities = await _priorityData.GetPriorityList();
+                _ivm.priorities = priotities.OrderByDescending(p => p.PriorityLevel).ToList();
+
 
                 int cicp = await _triageData.GetCancerICPCountByICPID(id);
                 int gicp = await _triageData.GetGeneralICPCountByICPID(id);
@@ -112,10 +126,12 @@ namespace AdminX.Controllers
                 _ivm.cancerActionsList = await _icpActionData.GetICPCancerActionsList();
                 _ivm.generalActionsList = await _icpActionData.GetICPGeneralActionsList();
                 _ivm.generalActionsList2 = await _icpActionData.GetICPGeneralActionsList2();
-
                 _ivm.clinicians = await _clinicianData.GetClinicianList(); 
                 _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY != null).ToList();
                 _ivm.clinicians = _ivm.clinicians.Where(c => c.SPECIALITY.Contains("Genetics")).ToList();
+                var clins = await _staffUser.GetClinicalStaffList();
+                _ivm.GAs = clins.Where(s => s.POSITION == ("Genomics Associate") || s.POSITION == ("Genomic Associate")).ToList();
+                _ivm.GenPs = clins.Where(s => s.POSITION == ("Genomics Practitioner") || s.POSITION == ("Genomics Practitioner")).ToList();
 
                 string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
@@ -190,6 +206,7 @@ namespace AdminX.Controllers
                     if (successwl == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genAddWL(SQL)" }); }
                 }
 
+                //add to GC waiting list
                 if (facility2 != null && facility2 != "")
                 {
                     int successwl = _crud.AddToWaitingList(mpi, clinician2, facility2, wlPriority.GetValueOrDefault(), referral.refid, User.Identity.Name);
@@ -204,7 +221,8 @@ namespace AdminX.Controllers
                     if (successDiary == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Triage-genDiaryUpdate(SQL)" }); }
                     var diary = await _diaryData.GetLatestDiaryByRefID(refID, "CTBAck");
                     int diaryID = diary.DiaryID;
-                    _lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                    //_lc.DoPDF(184, mpi, referral.refid, User.Identity.Name, referrer, "", "", 0, "", false, false, diaryID);
+                    return RedirectToAction("Index", "LetterMenu", new { id = mpi, isRelative = false, letterGroup = "Standard", docCode = "CTBAck" });
                 }
 
                 if (tp2 == 6) //Dictate letter
@@ -215,8 +233,9 @@ namespace AdminX.Controllers
                 }
 
                 if (tp2 == 7) //Reject letter
-                {                    
-                    _lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
+                {
+                    //_lc.DoPDF(208, mpi, referral.refid, User.Identity.Name, referrer);
+                    return RedirectToAction("Index", "LetterMenu", new { id = mpi, isRelative = false, letterGroup = "Standard", docCode = "RejectCMA" });
                 }
 
                 return RedirectToAction("Index");

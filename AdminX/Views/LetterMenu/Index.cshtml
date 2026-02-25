@@ -523,7 +523,7 @@
         }
 
         document.getElementById("txtLetterFrom").value = staffName.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
-        document.getElementById("txtLetterTo").value = letterTo;
+        document.getElementById("txtLetterTo").value = letterTo.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
     }
 
     function DoPreview()
