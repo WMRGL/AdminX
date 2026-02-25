@@ -414,7 +414,7 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewClinician(string clinCode, string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
+        public async Task<IActionResult> AddNewClinician(string clinCode, string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP, int isActive)
         {
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
@@ -451,7 +451,7 @@ namespace AdminX.Controllers
                 }
             }
 
-            int iSuccess = _crud.SysAdminCRUD("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
+            int iSuccess = _crud.SysAdminCRUD("Clinician", "Create", isGP, isActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
