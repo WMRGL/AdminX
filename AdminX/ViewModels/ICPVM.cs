@@ -35,5 +35,7 @@ namespace AdminX.ViewModels
         public List<ClinicVenue> clinicalFacilityList { get; set; }
         public bool isChild { get; set; }
         public List<Priority> priorities { get; set; }
+        public string genAClinic { get; set; }
+        public string genPClinic { get; set; }
     }
 }

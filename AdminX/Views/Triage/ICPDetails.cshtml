@@ -300,37 +300,8 @@
                 <div class="row" id="GCWaitingListDetails">
                     <div class="row mb-2 g-2">
                         <h5 id="lblWaitingList">Waiting list details:</h5>
-                    </div>
+                    </div>                   
                     
-                    <div class="row mb-2 g-2">
-                        <div class="col-md-4">
-                            <label for="ddlGa" id="lblGa">Genomics Associate:</label>
-                        </div>
-                        <div class="col-md-4">
-                            <select id="ddlGa" name="ga">
-                                <option value="" selected></option>
-                                @foreach (var c in Model.GAs)
-                                {
-                                    <option value=@c.STAFF_CODE>@c.NAME</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-2 g-2">
-                        <div class="col-md-4">
-                            <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
-                        </div>
-                        <div class="col-md-4">
-                            <select id="ddlGenP" name="genp">
-                                <option value="" selected></option>
-                                @foreach (var c in Model.GenPs)
-                                {
-                                    <option value=@c.STAFF_CODE>@c.NAME</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
                     
                     <div class="row mb-2 g-2" id="clicsActions" hidden>
                         @*CLICS actions - only displayed if CLICS selected*@
@@ -352,7 +323,7 @@
 
                     <div class="row mb-2 g-2">
                         <div class="col-md-2">
-                            <label for="ddlFacility" id="lblClinician">GC:</label>
+                            <label for="ddlFacility" id="lblGCs">GC:</label>
                         </div>
                         <div class="col-md-4">
                             <select class="w-100" id="ddlGCs" name="clinician2">
@@ -363,11 +334,40 @@
                                 }
                             </select>
                         </div>
+                        <div class="row mb-2 g-2">
+                            <div class="col-md-4">
+                                <label for="ddlGa" id="lblGa">Genomics Associate:</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlGa" name="ga">
+                                    <option value="" selected></option>
+                                    @foreach (var c in Model.GAs)
+                                    {
+                                        <option value=@c.STAFF_CODE>@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-2 g-2">
+                            <div class="col-md-4">
+                                <label for="ddlGenP" id="lblGenP">Genomics Practitioner:</label>
+                            </div>
+                            <div class="col-md-4">
+                                <select id="ddlGenP" name="genp">
+                                    <option value="" selected></option>
+                                    @foreach (var c in Model.GenPs)
+                                    {
+                                        <option value=@c.STAFF_CODE>@c.NAME</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-md-2">
-                            <label for="ddlFacility" id="lblFacility">Clinic:</label>
+                            <label for="ddlFacility" id="lblFacility2">Clinic:</label>
                         </div>
                         <div class="col-md-4">
-                            <select class="w-100" id="ddlFacility" name="facility2">
+                            <select class="w-100" id="ddlFacility2" name="facility2">
                                 <option value="" selected></option>
                                 @foreach (var f in Model.clinicalFacilityList)
                                 {
@@ -541,7 +541,9 @@
         let _tp2 = "";
         _tp1 = document.getElementById("ddlTreatPath1");
         var _facility = document.getElementById("ddlFacility");
+        var _facility2 = document.getElementById("ddlFacility2");
         var _facilityLabel = document.getElementById("lblFacility");
+        var _facilityLabel2 = document.getElementById("lblFacility2");
         var _cons = document.getElementById("ConsWaitingListDetails");
         var _gcs = document.getElementById("GCWaitingListDetails");
         
@@ -549,6 +551,7 @@
         document.getElementById("ddlGa").hidden = true;
         document.getElementById("lblGenP").hidden = true;
         document.getElementById("ddlGenP").hidden = true;
+        
         //document.getElementById("closeReferral").hidden = true;
         
         //if one of the clinic appointment boxes is selected
@@ -568,7 +571,7 @@
                 //GC Only or Cons/GC
                 if(_tp1.value == 3 || _tp1.value == 5)
                 {
-                    _gcs.hidden = false;
+                    _gcs.hidden = false;                    
                 }
 
                 //Cons only or Cons/GC
@@ -617,13 +620,20 @@
             document.getElementById("btnGeneralTriage").hidden = false;
         }
 
+        document.getElementById("lblGCs").hidden = false;
+        document.getElementById("ddlGCs").hidden = false;
+
         //Send to GA
         if(_tp2.value == "5")
-        {   
+        {               
             document.getElementById("lblGa").hidden = false;
             document.getElementById("ddlGa").hidden = false;
-            _facility.hidden = true;
-            _facilityLabel.hidden = true;
+            document.getElementById("lblGCs").hidden = true;
+            document.getElementById("ddlGCs").hidden = true;
+            
+            _facility2.value = "@Model.genAClinic".toUpperCase();
+            //_facility.hidden = true;
+            //_facilityLabel.hidden = true;
         }        
 
         //Send to GenP
@@ -631,8 +641,11 @@
         {
             document.getElementById("lblGenP").hidden = false;
             document.getElementById("ddlGenP").hidden = false;
-            _facility.hidden = true;
-            _facilityLabel.hidden = true;
+            document.getElementById("lblGCs").hidden = true;
+            document.getElementById("ddlGCs").hidden = true;
+            _facility2.value = "@Model.genPClinic".toUpperCase();;
+            //_facility.hidden = true;
+            //_facilityLabel.hidden = true;
         }
         
         if(_tp2.value == "6" || _tp2.value == "7" || _tp2.value == "8")

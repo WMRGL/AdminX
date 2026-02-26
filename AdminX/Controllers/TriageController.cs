@@ -132,6 +132,9 @@ namespace AdminX.Controllers
                 var clins = await _staffUser.GetClinicalStaffList();
                 _ivm.GAs = clins.Where(s => s.POSITION == ("Genomics Associate") || s.POSITION == ("Genomic Associate")).ToList();
                 _ivm.GenPs = clins.Where(s => s.POSITION == ("Genomics Practitioner") || s.POSITION == ("Genomics Practitioner")).ToList();
+                _ivm.genAClinic = await _constantsData.GetConstant("GAClinic", 1);
+                _ivm.genPClinic = await _constantsData.GetConstant("GenPClinic", 1);
+
 
                 string canDeleteICP = await _constantsData.GetConstant("DeleteICPBtn", 1);
 
@@ -163,7 +166,7 @@ namespace AdminX.Controllers
         
         [HttpPost]
         public async Task<IActionResult> DoGeneralTriage(int icpID, string? clinician, string? facility, int? duration, string? comment, bool isSPR, bool isChild, int? tp1, int? tp2c, 
-            int? tp2nc, int? wlPriority, string? clinician2, string? facility2, int? duration2, string? comment2, bool isChild2)
+            int? tp2nc, int? wlPriority, string? clinician2, string? facility2, int? duration2, string? comment2, bool isChild2, string? ga, string? genp)
         {
             try
             {
@@ -191,7 +194,11 @@ namespace AdminX.Controllers
                 {
                     sType = "Haemoglobinopathy";
                 }
-                
+
+                //if ga or genp
+                if(ga != null) { clinician2 = ga; }
+                if(genp != null) { clinician2 = genp; }
+
                 int success = _crud.TriageDetail(sType, "Triage", icpID, tp1.GetValueOrDefault(), tp2, clinician, facility, comment, sApptIntent, User.Identity.Name, clinician2, facility2, comment2,
                     duration, duration2, isSPR, isChild, isChild2);
 
