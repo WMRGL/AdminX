@@ -27,7 +27,7 @@ namespace AdminX.Meta
             int? int8, string string1, string string2, string text, string? string3 = "", string? string4 = "", string? string5 = "", string? string6 = "",
             string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", string? string12 = "",
             DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "",
-            string? string17 = "", string? string18 = "", bool? bool1 = false, bool? bool2 = false);
+            string? string17 = "", string? string18 = "", bool? bool1 = false, bool? bool2 = false, DateTime? dDate3 = null);
 
         public int TriageDetail(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string? string4, string sLogin,
        string? string5 = "", string? string6 = "", string? string7 = "", int? int4 = 0, int? int5 = 0, bool? bool1 = false, bool? bool2 = false, bool? bool3 = false);
@@ -205,7 +205,7 @@ namespace AdminX.Meta
             int? int8, string string1, string string2, string text, string? string3 = "", string? string4 = "", string? string5 = "", string? string6 = "",
             string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "", string? string12 = "",
             DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "",
-            string? string17 = "", string? string18 = "", bool? bool1 = false, bool? bool2 = false)
+            string? string17 = "", string? string18 = "", bool? bool1 = false, bool? bool2 = false, DateTime? dDate3 = null)
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
@@ -251,6 +251,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string16", SqlDbType.VarChar).Value = string16;
             cmd.Parameters.Add("@string17", SqlDbType.VarChar).Value = string17;
             cmd.Parameters.Add("@string18", SqlDbType.VarChar).Value = string18;
+            cmd.Parameters.Add("@date3", SqlDbType.DateTime).Value = dDate3;
 
             // cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
