@@ -358,7 +358,7 @@ namespace AdminX.Controllers
         public IActionResult UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
              string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
              string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
-             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic)
+             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic, DateTime RefDate)
         {
             try
             {
@@ -403,7 +403,9 @@ namespace AdminX.Controllers
                          string15: OthReason1,
                          string16: OthReason2,
                          string17: OthReason3,
-                         string18: OthReason4
+                         string18: OthReason4,
+                         dDate3: RefDate
+
 
 
                      );
@@ -441,7 +443,8 @@ namespace AdminX.Controllers
                         string12: COMPLETE,
                         dDate1: ClockStartDate,
                         dDate2: ClockStopDate,
-                        string13: Status_Admin
+                        string13: Status_Admin,
+                        dDate3: RefDate
 
                     );
                     if (success != 1)

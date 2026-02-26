@@ -20,7 +20,7 @@
         <h5 class="card-title text-dark mb-0">New Clinician Creation</h5>
     </div>
     <div class="card-body">
-        <form asp-action="AddNewClinician">
+        <form asp-action="AddNewClinician" method="post">
 
             <div class="mb-3 row">
                 <div class="row">
@@ -88,6 +88,15 @@
                     </select>
                 </div>
             </div>
+            @* <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Not Currently Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+            </div> *@
            
 
             @*@
