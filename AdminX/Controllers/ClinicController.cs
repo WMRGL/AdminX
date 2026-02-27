@@ -223,7 +223,8 @@ namespace AdminX.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop, bool? isComplete = false)
+        public async Task<IActionResult> Edit(int refID, string counseled, string seenBy, DateTime arrivalTime, int noSeen, string letterRequired, bool isClockStop,
+            string? seenBy2, string? seenBy3, bool? isComplete = false)
         {
             try
             {
@@ -246,7 +247,7 @@ namespace AdminX.Controllers
                 }
 
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
-                    letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete);
+                    letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 

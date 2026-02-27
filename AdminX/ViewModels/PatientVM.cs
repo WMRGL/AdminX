@@ -33,6 +33,7 @@ namespace AdminX.ViewModels
         public List<string>? messages { get; set; }
         public string? diedage { get; set; }
         public string? currentage { get; set; }
+        public int currentAgeYears { get; set; }
         public List<Language> languages { get; set; }
         public Alert protectedAddress { get; set; }
         public bool success { get; set; }

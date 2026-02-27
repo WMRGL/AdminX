@@ -56,14 +56,15 @@ namespace AdminX.Controllers
         private readonly IEpicPatientReferenceDataAsync _epicPatientReferenceData;
         private readonly IEpicReferralReferenceDataAsync _epicReferralReferenceData;
         private readonly IPAddressFinder _ip;
+        private readonly IAgeCalculator _ageCalculator;
 
         public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
             ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api) //, ClinicalContext clinContext)
-        {            
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator) //, ClinicalContext clinContext)
+        {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
             //_apiContext = apiContext;
@@ -102,6 +103,7 @@ namespace AdminX.Controllers
             _epicPatientReferenceData = epicPatientReference;
             _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
+            _ageCalculator = ageCalculator;
             //_clinContext = clinContext;
         }
 
@@ -603,6 +605,8 @@ namespace AdminX.Controllers
                 _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = await _genderData.GetGenderList();
                 _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();
+                _pvm.currentAgeYears = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
+                
                 var ptareaCodes = await _areaNamesData.GetAreaNames();
                 if (ptareaCodes is not null && _pvm.patient.PtAreaName != null)
                 {
@@ -633,7 +637,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
             string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string PtTelMobile, string language,
-            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string ptLetterAddressee, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
         {
             try
             {
@@ -653,9 +657,9 @@ namespace AdminX.Controllers
 
                 _pvm.patient = await _patientData.GetPatientDetails(mpi);
                 bool interpreterBool = (isInterpreterReqd == "Yes");
-                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, "", lastname, nhsno.Replace(" ", ""),
+                int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, middleName, lastname, nhsno.Replace(" ", ""),
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, DECEASED_DATE, maidenName, interpreterBool,
-                    isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, PtTelMobile, areaCode, null, SALUTATION,
+                    isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, PtTelMobile, areaCode, ptLetterAddressee, SALUTATION,
                     GenderIdentity, language, deseasedStatus);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }

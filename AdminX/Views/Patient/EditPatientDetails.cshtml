@@ -138,20 +138,14 @@
                         </select>
                     </div>                    
                 </div>
-                <div class="row">
-                    <div class="mb-3 col-md-3">
-                        <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
-                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()" asp-for=@Model.patient.GP_Facility_Code>
-                            <option value="" selected>Select...</option>
-                            @foreach (var item in Model.GPPracticeList)
-                            {
-                                <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME, @item.ADDRESS, @item.ZIP</option>
-                            }
-                        </select>
-                    </div>
+                <div class="row">                    
                     <div class="mb-3 col-md-3" >
-                        <label class="form-label" for="ddlGPPractice">Salutation</label>
+                        <label class="form-label" for="salutation">Salutation</label>
                         <input type="text" name="SALUTATION" class="form-control" id="SALUTATION" placeholder="Salutation" asp-for=@Model.patient.SALUTATION>
+                    </div>
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="letteraddressee">Letter Addressee</label>
+                        <input type="text" name="ptLetterAddressee" class="form-control" id="ptLetterAddressee" placeholder="Letter Addressee" asp-for=@Model.patient.PtLetterAddressee>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="sex">Sex</label>
@@ -171,6 +165,18 @@
                             @foreach (var item in Model.genderIdentities)
                             {
                                 <option value=@item.Gender>@item.Gender</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-md-3">
+                        <label class="form-label" for="ddlGPPractice">GP Details (select a practice to see GP list)</label>
+                        <select class="form-select js-choice" id="ddlGPPractice" name="gpPracticeCode" onchange="ShowGPList()" asp-for=@Model.patient.GP_Facility_Code>
+                            <option value="" selected>Select...</option>
+                            @foreach (var item in Model.GPPracticeList)
+                            {
+                                <option value=@item.MasterFacilityCode>@item.MasterFacilityCode - @item.NAME, @item.ADDRESS, @item.ZIP</option>
                             }
                         </select>
                     </div>
@@ -264,6 +270,9 @@
     document.getElementById("ADDRESS3").addEventListener("change", GetCountyFromCity);
     window.addEventListener("load", LoadPatient);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+    document.getElementById("firstName").addEventListener("change", SetSalutation);
+    document.getElementById("lastName").addEventListener("change", SetSalutation);
+    document.getElementById("ddlTitle").addEventListener("change", SetSalutation);
 
     function DoSubmit()
     {
@@ -486,7 +495,8 @@
         CheckDeceasedStatus();
     });
 
-    function CheckDeceasedStatus() {
+    function CheckDeceasedStatus() 
+    {
         var dodInput = document.getElementById("dod");
         var deceasedContainer = document.getElementById("deceasedContainer");
         var deceasedCheckbox = document.getElementById("chkDeceased");
@@ -507,6 +517,27 @@
 
             deceasedCheckbox.checked = false;
         }
+    }
+
+    function SetSalutation()
+    {        
+        var _addressee = document.getElementById("ptLetterAddressee");
+        var _salutation = document.getElementById("SALUTATION");
+        var _title = document.getElementById("ddlTitle");
+        var _firstName = document.getElementById("firstName");
+        var _lastName = document.getElementById("lastName");
+        
+
+        if("@Model.currentAgeYears" < 16)
+        {
+            _addressee.value = "Parent/Guardian of " + _title.value + " " + _firstName.value + " " + _lastName.value;
+        }
+        else
+        {
+            _addressee.value = _title.value + " " + _firstName.value + " " + _lastName.value;
+        }
+        _salutation.value = _title.value + " " + _lastName.value;
+        
     }
 
 
