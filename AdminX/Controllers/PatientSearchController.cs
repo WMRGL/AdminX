@@ -119,17 +119,17 @@ namespace AdminX.Controllers
                         _pvm.dobSearch = dob.GetValueOrDefault();
                     }
 
-                    //_pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
-                    _pvm.patientsList = _pvm.patientsList.OrderBy(p =>
-                    {
-                        if (string.IsNullOrWhiteSpace(p.CGU_No) || !p.CGU_No.Contains("."))
-                            return 0;
-                        string suffixString = p.CGU_No.Substring(p.CGU_No.LastIndexOf('.') + 1).Trim();
-                        if (int.TryParse(suffixString, out int suffix))
-                            return suffix;
+                    _pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
+                    //_pvm.patientsList = _pvm.patientsList.OrderBy(p =>
+                    //{
+                    //    if (string.IsNullOrWhiteSpace(p.CGU_No) || !p.CGU_No.Contains("."))
+                    //        return 0;
+                    //    string suffixString = p.CGU_No.Substring(p.CGU_No.LastIndexOf('.') + 1).Trim();
+                    //    if (int.TryParse(suffixString, out int suffix))
+                    //        return suffix;
 
-                        return 0;
-                    }).ToList();
+                    //    return 0;
+                    //}).ToList();
                 }
 
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient Search", searchTerm, _ip.GetIPAddress());

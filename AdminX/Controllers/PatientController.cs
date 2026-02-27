@@ -140,16 +140,55 @@ namespace AdminX.Controllers
 
                             foreach (var item in _pvm.epicReferralStaging)
                             {
-                                var updateStatus = item.UpdateSts;
+                                //var updateStatus = item.UpdateSts;
 
-                                while (updateStatus < 5) //cycle through them all until they hit 5
+                                //while (updateStatus < 5) //cycle through them all until they hit 5
+                                //{
+                                //    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
+                                //        item.CreatedDate.GetValueOrDefault());
+
+                                //    var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
+                                //    updateStatus = stagedUpdate.UpdateSts;
+                                //}
+
+                                int updateStatus = item.UpdateSts.GetValueOrDefault();
+                                int previousStatus = -1;
+
+                                while (updateStatus < 5)
                                 {
-                                    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
-                                        item.CreatedDate.GetValueOrDefault());
+                                    if (updateStatus == previousStatus)
+                                    {
+                                        _pvm.PatientAlerts.Add(new PatientAlert
+                                        {
+                                            Severity = AlertSeverity.Critical,
+                                            Message = "Unable to load patient referral. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
+                                            Icon = "fa-cog",
+                                            ActionText = "Contact IT Support",
+                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
+                                        });
+                                        break;
+                                    }
+
+                                    previousStatus = updateStatus;
+
+                                    _crud.EpicReferralStaging(
+                                        item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo,
+                                        item.Speciality, item.Pathway, item.ReferralStatus,
+                                        item.CreatedDate.GetValueOrDefault()
+                                    );
 
                                     var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
-                                    updateStatus = stagedUpdate.UpdateSts;
+
+                                    if (stagedUpdate != null)
+                                    {
+                                        updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
+
                             }
                         }
 
@@ -316,6 +355,67 @@ namespace AdminX.Controllers
                         _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
                     }                    
                 }
+
+                //_pvm.PatientAlerts = new List<PatientAlert>();
+
+                //if (message != null && !success.GetValueOrDefault())
+                //{
+                //    _pvm.PatientAlerts.Add(new PatientAlert
+                //    {
+                //        Severity = AlertSeverity.Critical,
+                //        Message = message,
+                //        Icon = "fa-cog",
+
+                //    });
+                //}
+
+                //if (_pvm.isEpicPatientChanged || _pvm.isEpicReferralChanged)
+                //{
+                //    _pvm.PatientAlerts.Add(new PatientAlert
+                //    {
+                //        Severity = AlertSeverity.Critical,
+                //        Message = "Data changes detected in Epic that have not been applied locally.",
+                //        Icon = "fa-file-medical",
+                //        ActionText = "See Epic Changes",
+                //        ActionUrl = Url.Action("EpicPatientChanges", "Patient", new { id = id })
+                //    });
+                //}
+
+                //if (gpPractice == "" || _pvm.patient.GP_Code == null)
+                //{
+                //    _pvm.PatientAlerts.Add(new PatientAlert
+                //    {
+                //        Severity = AlertSeverity.Critical,
+                //        Message = "Invalid GP code assigned. Please verify in System Administration.",
+                //        Icon = "fa-user-md",
+                //        ActionText = "Update GP Information",
+                //        ActionUrl = Url.Action("EditPatientDetails", "Patient", new { mpi = id })
+                //    });
+                //}
+
+                //if (_pvm.patient.PtAreaCode == null)
+                //{
+                //    _pvm.PatientAlerts.Add(new PatientAlert
+                //    {
+                //        Severity = AlertSeverity.Warning,
+                //        Message = "This patient has no area code assigned.",
+                //        Icon = "fa-map-marker-alt",
+                //        ActionText = "Assign Area Code",
+                //        ActionUrl = Url.Action("EditPatientDetails", "Patient", new { mpi = id })
+                //    });
+                //}
+
+                //if (!_pvm.activeReferrals.Any() && !_pvm.tempReges.Any())
+                //{
+                //    _pvm.PatientAlerts.Add(new PatientAlert
+                //    {
+                //        Severity = AlertSeverity.Warning,
+                //        Message = "There is no activity for this patient.",
+                //        Icon = "fa-exclamation-triangle",
+                //        ActionText = "Create New Referral",
+                //        ActionUrl = Url.Action("AddNew", "Referral", new { mpi = id })
+                //    });
+                //}
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {

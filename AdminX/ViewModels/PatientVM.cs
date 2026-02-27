@@ -76,5 +76,17 @@ namespace AdminX.ViewModels
         public List<EpicReferralStaging> epicReferralStaging { get; set; }
         public List<EpicReferralReference> epicReferrals { get; set; }
         public int selectedAreaID { get; set; }
+        public List<PatientAlert> PatientAlerts { get; set; } = new List<PatientAlert>();
     }
+
+    public class PatientAlert
+    {
+        public AlertSeverity Severity { get; set; } 
+        public string Message { get; set; }
+        public string Icon { get; set; }
+        public string ActionText { get; set; }
+        public string ActionUrl { get; set; }
+    }
+
+    public enum AlertSeverity { Critical, Warning }
 }
