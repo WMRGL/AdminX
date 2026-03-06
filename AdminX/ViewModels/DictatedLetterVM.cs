@@ -31,5 +31,6 @@ namespace AdminX.ViewModels
         public List<DictatedlettersReportClinicians> dictatedlettersReportClinicians { get; set; }
         public List<DictatedLettersReport> dictatedLettersSecTeamReports { get; set; }
         public string edmsLink { get; set; }
+        public List<ExternalCliniciansAndFacilities> hospitals { get; set; }
     }
 }

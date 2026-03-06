@@ -105,7 +105,8 @@ namespace AdminX.Controllers
                 } 
                 else
                 {
-                    _rvm.message = "Patient does not have an ICP, or has the wrong one. Please email the ICT team.";
+                    _rvm.message = "Patient does not have an ICP, please confirm that the referral information is complete";
+
                 }
                      //because ICP and Triage are different, apparently
                 

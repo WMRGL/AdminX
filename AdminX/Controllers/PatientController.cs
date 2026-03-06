@@ -529,7 +529,7 @@ namespace AdminX.Controllers
                 {
                     //List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
                     //int patientNumber = patList.Count();
-
+                    fileNumber = fileNumber.Replace(" ", "");
                     int patientNumber = 0;
 
                     while (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) != null)
@@ -797,6 +797,10 @@ namespace AdminX.Controllers
         {
             try
             {
+                if (newFileNo != null)
+                {
+                    newFileNo = newFileNo.Replace(" ", "");
+                }
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New");
@@ -819,6 +823,10 @@ namespace AdminX.Controllers
         {
             try
             {
+                if (newFileNumber != null)
+                {
+                    newFileNumber = newFileNumber.Replace(" ", "");
+                }
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "Update");

@@ -166,6 +166,8 @@ namespace AdminX.Controllers
                 List<ExternalCliniciansAndFacilities> extClins = _lvm.clinicians.Where(c => c.POSITION != null).ToList();                
                 _lvm.specialities = await _externalClinicianData.GetClinicianTypeList();
                 _lvm.edmsLink = await _constantsData.GetConstant("GEMRLink", 1);
+                _lvm.hospitals = await _externalClinicianData.GetClinicianList();
+
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
@@ -180,6 +182,21 @@ namespace AdminX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-edit" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetClinicianByHospital(string hospital)
+        {
+            try
+            {
+                var hospitals = await _externalClinicianData.GetClinicianList();
+                var clinicians = hospitals.Where(c => c.FACILITY == hospital).ToList();
+                return Json(clinicians);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-getCliniciansByHospital" });
             }
         }
 
@@ -333,9 +350,11 @@ namespace AdminX.Controllers
                 string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Add CC to DOT", "ID=" + dID.ToString(), _ip.GetIPAddress());
 
-                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
+                //int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, cc, "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "AddCC", dID, 0, 0, "", "", "", cc, User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-addCC(SQL)" }); }
+                TempData["SuccessMessage"] = "CC successfully added to the letter.";
 
                 return RedirectToAction("Edit", new { id = dID });
             }
@@ -357,10 +376,11 @@ namespace AdminX.Controllers
                 
                 int dID = letter.DotID;
 
-                int success = _crud.CallStoredProcedure("Letter", "DeleteCC", id, 0, 0, "", "", "", "", User.Identity.Name);
+                int success = _crud.CallStoredProcedure("Letter", "DeleteCC", dID, id, 0, "", "", "", "", User.Identity.Name);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-deleteCC(SQL)" }); }
 
+                TempData["SuccessMessage"] = "CC successfully removed.";
                 return RedirectToAction("Edit", new { id = dID });
                 
             }
