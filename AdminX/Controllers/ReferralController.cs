@@ -633,5 +633,58 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "ProcessReferral" });
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SearchExternalClinicians(string? firstName, string? lastName, bool isOnlyCurrent, bool isOnlyGP, bool isOnlyNonGP)
+        {
+            try
+            {
+                var clinicians = await _externalClinicianData.GetAllCliniciansList();
+
+                if (!string.IsNullOrEmpty(firstName))
+                {
+                    clinicians = clinicians.Where(s => s.FIRST_NAME != null && s.FIRST_NAME.ToUpper().Contains(firstName.ToUpper())).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(lastName))
+                {
+                    clinicians = clinicians.Where(s => s.NAME != null && s.NAME.ToUpper().Contains(lastName.ToUpper())).ToList();
+                }
+
+                if (isOnlyCurrent)
+                {
+                    clinicians = clinicians.Where(s => s.NON_ACTIVE == 0).ToList();
+                }
+
+                if (isOnlyGP)
+                {
+                    clinicians = clinicians.Where(s => s.Is_Gp == -1).ToList();
+                }
+
+                if (isOnlyNonGP)
+                {
+                    clinicians = clinicians.Where(s => s.Is_Gp == 0).ToList();
+                }
+
+                var results = clinicians.Select(c => new {
+                    masterClinicianCode = c.MasterClinicianCode,
+                    title = c.TITLE,
+                    firstName = c.FIRST_NAME,
+                    lastName = c.NAME,
+                    position = c.POSITION,
+                    speciality = c.SPECIALITY,
+                    facility = c.FACILITY,
+                    isGp = c.Is_Gp == -1 ? "Yes" : "No",
+                    isActive = c.NON_ACTIVE == 0 ? "Yes" : "No"
+                }).Take(50).ToList();
+
+                return Json(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
