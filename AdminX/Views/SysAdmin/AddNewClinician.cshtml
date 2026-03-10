@@ -74,7 +74,7 @@
                         <option value="">Select ...</option>
                         @foreach (var item in Model.facilities)
                         {
-                            <option value=@item.MasterFacilityCode>@item.NAME</option>
+                            <option value=@item.MasterFacilityCode>@item.NAME - @item.MasterFacilityCode</option>
                         }
                     </select>
                 </div>
