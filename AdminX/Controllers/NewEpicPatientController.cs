@@ -58,7 +58,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EpicPatientSearch(int id)
+        public async Task<IActionResult> EpicPatientSearch(int id, string? fileNumber)
         {
             try
             { 
@@ -77,6 +77,18 @@ namespace AdminX.Controllers
                 _epvm.relativeSearchResultsList = searchResults.Where(r => r.ResultSource == "Relative").ToList();
                 _epvm.pedigreeSearchResultsList = searchResults.Where(r => r.ResultSource == "Pedigree").ToList();
 
+                if (!string.IsNullOrEmpty(fileNumber))
+                {
+                    var rawList = await _patientData.GetMatchingPatientsByCGUNo(fileNumber);
+
+                    _epvm.patientList = rawList
+                        .OrderByDescending(p => p.CGU_No == fileNumber)
+                        .ThenBy(p => p.LASTNAME)
+                        .ToList();
+
+                    ViewBag.SearchedFileNumber = fileNumber;
+                }
+
                 return View(_epvm);
             }
             catch (Exception ex)
@@ -85,7 +97,7 @@ namespace AdminX.Controllers
             }
         }
 
-        
+               
         public async Task<IActionResult> AssignCGUNumber(int id, string? fileNumber)
         {
             try
