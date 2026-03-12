@@ -417,18 +417,31 @@
         }
 
         function LoadLetter() {
-            if (document.getElementById("ddlLetterStatus").value == "For Approval") {
-                //document.getElementById("btnApprove").hidden = false;
-                document.getElementById("ddlLetterStatus").disabled = true;
-            }
+               if (document.getElementById("ddlLetterStatus").value == "For Approval") {
+            document.getElementById("ddlLetterStatus").style.pointerEvents = "none";
+            document.getElementById("ddlLetterStatus").classList.add("bg-light");
+        }
             else if (document.getElementById("ddlLetterStatus").value == "For Printing") {
-                document.getElementById("ddlLetterStatus").disabled = true;
-                document.getElementById("txtLetterTo").disabled = true;
-                document.getElementById("txtLetterFrom").disabled = true;
-                document.getElementById("txtLetterContentBold").disabled = true;
-                document.getElementById("ddlLetterTo").disabled = true;
-                document.getElementById("ddlLetterFrom").disabled = true;
-                document.getElementById("letterText").contentEditable = false;
+               document.getElementById("txtLetterTo").readOnly = true;
+        document.getElementById("txtLetterFrom").readOnly = true;
+        document.getElementById("txtLetterContentBold").readOnly = true;
+
+        // Add a Bootstrap class to make them look greyed out
+        document.getElementById("txtLetterTo").classList.add("bg-light");
+        document.getElementById("txtLetterFrom").classList.add("bg-light");
+        document.getElementById("txtLetterContentBold").classList.add("bg-light");
+
+        // 2. DROPDOWNS: Disable clicks via CSS, as <select> doesn't support readOnly
+        document.getElementById("ddlLetterStatus").style.pointerEvents = "none";
+        document.getElementById("ddlLetterTo").style.pointerEvents = "none";
+        document.getElementById("ddlLetterFrom").style.pointerEvents = "none";
+
+        // Grey out the dropdowns
+        document.getElementById("ddlLetterStatus").classList.add("bg-light");
+        document.getElementById("ddlLetterTo").classList.add("bg-light");
+        document.getElementById("ddlLetterFrom").classList.add("bg-light");
+
+        document.getElementById("letterText").contentEditable = false;
             }
             else {
                 document.getElementById("optPrint").hidden = true;
@@ -731,6 +744,7 @@
             }
 
             document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
+            console.log(document.getElementById("txtLetterFrom").value)
             // document.getElementById("txtisAddressChanged").value = "true";
         }
 
