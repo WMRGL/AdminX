@@ -330,6 +330,7 @@
                                     }
                                     <option value="GP">GP</option>
                                     <option value="Hospital">Hospital</option>
+                                    <option value="Consultants">Consultants</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <select class="form-select my-2" id="ddlCCType2" hidden>
@@ -355,12 +356,24 @@
                                     </select>
                                 </div>
 
-                                <select id="ddlCC" hidden>
+                                <div id="consultantDropdownWrapper" class="my-2" hidden>
+                                    <select class="form-select my-2 js-choice" id="ddlConsultants">
+                                        <option value="" selected>Search by clinician or clinic name...</option>
+                                        @foreach (var item in Model.clinicians.OrderBy(c => c.LAST_NAME))
+                                        {
+                                            <option value="@item.MasterClinicianCode" data-facilitycode="@item.MasterFacilityCode">
+                                                @item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <select id="ddlCC" class="form-select mb-2" hidden>
                                 </select>
                             </div>
                             <div class="row">
                                 <div class="col-md-10">
-                                    <textarea rows="8" cols="40" id="txtCC" name="cc"></textarea>
+                                    <textarea class="form-control" rows="8" cols="40" id="txtCC" name="cc"></textarea>
                                 </div>
                                 <div class="col-md-2">
                                     <input type="text" id="txtCCCode" hidden />
@@ -395,6 +408,7 @@
         document.getElementById("ddlHospitals").addEventListener("change", FetchCliniciansByHospital);
         document.getElementById("ddlHospitalsClinician").addEventListener("change", SetHospitalClinicianCC);
         document.getElementById("ddlCC").addEventListener("change", SetOtherClinicianCC);
+        document.getElementById("ddlConsultants").addEventListener("change", SetConsultantCC);
 
         function LoadEDMSLink()
         {
@@ -403,18 +417,31 @@
         }
 
         function LoadLetter() {
-            if (document.getElementById("ddlLetterStatus").value == "For Approval") {
-                //document.getElementById("btnApprove").hidden = false;
-                document.getElementById("ddlLetterStatus").disabled = true;
-            }
+               if (document.getElementById("ddlLetterStatus").value == "For Approval") {
+            document.getElementById("ddlLetterStatus").style.pointerEvents = "none";
+            document.getElementById("ddlLetterStatus").classList.add("bg-light");
+        }
             else if (document.getElementById("ddlLetterStatus").value == "For Printing") {
-                document.getElementById("ddlLetterStatus").disabled = true;
-                document.getElementById("txtLetterTo").disabled = true;
-                document.getElementById("txtLetterFrom").disabled = true;
-                document.getElementById("txtLetterContentBold").disabled = true;
-                document.getElementById("ddlLetterTo").disabled = true;
-                document.getElementById("ddlLetterFrom").disabled = true;
-                document.getElementById("letterText").contentEditable = false;
+               document.getElementById("txtLetterTo").readOnly = true;
+        document.getElementById("txtLetterFrom").readOnly = true;
+        document.getElementById("txtLetterContentBold").readOnly = true;
+
+        // Add a Bootstrap class to make them look greyed out
+        document.getElementById("txtLetterTo").classList.add("bg-light");
+        document.getElementById("txtLetterFrom").classList.add("bg-light");
+        document.getElementById("txtLetterContentBold").classList.add("bg-light");
+
+        // 2. DROPDOWNS: Disable clicks via CSS, as <select> doesn't support readOnly
+        document.getElementById("ddlLetterStatus").style.pointerEvents = "none";
+        document.getElementById("ddlLetterTo").style.pointerEvents = "none";
+        document.getElementById("ddlLetterFrom").style.pointerEvents = "none";
+
+        // Grey out the dropdowns
+        document.getElementById("ddlLetterStatus").classList.add("bg-light");
+        document.getElementById("ddlLetterTo").classList.add("bg-light");
+        document.getElementById("ddlLetterFrom").classList.add("bg-light");
+
+        document.getElementById("letterText").contentEditable = false;
             }
             else {
                 document.getElementById("optPrint").hidden = true;
@@ -511,12 +538,13 @@
             document.getElementById("ddlLetterToClinician").hidden = false;
         }
 
-             function ShowCCClinician() {
+        function ShowCCClinician() {
             const selectedType = document.getElementById("ddlCCType").value;
 
             document.getElementById("ddlCCType2").hidden = true;
             document.getElementById("ddlCC").hidden = true;
             document.getElementById("hospitalDropdownWrapper").hidden = true;
+            document.getElementById("consultantDropdownWrapper").hidden = true;
 
             const clinicianWrapper = document.getElementById("clinicianDropdownWrapper");
             if (clinicianWrapper) clinicianWrapper.hidden = true;
@@ -531,6 +559,11 @@
                 document.getElementById("txtCCCode").value = "";
                 document.getElementById("txtCC").value = "";
             }
+            else if (selectedType === "Consultants") {
+            document.getElementById("consultantDropdownWrapper").hidden = false;
+            document.getElementById("txtCCCode").value = "";
+            document.getElementById("txtCC").value = "";
+        }
             else if (selectedType !== "") {
                 SetCCAddress(selectedType);
             }
@@ -554,15 +587,15 @@
 
         @foreach (var item in Model.clinicians)
         {
-                    @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
-                    { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                                @:clinCodeArray.push("@item.MasterClinicianCode");
-                                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                                @:clinPositionArray.push("@item.POSITION");
-                                @:clinSpecArray.push("@item.SPECIALITY");
-                                @:clinFacilityArray.push("@item.FACILITY");
-                                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
-                    }
+                        @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+                        { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                                        @:clinCodeArray.push("@item.MasterClinicianCode");
+                                        @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                                        @:clinPositionArray.push("@item.POSITION");
+                                        @:clinSpecArray.push("@item.SPECIALITY");
+                                        @:clinFacilityArray.push("@item.FACILITY");
+                                        //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+                        }
         }
 
                         for (var i in clinSpecArray) {
@@ -608,15 +641,15 @@
 
         @foreach (var item in Model.clinicians)
         {
-                    @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
-                    { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
-                                @:clinCodeArray.push("@item.MasterClinicianCode");
-                                @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
-                                @:clinPositionArray.push("@item.POSITION");
-                                @:clinSpecArray.push("@item.SPECIALITY");
-                                @:clinFacilityArray.push("@item.FACILITY");
-                                //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
-                    }
+                        @if (item.SPECIALITY != null && item.Is_GP == 0 && item.POSITION != null && item.TITLE is not null && item.FIRST_NAME is not null)
+                        { //we HAVE to limit them because the web page can't take lists that are more than 1000 items, so we have to find ways to cull it as much as possible
+                                        @:clinCodeArray.push("@item.MasterClinicianCode");
+                                        @:clinNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                                        @:clinPositionArray.push("@item.POSITION");
+                                        @:clinSpecArray.push("@item.SPECIALITY");
+                                        @:clinFacilityArray.push("@item.FACILITY");
+                                        //we HAVE to do them all, because we can't use the javascript variable inside the C# code block :(
+                        }
         }
 
                         for (var i in clinSpecArray) {
@@ -660,15 +693,15 @@
             var sAddress = "Nowhere";
         @foreach (var item in Model.clinicians)
         {
-                    @:sClinCodeArray.push("@item.MasterClinicianCode");
-                    @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
-                    @:sFacilityArray.push("@item.FACILITY");
+                        @:sClinCodeArray.push("@item.MasterClinicianCode");
+                        @:sNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME");
+                        @:sFacilityArray.push("@item.FACILITY");
         }
 
         @foreach (var item in Model.facilities)
         {
-                    @:sFacCodeArray.push("@item.MasterFacilityCode");
-                    @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
+                        @:sFacCodeArray.push("@item.MasterFacilityCode");
+                        @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
         }
 
                         for (i in sNameArray) {
@@ -698,9 +731,9 @@
             // so we have to use this dumb method!
         @foreach (var item in Model.staffMemberList)
         {
-                    @:staffCodeArray.push("@item.STAFF_CODE");
-                    @:sStaffNameArray.push("@item.NAME");
-                    @:sStaffPositionArray.push("@item.POSITION");
+                        @:staffCodeArray.push("@item.STAFF_CODE");
+                        @:sStaffNameArray.push("@item.NAME");
+                        @:sStaffPositionArray.push("@item.POSITION");
         }
 
                         for (i in staffCodeArray) {
@@ -711,6 +744,7 @@
             }
 
             document.getElementById("txtLetterFrom").value = sStaffName + "\n" + sStaffPosition;
+            console.log(document.getElementById("txtLetterFrom").value)
             // document.getElementById("txtisAddressChanged").value = "true";
         }
 
@@ -779,12 +813,12 @@
 
         @foreach (var item in Model.facilities)
         {
-                    @:facilityCodeArray.push("@item.MasterFacilityCode");
-                    @:facilityNameArray.push("@item.NAME");
-                    @:facilityAddressArray.push("@item.ADDRESS");
-                    @:facilityCityArray.push("@item.CITY");
-                    @:facilityStateArray.push("@item.STATE");
-                    @:facilityPostcodeArray.push("@item.ZIP");
+                        @:facilityCodeArray.push("@item.MasterFacilityCode");
+                        @:facilityNameArray.push("@item.NAME");
+                        @:facilityAddressArray.push("@item.ADDRESS");
+                        @:facilityCityArray.push("@item.CITY");
+                        @:facilityStateArray.push("@item.STATE");
+                        @:facilityPostcodeArray.push("@item.ZIP");
         }
 
                                 for (var j = 0; j < facilityCodeArray.length; j++) {
@@ -809,15 +843,22 @@
             document.getElementById("frmAddPatientToDOT").submit();
         }
 
-                function AddCC() {
-            if (document.getElementById("ddlCCType").value === "Hospital") {
+            function AddCC() {
+            const selectedType = document.getElementById("ddlCCType").value;
+
+            if (selectedType === "Hospital") {
                 const clinDrop = document.getElementById("ddlHospitalsClinician");
                 if (clinDrop && clinDrop.value) {
                     document.getElementById("txtCCCode").value = clinDrop.value;
                 }
             }
+            else if (selectedType === "Consultants") {
+                const consDrop = document.getElementById("ddlConsultants");
+                if (consDrop && consDrop.value) {
+                    document.getElementById("txtCCCode").value = consDrop.value;
+                }
+            }
 
-            // Validate the actual text that will be saved to the database
             const textToSubmit = document.getElementById("txtCC").value.trim();
 
             if (!textToSubmit) {
@@ -881,7 +922,7 @@
         function DoPrint() {
             // alert("Step 1: A print window will open.\nStep 2: You MUST click the 'Print' button in that window to send this letter to the printer.");
             document.getElementById("Print").submit();
-           
+
         }
 
 
@@ -908,7 +949,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Helpful to inspect exactly how the C# object was serialised
                     console.log("API Response Data:", data);
 
                     data.forEach(clinician => {
@@ -936,7 +976,7 @@
                 });
         }
 
-      
+
 
         // A function to set the CC text box when a clinician is selected from the new dropdown
         function SetHospitalClinicianCC() {
@@ -954,8 +994,8 @@
 
                 @foreach (var item in Model.facilities)
                 {
-                        @:sFacNameArray.push("@item.NAME");
-                        @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
+                            @:sFacNameArray.push("@item.NAME");
+                            @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
                 }
 
                 for (let i = 0; i < sFacNameArray.length; i++) {
@@ -987,30 +1027,68 @@
             }
 
             document.getElementById("txtCCCode").value = selectedOption.value;
-            const facilityCode = selectedOption.dataset.facility;
+            const facilityName = selectedOption.dataset.facility;
             let sAddress = "Address not found";
 
-            var sFacCodeArray = [];
+            var sFacNameArray = [];
             var sAddressArray = [];
 
             @foreach (var item in Model.facilities)
             {
-                    @:sFacCodeArray.push("@item.MasterFacilityCode");
-                    @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
+                        @:sFacNameArray.push("@item.NAME");
+                        @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
             }
 
-            for (let i = 0; i < sFacCodeArray.length; i++) {
-                if (sFacCodeArray[i] === facilityCode) {
+            for (let i = 0; i < sFacNameArray.length; i++) {
+                if (sFacNameArray[i] === facilityName) {
                     sAddress = sAddressArray[i];
                     break;
                 }
             }
 
-            const clinicianName = selectedOption.text.split(',')[0];
-
+            const clinicianName = selectedOption.text.split(',')[0].trim();
             const formattedAddress = sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
 
             document.getElementById("txtCC").value = `${clinicianName}\n${formattedAddress}`;
+        }
+
+           
+
+        function SetConsultantCC() {
+            const consDrop = document.getElementById("ddlConsultants");
+            const selectedOption = consDrop.options[consDrop.selectedIndex];
+
+            if (selectedOption && selectedOption.value) {
+                document.getElementById("txtCCCode").value = selectedOption.value;
+                const facilityCode = selectedOption.dataset.facilitycode;
+                let sAddress = "Address not found";
+
+                var sFacCodeArray = [];
+                var sAddressArray = [];
+
+                @foreach (var item in Model.facilities)
+                {
+                            @:sFacCodeArray.push("@item.MasterFacilityCode");
+                            @:sAddressArray.push("@item.NAME" + "\n" + "@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.ZIP");
+                }
+
+                for (let i = 0; i < sFacCodeArray.length; i++) {
+                    if (sFacCodeArray[i] === facilityCode) {
+                        sAddress = sAddressArray[i];
+                        break;
+                    }
+                }
+
+                const clinicianName = selectedOption.text.split(' - ')[0].trim();
+
+                const formattedAddress = sAddress.replace(/&amp;/g, "&").replace(/&#xD;&#xA;/g, "\n").replace(/&#x27;/g, "'");
+
+                document.getElementById("txtCC").value = `${clinicianName}\n${formattedAddress}`;
+
+            } else {
+                document.getElementById("txtCCCode").value = "";
+                document.getElementById("txtCC").value = "";
+            }
         }
 
 

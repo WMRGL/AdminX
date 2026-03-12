@@ -47,7 +47,69 @@
         }
         <div class="card-body">
 
-            <form asp-action="AssignCGUNumber">
+
+            <form asp-action="EpicPatientSearch" method="get">
+                <input name="id" asp-for="@Model.patient.MPI" hidden />
+                <div class="mb-3 row">
+                    <label class="col-form-label col-sm-3">Enter CGU number to use a family not listed in the search results</label>
+                    <div class="col-sm-1">
+                        <input name="fileNumber" class="form-control" value="@ViewBag.SearchedFileNumber" required />
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="submit" class="btn btn-outline-primary">Search for this file</button>
+                    </div>
+                </div>
+
+            </form>
+
+            <div class="table mt-4">
+                @if (Model.patientList != null && Model.patientList.Count() > 0)
+                {
+                    <h4>This file contains the following patients:</h4>
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>CGU Number</th>
+                                <th>Name</th>
+                                <th>DOB</th>
+                                <th>Address</th>
+                                <th>Postcode</th>
+                                <th>NHS Number</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.patientList)
+                            {
+                                <tr class="@(item.CGU_No == ViewBag.SearchedFileNumber ? "table-success" : "")">
+                                    <td>@item.CGU_No</td>
+                                    <td>@item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@(item.DOB.HasValue? item.DOB.Value.ToString("dd/MM/yyyy") : "Not known")</td>
+                                    <td>@item.ADDRESS1 @item.ADDRESS2 @item.ADDRESS3 @item.ADDRESS4</td>
+                                    <td>@item.POSTCODE</td>
+                                    <td>@item.SOCIAL_SECURITY</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div class="row mb-5 g-5 mt-2">
+                        <div class="col-md-4">
+                            <a class="btn btn-success" asp-controller="NewEpicPatient" asp-action="AssignCGUNumber" asp-route-id="@Model.patient.MPI" asp-route-fileNumber="@ViewBag.SearchedFileNumber">
+                                Confirm: Add Patient To File @ViewBag.SearchedFileNumber
+                            </a>
+                        </div>
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(ViewBag.SearchedFileNumber))
+                {
+                    <h5 class="text-danger mt-3">No patients found associated with file number @ViewBag.SearchedFileNumber.</h5>
+                }
+            </div>
+
+
+
+            </div>
+            @* <form asp-action="AssignCGUNumber">
                 <input name="id" asp-for=@Model.patient.MPI hidden/>
             
                 <h4>Enter CGU number to use a family not listed in the search results</h4>
@@ -55,7 +117,7 @@
                 <input name="fileNumber" />
 
                 <button type="submit" class="btn btn-outline-primary">Use this file number</button>
-            </form>
+            </form> *@
 
 
             @if (Model.relativeSearchResultsList.Count() > 0)
