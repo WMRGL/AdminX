@@ -190,13 +190,26 @@ namespace AdminX.Controllers
         {
             try
             {
-                var hospitals = await _externalClinicianData.GetClinicianList();
-                var clinicians = hospitals.Where(c => c.FACILITY == hospital).ToList();
+                var clinicians = await _externalClinicianData.GetCliniciansByHospital(hospital);
                 return Json(clinicians);
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-getCliniciansByHospital" });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetClinician()
+        {
+            try
+            {
+                var clinicians = await _externalClinicianData.GetAllCliniciansList();
+                return Json(clinicians);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "DictatedLetter-getClinicianDetails" });
             }
         }
 
@@ -219,7 +232,7 @@ namespace AdminX.Controllers
                 int success = _crud.CallStoredProcedure("Letter", "Update", dID, 0, 0, status, enclosures, letterContentBold, letterContent, User.Identity.Name, dDateDictated, null, false, false, 0, 0, 0, secTeam, consultant, gc, 0,0,0,0,0, comments, letterFrom );
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "DictatedLetter-edit(SQL)" }); }
-
+                TempData["SuccessMessage"] = "Letter saved successfully";
                 return RedirectToAction("Edit", new { id = dID });
             }
             catch (Exception ex)
