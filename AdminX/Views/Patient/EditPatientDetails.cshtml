@@ -314,6 +314,12 @@
             return 0;
         }
 
+        if (document.getElementById("ddlGP").value.length > 8)
+        {
+            window.alert("The selected GP's code is too long. Please select a different GP.");
+            return 0;
+        }
+
         if (document.getElementById("POSTCODE").value == null || document.getElementById("POSTCODE").value == "")
         {
             window.alert("Please enter a postcode.");
