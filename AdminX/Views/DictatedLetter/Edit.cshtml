@@ -409,6 +409,7 @@
         document.getElementById("ddlHospitalsClinician").addEventListener("change", SetHospitalClinicianCC);
         document.getElementById("ddlCC").addEventListener("change", SetOtherClinicianCC);
         document.getElementById("ddlConsultants").addEventListener("change", SetConsultantCC);
+        var hospitalClinicianChoiceInstance = null; 
 
         function LoadEDMSLink()
         {
@@ -932,6 +933,11 @@
             const clinicianWrapper = document.getElementById("clinicianDropdownWrapper");
             const clinicianDropdown = document.getElementById("ddlHospitalsClinician");
 
+            if (hospitalClinicianChoiceInstance) {
+                hospitalClinicianChoiceInstance.destroy();
+                hospitalClinicianChoiceInstance = null;
+            }
+
             clinicianDropdown.innerHTML = '<option value="">Select a clinician...</option>';
 
             if (!hospitalName) {
@@ -949,8 +955,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log("API Response Data:", data);
-
                     data.forEach(clinician => {
                         const option = document.createElement("option");
 
@@ -963,13 +967,20 @@
 
                         option.value = clinicianCode || "";
                         option.innerHTML = `${title} ${firstName} ${lastName}`.trim();
-
                         option.dataset.facility = clinician.facility || clinician.FACILITY || hospitalName;
 
                         clinicianDropdown.appendChild(option);
                     });
 
                     clinicianWrapper.hidden = false;
+
+                    if (typeof Choices !== "undefined") {
+                        hospitalClinicianChoiceInstance = new Choices(clinicianDropdown, {
+                            searchEnabled: true,
+                            itemSelectText: '', 
+                            shouldSort: false  
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error("There was a problem fetching the clinicians:", error);
