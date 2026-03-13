@@ -92,10 +92,11 @@
         <div class="row mb-3">
             <div class="mb-3 col-md-4">
                     <span class="mb-2">
-                        <label class="form-label" for="referrerCode">Referrer Code</label> <button class="btn btn-outline-primary mb-2" type="button" onclick="SetToGP()">Use GP</button>
+                        <label class="form-label" for="referrerCode">Referrer Code:</label> <button class="btn btn-outline-primary mb-2" type="button" onclick="SetToGP()">Use GP</button>
                         <button type="button" class="btn btn-outline-success mx-2 mb-2" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
                             Search External Referrer
                         </button>
+                        <button type="button" onclick="selectGen()" class="btn btn-outline-warning mb-2">Use GEN</button>
 
                     </span>
                    
@@ -362,6 +363,18 @@
         var modalInstance = bootstrap.Modal.getInstance(modalEl);
         if(modalInstance) {
             modalInstance.hide();
+        }
+    }
+
+    function selectGen()
+    {
+        var referrerList = document.getElementById("referrerCode");
+        var genOption = Array.from(referrerList.options).find(opt => opt.value === "GEN");
+        if(genOption) {
+            referrerList.value = "GEN";
+            referrerList.choices.setChoiceByValue("GEN");
+        } else {
+            alert("GEN option not found in the referrer list.");
         }
     }
 
