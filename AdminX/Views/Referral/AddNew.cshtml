@@ -150,7 +150,7 @@
                         </div>
                         <h5>Referrer details</h5>
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-md-4">
                                 <label class="form-label" for="refDate">Referring Clinician</label>
                                 <select class="form-select js-choice" id="ddlRefPhys" name="refPhys">
                                     <option value=@Model.patient.GP_Code selected>Use Patient's GP (@Model.patient.GP - @Model.patient.GP_Facility)</option>
@@ -166,6 +166,15 @@
                                     }
                                 </select>
                             </div>
+                            <div class="col-md-2 ">
+                                <button type="button" class="btn btn-outline-success  mt-4" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
+                                    Search External Referrer
+                                </button>
+                            </div>
+                            <div class="col-md-2 ">
+                                <button type="button" onclick="selectGen()" class="btn btn-outline-warning mt-4">Use GEN</button>
+                            </div>
+
                             @*
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-default btn-outline-primary" id="btnSetGP">Set to GP</button>
@@ -174,8 +183,8 @@
                         </div>                        
                         
                         
-                        <div class="row mb-5 g-5" id="cancerStuff" hidden>
-                            <h5>Cancer referral details</h5>
+                        <div class="row my-5" id="cancerStuff" hidden>
+                            <h3>Cancer referral details</h3>
                             <div class="row">                                
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="admin_status">Admin Status</label>
@@ -341,6 +350,7 @@
                         </div>
                     </div>
                 </form>
+                <partial name="_ExternalClinicianSearchModal" />
             </div>
         </div>
 
@@ -351,8 +361,11 @@
 </div>
 
 
-<script>
 
+@section Scripts {
+    <script src="~/js/clinicianSearch.js"></script>
+<script>
+    
     document.getElementById("refPathway").addEventListener("change", ShowCancerStuff);
     //document.getElementById("btnSetGP").addEventListener("click", SetReferrerToGP);
     window.addEventListener("load", ShowCancerStuff);
@@ -395,7 +408,9 @@
         const _newRefer = "@Model.patient.GP_Code";
         
         _refer.value = _newRefer;
-    }    
+    }  
+    
+        SetClinicianTarget("ddlRefPhys");
 
 </script>
-
+}

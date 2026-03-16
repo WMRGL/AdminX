@@ -1,0 +1,68 @@
+﻿<div class="modal fade" id="centeredModalSuccess" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">External Clinician</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body m-3">
+
+                <form id="frmSearchClinician" onsubmit="event.preventDefault(); SearchClinicians();" class="row row-cols-md-auto align-items-center">
+                    <div class="col-12">
+                        <label class="form-label" for="inlineFormInputName2">First Name</label>
+                        <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName2" name="firstNameSearch">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="inlineFormInputName1">Surname</label>
+                        <input type="text" class="form-control mb-2 me-sm-2" id="inlineFormInputName1" name="lastNameSearch">
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check mb-1 me-sm-2">
+                            <input type="checkbox" class="form-check-input" id="chkOnlyCurrent">
+                            <label class="form-check-label" for="chkOnlyCurrent">Show Only Current</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check mb-1 me-sm-2">
+                            <input type="checkbox" class="form-check-input" id="chkOnlyGP">
+                            <label class="form-check-label" for="chkOnlyGP">Show Only GPs</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-check mb-1 me-sm-2">
+                            <input type="checkbox" class="form-check-input" id="chkOnlyNonGP">
+                            <label class="form-check-label" for="chkOnlyNonGP">Show Only Non-GPs</label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-2 w-100">
+                        <button type="button" class="btn btn-success" onclick="SearchClinicians()">Search</button>
+                        <a type="button" class="btn btn-outline-primary float-end" asp-controller="SysAdmin" asp-action="AddNewClinician">Add New External Clinician</a>
+                    </div>
+                </form>
+
+
+                <div class="mt-4 table-responsive" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table table-sm table-striped table-hover" id="tblClinicianResults" style="display:none;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Facility</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblClinicianResultsBody">
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
