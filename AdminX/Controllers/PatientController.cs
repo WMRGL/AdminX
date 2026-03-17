@@ -53,6 +53,7 @@ namespace AdminX.Controllers
         private readonly IDocumentsDataAsync _docsData;
         private readonly IGenderIdentityDataAsync _genderIdentityData;
         private readonly IReferralStagingDataAsync _referralStagingData;
+        private readonly IApptStagingDataAsync _apptStagingData;
         private readonly IEpicPatientReferenceDataAsync _epicPatientReferenceData;
         private readonly IEpicReferralReferenceDataAsync _epicReferralReferenceData;
         private readonly IPAddressFinder _ip;
@@ -63,7 +64,7 @@ namespace AdminX.Controllers
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator) //, ClinicalContext clinContext)
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
@@ -104,6 +105,7 @@ namespace AdminX.Controllers
             _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
             _ageCalculator = ageCalculator;
+            _apptStagingData = apptStagingDataAsync;
             //_clinContext = clinContext;
         }
 
@@ -135,24 +137,14 @@ namespace AdminX.Controllers
                     if (_pvm.epicPatient != null)
                     {
                         _pvm.epicReferralStaging = await _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
+                        _pvm.epicApptStaging = await _apptStagingData.GetParkedApptUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates for appointments as well
 
                         if (_pvm.epicReferralStaging.Count > 0)
                         {
                             _pvm.epicReferralStaging = _pvm.epicReferralStaging.OrderBy(r => r.UpdateSts).ToList();
 
                             foreach (var item in _pvm.epicReferralStaging)
-                            {
-                                //var updateStatus = item.UpdateSts;
-
-                                //while (updateStatus < 5) //cycle through them all until they hit 5
-                                //{
-                                //    _crud.EpicReferralStaging(item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo, item.Speciality, item.Pathway, item.ReferralStatus,
-                                //        item.CreatedDate.GetValueOrDefault());
-
-                                //    var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
-                                //    updateStatus = stagedUpdate.UpdateSts;
-                                //}
-
+                            {                                
                                 int updateStatus = item.UpdateSts.GetValueOrDefault();
                                 int previousStatus = -1;
 
@@ -194,14 +186,53 @@ namespace AdminX.Controllers
                             }
                         }
 
-                        /*if ((_pvm.patient.Title != _pvm.epicPatient.Title || _pvm.epicPatient.FirstName != _pvm.patient.FIRSTNAME || 
-                            _pvm.epicPatient.LastName != _pvm.patient.LASTNAME || _pvm.epicPatient.PostCode != _pvm.patient.POSTCODE || 
-                            (_pvm.epicPatient.NHSNo != _pvm.patient.SOCIAL_SECURITY && _pvm.epicPatient.NHSNo != null) ||
-                            _pvm.patient.GP_Code != _pvm.epicPatient.GP || _pvm.patient.TEL != _pvm.epicPatient.PhoneHome || 
-                            _pvm.patient.WORKTEL != _pvm.epicPatient.PhoneWork || _pvm.patient.PtTelMobile != _pvm.epicPatient.PhoneMobile ||
-                            _pvm.patient.EthnicCode != _pvm.epicPatient.EthnicCode) && _pvm.epicPatient.UpdateSts == 1)*/
+                        if (_pvm.epicApptStaging.Count > 0)
+                        {
+                            _pvm.epicApptStaging = _pvm.epicApptStaging.OrderBy(r => r.UpdateSts).ToList();
 
-                        if(_pvm.epicPatient.UpdateSts == 1)
+                            foreach (var item in _pvm.epicApptStaging)
+                            {
+                                int updateStatus = item.UpdateSts.GetValueOrDefault();
+                                int previousStatus = -1;
+
+                                while (updateStatus < 5)
+                                {
+                                    if (updateStatus == previousStatus)
+                                    {
+                                        _pvm.PatientAlerts.Add(new PatientAlert
+                                        {
+                                            Severity = AlertSeverity.Critical,
+                                            Message = "Unable to load patient referral. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
+                                            Icon = "fa-cog",
+                                            ActionText = "Contact IT Support",
+                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
+                                        });
+                                        break;
+                                    }
+
+                                    previousStatus = updateStatus;
+
+                                    _crud.EpicApptStaging(
+                                        item.ID, item.PatientID, item.ApptID.GetValueOrDefault(), item.Appt_DTTM.GetValueOrDefault(), item.Arrived_DTTM, item.Departed_DTTM, item.Cancel_DTTM, item.LastEvent_DTTM, item.Cons_Code,
+                                        item.Clinic_Code, item.AttendanceIndicator, item.Spec_Code, "" //there is no Location in the table...?
+                                    );
+
+                                    var stagedUpdate = await _apptStagingData.GetParkedUpdate(item.ID);
+
+                                    if (stagedUpdate != null)
+                                    {
+                                        updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (_pvm.epicPatient.UpdateSts == 1)
                         {
                             _pvm.isEpicPatientChanged = true;
                         }

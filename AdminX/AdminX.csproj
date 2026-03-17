@@ -51,15 +51,18 @@
     <Folder Include="wwwroot\ErrorLogs\" />
     <Folder Include="wwwroot\DOTLetterPreviews\" />
     <Folder Include="wwwroot\DOTLetterPreviews\" />
+    <Folder Include="wwwroot\ErrorLogs\" />
+    <Folder Include="wwwroot\DOTLetterPreviews\" />
+    <Folder Include="wwwroot\StandardLetterPreviews\" />
     <Folder Include="wwwroot\StandardLetterPreviews\" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="APIControllers">
-      <HintPath>..\..\C# Libraries\APIControllers.dll</HintPath>
+      <HintPath>..\..\..\C# Libraries\APIControllers.dll</HintPath>
     </Reference>
     <Reference Include="ClinicalXPDataConnections">
-      <HintPath>..\..\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
+      <HintPath>..\..\..\C# Libraries\ClinicalXPDataConnections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -20,13 +20,15 @@ namespace AdminX.Data
         public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }
         public DbSet<DiaryAction> DiaryAction { get; set; }
         public DbSet<AlertTypes> AlertTypes { get; set; }
-        public DbSet<MergeHistory> MergeHistory { get; set; } 
+        public DbSet<MergeHistory> MergeHistory { get; set; }
         public DbSet<GenderIdentity> GenderIdentity { get; set; }
         public DbSet<HS> HS { get; set; }
         public DbSet<CliniciansClinics> CliniciansClinics { get; set; }
         public DbSet<EpicPatientReference> EpicPatientReferences { get; set; }
         public DbSet<EpicReferralStaging> EpicReferralStaging { get; set; }
         public DbSet<EpicReferralReference> EpicReferralReference { get; set; }
+        public DbSet<EpicApptStaging> EpicApptStaging { get; set; }
+        public DbSet<EpicApptReference> EpicApptReference { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
 
     }

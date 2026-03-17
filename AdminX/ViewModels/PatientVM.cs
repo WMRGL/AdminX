@@ -14,7 +14,7 @@ namespace AdminX.ViewModels
         public List<Relative> relatives { get; set; }
         public List<PatientTitle> titles { get; set; }
         public List<Ethnicity> ethnicities { get; set; }
-        public List<YesNo> yesno { get; set; }         
+        public List<YesNo> yesno { get; set; }
         public List<Referral> activeReferrals { get; set; }
         public List<Referral> inactiveReferrals { get; set; }
         public List<Referral> tempReges { get; set; }
@@ -72,9 +72,10 @@ namespace AdminX.ViewModels
         public string? GenderIdentity { get; set; }
         public bool isEpicPatientChanged { get; set; }
         public bool isEpicReferralChanged { get; set; }
-        public EpicPatientReference epicPatient {  get; set; }
+        public EpicPatientReference epicPatient { get; set; }
         public EpicReferralReference epicReferral { get; set; }
         public List<EpicReferralStaging> epicReferralStaging { get; set; }
+        public List<EpicApptStaging> epicApptStaging { get; set; }
         public List<EpicReferralReference> epicReferrals { get; set; }
         public int selectedAreaID { get; set; }
         public List<PatientAlert> PatientAlerts { get; set; } = new List<PatientAlert>();
@@ -82,7 +83,7 @@ namespace AdminX.ViewModels
 
     public class PatientAlert
     {
-        public AlertSeverity Severity { get; set; } 
+        public AlertSeverity Severity { get; set; }
         public string Message { get; set; }
         public string Icon { get; set; }
         public string ActionText { get; set; }

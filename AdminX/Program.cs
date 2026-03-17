@@ -81,6 +81,7 @@ builder.Services.AddScoped<ICityDataAsync, CityDataAsync>();
 builder.Services.AddScoped<IGenderDataAsync, GenderDataAsync>();
 builder.Services.AddScoped<IGenderIdentityDataAsync, GenderIdentityDataAsync>();
 builder.Services.AddScoped<IReferralStagingDataAsync, ReferralStagingDataAsync>();
+builder.Services.AddScoped<IApptStagingDataAsync, ApptStagingDataAsync>();
 builder.Services.AddScoped<IEpicPatientReferenceDataAsync, EpicPatientReferenceDataAsync>();
 builder.Services.AddScoped<IPedigreeDataAsync, PedigreeDataAsync>();
 builder.Services.AddScoped<IEthnicityDataAsync, EthnicityDataAsync>();

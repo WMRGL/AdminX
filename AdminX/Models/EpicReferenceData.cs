@@ -93,4 +93,45 @@ namespace AdminX.Models
         public string? ReferralStatus { get; set; }
         public int LocalUpdateSts { get; set; }
     }
+
+    [Table("DownstreamApptStagingTable", Schema = "dbo")]
+    public class EpicApptStaging
+    {
+        [Key]
+        public int ID { get; set; }
+        public string PatientID { get; set; }
+        public int? ApptID { get; set; }
+        public DateTime? Appt_DTTM { get; set; }
+        public string? Clinic_Code { get; set; }
+        public string? Cons_Code { get; set; }
+        public string? AttendanceIndicator { get; set; }
+        public DateTime? Arrived_DTTM { get; set; }
+        public DateTime? Departed_DTTM { get; set; }
+        public DateTime? Cancel_DTTM { get; set; }
+        public DateTime? LastEvent_DTTM { get; set; }
+        public Int16? UpdateSts { get; set; }
+        public string? UpdateMessage { get; set; }
+        public string? Spec_Code { get; set; }
+    }
+
+    [Table("DownstreamApptReferenceTable", Schema = "dbo")]
+    public class EpicApptReference
+    {
+        [Key]
+        public int ID { get; set; }
+        public int? MPI { get; set; }
+        //public string? ExternalReferralID { get; set; }
+        public int? ExternalApptID { get; set; }
+        public DateTime BookedDate { get; set; }
+        public DateTime? BookedTime { get; set; }
+        public string? ApptWith { get; set; }
+        public string? Location { get; set; }
+        public string? Outcome { get; set; }
+        public string? LocalUpdateBy { get; set; }
+        public DateTime? LocalUpdateDate { get; set; }
+        public int? RefID { get; set; }
+        public int? LinkedRefID { get; set; }
+        public string? PatientID { get; set; }
+        public int UpdateSts { get; set; }
+    }
 }
