@@ -697,8 +697,11 @@
                 "@Model.GPFacility.STATE" + " " +
                 "@Model.GPFacility.ZIP";
 
-            facilityDetails.value = fullDetails;
-        }
+        facilityDetails.value = fullDetails
+                        .replace(/&#x27;/g, "'")
+                        .replace(/&amp;/g, "&")
+                        .replace(/&#xD;/g, "")
+                        .replace(/&#xA;/g, "\n");        }
         else {
            
             for (var i in referrerCodes) {
@@ -717,8 +720,12 @@
                         facilityStateArray[i] + " " +
                         facilityPostcodeArray[i];
 
-                    facilityDetails.value = fullDetails.replace("&#x27;", "'");
-                    break;
+                    facilityDetails.value = fullDetails
+                                .replace(/&#x27;/g, "'")
+                                .replace(/&amp;/g, "&")
+                                .replace(/&#xD;/g, "")
+                                .replace(/&#xA;/g, "\n");                    
+                                break;
                 }
             }
         }
