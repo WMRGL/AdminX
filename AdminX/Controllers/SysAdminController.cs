@@ -866,5 +866,84 @@ namespace AdminX.Controllers
 
             return RedirectToAction("SetDutyClinicians", new { message = "Updated.", success = true });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFacilitiesAjax(string? searchTerm)
+        {
+            var facList = await _facilityData.GetFacilityListAll();
+
+            var activeFacs = facList.Where(f => f.NONACTIVE == 0);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                activeFacs = activeFacs.Where(f =>
+                    (f.NAME != null && f.NAME.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (f.MasterFacilityCode != null && f.MasterFacilityCode.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                );
+            }
+
+            var results = activeFacs.Select(f => new { code = f.MasterFacilityCode, name = f.NAME })
+                                    .Take(50)
+                                    .ToList();
+
+            return Json(results);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddNewClinicianAjax(string clinCode, string title, string firstName, string lastName, string facilityCode, string? jobTitle, string speciality, int isGP)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(clinCode)) clinCode = lastName;
+
+                if (isGP == 0)
+                {
+                    if (clinCode.Length >= 7) clinCode = clinCode.Substring(0, 6);
+                    clinCode = clinCode + firstName.Substring(0, 1);
+
+                    if (await _clinicianData.GetClinicianDetails(clinCode) != null)
+                    {
+                        int i = 1;
+                    CheckCode:
+                        string newClinCode = clinCode + i.ToString();
+                        if (await _clinicianData.GetClinicianDetails(newClinCode) != null)
+                        {
+                            i += 1;
+                            goto CheckCode;
+                        }
+                        clinCode = newClinCode;
+                    }
+                }
+
+                int iSuccess = _crud.SysAdminCRUD("Clinician", "Create", isGP, 0, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null, false, false, false, 0, 0, 0, jobTitle, speciality, facilityCode);
+
+                if (iSuccess == 1)
+                {
+                    var fac = await _facilityData.GetFacilityDetails(facilityCode);
+                    string facName = fac != null ? fac.NAME : facilityCode;
+
+                    return Json(new { success = true, masterClinicianCode = clinCode, title = title, firstName = firstName, lastName = lastName, facility = facName });
+                }
+                return Json(new { success = false, message = "Database insert failed." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTitlesAjax()
+        {
+            try
+            {
+                var titles = await _titleData.GetTitlesList();
+                return Json(titles.Select(t => new { title = t.Title }).ToList());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
