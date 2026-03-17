@@ -12,79 +12,97 @@
     };
 }
 
-
 @if (Model.Message != null)
 {
-    @if (!Model.isSuccess)
-    {
-        <div class="alert alert-danger" style="text-align:center">
-            @Model.Message
+    <div class="card">
+        <div class="card-body">
+            @if (Model.isSuccess)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.Message</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.Message</h3>
+                    </div>
+                </div>
+            }
         </div>
-    }
-    else
-    {
-        <div class="alert alert-success" style="text-align:center">
-            @Model.Message
-        </div>
-    }
+    </div>
 }
+
+
 
 <div class="text-center">
-    <h1>Upload File</h1>
-    <p>Note: please upload PDFs files if you can, anything else might not be processed correctly.</p>
+    <h1></h1>
 </div>
 
-<div class="row mb-5 g-5">
-    
+<div class="card">
+    <div class="card-header">
+
+        <h2 class="card-title mb-0 text-dark">Upload File</h2>
+        <p>Note: please upload PDFs files if you can, anything else might not be processed correctly.</p>
+
+    </div>
+    <div class="card-body">
+
+        @if (Model.patient.DCTM_Folder_ID == null || Model.patient.DCTM_Folder_ID == "")
+        {
+            <h2>No EDMS file available, please make patient electronic first</h2>
+        }
+        else
+        {
+
+           <div class="row">
+                <div class="col-md-4">
+                    <form asp-action="Upload" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input asp-for=@Model.patient.MPI name="mpi" hidden />
+                            <input type="file" id="wtf" asp-for="UploadedFile" class="form-control" name="fileToUpload" required/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Document Type</label>
+                            <select class="form-select js-choice" name="docType" required>
+                                <option value="">Select</option>
+                                @foreach (var item in Model.docKinds)
+                                {
+                                    <option value=@item.DocumentKind>@item.DocumentKind - @item.DocumentKindDescription</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3 ">
+                            <label class="form-label">Document Type</label>
+
+                            <select name="taskRouting" class="form-select" required>
+                                <option value="0">No task</option>
+                                <option value="1">Task for Consultant</option>
+                                <option value="2">Task for GC</option>
+                                <option value="3">Task for Admin</option>
+                            </select>
+                        </div>
+
+                        <input class="btn btn-outline-primary" type="submit" />
+                    </form>
+                </div>
+           </div>
+
+        }
+    </div>
 </div>
 
-@if (Model.patient.DCTM_Folder_ID == null || Model.patient.DCTM_Folder_ID == "")
-{
-    <h2>No EDMS file available, please make patient electronic first</h2>
-}
-else
-{
-
-    <form asp-action="Upload" enctype="multipart/form-data">
-        <div class="row mb-5 g-5">
-            <input asp-for=@Model.patient.MPI name="mpi" hidden />
-            <div class="col-md-4">
-                <input type="file" id="wtf" asp-for="UploadedFile" name="fileToUpload" />
-            </div>
-        </div>
-
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Document Type</label>
-            </div>
-            <div class="col-md-4">
-                <select name="docType">
-                    <option value="">Select</option>
-                    @foreach (var item in Model.docKinds)
-                    {
-                        <option value=@item.DocumentKind>@item.DocumentKind - @item.DocumentKindDescription</option>
-                    }
-                </select>
-            </div>
-        </div>
-        <div class="row mb-5 g-5">
-            <div class="col-md-2">
-                <label>Document Type</label>
-            </div>
-            <div class="col-md-2">
-                <select name="taskRouting">
-                    <option value="0">No task</option>
-                    <option value="1">Task for Consultant</option>
-                    <option value="2">Task for GC</option>
-                    <option value="3">Task for Admin</option>
-                </select>
-            </div>
-        </div>
-
-        <input class="btn btn-outline-primary" type="submit" />
-    </form>
-    
-}
 
 
 

@@ -453,6 +453,7 @@ namespace AdminX.Controllers
                         return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
                     }
                 }
+                TempData["SuccessMessage"] = "Referral details updated successfully.";
                 return RedirectToAction("ReferralDetails", new { refID = refid });
             }
             catch (Exception ex)

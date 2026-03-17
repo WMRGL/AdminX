@@ -211,7 +211,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-6">
                                         <label class="form-label" for="ref_status">Referral Status</label>
-                                        <select id="ref_status" class="form-control" name="COMPLETE">
+                                        <select id="ref_status" class="form-control" name="COMPLETE" required>
                                             <option selected>@Model.referral.COMPLETE</option>
                                             <option value="Active">Active </option>
                                             <option value="Complete">Complete</option>
@@ -219,7 +219,7 @@
                                     </div>
                                     <div class="mb-3 col-md-6">
                                         <label class="form-label" for="admin_status">Admin Status</label>
-                                        <select id="admin_status" name="Status_Admin" class="form-control">
+                                        <select id="admin_status" name="Status_Admin" class="form-control" required>
                                             <option value="" selected>@Model.referral.Status_Admin</option>
                                             @foreach (var item in Model.admin_status)
                                             {
@@ -578,7 +578,7 @@
                                 <div class="row">
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="ref_status">Referral Status</label>
-                                        <select id="ref_status" class="form-control" name="COMPLETE">
+                                        <select id="ref_status" class="form-control" name="COMPLETE" required>
                                             <option selected>@Model.referral.COMPLETE</option>
                                             <option value="Active">Active </option>
                                             <option value="Complete">Complete</option>
