@@ -147,13 +147,18 @@
                                 }
                             </select>
                         </div>
-                        <div class="col-md-2 ">
-                            <button type="button" class="btn btn-outline-success  mt-4" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
-                                Search External Referrer
-                            </button>
-                        </div>
-                        <div class="col-md-2 ">
-                            <button type="button" onclick="selectGen()" class="btn btn-outline-warning mt-4">Use GEN</button>
+                        <div class="col-md-8 mt-4">
+                            <div class="d-flex gap-2 ">
+                                <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetReferrerToGP()">
+                                    <i class="fa-solid fa-user-md me-1"></i> Use GP
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success flex-fill" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
+                                    <i class="fa-solid fa-magnifying-glass me-1"></i> Search External
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
+                                    <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
+                                </button>
+                            </div>
                         </div>
 
                         @*
@@ -169,7 +174,7 @@
                         <div class="row">
                             <div class="mb-3 col-md-6">
                                 <label class="form-label" for="admin_status">Admin Status</label>
-                                <select id="admin_status" name="Status_Admin" class="form-control" required>
+                                <select id="admin_status" name="Status_Admin" class="form-control" >
                                     <option value="" selected></option>
                                     @foreach (var item in Model.admin_status)
                                     {
@@ -349,46 +354,53 @@
     //document.getElementById("btnSetGP").addEventListener("click", SetReferrerToGP);
     window.addEventListener("load", ShowCancerStuff);
 
-    function ShowCancerStuff()
-    {
-        var cStuff = document.getElementById("cancerStuff");        
+        function ShowCancerStuff()
+         {
+             var cStuff = document.getElementById("cancerStuff");
 
-        if(document.getElementById("refPathway").value == "Cancer")
-        {
-            cStuff.hidden = false;
-            document.getElementById("type").value = "New Referral";
-            document.getElementById("ddlIndication").value = "?Cancer";
-            document.getElementById("ddlClinClass").value = "Routine";
-            document.getElementById("ddlPregnancy").value = "No Pregnancy";
-            document.getElementById("admin_status").value = "New Referral";
-            
-            document.getElementById("ddlConsultant").value = "@Model.areaName.ConsCode.ToUpper()";
-            document.getElementById("ddlGc").value = "@Model.areaName.GC.ToUpper()";
-            document.getElementById("ddlAdmin").value = "@Model.areaName.MedSecCode.ToUpper()";            
-        }
-        else
-        {
-            cStuff.hidden = true;
-            document.getElementById("type").value = "Incomplete Referral";
-            document.getElementById("ddlIndication").value = "?Other";
-            document.getElementById("ddlClinClass").value = "";
-            document.getElementById("ddlPregnancy").value = "";
-            document.getElementById("admin_status").value = "";
+             var adminStatusDropdown = document.getElementById("admin_status");
 
-            document.getElementById("ddlConsultant").value = "";
-            document.getElementById("ddlGc").value = "";
-            document.getElementById("ddlAdmin").value = "";
-        }        
-    }
+             if(document.getElementById("refPathway").value == "Cancer")
+             {
+                 cStuff.hidden = false;
+                 adminStatusDropdown.required = true;
+                 document.getElementById("type").value = "New Referral";
+                 document.getElementById("ddlIndication").value = "?Cancer";
+                 document.getElementById("ddlClinClass").value = "Routine";
+                 document.getElementById("ddlPregnancy").value = "No Pregnancy";
+                 document.getElementById("admin_status").value = "New Referral";
 
-    function SetReferrerToGP() //this isn't called from anywhere, do we actually need it...?
-    {
-        var _refer = document.getElementById("ddlRefPhys");
-        const _newRefer = "@Model.patient.GP_Code";
-        
-        _refer.value = _newRefer;
-    }  
-    
+                 document.getElementById("ddlConsultant").value = "@Model.areaName.ConsCode.ToUpper()";
+                 document.getElementById("ddlGc").value = "@Model.areaName.GC.ToUpper()";
+                 document.getElementById("ddlAdmin").value = "@Model.areaName.MedSecCode.ToUpper()";
+             }
+             else
+             {
+                 cStuff.hidden = true;
+                 adminStatusDropdown.required = false;
+                 document.getElementById("type").value = "Incomplete Referral";
+                 document.getElementById("ddlIndication").value = "?Other";
+                 document.getElementById("ddlClinClass").value = "";
+                 document.getElementById("ddlPregnancy").value = "";
+                 document.getElementById("admin_status").value = "";
+
+                 document.getElementById("ddlConsultant").value = "";
+                 document.getElementById("ddlGc").value = "";
+                 document.getElementById("ddlAdmin").value = "";
+             }
+         }
+
+        function SetReferrerToGP()
+         {
+             var _refer = document.getElementById("ddlRefPhys");
+             const _newRefer = "@Model.patient.GP_Code";
+
+             if (_refer.choices) {
+                 _refer.choices.setChoiceByValue(_newRefer);
+             } else {
+                 _refer.value = _newRefer;
+             }
+         }
         SetClinicianTarget("ddlRefPhys");
 
 </script>

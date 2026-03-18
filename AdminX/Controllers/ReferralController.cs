@@ -563,7 +563,7 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
                 }
-
+                TempData["SuccessMessage"] = "Referral added successfully.";
                 return RedirectToAction("PatientDetails", "Patient", new { id = mpi });
             }
             catch (Exception ex)
