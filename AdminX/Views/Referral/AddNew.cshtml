@@ -358,12 +358,12 @@
          {
              var cStuff = document.getElementById("cancerStuff");
 
-             var adminStatusDropdown = document.getElementById("admin_status");
+             // var adminStatusDropdown = document.getElementById("admin_status");
 
              if(document.getElementById("refPathway").value == "Cancer")
              {
                  cStuff.hidden = false;
-                 adminStatusDropdown.required = true;
+                 // adminStatusDropdown.required = true;
                  document.getElementById("type").value = "New Referral";
                  document.getElementById("ddlIndication").value = "?Cancer";
                  document.getElementById("ddlClinClass").value = "Routine";
@@ -377,7 +377,7 @@
              else
              {
                  cStuff.hidden = true;
-                 adminStatusDropdown.required = false;
+                 // adminStatusDropdown.required = false;
                  document.getElementById("type").value = "Incomplete Referral";
                  document.getElementById("ddlIndication").value = "?Other";
                  document.getElementById("ddlClinClass").value = "";
