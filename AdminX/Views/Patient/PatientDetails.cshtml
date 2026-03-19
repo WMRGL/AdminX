@@ -279,6 +279,9 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#relatives" role="tab" aria-selected="false" tabindex="-1">
                     Relatives
                 </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#wait-list" role="tab" aria-selected="false" tabindex="-1">
+                    Waiting List
+                </a>
             </div>
         </div>
     </div>
@@ -1573,6 +1576,65 @@
                     <a id="btnImportRelative" asp-controller="Relative" asp-action="ImportRelatives" asp-route-id=@Model.patient.WMFACSID class="btn btn-light bg-white me-2">Import Relatives from Phenotips</a>
                 </div>
 
+            </div>
+            <div class="tab-pane fade" id="wait-list" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="col-auto d-none d-sm-block">
+                            <h5 class="card-title mb-0">Relatives</h5>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.waitingList.Count > 0)
+                        {
+                            <div class="table-responsive">
+                                <table class="table mb-0 table-hover defaultTable">
+                                    <thead class="">
+                                        <tr>
+                                            <th>Clinician</th>
+                                            <th>Clinic</th>
+                                            <th>Date Added</th>
+                                            <th>Duration</th>
+                                            <th>Priority</th>
+                                            <th>Comment</th>
+                                            <th>Instructions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.waitingList)
+                                        {
+                                            <tr>
+                                               
+                                                <td>@item.ClinicianName</td>
+                                                <td>@item.ClinicName</td>
+                                                @if (@item.AddedDate.HasValue)
+                                                {
+                                                <td data-sort=@item.AddedDate.Value.ToString("yyyyMMdd")>@item.AddedDate.Value.ToString("dd/MM/yyyy")</td>
+                                                }
+                                                else
+                                                {
+                                                <td data-sort="0">Not known</td>
+                                                }
+                                                <td>@item.Duration</td>
+                                                <td>@item.Priority</td>
+                                                <td>@item.Comment</td>
+                                                <td>@item.Instructions</td>
+                                                
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <h4>Patient is not on a waiting list.</h4>
+                        }
+
+                    </div>
+                </div>
+               
             </div>
         </div>
     </div>
