@@ -57,13 +57,14 @@ namespace AdminX.Controllers
         private readonly IEpicReferralReferenceDataAsync _epicReferralReferenceData;
         private readonly IPAddressFinder _ip;
         private readonly IAgeCalculator _ageCalculator;
+        private readonly IWaitingListDataAsync _waitingListData;
 
         public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
             ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator) //, ClinicalContext clinContext)
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
@@ -104,6 +105,7 @@ namespace AdminX.Controllers
             _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
             _ageCalculator = ageCalculator;
+            _waitingListData = waitingListData;
             //_clinContext = clinContext;
         }
 
@@ -230,6 +232,7 @@ namespace AdminX.Controllers
                 _pvm.referralsList = await _referralData.GetActiveReferralsListForPatient(_pvm.patient.MPI);
                 _pvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = await _docsData.GetDocumentsList();
+                _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
 
                 foreach (var item in referrals)
                 {
