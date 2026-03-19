@@ -233,6 +233,7 @@ namespace AdminX.Controllers
                 _pvm.diaryActionsList = await _diaryActionData.GetDiaryActions();
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
+                _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
 
                 foreach (var item in referrals)
                 {
