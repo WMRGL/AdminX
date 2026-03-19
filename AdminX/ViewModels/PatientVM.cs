@@ -79,6 +79,7 @@ namespace AdminX.ViewModels
         public int selectedAreaID { get; set; }
         public List<PatientAlert> PatientAlerts { get; set; } = new List<PatientAlert>();
         public List<WaitingList> waitingList { get; set; }
+        public Pedigree pedigree { get; set; }
     }
 
     public class PatientAlert
