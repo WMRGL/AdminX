@@ -557,7 +557,7 @@ namespace AdminX.Controllers
                 int success = _CRUD.ReferralDetail("Referral", "Create", User.Identity.Name, mpi, RefFHF, refReasonAff, OthReason1Aff,
                     OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic, refType, indication, comments, refPathway, UBRN, subPathway,
                     consultant, gc, admin, refPhys, pregnancy, clinClass, "Active", refDate, null, Status_Admin, refReason, refReason1,
-                    refReason2, refReason3, refReason4, false, false);
+                    refReason2, refReason3, refReason4, "", "", false, false);
 
                 if (success != 1)
                 {
@@ -617,14 +617,16 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
-            
+            string? refReason1,string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff, int? OthReason2Aff, int? OthReason3Aff,
+            int? OthReason4Aff,  int? symptomatic, int? RefFHF, string? Status_Admin, string? refReason
             )
         {
             try
             {
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
 
-                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, 0, 0, 0, 0, 0, 0, 0, pathway, consultant, "", gc, admin, referrerCode, indication);
+                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, RefFHF, refReasonAff, OthReason1Aff, OthReason2Aff, OthReason3Aff, OthReason4Aff,
+                    symptomatic, pathway, consultant, "", gc, admin, referrerCode, indication, refReason, Status_Admin,  refReason1, refReason2, refReason3, refReason4);
 
                 if (success != 1)
                 {
