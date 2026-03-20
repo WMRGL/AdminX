@@ -604,6 +604,8 @@ namespace AdminX.Controllers
                     return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
                 }
                 _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
+                _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
 
                 return View(_rvm);
             }
@@ -614,7 +616,9 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication)
+        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
+            
+            )
         {
             try
             {

@@ -110,7 +110,167 @@
             </select>
             </div>
             
-        </div>        
+        </div>
+
+            <div class="row my-5" id="cancerStuff" hidden>
+                <h3>Cancer referral details</h3>
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label" for="admin_status">Admin Status</label>
+                        <select id="admin_status" name="Status_Admin" class="form-control">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.admin_status)
+                            {
+                                <option value=@item.Status_Admin>@item.Status_Admin</option>
+                            }
+
+                        </select>
+                    </div>
+
+
+                    <div class="mb-3 col-md-2">
+                        <label class="form-label" for="inputZip">Referred using FHF?</label><br />
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="1" name="RefFHF">
+
+                            <span class="form-check-label">
+                                Yes
+                            </span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="0" name="RefFHF">
+                            <span class="form-check-label">
+                                No
+                            </span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="2" name="RefFHF" checked>
+                            <span class="form-check-label">
+                                Don't know/not recorded'
+                            </span>
+                        </label>
+                    </div>
+
+
+                    <div class="mb-3 col-md-2">
+                        <label class="form-label" for="inputZip">Symptomatic at referral?</label><br />
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="1" name="symptomatic">
+                            <span class="form-check-label">
+                                Yes
+                            </span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="0" name="symptomatic">
+                            <span class="form-check-label">
+                                No
+                            </span>
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" value="2" name="symptomatic" checked>
+                            <span class="form-check-label">
+                                Don't know/Unclear'
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Referral Reason Code</label>
+                        <select class="form-select" name="refReason">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.referralReasonsList)
+                            {
+                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Affected?</label>
+                        <select class="form-select" name="refReasonAff">
+                            <option value="0">Not affected</option>
+                            <option value="-1">Affected</option>
+                            <option value="1" selected>Unclear</option>
+                        </select> @*Because of the tri-state, and because the old data has -1 and 0, we have to use 1 for "unclear" now.*@
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+
+                        <select class="form-select" name="refReason1">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.referralReasonsList)
+                            {
+                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="OthReason1Aff">
+                            <option value="0">Not affected</option>
+                            <option value="-1">Affected</option>
+                            <option value="1" selected>Unclear</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-select" name="refReason2">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.referralReasonsList)
+                            {
+                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="OthReason2Aff">
+                            <option value="0">Not affected</option>
+                            <option value="-1">Affected</option>
+                            <option value="1" selected>Unclear</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-select" name="refReason3">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.referralReasonsList)
+                            {
+                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="OthReason3Aff">
+                            <option value="0">Not affected</option>
+                            <option value="-1">Affected</option>
+                            <option value="1" selected>Unclear</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-select" name="refReason4">
+                            <option value="" selected></option>
+                            @foreach (var item in Model.referralReasonsList)
+                            {
+                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="OthReason4Aff">
+                            <option value="0">Not affected</option>
+                            <option value="-1">Affected</option>
+                            <option value="1" selected>Unclear</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
 
 
         <div class="row mb-5">          
@@ -134,6 +294,7 @@
 
     document.getElementById("ddlPathways").addEventListener("change", SetPathway);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+    window.addEventListener("load", displayCancer);
     
     function SetPathway()
     {
@@ -143,7 +304,8 @@
         var adminList = document.getElementById("ddlAdmin");        
         var refCons;
         var refGC;
-        var refAdmin;               
+        var refAdmin;   
+        var cancerStuff = document.getElementById("cancerStuff");
 
         if(pw.value.includes("Cancer"))
         {
@@ -168,6 +330,8 @@
                 adminList.value = refAdmin;
             }
             document.getElementById("manualChoiceCaption").hidden = true;  
+            cancerStuff.hidden = false;
+                console.log(pw.value);
         }
         else
         {
@@ -175,8 +339,19 @@
             gcsList.value = "";
             adminList.value = "";
             document.getElementById("manualChoiceCaption").hidden = false;
+            cancerStuff.hidden = true;
+            console.log(pw.value);
         }
     }
+
+    function displayCancer()
+    {
+        var pw = document.getElementById("ddlPathways");
+        if(pw.value.includes("Cancer"))
+        {
+            document.getElementById("cancerStuff").hidden = false;
+        }
+        }
 
     function DoSubmit()
     {
