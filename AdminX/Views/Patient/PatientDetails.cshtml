@@ -892,6 +892,24 @@
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Mobile):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtTelMobile != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.PtTelMobile)
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
                                                 <strong>Email:</strong>
                                                 <div class="text-muted">
                                                     @if (Model.patient.EmailAddress != null && Model.patient.EmailCommsConsent == "Yes")
