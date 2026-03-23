@@ -101,7 +101,7 @@
                     </span>
                    
             <select id="referrerCode" name="referrerCode" class="form-select js-choice">
-                <option selected="">@Model.referral.ReferrerCode</option>
+                <option selected="">@Model.referral.ReferrerCode - @Model.referral.ReferringClinician - @Model.referral.ReferringFacility</option>
                 <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
                 @foreach (var item in Model.referrers)
                 {
