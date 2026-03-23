@@ -65,7 +65,8 @@ namespace AdminX.Controllers
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
+            IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
@@ -106,6 +107,7 @@ namespace AdminX.Controllers
             _epicReferralReferenceData = epicReferralReference;
             _ip = new IPAddressFinder(HttpContext); //IP Address is how it gets the computer name when on the server
             _ageCalculator = ageCalculator;
+            _waitingListData = waitingListData;
             _apptStagingData = apptStagingDataAsync;
             //_clinContext = clinContext;
         }

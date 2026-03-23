@@ -524,6 +524,8 @@ namespace AdminX.Meta
         {
             int success = 0;
 
+            if (attendance == null) { attendance = ""; }
+
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("dbo.sp_DownstreamApptStagingTableInsert", conn);
