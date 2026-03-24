@@ -200,16 +200,16 @@ namespace AdminX.Controllers
 
                                 while (updateStatus < 5)
                                 {
-                                    if (updateStatus == previousStatus)
+                                    if (updateStatus == previousStatus || updateStatus < previousStatus)
                                     {
                                         _pvm.PatientAlerts.Add(new PatientAlert
                                         {
                                             Severity = AlertSeverity.Critical,
-                                            Message = "Unable to load patient referral. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
+                                            Message = "Unable to load patient appointment. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
                                             Icon = "fa-cog",
                                             ActionText = "Contact IT Support",
-                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
-                                        });
+                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"                                            
+                                        });                                        
                                         break;
                                     }
 
