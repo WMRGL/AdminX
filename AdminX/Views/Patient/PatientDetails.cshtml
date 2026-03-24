@@ -559,11 +559,15 @@
                             <a asp-controller="Patient" asp-action="EditPatientDetails" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Edit Details</a>
                         </div>
                         <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
-                        @if (Model.pedigree.File_Dctm_Sts == 0)
+                        
+                        @if(Model.pedigree != null)
                         {
-                            <div class="text-success">
-                                <strong>File Location: @Model.pedigree.FILE_LOCATION</strong>
-                            </div>
+                            if (Model.pedigree.File_Dctm_Sts == 0)
+                            {
+                                <div class="text-success">
+                                    <strong>File Location: @Model.pedigree.FILE_LOCATION</strong>
+                                </div>
+                            }
                         }
 
                        
@@ -885,6 +889,24 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong> Tel(Mobile):</strong>
+                                                <div class="text-muted">
+                                                    @if (Model.patient.PtTelMobile != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.patient.PtTelMobile)
+                                                    }
+                                                    else
+                                                    {
+                                                        <p></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
