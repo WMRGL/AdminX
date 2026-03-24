@@ -306,6 +306,9 @@ namespace AdminX.Controllers
                 _rvm.subPathways = await _pathwayData.GetSubPathwayList();
                 _rvm.GP = await _externalClinicianData.GetClinicianDetails(_rvm.patient.GP_Code);
                 _rvm.GPFacility = await _externalFacilityData.GetFacilityDetails(_rvm.patient.GP_Facility_Code);
+                _rvm.priorityList = await _priorityData.GetPriorityList();
+                _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
+
 
                 if (_rvm.patient.PtAreaCode == null)
                 {
