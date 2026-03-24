@@ -78,7 +78,7 @@
         </div>
 
         <div class="row mb-3">
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label">Indication</label>            
                 <select class="form-select" name="indication" asp-for=@Model.referral.INDICATION>
                     @foreach (var item in Model.indicationList)
@@ -87,20 +87,35 @@
                     }
                 </select>
             </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="type">Type</label>
+                    <select class="form-select" id="type" asp-for="@Model.referral.RefType" name="refType">
+                        @foreach (var item in Model.activities)
+                        {
+                            <option value="@item.APP_TYPE">@item.APP_TYPE</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="refDate">Date</label>
+                    <input type="date" class="form-control" id="refDate" asp-for="@Model.referral.RefDate" name="refDate" required />
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="subPathway">Sub-Pathway (if applicable)</label>
+                    <select class="form-select" id="subPathway" asp-for="@Model.referral.Pathway_Subset" name="subPathway">
+                        <option value="" selected>None</option>
+                        @foreach (var item in Model.subPathways)
+                        {
+                            <option value="@item.Subset">@item.Subset</option>
+                        }
+                    </select>
+                </div>
         </div>
 
         <div class="row mb-3">
-            <div class="mb-3 col-md-4">
-                    <span class="mb-2">
-                        <label class="form-label" for="referrerCode">Referrer Code:</label> <button class="btn btn-outline-primary mb-2" type="button" onclick="SetToGP()">Use GP</button>
-                        <button type="button" class="btn btn-outline-success mx-2 mb-2" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
-                            Search External Referrer
-                        </button>
-                        <button type="button" onclick="selectGen()" class="btn btn-outline-warning mb-2">Use GEN</button>
-
-                    </span>
-                   
-            <select id="referrerCode" name="referrerCode" class="form-select js-choice">
+            <div class="mb-3 col-md-3">
+                <label class="form-label" for="referrerCode">Referrer Code:</label>
+                <select id="referrerCode" name="referrerCode" class="form-select js-choice">
                 <option selected="">@Model.referral.ReferrerCode - @Model.referral.ReferringClinician - @Model.referral.ReferringFacility</option>
                 <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
                 @foreach (var item in Model.referrers)
@@ -108,11 +123,41 @@
                     <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>
                 }
             </select>
+                    <button class="btn btn-outline-primary mb-2" type="button" onclick="SetToGP()">Use GP</button>
+                    <button type="button" class="btn btn-outline-success mx-2 mb-2" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
+                        Search External Referrer
+                    </button>
+                    <button type="button" onclick="selectGen()" class="btn btn-outline-warning mb-2">Use GEN</button>
             </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="clinClass">Class/Urgency</label>
+                    <select class="form-control" id="ddlClinClass" asp-for=@Model.referral.RefClass name="clinClass">
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.priorityList)
+                        {
+                            <option value="@item.CLASS">@item.CLASS - @item.DESCRIPTION</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="pregnancy">Pregnancy</label>
+                    <select class="form-control" asp-for=@Model.referral.PREGNANCY id="ddlPregnancy" name="pregnancy">
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.pregnancy)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="comments">Comments</label>
+                    <textarea class="form-control" id="comments" name="comments"></textarea>
+                </div>
             
         </div>
 
-            <div class="row my-5" id="cancerStuff" hidden>
+          
+            <div class="row my-3" id="cancerStuff" hidden>
                 <h3>Cancer referral details</h3>
                 <div class="row">
                     <div class="mb-3 col-md-6">
@@ -295,6 +340,7 @@
     document.getElementById("ddlPathways").addEventListener("change", SetPathway);
     document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
     window.addEventListener("load", displayCancer);
+    window.addEventListener("load", SetPathway);
     
     function SetPathway()
     {

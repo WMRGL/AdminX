@@ -606,6 +606,10 @@ namespace AdminX.Controllers
                 _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
                 _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
+                _rvm.activities = await _activityTypeData.GetReferralTypes();
+                _rvm.subPathways = await _pathwayData.GetSubPathwayList();
+                _rvm.priorityList = await _priorityData.GetPriorityList();
+                _rvm.pregnancy = new List<string> { "No Pregnancy", "Pregnant" };
 
                 return View(_rvm);
             }
@@ -616,23 +620,25 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessNewReferral(int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
-            string? refReason1,string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff, int? OthReason2Aff, int? OthReason3Aff,
-            int? OthReason4Aff,  int? symptomatic, int? RefFHF, string? Status_Admin, string? refReason
-            )
+        public async Task<IActionResult> ProcessNewReferral(
+    int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
+    string? refReason1, string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff,
+    int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? symptomatic, int? RefFHF, string? Status_Admin, string? refReason,
+    string? refType, DateTime? refDate, string? subPathway, string? clinClass, string? pregnancy, string? comments)
         {
             try
             {
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
-
-                int success = _CRUD.ReferralDetail("Referral", "Process", User.Identity.Name, refID, RefFHF, refReasonAff, OthReason1Aff, OthReason2Aff, OthReason3Aff, OthReason4Aff,
-                    symptomatic, pathway, consultant, "", gc, admin, referrerCode, indication, refReason, Status_Admin,  refReason1, refReason2, refReason3, refReason4);
+                int success = _CRUD.ReferralDetail("Referral",
+                "Process", User.Identity.Name, refID, RefFHF, refReasonAff, OthReason1Aff, OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic,pathway,consultant,
+                comments, gc, admin, referrerCode,indication, refReason, Status_Admin, refReason1,refReason2,refReason3,refReason4,refDate,null,refType,subPathway,
+                clinClass,pregnancy);
 
                 if (success != 1)
                 {
                     return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
                 }
-
+                TempData["SuccessMessage"] = "Referral processed successfully.";
                 return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
             }
             catch (Exception ex)
