@@ -55,7 +55,7 @@ namespace AdminX.Meta
             string? refStatus, DateTime createdDate);
 
         public int EpicApptStaging(int id, string epicPatID, int epicApptID, DateTime ApptDate, DateTime? arrivedDate, DateTime? departedDate, DateTime? cancelledDate, DateTime? lastEventDate,
-            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location);
+            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location, string? cancelReason);
 
         public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0);
     }
