@@ -112,6 +112,7 @@ namespace AdminX.Models
         public Int16? UpdateSts { get; set; }
         public string? UpdateMessage { get; set; }
         public string? Spec_Code { get; set; }
+        public string? CancelReason { get; set; }
     }
 
     [Table("DownstreamApptReferenceTable", Schema = "dbo")]

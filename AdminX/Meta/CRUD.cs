@@ -520,7 +520,7 @@ namespace AdminX.Meta
         }
 
         public int EpicApptStaging(int id, string epicPatID, int epicApptID, DateTime ApptDate, DateTime? arrivedDate, DateTime? departedDate, DateTime? cancelledDate, DateTime? lastEventDate,
-            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location)
+            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location, string? cancelReason)
         {
             int success = 0;
 
@@ -542,7 +542,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@LastEvent_DTTM", SqlDbType.DateTime).Value = lastEventDate;
             cmd.Parameters.Add("@Attendance", SqlDbType.VarChar).Value = attendance;
             cmd.Parameters.Add("@ApptRefID", SqlDbType.Int).Value = epicApptID;
-            cmd.Parameters.Add("@CancelReason", SqlDbType.VarChar).Value = ""; //TODO: add actual value
+            cmd.Parameters.Add("@CancelReason", SqlDbType.VarChar).Value = cancelReason;
             //cmd.Parameters.Add("@Location", SqlDbType.VarChar).Value = location;
             cmd.ExecuteNonQuery();
             conn.Close();

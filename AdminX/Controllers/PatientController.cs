@@ -217,7 +217,7 @@ namespace AdminX.Controllers
 
                                     _crud.EpicApptStaging(
                                         item.ID, item.PatientID, item.ApptID.GetValueOrDefault(), item.Appt_DTTM.GetValueOrDefault(), item.Arrived_DTTM, item.Departed_DTTM, item.Cancel_DTTM, item.LastEvent_DTTM, item.Cons_Code,
-                                        item.Clinic_Code, item.AttendanceIndicator, item.Spec_Code, "" //there is no Location in the table...?
+                                        item.Clinic_Code, item.AttendanceIndicator, item.Spec_Code, "", item.CancelReason //there is no Location in the table...?
                                     );
 
                                     var stagedUpdate = await _apptStagingData.GetParkedUpdate(item.ID);
