@@ -424,7 +424,7 @@ namespace AdminX.Controllers
                 clinCode = lastName;
             }
 
-            if (isGP == 0)
+            if (clinCode == lastName)
             {
                 if (clinCode.Length >= 7)
                 {

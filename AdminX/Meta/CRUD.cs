@@ -525,6 +525,7 @@ namespace AdminX.Meta
             int success = 0;
 
             if (attendance == null) { attendance = ""; }
+            if (cancelReason == null) { cancelReason = ""; }            
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
