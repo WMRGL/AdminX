@@ -513,6 +513,12 @@ namespace AdminX.Controllers
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - New Referral", "", _ip.GetIPAddress());
 
                 _rvm.patient = await _patientData.GetPatientDetails(mpi);
+
+                if(_rvm.patient.GP_Code == null)
+                {
+                    return RedirectToAction("PatientDetails", "Patient", new { id=mpi, message="No GP is assigned to the patient", success=false });
+                }
+
                 _rvm.activities = await _activityTypeData.GetReferralTypes();
                 _rvm.consultants = await _staffUserData.GetConsultantsList();
                 _rvm.gcs = await _staffUserData.GetGCList();

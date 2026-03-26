@@ -120,7 +120,6 @@ namespace AdminX.Controllers
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
 
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "MPI=" + id.ToString(), _ip.GetIPAddress()); 
 
                 if (message != null && message != "")
@@ -129,111 +128,26 @@ namespace AdminX.Controllers
                     _pvm.success = success.GetValueOrDefault();
                 }
 
-                _pvm.patient = await _patientData.GetPatientDetails(id);                
+                _pvm.patient = await _patientData.GetPatientDetails(id);
+
+                if (_pvm.patient == null) { return RedirectToAction("NotFound", "WIP"); } //just make sure there is actually a patient!
 
                 _pvm.patientsList = new List<Patient>(); //because null
+
+                List<Referral> referrals = await _referralData.GetReferralsList(id);
 
                 if (_pvm.patient.CGU_No != "." && _pvm.patient.CGU_No != "" && _pvm.patient.CGU_No != null)
                 {
                     _pvm.epicPatient = await _epicPatientReferenceData.GetEpicPatient(id);
 
                     if (_pvm.epicPatient != null)
-                    {
-                        _pvm.epicReferralStaging = await _referralStagingData.GetParkedReferralUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates
-                        _pvm.epicApptStaging = await _apptStagingData.GetParkedApptUpdates(_pvm.epicPatient.ExternalPatientID); //check and process parked updates for appointments as well
-
-                        if (_pvm.epicReferralStaging.Count > 0)
+                    {                        
+                        await ProcessEpicReferrals(_pvm.epicPatient.ExternalPatientID); //refactoring
+                                                
+                        if (referrals.Count > 0) //only attempt to process appointment updates if there are referrals (or appointments won't have anything to link to)
                         {
-                            _pvm.epicReferralStaging = _pvm.epicReferralStaging.OrderBy(r => r.UpdateSts).ToList();
-
-                            foreach (var item in _pvm.epicReferralStaging)
-                            {                                
-                                int updateStatus = item.UpdateSts.GetValueOrDefault();
-                                int previousStatus = -1;
-
-                                while (updateStatus < 5)
-                                {
-                                    if (updateStatus == previousStatus)
-                                    {
-                                        _pvm.PatientAlerts.Add(new PatientAlert
-                                        {
-                                            Severity = AlertSeverity.Critical,
-                                            Message = "Unable to load patient referral. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
-                                            Icon = "fa-cog",
-                                            ActionText = "Contact IT Support",
-                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
-                                        });
-                                        break;
-                                    }
-
-                                    previousStatus = updateStatus;
-
-                                    _crud.EpicReferralStaging(
-                                        item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo,
-                                        item.Speciality, item.Pathway, item.ReferralStatus,
-                                        item.CreatedDate.GetValueOrDefault()
-                                    );
-
-                                    var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
-
-                                    if (stagedUpdate != null)
-                                    {
-                                        updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
-
-                        if (_pvm.epicApptStaging.Count > 0)
-                        {
-                            _pvm.epicApptStaging = _pvm.epicApptStaging.OrderBy(r => r.UpdateSts).ToList();
-
-                            foreach (var item in _pvm.epicApptStaging)
-                            {
-                                int updateStatus = item.UpdateSts.GetValueOrDefault();
-                                int previousStatus = -1;
-
-                                while (updateStatus < 5)
-                                {
-                                    if (updateStatus == previousStatus || updateStatus < previousStatus)
-                                    {
-                                        _pvm.PatientAlerts.Add(new PatientAlert
-                                        {
-                                            Severity = AlertSeverity.Critical,
-                                            Message = "Unable to load patient appointment. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
-                                            Icon = "fa-cog",
-                                            ActionText = "Contact IT Support",
-                                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"                                            
-                                        });                                        
-                                        break;
-                                    }
-
-                                    previousStatus = updateStatus;
-
-                                    _crud.EpicApptStaging(
-                                        item.ID, item.PatientID, item.ApptID.GetValueOrDefault(), item.Appt_DTTM.GetValueOrDefault(), item.Arrived_DTTM, item.Departed_DTTM, item.Cancel_DTTM, item.LastEvent_DTTM, item.Cons_Code,
-                                        item.Clinic_Code, item.AttendanceIndicator, item.Spec_Code, "", item.CancelReason //there is no Location in the table...?
-                                    );
-
-                                    var stagedUpdate = await _apptStagingData.GetParkedUpdate(item.ID);
-
-                                    if (stagedUpdate != null)
-                                    {
-                                        updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-
-                            }
-                        }
+                            await ProcessEpicAppointments(_pvm.epicPatient.ExternalPatientID);
+                        }                        
 
                         if (_pvm.epicPatient.UpdateSts == 1)
                         {
@@ -245,7 +159,7 @@ namespace AdminX.Controllers
                     _pvm.patientsList = patientList.OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
                 }
 
-                List<Referral> referrals = await _referralData.GetReferralsList(id);
+                
                 _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "MISSING DATA").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
@@ -272,9 +186,8 @@ namespace AdminX.Controllers
                     EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
                     if (epicRef != null)
                     {
-                        _pvm.epicReferral = epicRef;                        
-
-                        /*if(item.PATIENT_TYPE_CODE != epicRef.Consultant || item.GC_CODE != epicRef.GC || item.PATHWAY != epicRef.Pathway) //etc*/
+                        _pvm.epicReferral = epicRef;   
+                        
                         if(epicRef.LocalUpdateSts == 1)
                         {
                             _pvm.isEpicReferralChanged = true;
@@ -296,14 +209,10 @@ namespace AdminX.Controllers
                         _pvm.previousPatient = await _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + prevRegNo.ToString());
                         _pvm.nextPatient = await _patientData.GetPatientDetailsByCGUNo(_pvm.patient.PEDNO + "." + nextRegNo.ToString());
                     }
-                }
-
-                if (_pvm.patient == null)
-                {
-                    return RedirectToAction("NotFound", "WIP");
-                }
+                }                
 
                 _pvm.relatives = new List<Relative>();
+
                 if (_pvm.patient.PEDNO != null)
                 {
                     var rels = await _relativeData.GetRelativesList(id);                    
@@ -314,7 +223,6 @@ namespace AdminX.Controllers
 
                 if (_pvm.patient.DECEASED == -1)
                 {
-
                     if (_pvm.patient.DOB.HasValue && _pvm.patient.DECEASED_DATE.HasValue)
                     {
                         _pvm.diedage = CalculateDiedAge(_pvm.patient.DOB.Value, _pvm.patient.DECEASED_DATE.Value);
@@ -324,22 +232,17 @@ namespace AdminX.Controllers
                         _pvm.diedage = "Unknown";
                     }
                 }
-                if (_pvm.patient.DOB != null)
-                {
-                    _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value);
-                }
 
-                if (_pvm.patient.PtAreaCode == null)
-                {
-                    _pvm.messages.Add("This patient has no area code assigned.");
-                }
+                if (_pvm.patient.DOB != null) { _pvm.currentage = CalculateAge(_pvm.patient.DOB.Value); }
+
+                if (_pvm.patient.PtAreaCode == null) {  _pvm.messages.Add("This patient has no area code assigned."); }
 
                 if (_pvm.activeReferrals.Count == 0 && _pvm.inactiveReferrals.Count == 0 && _pvm.tempReges.Count == 0 && _pvm.incompleteReferrals.Count == 0)
                 {                    
                     _pvm.messages.Add("There is no activity for this patient, please rectify by adding a referral or temp-reg.");
                 }
 
-                string gpPractice = "";
+                string gpPractice = ""; //check current GP is still valid
 
                 if (_pvm.patient.GP != null)
                 {
@@ -371,94 +274,13 @@ namespace AdminX.Controllers
 
                 string ptURL = await _constantsData.GetConstant("PhenotipsURL", 2);
 
-                if (!ptURL.Contains("0"))
-                {
-                    _pvm.isPhenotipsAvailable = true;
-                }
-
-                
-                if (_pvm.isPhenotipsAvailable) 
-                {
-                    //if (_api.GetPhenotipsPatientID(id).Result != "")
-                    if(await _phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
-                    {
-                        //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
-
-                        _pvm.isPatientInPhenotips = true;
-                        _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
-                        _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
-
-                        _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
-                        _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
-                        _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
-                    }                    
-                }
-
-                //_pvm.PatientAlerts = new List<PatientAlert>();
-
-                //if (message != null && !success.GetValueOrDefault())
-                //{
-                //    _pvm.PatientAlerts.Add(new PatientAlert
-                //    {
-                //        Severity = AlertSeverity.Critical,
-                //        Message = message,
-                //        Icon = "fa-cog",
-
-                //    });
-                //}
-
-                //if (_pvm.isEpicPatientChanged || _pvm.isEpicReferralChanged)
-                //{
-                //    _pvm.PatientAlerts.Add(new PatientAlert
-                //    {
-                //        Severity = AlertSeverity.Critical,
-                //        Message = "Data changes detected in Epic that have not been applied locally.",
-                //        Icon = "fa-file-medical",
-                //        ActionText = "See Epic Changes",
-                //        ActionUrl = Url.Action("EpicPatientChanges", "Patient", new { id = id })
-                //    });
-                //}
-
-                //if (gpPractice == "" || _pvm.patient.GP_Code == null)
-                //{
-                //    _pvm.PatientAlerts.Add(new PatientAlert
-                //    {
-                //        Severity = AlertSeverity.Critical,
-                //        Message = "Invalid GP code assigned. Please verify in System Administration.",
-                //        Icon = "fa-user-md",
-                //        ActionText = "Update GP Information",
-                //        ActionUrl = Url.Action("EditPatientDetails", "Patient", new { mpi = id })
-                //    });
-                //}
-
-                //if (_pvm.patient.PtAreaCode == null)
-                //{
-                //    _pvm.PatientAlerts.Add(new PatientAlert
-                //    {
-                //        Severity = AlertSeverity.Warning,
-                //        Message = "This patient has no area code assigned.",
-                //        Icon = "fa-map-marker-alt",
-                //        ActionText = "Assign Area Code",
-                //        ActionUrl = Url.Action("EditPatientDetails", "Patient", new { mpi = id })
-                //    });
-                //}
-
-                //if (!_pvm.activeReferrals.Any() && !_pvm.tempReges.Any())
-                //{
-                //    _pvm.PatientAlerts.Add(new PatientAlert
-                //    {
-                //        Severity = AlertSeverity.Warning,
-                //        Message = "There is no activity for this patient.",
-                //        Icon = "fa-exclamation-triangle",
-                //        ActionText = "Create New Referral",
-                //        ActionUrl = Url.Action("AddNew", "Referral", new { mpi = id })
-                //    });
-                //}
+                if (!ptURL.Contains("0")) { _pvm.isPhenotipsAvailable = true; }
+                                
+                if (_pvm.isPhenotipsAvailable)  { await ProcessPhenotipsData(id); }
 
                 ViewBag.Breadcrumbs = new List<BreadcrumbItem>
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
-
                     new BreadcrumbItem { Text = "Patient" }
                 };
                 
@@ -519,8 +341,7 @@ namespace AdminX.Controllers
             {
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _pvm.staffMember.STAFF_CODE;
-
-                //IPAddressFinder _ip = new IPAddressFinder(HttpContext);
+               
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Patient", "New", _ip.GetIPAddress());
                 string cguNumber = "";                
 
@@ -529,9 +350,7 @@ namespace AdminX.Controllers
                     cguNumber = await _pedigreeData.GetNextPedigreeNumber() + ".0";
                 }
                 else
-                {
-                    //List<Patient> patList = await _patientSearchData.GetPatientsListByCGUNo(fileNumber); //get the next CGU point number
-                    //int patientNumber = patList.Count();
+                {                   
                     fileNumber = fileNumber.Replace(" ", "");
                     int patientNumber = 0;
 
@@ -540,12 +359,7 @@ namespace AdminX.Controllers
                         patientNumber++;
                     }
 
-                    cguNumber = fileNumber + "." + patientNumber.ToString();
-
-                    //if (await _patientData.GetPatientDetailsByCGUNo(fileNumber + "." + patientNumber.ToString()) == null)
-                    //{
-                    //    cguNumber = fileNumber + "." + patientNumber.ToString();
-                    //}
+                    cguNumber = fileNumber + "." + patientNumber.ToString();                   
                 }                
 
                 _pvm.cguNumber = cguNumber;
@@ -646,12 +460,9 @@ namespace AdminX.Controllers
                         tel, workTel, mobile, areaCode, cguNumber, SALUTATION,  GenderIdentity, language, deseasedStatus);
                     _pvm.success = true;
                     _pvm.message = "Patient saved.";
-                }                
+                }
 
-                //_pvm.patient = _patientData.GetPatientDetailsByCGUNo(cguNumber);
-
-                _pvm.patient = await _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob);
-
+                _pvm.patient = await _patientData.GetPatientDetailsByDemographicData(firstname, lastname, nhsno, dob); //CGU number might not be what was set so we have to use demog data
 
                 if(startDate != null && endDate != null)
                 {                     
@@ -713,7 +524,6 @@ namespace AdminX.Controllers
                 {
                     int areaID = ptareaCodes.First(a => a.AreaName == _pvm.patient.PtAreaName).AreaID;
                     _pvm.selectedAreaID = areaID;
-
                 }
 
                 if (success.HasValue)
@@ -742,7 +552,6 @@ namespace AdminX.Controllers
         {
             try
             {
-
                 string deceased = Request.Form["DECEASED"];
                 bool deseasedStatus = false;
                 if (deceased == "1")
@@ -843,7 +652,6 @@ namespace AdminX.Controllers
                     patientNumber++;
                 }
 
-
                 string sMessage = "";
                 bool isSuccess = false;
                 int sourceDCTM = 0;
@@ -855,8 +663,7 @@ namespace AdminX.Controllers
                 var destPed = await _pedigreeData.GetPedigree(newFileNumber);
 
                 if (destPed != null)
-                {
-                   
+                {                   
                     destDCTM = destPed.File_Dctm_Sts;
                 }
 
@@ -994,6 +801,120 @@ namespace AdminX.Controllers
             Process.Start($"\\\\zion.matrix.local\\dfsrootbwh\\cling\\WMFACS databases\\Pedigree drawing\\GeneticPedigree.exe");
         }
 
-        
+
+        async Task ProcessEpicReferrals(string patID)
+        {
+            var epicReferralStaging = await _referralStagingData.GetParkedReferralUpdates(patID);
+
+            epicReferralStaging = epicReferralStaging.OrderBy(r => r.UpdateSts).ToList();
+
+            foreach (var item in epicReferralStaging)
+            {
+                int updateStatus = item.UpdateSts.GetValueOrDefault();
+                int previousStatus = -1;
+
+                while (updateStatus < 5)
+                {
+                    if (updateStatus == previousStatus)
+                    {
+                        _pvm.PatientAlerts.Add(new PatientAlert
+                        {
+                            Severity = AlertSeverity.Critical,
+                            Message = "Unable to load patient referral. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
+                            Icon = "fa-cog",
+                            ActionText = "Contact IT Support",
+                            ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
+                        });
+                        break;
+                    }
+
+                    previousStatus = updateStatus;
+
+                    _crud.EpicReferralStaging(
+                        item.ID, item.PatientID, item.ReferralID.GetValueOrDefault(), item.ReferralDate.GetValueOrDefault(), item.ReferredBy, item.ReferredTo,
+                        item.Speciality, item.Pathway, item.ReferralStatus,
+                        item.CreatedDate.GetValueOrDefault()
+                    );
+
+                    var stagedUpdate = await _referralStagingData.GetParkedUpdate(item.ID);
+
+                    if (stagedUpdate != null)
+                    {
+                        updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        async Task ProcessEpicAppointments(string patID)
+        {
+            var epicApptStaging = await _apptStagingData.GetParkedApptUpdates(patID);
+
+            if (epicApptStaging.Count > 0)
+            {
+                epicApptStaging = epicApptStaging.OrderBy(r => r.UpdateSts).ToList();
+
+                foreach (var item in epicApptStaging)
+                {
+                    int updateStatus = item.UpdateSts.GetValueOrDefault();
+                    int previousStatus = -1;
+
+                    while (updateStatus < 5)
+                    {
+                        if (updateStatus == previousStatus || updateStatus < previousStatus)
+                        {
+                            _pvm.PatientAlerts.Add(new PatientAlert
+                            {
+                                Severity = AlertSeverity.Critical,
+                                Message = "Unable to load patient appointment. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
+                                Icon = "fa-cog",
+                                ActionText = "Contact IT Support",
+                                ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
+                            });
+                            break;
+                        }
+
+                        previousStatus = updateStatus;
+
+                        _crud.EpicApptStaging(
+                            item.ID, item.PatientID, item.ApptID.GetValueOrDefault(), item.Appt_DTTM.GetValueOrDefault(), item.Arrived_DTTM, item.Departed_DTTM, item.Cancel_DTTM, item.LastEvent_DTTM, item.Cons_Code,
+                            item.Clinic_Code, item.AttendanceIndicator, item.Spec_Code, "", item.CancelReason //there is no Location in the table...?
+                        );
+
+                        var stagedUpdate = await _apptStagingData.GetParkedUpdate(item.ID);
+
+                        if (stagedUpdate != null)
+                        {
+                            updateStatus = stagedUpdate.UpdateSts.GetValueOrDefault();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        async Task ProcessPhenotipsData(int id)
+        {
+            if (await _phenotipsMirrorData.GetPhenotipsPatientByID(id) != null) //don't ping the API every time we open a record!
+            {
+                //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+
+                _pvm.isPatientInPhenotips = true;
+                _pvm.isCancerPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "Cancer").Result; //pings the Phenotips API to see if a PPQ is scheduled
+                _pvm.isGeneralPPQScheduled = _api.CheckPPQExists(_pvm.patient.MPI, "General").Result;
+
+                _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
+                _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
+                _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
+            }
+        }        
     }
 }
