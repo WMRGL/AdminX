@@ -241,7 +241,7 @@
                                     {
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
-                                </select>
+                                </select>                                
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Affected?</label>
@@ -254,7 +254,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-
+                                <input name="refReason1" class="form-control" asp-for=@Model.referral.OthReason1>
+                                @*
                                 <select class="form-select" name="refReason1">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -262,6 +263,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason1Aff">
@@ -273,6 +275,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason2" class="form-control" asp-for=@Model.referral.OthReason2>
+                                @*
                                 <select class="form-select" name="refReason2">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -280,6 +284,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason2Aff">
@@ -291,6 +296,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason3" class="form-control" asp-for=@Model.referral.OthReason3>
+                                @*
                                 <select class="form-select" name="refReason3">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -298,6 +305,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason3Aff">
@@ -309,6 +317,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason4" class="form-control" asp-for=@Model.referral.OthReason4>
+                                @*
                                 <select class="form-select" name="refReason4">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -316,6 +326,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason4Aff">

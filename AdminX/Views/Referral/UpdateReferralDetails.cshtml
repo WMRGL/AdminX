@@ -325,6 +325,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
+                                            <input name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
+                                            @*
                                             <select name="OthReason1" class="form-select" asp-for=@Model.referral.OthReason1>
                                                 <option value="">Select</option>
                                                 @foreach (var item in Model.referralReasonsList)
@@ -332,6 +334,7 @@
                                                     <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                                 }
                                             </select>
+                                            *@
                                         </div>
                                         <div class="col-md-2 mt-2">
                                             <select class="form-select" name="OthReason1Aff" asp-for=@Model.referral.OthReason1Aff>
@@ -343,13 +346,16 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
-                                            <select name="OthReason2" class="form-select" asp-for=@Model.referral.OthReason2>
+                                            <input name="OthReason2" class="form-control" asp-for=@Model.referral.OthReason2>
+                                            @*
+                                                <select name="OthReason2" class="form-select" asp-for=@Model.referral.OthReason2>
                                                 <option value="">Select</option>
                                                 @foreach (var item in Model.referralReasonsList)
                                                 {
                                                     <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                                 }
                                             </select>
+                                            *@
                                         </div>
                                         <div class="col-md-2 mt-2">
                                             <select class="form-select" name="OthReason2Aff" asp-for=@Model.referral.OthReason2Aff>
@@ -361,6 +367,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
+                                            <input name="OthReason3" class="form-control" asp-for=@Model.referral.OthReason3>
+                                            @*
                                             <select name="OthReason3" class="form-select" asp-for=@Model.referral.OthReason3>
                                                 <option value="">Select</option>
                                                 @foreach (var item in Model.referralReasonsList)
@@ -368,6 +376,7 @@
                                                     <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                                 }
                                             </select>
+                                            *@
                                         </div>
                                         <div class="col-md-2 mt-2">
                                             <select class="form-select" name="OthReason3Aff" asp-for=@Model.referral.OthReason3Aff>
@@ -379,6 +388,8 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-4 mt-2">
+                                            <input name="OthReason4" class="form-control" asp-for=@Model.referral.OthReason4>
+                                            @*
                                             <select name="OthReason4" class="form-select" asp-for=@Model.referral.OthReason4>
                                                 <option value="">Select</option>
                                                 @foreach (var item in Model.referralReasonsList)
@@ -386,6 +397,7 @@
                                                     <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                                 }
                                             </select>
+                                            *@
                                         </div>
                                         <div class="col-md-2 mt-2">
                                             <select class="form-select" name="OthReason4Aff" asp-for=@Model.referral.OthReason4Aff>
@@ -404,11 +416,7 @@
                         </div>
                         <partial name="_ExternalClinicianSearchModal" />
                     </div>
-
-                   
-                
                 </div>
-
             </div>
         </div>
     </div>
