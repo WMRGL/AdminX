@@ -28,9 +28,11 @@ namespace AdminX.Controllers
         private readonly IConstantsDataAsync _constants;
         private readonly ICRUD _crud;
         private readonly IPAddressFinder _ip;
+        private readonly IPatientDataAsync _patientData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
-            IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud)
+            IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
+            IPatientDataAsync patientData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -47,6 +49,7 @@ namespace AdminX.Controllers
             _constants = constants;
             _crud = new CRUD(_config);
             _ip = new IPAddressFinder(HttpContext);
+            _patientData = patientData;
         }
 
         [HttpGet]
@@ -381,16 +384,48 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> ClinicianDetails(string clinCode, string title, string firstName, string lastName, string facility, string speciality, string position, int isGP, int isNonActive)
         {
-
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details");
+
+            var curClin = await _clinicianData.GetClinicianDetails(clinCode);
+
+            string curFac = curClin.FACILITY;
 
             int iSuccess = _crud.SysAdminCRUD("Clinician", "Edit", isGP, isNonActive, 0, clinCode, title, firstName, lastName, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, facility, speciality, position);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinician-edit(SQL)" }); }
 
-            return RedirectToAction("Clinicians", new { message = "Changes saved.", success = true });
+            string sMessage = "Changes saved";
+
+            if (isGP != 0) //alert user if changes made to a GP - those patients will need updating
+            {
+                bool isGPChanged = false;
+
+                if (isNonActive != 0) { isGPChanged = true; }
+
+                if(curFac != facility) { isGPChanged = true; }
+
+                if (isGPChanged)
+                {
+
+                    List<Patient> patients = await _patientData.GetPatientsWithGPCode(clinCode);
+
+                    if (patients.Count > 0)
+                    {
+                        sMessage += " - please check the following patients and amend their GP if necessary:<br /> <br />";
+
+                        foreach (var p in patients)
+                        {
+                            sMessage += "<a href=../Patient/PatientDetails?id=" + p.MPI + ">" + p.CGU_No + " - " + p.FIRSTNAME + " " + p.LASTNAME + "</a><br />";
+                        }
+                    }
+                }
+            }
+
+
+
+            return RedirectToAction("Clinicians", new { message = sMessage, success = true });
         }
 
         [HttpGet]

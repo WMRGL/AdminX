@@ -37,64 +37,56 @@
 
                         <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - Referral Details</h5>
                     </div>
-                    @if (Model.referral.PATHWAY?.Trim() == "Cancer")
 
-                    {
+                    <div class="card-body">
                         <div class="card-body">
                             <form method="post">
                                 <div class="row">
-                                    <div class="mb-3 col-md-4">
+                                    <div class="mb-3 col-md-3">
                                         <label class="form-label" for="refid">Referral ID</label>
                                         <input type="text" class="form-control" value="@Model.referral.refid" id="refid" name="refid" readonly>
                                     </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="rdate">Referral Date</label>
-                                        @if (Model.referral.RefDate != null)
-                                        {
-                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate">
-
-                                        }
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="ubrn">UBRN</label>
-                                        <input type="text" class="form-control" value="@Model.referral.UBRN" id="ubrn" name="UBRN">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="type">Type</label>
-                                        <select id="type" name="RefType" class="form-select">
-                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
-                                            @foreach (var item in Model.activities)
-                                            {
-                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
-
-                                            }
-
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="pathway">Pathway</label>
-                                        @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="ddlPathway">Pathway</label>
                                         <select id="ddlPathway" name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
                                             @foreach (var item in Model.pathways)
                                             {
                                                 <option value=@item>@item</option>
                                             }
                                         </select>
-
                                     </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="spathway">Sub Pathway</label>
-                                        <select id="spathway" name="Pathway_Subset" class="form-select" asp-for=@Model.referral.Pathway_Subset>
-                                            <option selected></option>
-                                            <option value=""></option>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="rdate">Referral Date</label>
+                                        @if (Model.referral.RefDate != null)
+                                        {
+                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate">
+                                        }
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="type">Type</label>
+                                        <select id="type" name="RefType" class="form-select">
+                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
+                                            @foreach (var item in Model.activities)
+                                            {
+                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
+                                            }
                                         </select>
                                     </div>
                                 </div>
 
+
                                 <div class="row">
-                                    <div class="mb-3 col-md-4">
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="spathway">Sub Pathway</label>
+                                        <select id="spathway" name="Pathway_Subset" class="form-select" asp-for=@Model.referral.Pathway_Subset>
+                                            <option value="" selected>Select...</option>
+                                            @foreach (var item in Model.subPathways)
+                                            {
+                                                <option value=@item.Subset>@item.Subset</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
                                         <label class="form-label" for="consultant">Consultant</label>
                                         <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select">
                                             <option value="" selected></option>
@@ -104,9 +96,9 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="mb-3 col-md-4">
+                                    <div class="mb-3 col-md-3">
                                         <label class="form-label" for="nurse">Counsellor/Nurse </label>
-                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select">
+                                        <select asp-for=@Model.referral.GC_CODE id="nurse" name="GC_CODE" class="form-select">
                                             <option value="" selected></option>
                                             @foreach (var item in Model.gcs)
                                             {
@@ -114,7 +106,7 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="mb-3 col-md-4">
+                                    <div class="mb-3 col-md-3">
                                         <label class="form-label" for="admin">Admin Contact</label>
                                         <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select">
                                             <option selected="">@Model.referral.AdminContact</option>
@@ -122,16 +114,74 @@
                                             {
                                                 <option value=@item.STAFF_CODE>@item.NAME</option>
                                             }
+                                        </select>
+                                    </div>
+                                </div>
 
+                                <div class="row">
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="inputStatePreg">Pregnancy</label>
+                                        <select id="inputStatePreg" name="PREGNANCY" class="form-select">
+                                            <option selected="">@Model.referral.PREGNANCY</option>
+                                            <option value="No Pregnancy">No Pregnancy</option>
+                                            <option value="Pregnant">Pregnant</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="indication">Indication</label>
+                                        <select class="form-control" name="indication" asp-for=@Model.referral.INDICATION>
+                                            @foreach (var item in Model.indicationList)
+                                            {
+                                                <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="rclass">Class</label>
+                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>
+                                            <option value="Routine">Routine</option>
+                                            <option value="Fast Track">Fast Track</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="ClockStartDate">Clock Start</label>
+                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDate" onchange="CalculateClockAge()">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                   
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="ClockStopDate">Clock Stop</label>
+                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDate" onchange="CalculateClockAge()">
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="clockage">Clock Age</label>
+                                        <input type="text" class="form-control" id="clockage" value="" readonly>
+                                    </div>
+                                
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="ref_status">Referral Status</label>
+                                        <select id="ref_status" class="form-control" name="COMPLETE" required>
+                                            <option selected>@Model.referral.COMPLETE</option>
+                                            <option value="Active">Active </option>
+                                            <option value="Complete">Complete</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 col-md-3">
+                                        <label class="form-label" for="information">Information Gathering</label>
+                                        <select id="information" class="form-select bg-light" name="Clics" asp-for=@Model.referral.Clics style="pointer-events: none;" tabindex="-1">
+                                            <option value=""></option>
+                                            <option value="Clics">Clics</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-5 mb-3">
-                                        <label class="form-label fw-bold" for="referrerCodeC">Referrer Code</label>
-
-                                        <select id="referrerCodeC" name="ReferrerCode" class="form-select js-choice mb-2">
+                                        <label class="form-label fw-bold" for="referrerCode">Referrer Code</label>
+                                        <select id="referrerCode" name="ReferrerCode" class="form-select js-choice mb-2">
                                             <option selected="">@Model.referral.ReferrerCode</option>
                                             <option value="@Model.patient.GP_Code">Use GP - @Model.patient.GP</option>
                                             @foreach (var item in Model.referrers)
@@ -141,7 +191,7 @@
                                         </select>
 
                                         <div class="d-flex gap-2 mt-2">
-                                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetToGP('cancer')">
+                                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetToGP()">
                                                 <i class="fa-solid fa-user-md me-1"></i> Use GP
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-success flex-fill" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
@@ -154,8 +204,8 @@
                                     </div>
 
                                     <div class="col-md-4 mb-3">
-                                        <label class="form-label fw-bold" for="facilityFullDetailsC">Facility Details</label>
-                                        <textarea class="form-control bg-light" id="facilityFullDetailsC" rows="3" readonly></textarea>
+                                        <label class="form-label fw-bold" for="facilityFullDetails">Facility Details</label>
+                                        <textarea class="form-control bg-light" id="facilityFullDetails" rows="3" readonly></textarea>
                                     </div>
 
                                     <div class="col-md-3 mb-3">
@@ -163,465 +213,200 @@
                                         <textarea class="form-control" id="comment" name="REASON_FOR_REFERRAL" rows="3" placeholder="Add a comment..." spellcheck="true">@Model.referral.REASON_FOR_REFERRAL</textarea>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputEmail4">Pregnancy</label>
-                                        <select id="inputState" name="PREGNANCY" class="form-select">
-                                            <option selected="">@Model.referral.PREGNANCY</option>
-                                            <option value="No Pregnancy">No Pregnancy</option>
-                                            <option value="Pregnant">Pregnant</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="indication">Indication</label>
-                                        <select class="form-control" name="indication" asp-for=@Model.referral.INDICATION>
-                                            @foreach (var item in Model.indicationList)
-                                            {
-                                                <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
-                                            }           
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>
-                                            @*<option selected="">@Model.referral.RefClass</option>*@
-                                            <option value="Routine">Routine</option>                                            
-                                            <option value="Fast Track">Fast Track</option>
-                                            <option value="Urgent">Urgent</option>
-                                        </select>
 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockstart">Clock Start</label>
-                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDateC" onchange="CalculateClockAge()">
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Clock Stop</label>
-                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDateC" onchange="CalculateClockAge()">
-                                    </div>
-                                    
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockageC">Clock Age</label>
-                                        <input type="text" class="form-control" id="clockageC" value="" readonly>
+                                <div class="row my-5" id="cancerStuff" hidden>
+                                    <h3>Cancer referral details</h3>
+                                    <div class="row">
+                                        <div class="mb-3 col-md-6">
+                                            <label class="form-label" for="admin_status">Admin Status</label>
+                                            <select id="admin_status" asp-for=@Model.referral.Status_Admin name="Status_Admin" class="form-control">
+                                                <option value="" selected>@Model.referral.Status_Admin</option>
+                                                @foreach (var item in Model.admin_status)
+                                                {
+                                                    <option value="@item.Status_Admin">@item.Status_Admin</option>
+                                                }
+                                            </select>
+                                        </div>
 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-6">
-                                        <label class="form-label" for="ref_status">Referral Status</label>
-                                        <select id="ref_status" class="form-control" name="COMPLETE" required>
-                                            <option selected>@Model.referral.COMPLETE</option>
-                                            <option value="Active">Active </option>
-                                            <option value="Complete">Complete</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-6">
-                                        <label class="form-label" for="admin_status">Admin Status</label>
-                                        <select id="admin_status" name="Status_Admin" class="form-control" >
-                                            <option value="" selected>@Model.referral.Status_Admin</option>
-                                            @foreach (var item in Model.admin_status)
-                                            {
-                                                <option value="@item.Status_Admin">@item.Status_Admin</option>
-                                            }
-
-                                        </select>
-                                    </div>
-
-                                </div>
-
-                                <div class="row">
-                                    <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="ref_code">Referral Reason Code</label>
-                                        <select id="ref_code" class="form-control" name="RefReasonCode" asp-for=@Model.referral.RefReasonCode>
-                                            <option value="">Select</option>
-                                            @foreach (var item in Model.referralReasonsList)
-                                            {
-                                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                                            }
-                                        </select>
-                                        <input name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
-                                        <input name="OthReason2" class="form-control" asp-for=@Model.referral.OthReason2>
-                                        <input name="OthReason3" class="form-control" asp-for=@Model.referral.OthReason3>
-                                        <input name="OthReason4" class="form-control" asp-for=@Model.referral.OthReason4>
-                                        @*
-                                        <select name="OthReason1" class="form-control" asp-for=@Model.referral.OthReason1>
-                                            <option value="">Select</option>
-                                            @foreach (var item in Model.referralReasonsList)
-                                            {
-                                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                                            }
-                                        </select>
-                                        <select name="OthReason2" class="form-control" asp-for=@Model.referral.OthReason2>
-                                            <option value="">Select</option>
-                                           @foreach (var item in Model.referralReasonsList)
-                                            {
-                                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                                            }
-                                        </select>
-                                        <select name="OthReason3" class="form-control" asp-for=@Model.referral.OthReason3>
-                                            <option value="">Select</option>
-                                            @foreach (var item in Model.referralReasonsList)
-                                            {
-                                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                                            }
-                                        </select>
-                                        <select name="OthReason4" class="form-control" asp-for=@Model.referral.OthReason4>
-                                            <option value="">Select</option>
-                                            @foreach (var item in Model.referralReasonsList)
-                                            {
-                                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                                            }
-                                        </select>
-                                        *@
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label class="form-label" for="inputZip">Affected?</label><br />
-                                        <select class="form-select" name="refReasonAff" asp-for=@Model.referral.RefReasonAff>
-                                            <option value="0">Not affected</option>
-                                            <option value="-1">affected</option>
-                                            <option value="1">Unclear</option>
-                                        </select>
-                                        <select class="form-select" name="OthReason1Aff" asp-for=@Model.referral.OthReason1Aff>
-                                            <option value="0">Not affected</option>
-                                            <option value="-1">affected</option>
-                                            <option value="1">Unclear</option>
-                                        </select>
-                                        <select class="form-select" name="OthReason2Aff" asp-for=@Model.referral.OthReason2Aff>
-                                            <option value="0">Not affected</option>
-                                            <option value="-1">affected</option>
-                                            <option value="1">Unclear</option>
-                                        </select>
-                                        <select class="form-select" name="OthReason3Aff" asp-for=@Model.referral.OthReason3Aff>
-                                            <option value="0">Not affected</option>
-                                            <option value="-1">affected</option>
-                                            <option value="1">Unclear</option>
-                                        </select>
-                                        <select class="form-select" name="OthReason4Aff" asp-for=@Model.referral.OthReason4Aff>
-                                            <option value="0">Not affected</option>
-                                            <option value="-1">affected</option>
-                                            <option value="1">Unclear</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label class="form-label" for="inputZip">Referred using FHF?</label><br />
-                                        <label class="form-check">
-                                            @if (Model.referral.RefFHF == 1)
-                                            {
-                                                <input class="form-check-input" type="radio" value="1" name="RefFHF" checked>
-
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="1" name="RefFHF">
-                                            }
-                                            <span class="form-check-label">
-                                                Yes
-                                            </span>
-                                        </label>
-                                        <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            @if (Model.referral.RefFHF == 0)
-                                            {
-                                                <input class="form-check-input" type="radio" value="0" name="RefFHF" checked>
-
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="0" name="RefFHF">
-                                            }
-                                            <span class="form-check-label">
-                                                No
-                                            </span>
-                                        </label>
-                                        <label class="form-check">
-                                            @if (Model.referral.RefFHF == 2)
-                                            {
-                                                <input class="form-check-input" type="radio" value="2" name="RefFHF" checked>
-
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="2" name="RefFHF">
-                                            }
-                                            <span class="form-check-label">
-                                                Don't know/not recorded'
-                                            </span>
-                                        </label>
-
-
-                                    </div>
-                                    <div class="mb-3 col-md-2">
-                                        <label class="form-label" for="inputZip">Symptomatic at referral?</label><br />
-                                        <label class="form-check">
+                                        <div class="mb-3 col-md-2">
+                                            <label class="form-label">Referred using FHF?</label><br />
                                             <label class="form-check">
-                                            @if (Model.referral.RefSympt == 1)
-                                            {
-                                                <input class="form-check-input" type="radio" value="1" name="symptomatic" checked>
+                                                @if (Model.referral.RefFHF == 1)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="1" name="RefFHF" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="1" name="RefFHF">
+                                                }
+                                                <span class="form-check-label">Yes</span>
+                                            </label>
+                                            <label class="form-check">
+                                                @if (Model.referral.RefFHF == 0)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="0" name="RefFHF" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="0" name="RefFHF">
+                                                }
+                                                <span class="form-check-label">No</span>
+                                            </label>
+                                            <label class="form-check">
+                                                @if (Model.referral.RefFHF == 2 || Model.referral.RefFHF == null)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="2" name="RefFHF" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="2" name="RefFHF">
+                                                }
+                                                <span class="form-check-label">Don't know/not recorded</span>
+                                            </label>
+                                        </div>
 
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="1" name="symptomatic">
-                                            }
-                                            <span class="form-check-label">
-                                                Yes
-                                            </span>
-                                        </label>
-                                        <label class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="">
-                                            @if (Model.referral.RefSympt == 0)
-                                            {
-                                                <input class="form-check-input" type="radio" value="0" name="symptomatic" checked>
-
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="0" name="symptomatic">
-                                            }
-                                            <span class="form-check-label">
-                                                No
-                                            </span>
-                                        </label>
-                                        <label class="form-check">
-                                            @if (Model.referral.RefSympt == 2)
-                                            {
-                                                <input class="form-check-input" type="radio" value="2" name="symptomatic" checked>
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="radio" value="2" name="symptomatic">
-                                            }
-                                            <span class="form-check-label">
-                                                Don't know/Unclear'
-                                            </span>
-                                        </label>
-                                    </div>                                    
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                                <a asp-controller=Review asp-action=Create asp-route-id=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
-                            </form>
-
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="card-body">
-                            <form method="post">
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="refid">Referral ID</label>
-                                        <input type="text" class="form-control" value="@Model.referral.refid" id="refid" name="refid" readonly>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="rdate">Referral Date</label>
-                                        @if (Model.referral.RefDate != null)
-                                        {
-                                            <input type="text" value="@Model.referral.RefDate.Value.ToString("dd/MM/yyyy")" name="RefDate" class="form-control" id="rdate">
-
-                                        }
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="ubrn">UBRN</label>
-                                        <input type="text" class="form-control" value="@Model.referral.UBRN" id="ubrn" name="UBRN">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="type">Type</label>
-                                        <select id="type" name="RefType" class="form-select">
-                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
-                                            @foreach (var item in Model.activities)
-                                            {
-                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
-
-                                            }
-
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="pathway">Pathway</label>
-                                        @*<input type="text" name="PATHWAY" value="@Model.referral.PATHWAY" id="pathway" class="form-control" readonly>*@
-                                        <select name="PATHWAY" class="form-select" asp-for=@Model.referral.PATHWAY>
-                                            @foreach (var item in Model.pathways)
-                                            {
-                                                <option value=@item>@item</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="spathway">Sub Pathway</label>
-                                        <select id="spathway" name="Pathway_Subset" class="form-select" asp-for=@Model.referral.Pathway_Subset>                                            
-                                            <option value="" selected>Select...</option>
-                                            @foreach(var item in Model.subPathways)
-                                            {
-                                                <option value=@item.Subset>@item.Subset</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="consultant">Consultant</label>
-                                        <select asp-for=@Model.referral.PATIENT_TYPE_CODE id="consultant" name="PATIENT_TYPE_CODE" class="form-select">
-                                            <option value="" selected></option>
-                                            @foreach (var item in Model.consultants)
-                                            {
-                                                <option value="@item.STAFF_CODE">@item.NAME</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="nurse">Counsellor/Nurse </label>
-                                        <select asp-for=@Model.referral.GC_CODE id="nurse" id="nurse" name="GC_CODE" class="form-select">
-                                            <option value="" selected></option>
-                                            @foreach (var item in Model.gcs)
-                                            {
-                                                <option value="@item.STAFF_CODE">@item.NAME</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="admin">Admin Contact</label>
-                                        <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select">
-                                            <option selected="">@Model.referral.AdminContact</option>
-                                            @foreach (var item in Model.admin)
-                                            {
-                                                <option value=@item.STAFF_CODE>@item.NAME</option>
-                                            }
-
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label fw-bold" for="referrerCodeG">Referrer Code</label>
-
-                                        <select id="referrerCodeG" name="ReferrerCode" class="form-select js-choice mb-2">
-                                            <option selected="">@Model.referral.ReferrerCode</option>
-                                            <option value="@Model.patient.GP_Code">Use GP - @Model.patient.GP</option>
-                                            @foreach (var item in Model.referrers)
-                                            {
-                                                <option value="@item.MasterClinicianCode">@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME</option>
-                                            }
-                                        </select>
-
-                                        <div class="d-flex gap-2 mt-2">
-                                            <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetToGP('general')">
-                                                <i class="fa-solid fa-user-md me-1"></i> Use GP
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-success flex-fill" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
-                                                <i class="fa-solid fa-magnifying-glass me-1"></i> Search External
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
-                                                <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
-                                            </button>
+                                        <div class="mb-3 col-md-2">
+                                            <label class="form-label">Symptomatic at referral?</label><br />
+                                            <label class="form-check">
+                                                @if (Model.referral.RefSympt == 1)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="1" name="symptomatic" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="1" name="symptomatic">
+                                                }
+                                                <span class="form-check-label">Yes</span>
+                                            </label>
+                                            <label class="form-check">
+                                                @if (Model.referral.RefSympt == 0)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="0" name="symptomatic" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="0" name="symptomatic">
+                                                }
+                                                <span class="form-check-label">No</span>
+                                            </label>
+                                            <label class="form-check">
+                                                @if (Model.referral.RefSympt == 2 || Model.referral.RefSympt == null)
+                                                {
+                                                    <input class="form-check-input" type="radio" value="2" name="symptomatic" checked>
+                                                }
+                                                else
+                                                {
+                                                    <input class="form-check-input" type="radio" value="2" name="symptomatic">
+                                                }
+                                                <span class="form-check-label">Don't know/Unclear</span>
+                                            </label>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-3 mb-3">
-                                        <label class="form-label fw-bold" for="facilityFullDetailsG">Facility Details</label>
-                                        <textarea class="form-control bg-light" id="facilityFullDetailsG" rows="3" readonly></textarea>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label class="form-label" for="ref_code">Referral Reason Code</label>
+                                            <select id="ref_code" class="form-control" name="RefReasonCode" asp-for=@Model.referral.RefReasonCode>
+                                                <option value="">Select</option>
+                                                @foreach (var item in Model.referralReasonsList)
+                                                {
+                                                    <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label">Affected?</label>
+                                            <select class="form-select" name="refReasonAff" asp-for=@Model.referral.RefReasonAff>
+                                                <option value="0">Not affected</option>
+                                                <option value="-1">Affected</option>
+                                                <option value="1">Unclear</option>
+                                            </select>
+                                        </div>
                                     </div>
-
-                                    <div class="col-md-3 mb-3">
-                                        <label class="form-label fw-bold" for="commentG">Comment</label>
-                                        <textarea class="form-control" id="commentG" name="REASON_FOR_REFERRAL" rows="3" placeholder="Add a comment..." spellcheck="true">@Model.referral.REASON_FOR_REFERRAL</textarea>
+                                    <div class="row">
+                                        <div class="col-md-4 mt-2">
+                                            <select name="OthReason1" class="form-select" asp-for=@Model.referral.OthReason1>
+                                                <option value="">Select</option>
+                                                @foreach (var item in Model.referralReasonsList)
+                                                {
+                                                    <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mt-2">
+                                            <select class="form-select" name="OthReason1Aff" asp-for=@Model.referral.OthReason1Aff>
+                                                <option value="0">Not affected</option>
+                                                <option value="-1">Affected</option>
+                                                <option value="1">Unclear</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mt-2">
+                                            <select name="OthReason2" class="form-select" asp-for=@Model.referral.OthReason2>
+                                                <option value="">Select</option>
+                                                @foreach (var item in Model.referralReasonsList)
+                                                {
+                                                    <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mt-2">
+                                            <select class="form-select" name="OthReason2Aff" asp-for=@Model.referral.OthReason2Aff>
+                                                <option value="0">Not affected</option>
+                                                <option value="-1">Affected</option>
+                                                <option value="1">Unclear</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mt-2">
+                                            <select name="OthReason3" class="form-select" asp-for=@Model.referral.OthReason3>
+                                                <option value="">Select</option>
+                                                @foreach (var item in Model.referralReasonsList)
+                                                {
+                                                    <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mt-2">
+                                            <select class="form-select" name="OthReason3Aff" asp-for=@Model.referral.OthReason3Aff>
+                                                <option value="0">Not affected</option>
+                                                <option value="-1">Affected</option>
+                                                <option value="1">Unclear</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mt-2">
+                                            <select name="OthReason4" class="form-select" asp-for=@Model.referral.OthReason4>
+                                                <option value="">Select</option>
+                                                @foreach (var item in Model.referralReasonsList)
+                                                {
+                                                    <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mt-2">
+                                            <select class="form-select" name="OthReason4Aff" asp-for=@Model.referral.OthReason4Aff>
+                                                <option value="0">Not affected</option>
+                                                <option value="-1">Affected</option>
+                                                <option value="1">Unclear</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputEmail4">Pregnancy</label>
-                                        <select id="inputState" name="PREGNANCY" class="form-select">
-                                            <option selected="">@Model.referral.PREGNANCY</option>
-                                            <option value="No Pregnancy">No Pregnancy</option>
-                                            <option value="Pregnant">Pregnant</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="indication">Indication</label>
-                                        <select class="form-control" name="indication" asp-for=@Model.referral.INDICATION>
-                                            @foreach (var item in Model.indicationList)
-                                            {
-                                                <option value=@item.DISEASE_CODE>@item.DISEASE_CODE - @item.DESCRIPTION</option>
-                                            }           
-                                        </select>
 
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="rclass">Class</label>
-                                        <select id="rclass" name="RefClass" class="form-select" asp-for=@Model.referral.RefClass>
-                                            <option value="Routine">Routine</option>
-                                            <option value="Fast Track">Fast Track</option>
-                                            <option value="Urgent">Urgent</option>
-                                        </select>
-
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockstart">Clock Start</label>
-                                        <input type="date" name="ClockStartDate" asp-for=@Model.referral.ClockStartDate class="form-control" id="ClockStartDateG" onchange="CalculateClockAge()">
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="inputState">Clock Stop</label>
-                                        <input type="date" name="ClockStopDate" asp-for=@Model.referral.ClockStopDate class="form-control" id="ClockStopDateG" onchange="CalculateClockAge()">
-                                    </div>
-                                    <div class="mb-3 col-md-4">
-                                        <label class="form-label" for="clockageG">Clock Age</label>
-                                        <input type="text" class="form-control" id="clockageG" value="" readonly>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="ref_status">Referral Status</label>
-                                        <select id="ref_status" class="form-control" name="COMPLETE" required>
-                                            <option selected>@Model.referral.COMPLETE</option>
-                                            <option value="Active">Active </option>
-                                            <option value="Complete">Complete</option>
-                                        </select>
-                                    </div>
-                                    @*
-                                    <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="admin_status">Admin Status</label>
-                                        <select id="admin_status" name="Status_Admin" class="form-control">
-                                            <option value="" selected>@Model.referral.Status_Admin</option>
-                                            @foreach (var item in Model.admin_status)
-                                            {
-                                                <option value="@item.Status_Admin">@item.Status_Admin</option>
-                                            }
-
-                                        </select>
-                                    </div>*@
-                                    <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="information">Information Gathering</label>
-                                        <select id="information" class="form-select" name="Clics" asp-for=@Model.referral.Clics>
-                                            <option selected></option>
-                                            <option value="Clics">Clics</option>
-                                        </select>
-                                    </div>
-                                    @*
-                                    <div class="mb-3 col-md-3">
-                                        <label class="form-label" for="inputZip">Breach Reason</label>
-                                        <select asp-for=@Model.referral.REASON_FOR_BREACH id="inputState" name="REASON_FOR_BREACH" class="form-select">
-                                            <option selected>@Model.referral.REASON_FOR_BREACH</option>
-                                            <option value="Patient choice">Patient choice</option>
-                                            <option value="Clinical Decision">Clinical Decision</option>
-                                            <option value="Operational Issue">Operational Issue</option>
-                                        </select>
-                                    </div>
-                                    *@
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                                <a asp-controller=Review asp-action=Create asp-route-id=@Model.referral.refid class="btn btn-outline-success float-end text-black">Schedule Review</a>
+                                <button type="submit" class="btn btn-primary mt-4">Save changes</button>
+                                <a asp-controller=Review asp-action=Create asp-route-id=@Model.referral.refid class="btn btn-outline-success float-end text-black mt-4">Schedule Review</a>
 
                             </form>
                         </div>
-                    }
+                        <partial name="_ExternalClinicianSearchModal" />
+                    </div>
+
+                   
+                
                 </div>
 
             </div>
@@ -634,28 +419,46 @@
 
 @section Scripts {
 <script src="~/js/clinicianSearch.js"></script>
+<script src="~/js/referral.js"></script>
+        
 <script>
+
+      
     var refCode;
     var facilityDetails;
    
-    if("@Model.referral.PATHWAY".startsWith("General"))
-    {
-        refCode = document.getElementById("referrerCodeG");
-        facilityDetails = document.getElementById("facilityFullDetailsG");
-        SetClinicianTarget("referrerCodeG");
-    }
-    else
-    {
-        refCode = document.getElementById("referrerCodeC");
-        facilityDetails = document.getElementById("facilityFullDetailsC");   
-        SetClinicianTarget("referrerCodeC");
+    // if("@Model.referral.PATHWAY".startsWith("General"))
+    // {
+    //     refCode = document.getElementById("referrerCodeG");
+    //     facilityDetails = document.getElementById("facilityFullDetailsG");
+    //     SetClinicianTarget("referrerCodeG");
+    // }
+    // else
+    // {
+    //     refCode = document.getElementById("referrerCodeC");
+    //     facilityDetails = document.getElementById("facilityFullDetailsC");   
+    //     SetClinicianTarget("referrerCodeC");
 
-    }
+    // }
 
+        var refCode = document.getElementById("referrerCode");
+        var facilityDetails = document.getElementById("facilityFullDetails");
 
-        
+        SetClinicianTarget("referrerCode");
 
-    
+        // Show/Hide Cancer block based on dropdown
+        function ShowCancerStuff() {
+            var cStuff = document.getElementById("cancerStuff");
+            var pathway = document.getElementById("ddlPathway").value;
+            if (pathway && pathway.includes("Cancer")) {
+                cStuff.hidden = false;
+            } else {
+                cStuff.hidden = true;
+            }
+        }
+
+        document.getElementById("ddlPathway").addEventListener("change", ShowCancerStuff);
+        window.addEventListener("load", ShowCancerStuff);
 
     function updateFacility() 
     {
@@ -793,7 +596,9 @@
 
     updateFacility();
     CalculateClockAge();
-    
+
+   
+
 </script>
 
 
