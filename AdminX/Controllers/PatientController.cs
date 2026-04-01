@@ -214,6 +214,7 @@ namespace AdminX.Controllers
                 }
 
                 List<Referral> referrals = await _referralData.GetReferralsList(id);
+                referrals = referrals.Where(r => r.COMPLETE != null).ToList();
                 _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "MISSING DATA").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
@@ -315,6 +316,11 @@ namespace AdminX.Controllers
 
                     if (clin != null)
                     {
+                        if(clin.NON_ACTIVE != 0)
+                        {
+                            _pvm.messages.Add("The assigned GP has been marked as non-active. Please check and amend.");
+                        }
+
                         var gp = await _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                         gpPractice = gp.FACILITY;
                     }
@@ -336,6 +342,10 @@ namespace AdminX.Controllers
                 {                 
                     _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
                 }
+
+                
+
+                
 
                 string ptURL = await _constantsData.GetConstant("PhenotipsURL", 2);
 
