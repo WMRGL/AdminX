@@ -258,6 +258,14 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label class="form-label">Additional Notes</label>
+                        <textarea class="form-control" name="additionalNotes" asp-for=@Model.patient.ADDITIONAL_NOTES></textarea>
+                    </div>
+                </div>
+
+
                 <button type="button" id="btnSubmit" class="btn btn-primary btn-lg">Save Patient</button>
             </form>
         </div>

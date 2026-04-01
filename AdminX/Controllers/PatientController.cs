@@ -716,16 +716,17 @@ namespace AdminX.Controllers
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
             string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string PtTelMobile, string language,
-            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string ptLetterAddressee, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string ptLetterAddressee, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE,
+            string? additionalNotes)
         {
             try
             {
 
                 string deceased = Request.Form["DECEASED"];
-                bool deseasedStatus = false;
+                bool deceasedStatus = false;
                 if (deceased == "1")
                 {
-                    deseasedStatus = true;
+                    deceasedStatus = true;
                 }
 
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
@@ -739,7 +740,7 @@ namespace AdminX.Controllers
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, middleName, lastname, nhsno.Replace(" ", ""),
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, DECEASED_DATE, maidenName, interpreterBool,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, PtTelMobile, areaCode, ptLetterAddressee, SALUTATION,
-                    GenderIdentity, language, deseasedStatus);
+                    GenderIdentity, language, deceasedStatus, additionalNotes);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
