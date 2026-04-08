@@ -456,7 +456,7 @@ namespace AdminX.Controllers
 
             if (clinCode == null)
             {
-                clinCode = lastName;
+                clinCode = lastName + firstName.Substring(0, 1);
             }
 
             if (isGP == 0)
