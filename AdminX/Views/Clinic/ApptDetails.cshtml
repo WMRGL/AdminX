@@ -90,7 +90,7 @@ else
                             @if (@Model.Clinic.Attendance != null && @Model.Clinic.Attendance != "")
                             {
                                 <dt class="col-sm-2">
-                                    @Model.Clinic.Attendance:
+                                    Attendance:
                                 </dt>
                                 <dd class="col-sm-10">
                                     @if (@Model.Clinic.Attendance == "Attended")
@@ -104,6 +104,12 @@ else
                                 </dd>
                             }
                         }
+                        <dt class="col-sm-2">
+                            Comments:
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Clinic.Comments)
+                        </dd>
                     </dl>
                 </div>
             </div>
@@ -176,8 +182,7 @@ else
                 </dt>
                 <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.linkedReferral.REASON_FOR_REFERRAL)
-                </dd>
-
+                </dd>               
             </div>
         </div>
     </div>
