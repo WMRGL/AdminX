@@ -81,6 +81,7 @@ namespace AdminX.Meta
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
+            if (string2 == null) { string2 = ""; }
             if (string3 == null) { string3 = ""; }
             
 
