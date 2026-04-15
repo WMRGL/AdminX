@@ -445,6 +445,12 @@
             return 0;
         }
 
+        if (document.getElementById("referrerCode").value.length > 8)
+        {
+            window.alert("The selected referrer code is too long. Please select a different GP.");
+            return 0;
+        }
+
         return 1;
     }   
 
@@ -459,7 +465,7 @@
         _referrerList.choices.setChoiceByValue(newCode);
     }
 
- 
+        
    
 
 </script>

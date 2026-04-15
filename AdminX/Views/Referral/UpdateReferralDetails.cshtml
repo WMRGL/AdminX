@@ -605,6 +605,11 @@
     updateFacility();
     CalculateClockAge();
 
+
+    if (document.getElementById("referrerCode").value.length > 8)
+    {
+    window.alert("The selected referrer code is too long. Please select a different GP.");
+    }
    
 
 </script>
