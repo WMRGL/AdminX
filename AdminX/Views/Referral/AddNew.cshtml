@@ -369,5 +369,10 @@
        
         SetClinicianTarget("ddlRefPhys");
 
+    if (document.getElementById("ddlRefPhys").value.length > 8)
+    {
+    window.alert("The selected referrer code is too long. Please select a different GP.");
+    }
+
 </script>
 }
