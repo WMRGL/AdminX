@@ -64,13 +64,21 @@
                                     </div>
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="type">Type</label>
-                                        <select id="type" name="RefType" class="form-select">
-                                            <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
-                                            @foreach (var item in Model.activities)
-                                            {
-                                                <option value="@item.APP_TYPE">@item.APP_TYPE</option>
-                                            }
-                                        </select>
+                                        @if (Model.referral.RefType != "Temp_RegOnly")
+                                        {
+                                            <select id="type" name="RefType" class="form-select">
+                                                <option value="@Model.referral.RefType" selected>@Model.referral.RefType</option>
+                                                @foreach (var item in Model.activities)
+                                                {
+                                                    <option value="@item.APP_TYPE">@item.APP_TYPE</option>
+                                                }
+                                            </select>
+                                        } else
+                                        {
+                                            <input type="text" class="form-control" value="@Model.referral.RefType" id="type" name="RefType" readonly>
+
+                                        }
+                                       
                                     </div>
                                 </div>
 
@@ -199,6 +207,9 @@
                                             </button>
                                             <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
                                                 <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-info flex-fill" onclick="SetToSelf()">
+                                                <i class="fa-solid fa-user me-1"></i> Self
                                             </button>
                                         </div>
                                     </div>
@@ -542,63 +553,91 @@
         }
     }
 
-    function CalculateClockAge() 
-    {
-        var clockStart;
-        var clockStop;
-        var clockAgeTotal;
+    // function CalculateClockAge() 
+    // {
+    //     var clockStart;
+    //     var clockStop;
+    //     var clockAgeTotal;
 
-        if("@Model.referral.PATHWAY".startsWith("General"))
-        {
-            clockStart = Date.parse(document.getElementById("ClockStartDateG").value);
-            clockStop = Date.parse(document.getElementById("ClockStopDateG").value);
-            clockAgeTotal = document.getElementById("clockageG");
-        }
-        else
-        {
-            clockStart = Date.parse(document.getElementById("ClockStartDateC").value);
-            clockStop = Date.parse(document.getElementById("ClockStopDateC").value);
-            clockAgeTotal = document.getElementById("clockageC");
-        }
+    //     if("@Model.referral.PATHWAY".startsWith("General"))
+    //     {
+    //         clockStart = Date.parse(document.getElementById("ClockStartDateG").value);
+    //         clockStop = Date.parse(document.getElementById("ClockStopDateG").value);
+    //         clockAgeTotal = document.getElementById("clockageG");
+    //     }
+    //     else
+    //     {
+    //         clockStart = Date.parse(document.getElementById("ClockStartDateC").value);
+    //         clockStop = Date.parse(document.getElementById("ClockStopDateC").value);
+    //         clockAgeTotal = document.getElementById("clockageC");
+    //     }
         
-        var clockAge;
-        var today = new Date();        
+    //     var clockAge;
+    //     var today = new Date();        
 
 
-        if (isNaN(clockStop)) 
-        {   
-            clockAge = today - clockStart;            
-        }
-        else 
-        {   
-            clockAge = clockStop - clockStart;
-        }
-        var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
-        clockAgeTotal.value = Math.floor(clockAgeDays) + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
-    }
+    //     if (isNaN(clockStop)) 
+    //     {   
+    //         clockAge = today - clockStart;            
+    //     }
+    //     else 
+    //     {   
+    //         clockAge = clockStop - clockStart;
+    //     }
+    //     var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
+    //     clockAgeTotal.value = Math.floor(clockAgeDays) + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
+    // }
 
-    function SetToGP(pathway)
-    {
-        var _referrerList;        
-
-        if(pathway == "cancer")
+            function CalculateClockAge()
         {
-            _referrerList = document.getElementById("referrerCodeC");            
+            var clockStartEl = document.getElementById("ClockStartDate");
+            var clockStopEl = document.getElementById("ClockStopDate");
+            var clockAgeTotal = document.getElementById("clockage");
+
+            if (!clockStartEl || !clockStopEl || !clockAgeTotal) return;
+
+            var clockStart = Date.parse(clockStartEl.value);
+            var clockStop = Date.parse(clockStopEl.value);
+
+            var clockAge;
+            var today = new Date();
+
+            if (isNaN(clockStart)) {
+                clockAgeTotal.value = "";
+                return;
+            }
+
+            if (isNaN(clockStop))
+            {
+                clockAge = today - clockStart;
+            }
+            else
+            {
+                clockAge = clockStop - clockStart;
+            }
+
+            var clockAgeDays = ((clockAge / 1000) / 3600) / 24;
+            clockAgeTotal.value = Math.floor(clockAgeDays) + " days (" + Math.ceil(clockAgeDays / 7) + " weeks)";
         }
-        else
+
+        function SetToGP()
         {
-            _referrerList = document.getElementById("referrerCodeG");           
+            var _referrerList = document.getElementById("referrerCode");
+
+            const newCode = "@Model.patient.GP_Code";
+
+            _referrerList.value = newCode;
+
+            if (_referrerList.choices) {
+                _referrerList.choices.setChoiceByValue(newCode);
+            }
+
+            if (typeof updateFacility === "function") {
+                updateFacility();
+            }
         }
 
-        const newCode = "@Model.patient.GP_Code";               
-
-        _referrerList.value = newCode;
-                
-        _referrerList.choices.setChoiceByValue(newCode);
-        updateFacility();
-
-    }
-        
+      
 
     refCode.addEventListener("change", updateFacility);
 
@@ -610,7 +649,8 @@
     {
     window.alert("The selected referrer code is too long. Please select a different GP.");
     }
-   
+
+           
 
 </script>
 
