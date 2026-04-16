@@ -95,6 +95,36 @@ function selectGen() {
     } else {
         alert("GEN option not found in the referrer list.");
     }
+
+    //if (typeof updateFacility === "function") {
+    //    updateFacility();
+    //}
+}
+
+function SetToSelf() {
+    var _referrerList = document.getElementById(_clinicianDropdownTargetId);
+
+    if (!_referrerList) {
+        console.error("Dropdown element not found: " + _clinicianDropdownTargetId);
+        return;
+    }
+
+    var selfOption = Array.from(_referrerList.options).find(opt => opt.value === "Self/FamMemb");
+
+    if (selfOption) {
+        if (_referrerList.choices) {
+            _referrerList.choices.setChoiceByValue("Self/FamMemb");
+        } else {
+            _referrerList.value = "Self/FamMemb";
+        }
+    } else {
+        console.warn("Self/FamMemb option not found in the referrer list.");
+        alert("Self/FamMemb option not found in the referrer list.");
+    }
+
+    //if (typeof updateFacility === "function") {
+    //    updateFacility();
+    //}
 }
 
 function ToggleClinicianViews(view) {
@@ -212,3 +242,7 @@ async function LoadTitles() {
         titleSelect.innerHTML = '<option value="">Error</option>';
     }
 }
+
+
+
+

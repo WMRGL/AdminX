@@ -32,8 +32,13 @@ function ShowCancerStuff() {
 }
 
 function SetReferrerToGP() {
-    var _refer = document.getElementById("ddlRefPhys");
+    var _refer = document.getElementById(_clinicianDropdownTargetId);
     const _newRefer = "@Model.patient.GP_Code";
+
+    if (!_refer) {
+        console.error("Dropdown element not found: " + _clinicianDropdownTargetId);
+        return;
+    }
 
     if (_refer.choices) {
         _refer.choices.setChoiceByValue(_newRefer);

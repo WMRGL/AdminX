@@ -158,6 +158,9 @@
                                 <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
                                     <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
                                 </button>
+                                <button type="button" class="btn btn-sm btn-outline-info flex-fill" onclick="SetToSelf()">
+                                    <i class="fa-solid fa-user me-1"></i> Self
+                                </button>
                             </div>
                         </div>
 
@@ -373,6 +376,40 @@
     {
     window.alert("The selected referrer code is too long. Please select a different GP.");
     }
+
+    function SetToGP()
+    {
+        var _referrerList = document.getElementById("referrerCode");
+
+        const newCode = "@Model.patient.GP_Code";
+
+        _referrerList.value = newCode;
+
+        if (_referrerList.choices) {
+            _referrerList.choices.setChoiceByValue(newCode);
+        }
+
+        if (typeof updateFacility === "function") {
+            updateFacility();
+        }
+    }
+
+            function SetReferrerToGP() {
+                var _refer = document.getElementById("ddlRefPhys");
+            const _newRefer = "@Model.patient.GP_Code";
+
+            if (!_refer) {
+                    console.error("Dropdown element not found: " + "ddlRefPhys");
+                return;
+            }
+
+            if (_refer.choices) {
+                _refer.choices.setChoiceByValue(_newRefer);
+            } else {
+                _refer.value = _newRefer;
+            }
+        }
+
 
 </script>
 }
