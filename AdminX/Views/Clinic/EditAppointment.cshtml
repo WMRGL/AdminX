@@ -1,0 +1,48 @@
+﻿@model AdminX.ViewModels.ClinicVM
+@{
+    ViewData["Title"] = "Admin-X - Edit Appointment ";
+}
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            @if (Model.patient.FIRSTNAME != null && Model.patient.LASTNAME != null)
+            {
+                <h3 class="card-title text-dark">Edit <span>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</span> Appointment</h3>
+            } else {
+                <h3 class="card-title text-dark">Edit <span>@Model.patient.CGU_No</span> Appointment</h3>
+            }
+        </div>
+        <div class="card-body">
+            <dl class="row mb-5">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.activityItem.TYPE):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.activityItem.TYPE)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.activityItem.BOOKED_DATE):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.activityItem.BOOKED_DATE)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.activityItem.BOOKED_TIME)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.activityItem.FACILITY):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.activityItem.FACILITY)
+                </dd>
+            </dl>
+            <form asp-action="EditAppointment">
+
+            </form>
+        </div>
+    </div>
+</div>

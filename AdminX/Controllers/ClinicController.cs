@@ -24,10 +24,10 @@ namespace AdminX.Controllers
         private readonly IAuditServiceAsync _audit;
         private readonly IOutcomeDataAsync _outcomeData;
         private readonly IClinicVenueDataAsync _venueData;
-        private readonly IActivityTypeDataAsync _activityTypeData;        
+        private readonly IActivityTypeDataAsync _activityTypeData;
         private readonly IPAddressFinder _ip;
 
-        public ClinicController(IConfiguration config, IPatientDataAsync patient, IReferralDataAsync referral, IActivityDataAsync activity, IStaffUserDataAsync staffUser, IClinicDataAsync clinic, 
+        public ClinicController(IConfiguration config, IPatientDataAsync patient, IReferralDataAsync referral, IActivityDataAsync activity, IStaffUserDataAsync staffUser, IClinicDataAsync clinic,
             ICRUD crud, IAuditServiceAsync audit, IOutcomeDataAsync outcome, IActivityTypeDataAsync activityType, IClinicVenueDataAsync clinicVenue)
         {
             //_clinContext = context;
@@ -159,7 +159,7 @@ namespace AdminX.Controllers
                     return RedirectToAction("NotFound", "WIP");
                 }
 
-                if(_cvm.linkedReferral == null)
+                if (_cvm.linkedReferral == null)
                 {
                     return RedirectToAction("Index", "Clinic", new { message = "Appointment ID: " + _cvm.Clinic.RefID + " is not linked to a referral, or the linked referral was deleted", success = false });
                 }
@@ -170,7 +170,7 @@ namespace AdminX.Controllers
                     new BreadcrumbItem { Text = "Contacts", Controller = "Clinic", Action = "Index"},
                     new BreadcrumbItem { Text = "Details"}
                 };
-               
+
 
                 return View(_cvm);
             }
@@ -247,7 +247,7 @@ namespace AdminX.Controllers
                 }
 
                 int success = _crud.CallStoredProcedure("Appointment", "Update", refID, noSeen, 0, counseled, seenBy,
-                    letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0,0,0,seenBy2,seenBy3);
+                    letterRequired, "", User.Identity.Name, arrivalTime, null, isClockStop, isComplete, 0, 0, 0, seenBy2, seenBy3);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
@@ -281,10 +281,10 @@ namespace AdminX.Controllers
 
             return View(_cvm);
         }
-        
+
         [HttpPost]
-        public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string? outcome, string? venue, string? clinician1, 
-            string? clinician2, string? clinician3, int? timeSpent, int? noPatientsSeen, string? letterReq, string? counseled, string? callersName, string? callersOrg, string? callersTelNo, 
+        public async Task<IActionResult> AddNew(int mpi, int linkedRefID, DateTime bookedDate, DateTime bookedTime, string appType, string? outcome, string? venue, string? clinician1,
+            string? clinician2, string? clinician3, int? timeSpent, int? noPatientsSeen, string? letterReq, string? counseled, string? callersName, string? callersOrg, string? callersTelNo,
             string? message, string? urgency, bool? isAddAsNote = false, bool? isClockStop = false)
         {
             int refID = 0;
@@ -295,9 +295,9 @@ namespace AdminX.Controllers
 
             DateTime bookedTimeEdited = DateTime.Parse("1900-01-01 " + bookedTime.Hour + ":" + bookedTime.Minute + ":" + bookedTime.Second);
 
-            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, "", User.Identity.Name, 
-                bookedDate, bookedTimeEdited, isClockStop, false, noPatientsSeen, 0, 0, clinician2, clinician3, letterReq, 0, 0, 0, 0, 0,counseled);
-            
+            int success = _crud.CallStoredProcedure("Contact", "Create", mpi, linkedRefID, timeSpent.GetValueOrDefault(), appType, venue, clinician1, "", User.Identity.Name,
+                bookedDate, bookedTimeEdited, isClockStop, false, noPatientsSeen, 0, 0, clinician2, clinician3, letterReq, 0, 0, 0, 0, 0, counseled);
+
             if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-create(SQL)" }); }
 
             List<ActivityItem> appts = await _activityData.GetActivityList(mpi);
@@ -310,9 +310,9 @@ namespace AdminX.Controllers
                 Patient patient = await _patientData.GetPatientDetails(mpi);
                 string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message";
 
-                string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A"  + 
-                    $"Organisation - {callersOrg}%0D%0A%0D%0A" + 
-                $"Contact Tel No - {callersTelNo}%0D%0A%0D%0A" + 
+                string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A" +
+                    $"Organisation - {callersOrg}%0D%0A%0D%0A" +
+                $"Contact Tel No - {callersTelNo}%0D%0A%0D%0A" +
                 message;
 
                 string emailBodyText = "";
@@ -330,10 +330,31 @@ namespace AdminX.Controllers
 
                 TempData["SuccessMessage"] = "Created successfully.";
 
-                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");                
+                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
             }
 
             return RedirectToAction("ApptDetails", new { id = refID });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditAppointment(int id)
+        {
+            try {
+                _cvm.activityItem = await _activityData.GetActivityDetails(id); string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
+
+                _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
+                _cvm.activityItems = await _activityData.GetClinicDetailsList(id);
+                _cvm.activityItem = await _activityData.GetActivityDetails(id);
+                _cvm.outcomes = await _clinicData.GetOutcomesList();
+                int mpi = _cvm.activityItem.MPI;
+                _cvm.patient = await _patientData.GetPatientDetails(mpi);
+                return View(_cvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic-editAppt" });
+            }
         }
     }
 }
