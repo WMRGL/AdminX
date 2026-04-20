@@ -479,22 +479,16 @@
         document.getElementById("ddlPathway").addEventListener("change", ShowCancerStuff);
         window.addEventListener("load", ShowCancerStuff);
 
-    function updateFacility() 
-    {
-        if (!refCode || !facilityDetails) return;
-
+            // --- Initialise once at page load ---
         var facilityCodeArray = [];
         var facilityNameArray = [];
         var facilityAddressArray = [];
         var facilityCityArray = [];
         var facilityStateArray = [];
         var facilityPostcodeArray = [];
-
         var referrerCodes = [];
-        var facCodeArray = []; // Maps Referrer -> Facility Code
-        var facCode;
+        var facCodeArray = [];
 
-        // Populate Data Arrays
         @foreach (var item in Model.facilities)
         {
                 @:facilityCodeArray.push("@item.MasterFacilityCode");
@@ -511,47 +505,51 @@
                 @:facCodeArray.push("@item.MasterFacilityCode");
         }
 
-        // Handle GP Selection
-        if (refCode.value == "@Model.patient?.GP_Code") {
-            let fullDetails = "@Model.GPFacility.NAME" + ", " +
-                "@Model.GPFacility.ADDRESS" + ", " +
-                "@Model.GPFacility.CITY" + ", " +
-                "@Model.GPFacility.STATE" + " " +
-                "@Model.GPFacility.ZIP";
+        function updateFacility()
+        {
+            if (!refCode || !facilityDetails) return;
 
-        facilityDetails.value = fullDetails
-                        .replace(/&#x27;/g, "'")
-                        .replace(/&amp;/g, "&")
-                        .replace(/&#xD;/g, "")
-                        .replace(/&#xA;/g, "\n");        }
-        else {
-           
-            for (var i in referrerCodes) {
-                if (referrerCodes[i] == refCode.value) {
-                    facCode = facCodeArray[i];
-                    break;
+            var facCode;
+
+            if (refCode.value == "@Model.patient?.GP_Code") {
+                let fullDetails = "@Model.GPFacility.NAME" + ", " +
+                    "@Model.GPFacility.ADDRESS" + ", " +
+                    "@Model.GPFacility.CITY" + ", " +
+                    "@Model.GPFacility.STATE" + " " +
+                    "@Model.GPFacility.ZIP";
+
+                facilityDetails.value = fullDetails
+                    .replace(/&#x27;/g, "'")
+                    .replace(/&amp;/g, "&")
+                    .replace(/&#xD;/g, "")
+                    .replace(/&#xA;/g, "\n");
+            } else {
+                for (var i in referrerCodes) {
+                    if (referrerCodes[i] == refCode.value) {
+                        facCode = facCodeArray[i];
+                        break;
+                    }
                 }
-            }
 
-            facilityDetails.value = ""; 
-            for (var i in facilityCodeArray) {
-                if (facilityCodeArray[i] == facCode) {
-                    let fullDetails = facilityNameArray[i] + ", " +
-                        facilityAddressArray[i] + ", " +
-                        facilityCityArray[i] + ", " +
-                        facilityStateArray[i] + " " +
-                        facilityPostcodeArray[i];
+                facilityDetails.value = "";
+                for (var i in facilityCodeArray) {
+                    if (facilityCodeArray[i] == facCode) {
+                        let fullDetails = facilityNameArray[i] + ", " +
+                            facilityAddressArray[i] + ", " +
+                            facilityCityArray[i] + ", " +
+                            facilityStateArray[i] + " " +
+                            facilityPostcodeArray[i];
 
-                    facilityDetails.value = fullDetails
-                                .replace(/&#x27;/g, "'")
-                                .replace(/&amp;/g, "&")
-                                .replace(/&#xD;/g, "")
-                                .replace(/&#xA;/g, "\n");                    
-                                break;
+                        facilityDetails.value = fullDetails
+                            .replace(/&#x27;/g, "'")
+                            .replace(/&amp;/g, "&")
+                            .replace(/&#xD;/g, "")
+                            .replace(/&#xA;/g, "\n");
+                        break;
+                    }
                 }
             }
         }
-    }
 
     // function CalculateClockAge() 
     // {
