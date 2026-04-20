@@ -3,6 +3,15 @@
     ViewData["Title"] = "Admin-X - Edit Appointment ";
 }
 
+
+@{ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" }),
+
+
+    };
+}
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
@@ -14,34 +23,30 @@
             }
         </div>
         <div class="card-body">
-            <dl class="row mb-5">
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.activityItem.TYPE):
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.activityItem.TYPE)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.activityItem.BOOKED_DATE):
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.activityItem.BOOKED_DATE)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.activityItem.BOOKED_TIME):
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.activityItem.BOOKED_TIME)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.activityItem.FACILITY):
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.activityItem.FACILITY)
-                </dd>
-            </dl>
+            
             <form asp-action="EditAppointment">
-
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Appointment Status</label>
+                        <input type="text" class="form-control" asp-for="Clinic.Clinician"  />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Seen By</label>
+                        <input type="text" class="form-control" asp-for="@Model.Clinic.Clinician2"  />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Seen By</label>
+                        <input type="text" class="form-control" asp-for="@Model.Clinic.Clinician3"  />
+                    </div>
+                    
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-outline-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </div>
     </div>

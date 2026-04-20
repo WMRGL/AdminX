@@ -349,7 +349,25 @@ namespace AdminX.Controllers
                 _cvm.outcomes = await _clinicData.GetOutcomesList();
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
+                _cvm.Clinic = await _clinicData.GetClinicDetails(id);
                 return View(_cvm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic-editAppt" });
+            }
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> EditAppointment(Appointment appointment)
+        {
+            try
+            {
+                //int success = _crud.CallStoredProcedure("Appointment", "Update", appointment.RefID);
+                //if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-editAppt(SQL)" }); }
+                //TempData["SuccessMessage"] = "Clinic details updated successfully.";
+                return RedirectToAction("ApptDetails", new { id = appointment.RefID });
             }
             catch (Exception ex)
             {
