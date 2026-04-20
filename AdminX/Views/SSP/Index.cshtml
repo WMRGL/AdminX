@@ -1,0 +1,35 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model AdminX.ViewModels.SSPVM
+
+<div class="container">
+    <div class="row mb-2 g-2">
+        <h1>Social Service Pathways</h1>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CGU Number</th>
+                <th>Patient</th>
+                <th>Current Status</th>
+                <th>Outcome</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.ssps)
+            {
+                <tr>
+                    <td>@item.CGU_No</td>
+                    <td>@item.PatientFirstName @item.PatientLastName</td>
+                    <td>@item.SSPStatus</td>
+                    <td>@item.Outcome</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
