@@ -77,6 +77,7 @@ function SelectExternalClinician(code, name, facility) {
 }
 
 function selectGen() {
+    // 1. Use the dynamic target ID so it works on ALL pages
     var referrerList = document.getElementById(_clinicianDropdownTargetId);
 
     if (!referrerList) {
@@ -84,48 +85,45 @@ function selectGen() {
         return;
     }
 
-    var genOption = Array.from(referrerList.options).find(opt => opt.value === "GEN");
+    const newCode = "GEN";
 
-    if (genOption) {
-        if (referrerList.choices) {
-            referrerList.choices.setChoiceByValue("GEN");
-        } else {
-            referrerList.value = "GEN";
-        }
+    // 2. Set the value directly without doing manual loops
+    if (referrerList.choices) {
+        referrerList.choices.setChoiceByValue(newCode);
     } else {
-        alert("GEN option not found in the referrer list.");
+        referrerList.value = newCode;
     }
 
-    //if (typeof updateFacility === "function") {
-    //    updateFacility();
-    //}
+    // 3. Force the facility update
+    if (typeof updateFacility === "function") {
+        updateFacility();
+    }
 }
 
 function SetToSelf() {
-    var _referrerList = document.getElementById(_clinicianDropdownTargetId);
+    // 1. Use the dynamic target ID instead of hardcoding "ddlRefPhys"
+    var referrerList = document.getElementById(_clinicianDropdownTargetId);
 
-    if (!_referrerList) {
+    if (!referrerList) {
         console.error("Dropdown element not found: " + _clinicianDropdownTargetId);
         return;
     }
 
-    var selfOption = Array.from(_referrerList.options).find(opt => opt.value === "Self/FamMemb");
+    const newCode = "Self/FamMemb";
 
-    if (selfOption) {
-        if (_referrerList.choices) {
-            _referrerList.choices.setChoiceByValue("Self/FamMemb");
-        } else {
-            _referrerList.value = "Self/FamMemb";
-        }
+    // 2. Set the value directly
+    if (referrerList.choices) {
+        referrerList.choices.setChoiceByValue(newCode);
     } else {
-        console.warn("Self/FamMemb option not found in the referrer list.");
-        alert("Self/FamMemb option not found in the referrer list.");
+        referrerList.value = newCode;
     }
 
-    //if (typeof updateFacility === "function") {
-    //    updateFacility();
-    //}
+    // 3. Force the facility update
+    if (typeof updateFacility === "function") {
+        updateFacility();
+    }
 }
+
 
 function ToggleClinicianViews(view) {
     if (view === 'add') {
