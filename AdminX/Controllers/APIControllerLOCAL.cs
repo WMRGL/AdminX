@@ -285,6 +285,12 @@ namespace APIControllers.Controllers
                 
                 foreach (var item in dynJson.pedigree.members)
                 {
+                    var props = item["properties"];
+                    if (props == null)
+                    {
+                        continue;
+                    }                  
+
                     if ((item.properties.patient_name.first_name != null && item.properties.patient_name.first_name != "")
                             && (item.properties.patient_name.last_name != null && item.properties.patient_name.last_name != ""))
                     {
@@ -292,13 +298,18 @@ namespace APIControllers.Controllers
                         DateTime dob = DateTime.Parse("1900-01-01");
                         DateTime dod = DateTime.Parse("1900-01-01");
                         string gender;
-                        if (item.properties.date_of_birth.year != null && item.properties.date_of_birth.month != null && item.properties.date_of_birth.day != null)
+
+                        var dobToken = props["date_of_birth"];
+                        if (dobToken?["year"] != null && dobToken?["month"] != null && dobToken?["day"] != null)
                         {
                             dob = DateTime.Parse(item.properties.date_of_birth.year.ToString() + "-" +
                                             item.properties.date_of_birth.month.ToString() + "-" +
                                             item.properties.date_of_birth.day.ToString());
-                        }
-                        if (item.properties.date_of_death.year != null && item.properties.date_of_death.month != null && item.properties.date_of_death.day != null)
+                        }                        
+
+                        
+                        var dodToken = props["date_of_death"];
+                        if (dodToken?["year"] != null && dodToken?["month"] != null && dodToken?["day"] != null)
                         {
                             dod = DateTime.Parse(item.properties.date_of_death.year.ToString() + "-" +
                                             item.properties.date_of_death.month.ToString() + "-" +
