@@ -101,7 +101,6 @@ function selectGen() {
 }
 
 function SetToSelf() {
-    // 1. Use the dynamic target ID instead of hardcoding "ddlRefPhys"
     var referrerList = document.getElementById(_clinicianDropdownTargetId);
 
     if (!referrerList) {
@@ -111,14 +110,12 @@ function SetToSelf() {
 
     const newCode = "Self/FamMemb";
 
-    // 2. Set the value directly
     if (referrerList.choices) {
         referrerList.choices.setChoiceByValue(newCode);
     } else {
         referrerList.value = newCode;
     }
 
-    // 3. Force the facility update
     if (typeof updateFacility === "function") {
         updateFacility();
     }

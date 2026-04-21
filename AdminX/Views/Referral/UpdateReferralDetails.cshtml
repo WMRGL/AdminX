@@ -505,13 +505,19 @@
                 @:facCodeArray.push("@item.MasterFacilityCode");
         }
 
-        function updateFacility()
+           function updateFacility()
         {
             if (!refCode || !facilityDetails) return;
 
-            var facCode;
+            var selectedCode = refCode.value;
 
-            if (refCode.value == "@Model.patient?.GP_Code") {
+            if (selectedCode === "Self/FamMemb" ) {
+                facilityDetails.value = "Not Applicable"; 
+                return;
+            }
+
+            // Handle GP Selection
+            if (selectedCode === "@Model.patient?.GP_Code") {
                 let fullDetails = "@Model.GPFacility.NAME" + ", " +
                     "@Model.GPFacility.ADDRESS" + ", " +
                     "@Model.GPFacility.CITY" + ", " +
@@ -523,33 +529,37 @@
                     .replace(/&amp;/g, "&")
                     .replace(/&#xD;/g, "")
                     .replace(/&#xA;/g, "\n");
-            } else {
-                for (var i in referrerCodes) {
-                    if (referrerCodes[i] == refCode.value) {
-                        facCode = facCodeArray[i];
-                        break;
-                    }
-                }
 
-                facilityDetails.value = "";
-                for (var i in facilityCodeArray) {
-                    if (facilityCodeArray[i] == facCode) {
-                        let fullDetails = facilityNameArray[i] + ", " +
-                            facilityAddressArray[i] + ", " +
-                            facilityCityArray[i] + ", " +
-                            facilityStateArray[i] + " " +
-                            facilityPostcodeArray[i];
+                return;
+            }
 
-                        facilityDetails.value = fullDetails
-                            .replace(/&#x27;/g, "'")
-                            .replace(/&amp;/g, "&")
-                            .replace(/&#xD;/g, "")
-                            .replace(/&#xA;/g, "\n");
-                        break;
-                    }
+            // OPTIMISED SEARCH: Use .indexOf() instead of a slow for...in loop
+            var refIndex = referrerCodes.indexOf(selectedCode);
+
+            if (refIndex !== -1) {
+                var facCode = facCodeArray[refIndex];
+                var facIndex = facilityCodeArray.indexOf(facCode);
+
+                if (facIndex !== -1) {
+                    let fullDetails = facilityNameArray[facIndex] + ", " +
+                        facilityAddressArray[facIndex] + ", " +
+                        facilityCityArray[facIndex] + ", " +
+                        facilityStateArray[facIndex] + " " +
+                        facilityPostcodeArray[facIndex];
+
+                    facilityDetails.value = fullDetails
+                        .replace(/&#x27;/g, "'")
+                        .replace(/&amp;/g, "&")
+                        .replace(/&#xD;/g, "")
+                        .replace(/&#xA;/g, "\n");
+
+                    return;
                 }
             }
+
+            facilityDetails.value = "";
         }
+
 
     // function CalculateClockAge() 
     // {
