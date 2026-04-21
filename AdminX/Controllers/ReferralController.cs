@@ -315,8 +315,8 @@ namespace AdminX.Controllers
                     return RedirectToAction("PatientDetails", "Patient", new { id=_rvm.patient.MPI, message="You need to assign an area code before processing the referral.", success=false });
                 }
 
-                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
-
+                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByAreaName(_rvm.patient.PtAreaName); //for the record: I hate doing this!! But it is necessary.
+                                                                                                            //normalisation? What's that now???
                 if (_rvm.referral.ClockStartDate != null)
                 {
                     if (_rvm.referral.ClockStopDate != null)
@@ -606,7 +606,8 @@ namespace AdminX.Controllers
                 {
                     return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
                 }
-                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByCode(_rvm.patient.PtAreaCode);
+                _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByAreaName(_rvm.patient.PtAreaName); //because the MPT doesn't record the unique ID, only the name and the non-unique code!!!
+                                                                                                            //seriously, wtf was whoever designed this thinking???
                 _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
                 _rvm.activities = await _activityTypeData.GetReferralTypes();
