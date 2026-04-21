@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Data;
 using System.Net;
 
@@ -38,6 +39,10 @@ namespace AdminX.Meta
             string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "",
         string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "",
         string? string19 = "", string? string20 = ""); //the Clinic Setup needs a ridiculous number of strings!!!
+
+
+        public int SSPCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, DateTime? dDate3 = null); 
 
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username);
 
@@ -400,6 +405,39 @@ namespace AdminX.Meta
             return iReturnValue;
         }
 
+        public int SSPCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, DateTime? dDate3 = null)
+        {
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
+            if (dDate3 == null) { dDate3 = DateTime.Parse("1900-01-01"); }
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXSSPCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
+            cmd.Parameters.Add("@int3", SqlDbType.Int).Value = int3;            
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
+            cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
+            cmd.Parameters.Add("@date3", SqlDbType.DateTime).Value = dDate3;
+
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+        }
 
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username)
         {

@@ -1,0 +1,118 @@
+﻿@model AdminX.ViewModels.SSPVM
+
+@{
+    ViewData["Title"] = "Admin-X - Social Service Pathways";
+    ViewData["Page"] = "/ Social Service Pathways";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Social Service Pathway Details", "SSPDetails", "SSP", new { id = Model.ssp.SSPID }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Social Service Pathway List", "Index", "SSP", new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">            
+            <h2>Edit Social Service Pathway for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h2>
+        </div>
+
+
+        <div class="card-body">
+            <form asp-action="Edit">
+                <input name="id" asp-for=@Model.ssp.SSPID hidden />
+
+                <dl class="row mb-5 mt-5">
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ssp.SSPStatus):
+                    </dt>
+                    <dd class="col-sm-4">
+                        <select class="w-100" name="status" asp-for=@Model.ssp.SSPStatusID>
+                            @foreach(var item in Model.sspStatuses)
+                            {
+                                <option value=@item.SSPStatusID>@item.SSPStatus</option>
+                            }
+                        </select>
+                    </dd>
+                    <dd class="col-sm-6"></dd>
+                    <dt class="col-sm-12">
+                        Information Requested:
+                    </dt>
+                    <dt class="col-sm-2">
+                        Date Requested:
+                    </dt>                    
+                    <dd class="col-sm-2">
+                        <input class="w-100" type="date" name="dateRequested" asp-for=@Model.ssp.DateInformationReq />
+                    </dd>                    
+                    <dt class="col-sm-2">
+                        Date Re-Requested:
+                    </dt>                    
+                    <dd class="col-sm-2">
+                        <input class="w-100" type="date" name="dateReRequested" asp-for=@Model.ssp.DateInformationReqFU />
+                    </dd>                    
+                    <dt class="col-sm-2">
+                        Date Received:
+                    </dt>
+                    <dd class="col-sm-2">
+                        <input class="w-100" type="date" name="dateReceived" asp-for=@Model.ssp.DateInformationReceived />
+                    </dd>                    
+                   
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ssp.Outcome):
+                    </dt>
+                    <dd class="col-sm-4">
+                        <select class="w-100" name="outcome" asp-for=@Model.ssp.OutcomeID>
+                            <option value="">Select Outcome</option>
+                            @foreach(var item in Model.sspOutcomes)
+                            {
+                                <option value=@item.ID>@item.Outcome</option>
+                            }
+                        </select>
+                    </dd>
+                    <dt class="col-sm-2">
+                        Details:
+                    </dt>
+                    <dd class="col-sm-4">
+                        <input class="w-100" name="outcomeDetails" asp-for=@Model.ssp.OtherOutcomeDetails />
+                    </dd>
+
+                    <dt class="col-sm-2">
+                        Social Worker Details:
+                    </dt>
+                    <dd class="col-sm-10">
+                        <select class="w-100 js-choice" name="socialWorkerID" asp-for=@Model.ssp.SocialWorkerID>
+                            <option value="">Select Social Worker</option>
+                            @foreach(var item in Model.socialWorkers)
+                            {
+                                <option value=@item.SocialWorkerID>@item.Title @item.FirstName @item.LastName - @item.SocialServicesDept</option>
+                            }
+                        </select>
+                    </dd>
+                    
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ssp.ParentalResponsibility):
+                    </dt>
+                    <dd class="col-sm-10">
+                        <input class="w-100" name="parentalResponsibility" asp-for="ssp.ParentalResponsibility" />
+                    </dd>
+                </dl>
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <a asp-controller="SSP" asp-action="SSPDetails" asp-route-id=@Model.ssp.SSPID class="btn btn-outline-danger">Cancel</a>
+                    </div>
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">Save</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
