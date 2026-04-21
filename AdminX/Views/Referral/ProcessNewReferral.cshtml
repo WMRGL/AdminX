@@ -455,7 +455,7 @@
             return 0;
         }
 
-        if (document.getElementById("referrerCode").value.length > 8)
+                if (document.getElementById("referrerCode").value.length > 8 && document.getElementById("referrerCode").value != "Self/FamMemb")
         {
             window.alert("The selected referrer code is too long. Please select a different GP.");
             return 0;
