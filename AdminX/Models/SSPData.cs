@@ -39,7 +39,7 @@ namespace AdminX.Models
     }
 
     [Table("ListSocialServices", Schema = "dbo")]
-    public class SocialServices
+    public class SocialService
     {
         [Key]
         public string SocialServicesID { get; set; }
@@ -53,7 +53,7 @@ namespace AdminX.Models
     }
 
     [Table("ViewSocialWorkers", Schema = "dbo")]
-    public class SocialWorkers
+    public class SocialWorker
     {
         [Key]
         public string SocialWorkerID { get; set; }

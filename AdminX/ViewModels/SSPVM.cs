@@ -9,8 +9,11 @@ namespace AdminX.ViewModels
         public List<SSP> ssps { get; set; }
         public List<SocialServicePathwayOutcome> sspOutcomes { get; set; }
         public List<SocialServicePathwayStatus> sspStatuses { get; set; }
-        public List<SocialServices> socialServices { get; set; }
-        public List<SocialWorkers> socialWorkers { get; set; }
+        public List<SocialService> socialServices { get; set; }
+        public List<SocialWorker> socialWorkers { get; set; }
         public Patient patient { get; set; }
+        public List<PatientTitle> titles { get; set; }
+        public SocialService socialService { get; set; }
+        public SocialWorker socialWorker { get; set; }
     }
 }

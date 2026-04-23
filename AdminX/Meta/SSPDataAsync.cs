@@ -8,8 +8,8 @@ namespace AdminX.Meta
     {
         public Task<List<SocialServicePathwayOutcome>> GetSSPOutcomes();
         public Task<List<SocialServicePathwayStatus>> GetSSPStatuses();
-        public Task<List<SocialServices>> GetSocialServices();
-        public Task<List<SocialWorkers>> GetSocialWorkers();
+        public Task<List<SocialService>> GetSocialServices();
+        public Task<List<SocialWorker>> GetSocialWorkers();
         public Task<SSP> GetSSPDetails(int id);
         public Task<List<SSP>> GetSSPList();
     }
@@ -39,15 +39,15 @@ namespace AdminX.Meta
             return statusSSPs;
         }
 
-        public async Task<List<SocialServices>> GetSocialServices()
+        public async Task<List<SocialService>> GetSocialServices()
         {
-            List<SocialServices> ss = await _adminContext.SocialServices.OrderBy(a => a.SocialServicesID).ToListAsync();
+            List<SocialService> ss = await _adminContext.SocialService.OrderBy(a => a.SocialServicesID).ToListAsync();
 
             return ss;
         }
-        public async Task<List<SocialWorkers>> GetSocialWorkers()
+        public async Task<List<SocialWorker>> GetSocialWorkers()
         {
-            List<SocialWorkers> sw = await _adminContext.SocialWorkers.OrderBy(a => a.SocialWorkerID).ToListAsync();
+            List<SocialWorker> sw = await _adminContext.SocialWorker.OrderBy(a => a.SocialWorkerID).ToListAsync();
 
             return sw;
         }
