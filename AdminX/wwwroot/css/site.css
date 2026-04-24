@@ -24,3 +24,18 @@ body {
 .bodyStyle {
     font-size: 14px;
 }
+
+/* FORCE the search input to ignore the library's auto-sizing */
+.choices__list--dropdown .choices__input {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 4px 10px !important;
+}
+
+/* Prevent the container from collapsing */
+.choices__list--dropdown {
+    word-break: break-all;
+}
+
