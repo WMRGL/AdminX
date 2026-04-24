@@ -358,16 +358,42 @@ namespace AdminX.Controllers
             }
         }
 
+
+
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> EditAppointment(Appointment appointment)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditAppointment(ClinicVM model)
         {
             try
             {
-                //int success = _crud.CallStoredProcedure("Appointment", "Update", appointment.RefID);
-                //if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-editAppt(SQL)" }); }
-                //TempData["SuccessMessage"] = "Clinic details updated successfully.";
-                return RedirectToAction("ApptDetails", new { id = appointment.RefID });
+                if (model.Clinic.RefID == 0)
+                {
+                    return NotFound();
+                }
+
+                int success = _crud.CallStoredProcedure(
+                    sType: "Appointment",
+                    sOperation: "EditAppointment",
+                    int1: model.Clinic.RefID,
+                    int2: 0,
+                    int3: 0,
+                    string1: model.Clinic.Clinician ?? "",
+                    string2: "",
+                    string3: "",
+                    text: "",
+                    string4: model.Clinic.Clinician2 ?? "",
+                    string5: model.Clinic.Clinician3 ?? "",
+                    sLogin: User.Identity.Name
+                );
+
+                if (success == 0)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-editAppt(SQL)" });
+                }
+
+                TempData["SuccessMessage"] = "Clinic details updated successfully.";
+
+                return RedirectToAction("ApptDetails", new { id = model.Clinic.RefID });
             }
             catch (Exception ex)
             {
