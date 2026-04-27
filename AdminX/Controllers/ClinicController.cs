@@ -342,14 +342,11 @@ namespace AdminX.Controllers
             try {
                 _cvm.activityItem = await _activityData.GetActivityDetails(id); string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit Clinic", "RefID=" + id.ToString(), _ip.GetIPAddress());
-
                 _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
-                _cvm.activityItems = await _activityData.GetClinicDetailsList(id);
-                _cvm.activityItem = await _activityData.GetActivityDetails(id);
-                _cvm.outcomes = await _clinicData.GetOutcomesList();
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
+                _cvm.venueList = await _venueData.GetVenueList();
                 return View(_cvm);
             }
             catch (Exception ex)
@@ -357,7 +354,6 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinic-editAppt" });
             }
         }
-
 
 
         [HttpPost]
@@ -377,12 +373,14 @@ namespace AdminX.Controllers
                     int1: model.Clinic.RefID,
                     int2: 0,
                     int3: 0,
-                    string1: model.Clinic.Clinician ?? "",
+                    string1: model.Clinic.STAFF_CODE_1,
                     string2: "",
                     string3: "",
                     text: "",
-                    string4: model.Clinic.Clinician2 ?? "",
-                    string5: model.Clinic.Clinician3 ?? "",
+                    string4: model.Clinic.SeenBy ?? "",
+                    string5: model.Clinic.SeenBy2 ?? "",
+                    string6: model.Clinic.SeenBy3 ?? "",
+                    string7: model.Clinic.FACILITY ?? "",
                     sLogin: User.Identity.Name
                 );
 
