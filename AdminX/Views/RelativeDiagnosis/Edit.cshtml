@@ -3,44 +3,46 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
-    ViewData["Title"] = "Clinic-X - Edit Relatives' Diagnosis";
+    ViewData["Title"] = "Admin-X - Edit Relatives' Diagnosis";
 }
 
 <div class="container">    
     <div class="row g-5 mb-5">
         <div class="col-md-2">
             @*<input type="button" value="Back" id="btnBack" class="btn btn-default btn-success" />*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativesDiagnosis.RelsID>Back to Diagnosis List</a>
+            <a type="button" class="btn btn-primary" asp-controller="RelativeDiagnosis" asp-action="Index" asp-route-relID=@Model.relativesDiagnosis.RelsID>Back to Diagnosis List</a>
         </div>
     </div>
 
     <div class="row g-5 mb-5">
-        <h1>Add new diagnosis</h1>
+        <h1>Edit diagnosis</h1>
     </div>
     <div class="row g-5 mb-5">
         <form id="frmAddNew" asp-action="Edit">
             <div class="row g-5 mb-5">
                 <h2>Diagnosis Details:</h2>
-            </div>           
-"
+            </div>
+            <div hidden>
+                <input name="tumourID" asp-for=@Model.relativesDiagnosis.TumourID />
+            </div>
             <div class="row g-5 mb-5">
                 <div class="col-md-2" class="text-right">
                     <label>Reported Diagnosis:</label>
                 </div>
                 <div class="col-md-3">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Diagnosis)
+                    <input class="w-100" type="text" name="diagnosis" asp-for=@Model.relativesDiagnosis.Diagnosis />
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Age:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.AgeDiag)
+                    <input class="w-100" type="text" name="age" asp-for=@Model.relativesDiagnosis.AgeDiag />
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Hospital(s):</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Hospital)
+                    <input class="w-100" type="text" name="hospital" asp-for=@Model.relativesDiagnosis.Hospital />
                 </div>
             </div>
 
@@ -52,7 +54,7 @@
                     <label>Source:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.CRegCode)
+                    <input class="w-100" type="text" name="cRegCode" asp-for=@Model.relativesDiagnosis.CRegCode />
                 </div>
                 <div class="col-md-2" class="text-right">
                     <label>
@@ -60,13 +62,19 @@
                     </label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.DateReq)
+                    <input class="w-100" type="date" name="dateRequested" asp-for=@Model.relativesDiagnosis.DateReq />
                 </div>
                 <div class="col-md-2" class="text-right">
                     <label>Consultant:</label>
                 </div>
                 <div class="col-md-2">
-                    @Html.DisplayFor(model => model.relativesDiagnosis.Cons)
+                    <select class="w-100" id="ddlCons" name="consultant" asp-for=@Model.relativesDiagnosis.Cons>
+                        <option value="">select...</option>
+                        @foreach (var s in Model.consultantList)
+                        {
+                            <option value="@s.STAFF_CODE">@s.NAME</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -134,7 +142,13 @@
                     <label>Site (topography)</label>
                 </div>
                 <div class="col-md-2">
-                    
+                    <select class="w-100" name="siteCode" asp-for=@Model.relativesDiagnosis.SiteCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourSiteList)
+                        {
+                            <option value=@item.SiteCode>@item.Site</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -142,7 +156,13 @@
                     <label>Laterality (side):</label>
                 </div>
                 <div class="col-md-2">
-                   
+                    <select class="w-100" name="latCode" asp-for=@Model.relativesDiagnosis.LatCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourLatList)
+                        {
+                            <option value=@item.LatCode>@item.Lat</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-md-1" class="text-right">
                     <label>Grade/stage:</label>
@@ -175,7 +195,13 @@
                     <label>Histology (morphology):</label>
                 </div>
                 <div class="col-md-2">
-                    
+                    <select class="w-100" name="morphCode" asp-for=@Model.relativesDiagnosis.MorphCode>
+                        <option value="">select...</option>
+                        @foreach (var item in Model.tumourMorphList)
+                        {
+                            <option value=@item.MorphCode>@item.Morph</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="row mb-5 g-5">
@@ -189,19 +215,19 @@
                     <label>Comments:</label>
                 </div>
                 <div class="col-md-2">
-                    <textarea name="sNotes"></textarea>
+                    <textarea name="notes" asp-for=@Model.relativesDiagnosis.Notes></textarea>
                 </div>
             </div>
 
 
-            <div id="metadata" hidden="true">
+            <div id="metadata" hidden>
                 <input name="tumourID" asp-for=@Model.relativesDiagnosis.TumourID />
             </div>
         </form>
 
         <div class="row g-5 mb-5">
             <div class="col-md-2">
-                <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+                <input type="button" class="btn btn-primary" value="Save" id="btnSave" />
             </div>
         </div>
     </div>
@@ -213,7 +239,8 @@
         document.getElementById("btnSave").addEventListener("click", DoSubmit);
         document.getElementById("btnBack").addEventListener("click", GoBack);
 
-        function GoBack() {
+        function GoBack() 
+        {
             window.history.back();
             //window.close();
         }
@@ -226,22 +253,15 @@
             //}
         }
 
-        function CheckFormValid() { //validation to ensure all required data is entered
+        function CheckFormValid() 
+        { //validation to ensure all required data is entered
 
-            if (document.getElementById("ddlDiag").value == null || document.getElementById("ddlDiag").value == "") {
-                window.alert("Please select a diagnosis.");
-                return 0;
-            }
-
-            if (document.getElementById("ddlStatus").value == null || document.getElementById("ddlStatus").value == "") {
-                window.alert("Please select a disease status.");
-                return 0;
-            }
-
-            if (document.getElementById("txtComments").value.match(/};.*/)) {
-                window.alert("Oi! Stop trying to inject SQL code into my form!");
-                return 0;
-            }
+            
+            //if (document.getElementById("txtComments").value.match(/};.*/)) 
+            //{
+            //    window.alert("Oi! Stop trying to inject SQL code into my form!");
+            //    return 0;
+           // }
             return 1;
         }
 

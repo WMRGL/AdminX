@@ -1,0 +1,75 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Clinic Venue Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">Details for @Model.venue.NAME (@Model.venue.FACILITY)</h5>
+        @if (!Model.hasAssociatedClinicDetails)
+        {
+            <p><span class="text-danger">No details exist for this clinic venue -</span> <a type="button" class="btn btn-outline-primary" asp-controller="SysAdmin" asp-action="AddNewCliniciansClinic" asp-route-clinCodeToCreate=@Model.venue.FACILITY>Create clinic details</a></p>
+        }
+    </div>
+
+    <div class="card-body">
+        <form asp-action="VenueDetails">
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Code</label>
+                </div>
+                <div class="col-md-11">
+                    <input class="form-control" name="clinCode" asp-for=@Model.venue.FACILITY readonly />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Name</label>
+                </div>
+                <div class="col-md-11">
+                    <input type="text" name="name" class="form-control" asp-for=@Model.venue.NAME />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Location</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="location" cols="50" rows="10" class="form-control" asp-for=@Model.venue.LOCATION></textarea>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Special Instructions</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="notes" class="form-control" cols="50" rows="10" asp-for=@Model.venue.NOTES></textarea>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Active</label>
+                </div>
+                <div class="col-md-11">
+                    <select class="form-select" name="isNonActive" asp-for=@Model.venue.NON_ACTIVE>
+                        <option value=0>Yes</option>
+                        <option value=-1>No</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

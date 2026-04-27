@@ -1,0 +1,139 @@
+﻿@model AdminX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnEditPatient" }),
+        Html.ActionLink("Phenotips", "Index", "WIP", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnPhenotips", target="_blank" }),
+    };
+}
+
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="container">
+    <h2>CGU Data</h2>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CGU Number</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>NHS Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="cguCGUNO">@Model.patient.CGU_No</td>
+                <td id="cguNAME">@Model.patient.FIRSTNAME @Model.patient.LASTNAME</td>
+                @if (Model.patient.DOB != null)
+                {
+                    <td id="cguDOB">@Model.patient.DOB.Value.ToString("dd/MM/yyyy")</td>
+                }
+                else
+                {
+                    <td id="cguDOB"></td>
+                }
+                <td id="cguNHS">@Model.patient.SOCIAL_SECURITY</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Phenotips Data</h2>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>CGU Number</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>NHS Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="ptCGUNO">@Model.ptPatient.CGUNumber</tdid>
+                <td id="ptNAME">@Model.ptPatient.FirstName @Model.ptPatient.LastName</td>
+                @if (@Model.ptPatient.DOB != null)
+                {
+                    <td id="ptDOB">@Model.ptPatient.DOB.ToString("dd/MM/yyyy")</td>
+                }
+                else
+                {
+                    <td id="ptDOB"></td>
+                }
+                <td id="ptNHS">@Model.ptPatient.NHSNo</td>
+            </tr>
+        </tbody>
+    </table>
+    
+</div>
+
+
+<script>
+
+    window.addEventListener("load", ShowDifferences);
+
+    function ShowDifferences()
+    {
+        document.getElementById("btnPhenotips").href = "@Model.phenotipsLink";
+
+        if("@Model.patient.CGU_No" != "@Model.ptPatient.CGUNumber")
+        {
+            document.getElementById("cguCGUNO").style.backgroundColor = "yellow";
+            document.getElementById("ptCGUNO").style.backgroundColor = "yellow";
+        }
+
+        if("@Model.patient.FIRSTNAME" != "@Model.ptPatient.FirstName" || "@Model.patient.LASTNAME" != "@Model.ptPatient.LastName")
+        {
+            document.getElementById("cguNAME").style.backgroundColor = "yellow";
+            document.getElementById("ptNAME").style.backgroundColor = "yellow";
+        }
+
+        if("@Model.patient.DOB" != "@Model.ptPatient.DOB")
+        {            
+            document.getElementById("cguDOB").style.backgroundColor = "yellow";
+            document.getElementById("ptDOB").style.backgroundColor = "yellow";
+        }
+
+        if("@Model.patient.SOCIAL_SECURITY" != "@Model.ptPatient.NHSNo")
+        {
+            document.getElementById("cguNHS").style.backgroundColor = "yellow";
+            document.getElementById("ptNHS").style.backgroundColor = "yellow";
+        }
+    }
+
+</script>

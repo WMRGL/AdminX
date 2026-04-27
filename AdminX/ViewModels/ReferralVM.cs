@@ -14,7 +14,37 @@ namespace AdminX.ViewModels
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> gcs { get; set; }
         public List<StaffMember> admin { get; set; }
+        public Referral referral { get; set; }
         public List<ActivityItem> referrals { get; set; }
         public List<string> pathways { get; set; }
+        public List<SubPathway> subPathways { get; set; }
+        public List<string> pregnancy { get; set; }
+        public List<Priority> priorityList { get; set; }
+        public List<ListStatusAdmin> admin_status { get; set; }
+        public List<ListDisease> diseases { get; set; }
+        public Appointment Clinic { get; set; }
+        public List<Appointment> ClinicList { get; set; }
+        public List<ExternalFacility> facilities { get; set; }
+        public List<Review> reviews { get; set; }
+        public int clockAgeDays { get; set; }
+        public int clockAgeWeeks { get; set; }
+        public StaffMember staffMember { get; set; }
+        public ActivityItem activity { get; set; }
+        public Review review { get; set; }
+        public List<Disease> indicationList { get; set; }
+        public List<ReferralReason> referralReasonsList { get; set; }
+        public Triage relatedICP { get; set; }
+        public ICP ICPDetails { get; set; } 
+        public AreaNames areaName { get; set; }
+        public bool canDeleteICP { get; set; }
+        public ICPGeneral icpGeneral { get; set; }
+        public ICPCancer icpCancer { get; set; }
+        public string icpCancerAction { get; set; }
+        public string icpGeneralAction1 { get; set; }
+        public string icpGeneralAction2 { get; set; }
+        public string waitingListDetails { get; set; }
+        public ExternalClinician GP { get; set; }
+        public ExternalFacility GPFacility { get; set; }
+        public string? message { get; set; }
     }
 }

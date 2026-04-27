@@ -1,8 +1,139 @@
 ﻿@model AdminX.ViewModels.PatientSearchVM
 @{
     ViewData["Title"] = "Admin-X - Patient Search";
+    ViewData["Page"] = "/ Patient Search";
 }
 
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Patient Search Form</h5>
+    </div>
+    <div class="card-body">
+        <form id="PatientSearch" asp-action="Index">
+
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="cguSearch">CGU/File Number:</label>
+                    <input type="text" class="form-control" id="cguSearch" name="cguNo" asp-for=@Model.cguNumberSearch>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="forenameSearch">Forename:</label>
+                    <input type="text" class="form-control" id="forenameSearch" name="firstname" asp-for=@Model.forenameSearch>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="surnameSearch">Surname</label>
+                    <input type="text" class="form-control" id="surnameSearch" name="lastname" asp-for=@Model.surnameSearch>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-6">
+                    <label class="form-label">Date of Birth</label>
+                    <input class="form-control" name="dob" id="dobSearch" tabindex="0" type="date" >
+                </div>
+                <div class="mb-3 col-md-6">
+                    <label class="form-label" for="nhsSearch">NHS Number:</label>
+                    <input type="text" class="form-control" id="nhsSearch" name="nhsNo" asp-for=@Model.nhsNoSearch />
+                </div>
+            </div>
+
+            <button type="button" onclick="ClearForm()" class="btn btn-dark btn-lg">Clear</button>
+            <button type="submit" class="btn btn-primary btn-lg float-end">Submit</button>
+
+
+        </form>
+    </div>
+</div>
+@if (Model.patientsList != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Patient Details</h5>
+
+        </div>
+        <div class="table-responsive">
+            <table class="table mb-2 table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">CGU Number</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Date of Birth</th>
+                        <th scope="col">NHS Number</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.patientsList)
+                    {
+                        <tr>
+                            <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-outline-primary text-dark">@item.CGU_No</a></td>
+                            <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
+                            @if (@item.DOB.HasValue)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
+                            <td>@item.SOCIAL_SECURITY</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+<div class="row mb-2 mb-xl-3">
+    <div class="col-auto d-none d-sm-block">
+        <a type="button" class="btn btn-primary btn-lg" asp-controller="PatientSearch" asp-action="NewPatientSearch">Create New Patient</a>
+
+    </div>
+
+    <div class="col-auto ms-auto text-end mt-n1">
+       
+    </div>
+</div>
+
+@if (ViewBag.RecentPatients != null)
+{
+    <div class="card mt-4 mb-4 shadow-sm">
+        <div class="card-header ">
+            <h5 class="card-title text-dark"><i class="fas fa-history me-2"></i>Recently Viewed Patients</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-responsive table-bordered table-striped defaultTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>NHS Number</th>
+                        <th>Name</th>
+                        <th>Date of Birth</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var patient in (List<Patient>)ViewBag.RecentPatients)
+                    {
+                        <tr>
+                            <td>
+                                <a href="@Url.Action("PatientDetails", "Patient", new { id = patient.MPI })"> @patient.CGU_No</a>
+                            </td>
+                            <td> @patient.SOCIAL_SECURITY</td>
+                            <td> @patient.FIRSTNAME @patient.LASTNAME</td>
+
+                            <td data-order="@(patient.DOB.HasValue? patient.DOB.Value.ToString("yyyyMMdd") : "0")">
+                                @(patient.DOB.HasValue? patient.DOB.Value.ToString("dd/MM/yyyy") : "Unknown")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+           </table>
+        </div>
+    </div>
+}
+
+
+
+@*
 <div class="container card">
     <div class="row mb-5 mt-2 g-2">
         <form id="PatientSearch" asp-action="Index">
@@ -25,7 +156,7 @@
                 <div class="col-md-2">
                     <input id="surnameSearch" class="w-100" type="text" name="lastname" asp-for=@Model.surnameSearch />
                 </div>
-                
+
             </div>
             <div class="row mb-5 g-5">
                 <div class="col-md-2">
@@ -50,11 +181,11 @@
                 <div class="col-md-2">
                     <button class="btn btn-success" type="button" onclick="ClearForm()">Clear</button>
                 </div>
-            </div>            
+            </div>
         </form>
     </div>
 
-    @if(Model.patientsList!= null)
+    @if (Model.patientsList != null)
     {
         <table class="table">
             <thead>
@@ -71,10 +202,20 @@
                     <tr>
                         <td><a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@item.MPI type="button" class="btn btn-success">@item.CGU_No</a></td>
                         <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
-                        @if(@item.DOB.HasValue)
+                        @if (item.DOB != null)
                         {
-                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            @if (@item.DOB.HasValue)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+
                         }
+                        else
+                        {
+                            <td></td>
+                        }
+
+
                         <td>@item.SOCIAL_SECURITY</td>
                     </tr>
                 }
@@ -90,6 +231,8 @@
 
 
 </div>
+*@
+
 
 <script>
     function ClearForm() 
@@ -101,4 +244,8 @@
         document.getElementById("nhsSearch").value = null;
         document.getElementById("PatientSearch").submit();
     }
+
+    Inputmask("999 999 9999").mask(document.getElementById("nhsSearch"));
+
 </script>
+

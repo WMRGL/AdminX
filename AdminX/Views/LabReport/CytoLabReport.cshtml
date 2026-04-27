@@ -1,0 +1,46 @@
+﻿@model AdminX.ViewModels.LabReportVM
+@{
+    ViewData["Title"] = "Admin-X - Cytogenetic Lab Report";
+}
+<div class="container">
+    
+    <h1>Report details for @Model.cytoReport.LABNO</h1>
+    
+    @if (Model.cytoReport.REPORT_STATUS == "Final")
+    {
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Summary:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.cytoReport.REPORT_SUMMARY</p>
+            </div>
+        </div>
+
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Interpretation:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.cytoReport.REPORT</p>
+            </div>
+        </div>
+        <div class="row mb-5 g-5">
+            <div class="col-md-1">
+                <label>Basis of Test:</label>
+            </div>
+            <div class="col-md-10">
+                <p>@Model.cytoReport.REPORT_STND_TEXT</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h1 class="redtext">This report is not finalised.</h1>
+    }
+
+    <div class="row mb-5 g-5">
+        <a type="button" class="btn btn-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.cytoReport.INTID>Back to Report List</a>
+    </div>
+
+</div>

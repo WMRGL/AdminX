@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ClinicalXPDataConnections.Models;
+﻿using ClinicalXPDataConnections.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AdminX.ViewModels
 {
@@ -12,5 +12,12 @@ namespace AdminX.ViewModels
         public string notificationMessage { get; set; }
         public string dllVersion { get; set; }
         public string appVersion { get; set; }
+        public int contactOutcomes { get; set; }
+        public int triageOutcomes { get; set; }
+        public int reviewOutcomes { get; set; }
+        public int dictatedLetters { get; set; }
+        public int newEpicPatients { get; set; }
+        public int newEpicReferrals { get; set; }
+        public List<StaffMember> dutyClinicianList { get; set; }
     }
 }

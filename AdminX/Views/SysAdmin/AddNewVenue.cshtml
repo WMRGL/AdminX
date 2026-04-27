@@ -1,0 +1,60 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - New Clinic Venue";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">New Clinic Venue</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddNewVenue">
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Code</label>
+                </div>
+                <div class="col-md-11">
+                    <input class="form-control" name="clinCode"  />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Name</label>
+                </div>
+                <div class="col-md-11">
+                    <input type="text" name="name" class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Location</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="location" cols="50" rows="10" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-md-1">
+                    <label class="form-label">Special Instructions</label>
+                </div>
+                <div class="col-md-11">
+                    <textarea name="notes" class="form-control" cols="50" rows="10"></textarea>
+                    <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

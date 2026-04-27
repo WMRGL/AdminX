@@ -1,0 +1,183 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - New Clinic Detail";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">New Clinicians Clinic Details</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddNewCliniciansClinic">
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <select name="clinCode" asp-for=@Model.clinCodeToCreate>
+                        @foreach(var item in Model.venues)
+                        {
+                            <option value=@item.FACILITY>@item.FACILITY (@item.NAME)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Addressee</label>
+                </div>
+                <div class="col-md-3">                    
+                    <input type="text" name="addressee" />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Salutation</label>                    
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="salutation" />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Position</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="position" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Pre-amble</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="50" name="preAmble"></textarea>
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Postlude</label>
+                </div>
+                <div class="col-md-3">
+                    <textarea cols="50" name="postlude"></textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Copies To</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="copiesTo" />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Site</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="site" />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Telephone</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="telephone" />
+                </div>
+            </div>
+            <div class="row mb-3">                
+                <div class="col-md-1 text-end">
+                    <label>Address</label>
+                </div>
+                <div class="col-md-5">
+                    <textarea cols="50" rows="6" name="address" ></textarea>
+                </div>
+                
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Town</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="town" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>County</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="county" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Postcode</label>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="postCode" />
+                </div>
+                
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Secretary</label>
+                </div>
+                <div class="col-md-5">
+                    <select name="secretary">
+                        @foreach (var item in Model.staffMembers)
+                        {
+                            <option value=@item.NAME>@item.NAME</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-1 text-end">
+                    <label>Call to Book</label>                
+                    <input type="checkbox" id="chkcallToBook" onchange="SetCallToBook()"  />
+                    <input type="text" id="txtcallToBook" name="callToBook" hidden /> @*because javascript can't pass a checkbox state to the C#!!*@
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Include SpR</label>                
+                    <input type="checkbox" id="chkincludeSPR" onchange="SetIncludeSPR()" />
+                    <input type="text" id="txtincludeSPR" name="includeSPR" hidden />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Show Date</label>                
+                    <input type="checkbox" id="chkshowDate" onchange="SetShowDate()" />
+                    <input type="text" id="txtshowDate" name="showDate" hidden />
+                </div>
+                <div class="col-md-1 text-end">
+                    <label>Show Local Ref</label>
+                    <input type="checkbox" id="chkshowLocalRef" onchange="SetShowLocalRef()" />
+                    <input type="text" id="txtshowLocalRef" name="showLocalRef" hidden />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary mt-3">Save Record</button>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    function SetCallToBook()
+    {
+        document.getElementById("txtcallToBook").value = document.getElementById("chkcallToBook").checked;
+    }
+    function SetIncludeSPR()
+    {
+        document.getElementById("txtincludeSPR").value = document.getElementById("chkincludeSPR").checked;
+    }
+    function SetShowDate()
+    {
+        document.getElementById("txtshowDate").value = document.getElementById("chkshowDate").checked;
+    }
+    function SetShowLocalRef()
+    {
+        document.getElementById("txtshowLocalRef").value = document.getElementById("chkshowLocalRef").checked;
+    }
+</script>

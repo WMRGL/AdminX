@@ -1,0 +1,133 @@
+﻿@model AdminX.ViewModels.SSPVM
+
+@{
+    ViewData["Title"] = "Admin-X - Social Service Pathways";
+    ViewData["Page"] = "/ Social Service Pathways";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Social Service Pathway List", "Index", "SSP", new { }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <div class="col-auto ms-auto text-end mt-n1">
+                <a asp-controller="SSP" asp-action="Edit" asp-route-id=@Model.ssp.SSPID class="btn btn-primary">Edit Details</a>
+            </div>
+            <h2>Social Service Pathway Details for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (<a asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>@Model.patient.CGU_No</a>)</h2>
+        </div>
+
+
+        <div class="card-body">
+            <dl class="row mb-5 mt-2">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ssp.SSPStatus):
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ssp.SSPStatus)
+                </dd>
+                <dt class="col-sm-12">
+                    Information Requested:
+                </dt>
+                <dt class="col-sm-2">
+                    Date Requested:
+                </dt>
+                @if(Model.ssp.DateInformationReq !=  null)
+                {
+                    <dd class="col-sm-2">
+                        @Model.ssp.DateInformationReq.Value.ToShortDateString()
+                    </dd>
+                }
+                else
+                {
+                    <dd class="col-sm-2">Not yet requested</dd>
+                }
+                <dt class="col-sm-2">
+                    Date Re-Requested:
+                </dt>                
+                    @if (Model.ssp.DateInformationReqFU != null)
+                    {
+                        <dd class="col-sm-2">
+                            @Model.ssp.DateInformationReqFU.Value.ToShortDateString()
+                        </dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-2"></dd>
+                    }
+                </dd>
+                <dt class="col-sm-2">
+                    Date Received:
+                </dt>                
+                    @if (Model.ssp.DateInformationReceived != null)
+                    {
+                        <dd class="col-sm-2">
+                            @Model.ssp.DateInformationReceived.Value.ToShortDateString()
+                        </dd>
+                    }
+                    else
+                    {
+                        <dd class="col-sm-2">Not yet received</dd>
+                    }
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ssp.Outcome):
+                </dt>
+                <dd class="col-sm-2">
+                    @Html.DisplayFor(model => model.ssp.Outcome)
+                </dd>
+                @if(Model.ssp.OtherOutcomeDetails != null)
+                {
+                    <dt class="col-sm-2">
+                        Details:
+                    </dt>
+                    <dd class="col-sm-6">
+                        @Html.DisplayFor(model => model.ssp.OtherOutcomeDetails)
+                    </dd>
+                }                
+                else
+                {
+                    <dt class="col-sm-8"></dt>
+                }
+
+                @if(Model.ssp.SocialWorkerLastName != null)
+                {
+                    <dt class="col-sm-2">
+                        Social Worker Details:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.ssp.SocialWorkerTitle @Model.ssp.SocialWorkerFirstName @Model.ssp.SocialWorkerLastName, @Model.ssp.SocialWorkerJobTitle
+                    </dd>
+                    <dt class="col-sm-2"></dt>
+                    <dd class="col-sm-10">
+                        @Model.ssp.SocialServiceDept<br />
+                        @Model.ssp.Address1<br />
+                        @Model.ssp.Address2<br />
+                        @Model.ssp.Address3<br />
+                        @Model.ssp.Address4<br />
+                        @Model.ssp.Address5<br />
+                        @Model.ssp.PostCode
+                    </dd>
+                }
+                @if(Model.ssp.ParentalResponsibility != null)
+                {
+                    <dt class="col-sm-2">
+                        @Html.DisplayNameFor(model => model.ssp.ParentalResponsibility):
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.ssp.ParentalResponsibility)
+                    </dd>
+                }
+
+            </dl>
+
+
+        </div>
+    </div>
+</div>

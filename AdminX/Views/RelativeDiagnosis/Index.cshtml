@@ -5,30 +5,38 @@
 *@
 @{
     ViewData["Title"] = "Admin-X - Relatives' Diagnoses";
+    ViewData["Page"] = "/ Relative / Diagnoses";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">
-            @*<button type="button" value="Back" id="btnBack" class="btn btn-default btn-success">Back</button>*@
-            @*<a type="button" class="btn btn-default btn-success" asp-controller="Home" asp-action="Index">Back to Home</a>*@
-            <a type="button" class="btn btn-default btn-success" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
-        </div>        
-    </div>
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Back to Relative Details", "RelativeDetails", "Relative", new { id = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("View Relative's Diary", "Index", "RelativeDiary", new { relID = Model.relativeDetails.relsid }, new { @class = "btn btn-light bg-white me-2 m-1" }),        
+    };
+}
 
-    <div class="row mb-5">
-        <hr />
-    </div>
+
+
+<div class="card">
+    @*<div class="row mb-5 g-5">
+        <div class="col-md-2">            
+            <a type="button" class="btn btn-default btn_primary" asp-controller="Relative" asp-action="RelativeDetails" asp-route-id=@Model.relativeDetails.relsid>Back to Relative Details</a>
+        </div>        
+    </div>*@
+
 
     @if (Model.relativesDiagnosisList.Count() > 0)
     {
-        <div class="row mb-5 g-5">
-            <h1>Diagnoses for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h1>
+        <div class="card-header">  
+            <h5 class="card-title text-dark">Diagnoses for relative @Model.relativeDetails.RelForename1 @Model.relativeDetails.RelSurname</h5>
         </div>
 
-        <div class="row mb-5 g-5">
-            <table class="table">
-                <thead>
+        <div class="card-body">
+            <table class="table table-bordered table-hover table-striped defaultTable">
+                <thead class="table-dark">
                     <tr>
                         <th></th>
                         <th>Diagnosis</th>
@@ -43,7 +51,7 @@
                     @foreach (var item in Model.relativesDiagnosisList)
                     {
                         <tr>
-                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-success">Edit</a></td>
+                            <td><a asp-controller="RelativeDiagnosis" asp-action="Edit" asp-route-id=@item.TumourID class="btn btn-primary">Edit</a></td>
                             <td>@item.Diagnosis</td>
                             <td>@item.AgeDiag</td>
                             <td>@item.Hospital</td>
@@ -63,18 +71,21 @@
     }
     else
     {
-        <h1>No diagnosis exists for this relative</h1>
+        <div class="card-body">
+            <h1>No diagnosis exists for this relative</h1>
+        </div>
+        
     }
-    <div class=row mb-5 g-5>
+    <div class="m-3">
         <div class="col-md-2">
             <div col-md-2>
-                @*<button id="btnAddNew" class="btn btn-default btn-success">Add New</button>*@
-                <a class="btn btn-default btn-success" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
+                @*<button id="btnAddNew" class="btn btn-default btn_primary">Add New</button>*@
+                <a type="button" class="btn btn-primary" asp-controller="RelativeDiagnosis" asp-action="AddNew" asp-route-id=@Model.relativeDetails.relsid>Add New</a>
             </div>
         </div>
     </div>
 
-    <div id="metadata" hidden="true">
+    <div id="metadata" hidden>
         <span id="theurl">@Context.Request.Path</span>
         <span id="thehost">@Context.Request.Host</span>
         <span id="count">@Model.relativesDiagnosisList.Count()</span>

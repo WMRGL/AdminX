@@ -1,0 +1,61 @@
+﻿@model AdminX.ViewModels.LabReportVM
+
+@{
+    ViewData["Title"] = "Admin-X - Lab Sample Details";
+}
+
+
+ @if(Model.cytoReport != null)
+    {
+<div class="card">
+    <div class="card-header">
+        <div class="card-title text-dark">
+                <h5> Cytogenetic sample details for @Model.cytoReport.LABNO </h5>
+        </div>
+    </div>
+        <div class="card-body">
+            <dl>
+                <dt class="col-md-2">Sample Type</dt>
+                <dd class="col-md-10">@Model.cytoReport.SAMPLETYPE</dd>
+                <dt class="col-md-2">Indication</dt>
+                <dd class="col-md-10">@Model.cytoReport.INDICATION</dd>
+                <dt class="col-md-2"></dt>
+                <dd class="col-md-10">@Model.cytoReport.OTHER_INDICATION_TEXT</dd>
+            </dl>
+            <a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.cytoReport.INTID>Back to Report List</a>
+
+        </div>
+</div>
+    }
+
+
+     @if (Model.dnaReport != null)
+    {
+<div class="card">
+    <div class="card-header">
+        <div class="card-title text-dark">
+            <h5> Molecular sample details for @Model.dnaReport.LABNO</h5>
+        </div>
+    </div>
+        <div class="card-body">
+            <dl>
+                <dt class="col-md-2">Sample Type</dt>
+                <dd class="col-md-10">@Model.dnaReport.SAMPLETYPE</dd>
+                @if (@Model.dnaReport.DATE_OBTAINED != null)
+                {
+                    <dt class="col-md-2">Date Obtained</dt>
+                    <dd class="col-md-10">@Model.dnaReport.DATE_OBTAINED.Value.ToString("dd/MM/yyyy")</dd>
+                }
+                @if (@Model.dnaReport.DATE_RECEIVED != null)
+                {
+                    <dt class="col-md-2">Date Received</dt>
+                    <dd class="col-md-10">@Model.dnaReport.DATE_RECEIVED.Value.ToString("dd/MM/yyyy")</dd>
+                }
+            </dl>
+            <a type="button" class="btn btn-outline-primary" asp-controller="LabReport" asp-action="LabReports" asp-route-intID=@Model.dnaReport.INTID>Back to Report List</a>
+
+        </div>
+</div>
+
+    }
+

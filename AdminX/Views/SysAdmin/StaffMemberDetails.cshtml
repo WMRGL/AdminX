@@ -1,0 +1,161 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Staff Member Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="card">
+   <div class="card-header">
+        <h5 class="card-title text-dark">Details for @Model.staffMember.NAME (@Model.staffMember.STAFF_CODE)</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="StaffMemberDetails" id="frmSubmit">
+            <div class="row">
+                <div class="mb-3 col-md-2">
+                    <label class="form-label" for="txtStaffCode">Staff Code:</label>
+                    <input type="text" class="form-control" name="staffCode" asp-for=@Model.staffMember.STAFF_CODE id="txtStaffCode" readonly>
+                </div>
+                <div class="mb-3 col-md-1">
+                    <label class="form-label" >Name:</label>
+                    <select name="title" class="form-select" asp-for=@Model.staffMember.StaffTitle>
+                        @foreach (var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="inputAddress2">&nbsp;</label>
+                    <input type="text" class="form-control" name="firstname" asp-for=@Model.staffMember.StaffForename>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="inputAddress2">&nbsp;</label>
+                    <input type="text" class="form-control" name="lastname" asp-for=@Model.staffMember.StaffSurname>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label class="form-label" for="inputAddress2">Windows Login</label>
+                    <input type="text" class="form-control" name="loginName" asp-for=@Model.staffMember.EMPLOYEE_NUMBER>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="role">Role</label>
+                    <input type="text" class="form-control" id="role" name="role" asp-for=@Model.staffMember.POSITION >
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="role">Type</label>
+                    <select name="type" class="form-select" asp-for=@Model.staffMember.CLINIC_SCHEDULER_GROUPS>
+                        @foreach (var item in Model.types)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="team">Team</label>
+                    <select name="type" class="form-select" id="team" asp-for=@Model.staffMember.BILL_ID>
+                        @foreach (var item in Model.teams)
+                        {
+                            <option value=@item>@item</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="date">Start Date</label>
+                    <input type="date" class="form-control" id="date" name="startDate" asp-for=@Model.staffMember.EMPLOYMENT_START_DATE>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label" for="role">EndDate</label>
+                    <input type="date" class="form-control" id="date" name="endDate" asp-for=@Model.staffMember.EMPLOYMENT_END_DATE id="txtEndDate">
+                </div>
+
+                <div class="mt-4 col-md-4">
+                    <label class="form-label">
+                        <span class="form-check-label">In Post</span>
+                        <input type="checkbox" class="form-check-input" id="chkInPost" asp-for=@Model.staffMember.InPost />
+                        <input name="isInPost" id="txtInPost" hidden />
+                    </label>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="mt-4 col-md-4">
+                    <label class="form-label">
+                        <span class="form-check-label">Manager/supervisor</span>
+                        <input type="checkbox" class="form-check-input" id="chkSupervisor" />
+                        <input name="isSupervisor" id="txtSupervisor" hidden />
+                    </label>
+                </div>
+                <div class="mt-4 col-md-4">
+                    <label class="form-label">
+                        <span class="form-check-label">System Administrator</span>
+                        <input type="checkbox" class="form-check-input" id="chkSystemAdministrator" />
+                        <input name="isSystemAdministrator" id="txtSystemAdministrator" hidden />
+                    </label>
+                </div>
+                @if (Model.staffMember.CLINIC_SCHEDULER_GROUPS != "Admin")
+                {
+                    <div class="mb-3 col-md-4">
+                        <label class="form-label" for="date">GMC Number</label>
+                        <input type="text" class="form-control" name="gmcNumber" asp-for=@Model.staffMember.GMCNumber>
+                    </div>
+                }
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.getElementById("chkInPost").addEventListener("change", SetLeaver);
+    document.getElementById("btnSubmit").addEventListener("click", DoSubmit);
+    window.addEventListener("load", SetCheckBoxValues);
+
+    function SetLeaver()
+    {
+        if(!document.getElementById("chkInPost").checked)
+        {
+            if(document.getElementById("txtEndDate").value == "")
+            {
+                var date = new Date;
+                
+                document.getElementById("txtEndDate").value = date.toISOString().split('T')[0];
+            }
+        }
+        else
+        {
+            document.getElementById("txtEndDate").value = "";
+        }
+
+        SetCheckBoxValues();
+    }
+
+    function SetCheckBoxValues()
+    {
+        document.getElementById("txtSupervisor").value = document.getElementById("chkSupervisor").checked;
+        document.getElementById("txtSystemAdministrator").value = document.getElementById("chkSystemAdministrator").checked;
+    }
+
+
+    function DoSubmit()
+    {
+        document.getElementById("txtStaffCode").disabled=false;        
+        document.getElementById("frmSubmit").submit();
+    }
+
+</script>

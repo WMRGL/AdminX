@@ -1,0 +1,23 @@
+﻿@model List<AdminX.Models.BreadcrumbItem>
+
+@if (Model != null && Model.Any())
+{
+    <h3>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var item = Model[i];
+            if (!string.IsNullOrEmpty(item.Controller) && !string.IsNullOrEmpty(item.Action))
+            {
+                <a class="text-decoration-none" asp-controller="@item.Controller" asp-action="@item.Action" asp-all-route-data="@item.RouteValues">@item.Text</a>
+            }
+            else
+            {
+                @item.Text
+            }
+            @if (i < Model.Count - 1)
+            {
+                <span> / </span>
+            }
+        }
+    </h3>
+}

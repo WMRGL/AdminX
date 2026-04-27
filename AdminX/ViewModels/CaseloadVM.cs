@@ -15,6 +15,6 @@ namespace AdminX.ViewModels
         public int countReviews { get; set; }
         public int countLetters { get; set; }
         public string name { get; set; }
-        public string staffCode { get; set; }               
+        public string staffCode { get; set; }        
     }
 }

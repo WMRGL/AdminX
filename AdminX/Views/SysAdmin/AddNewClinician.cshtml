@@ -1,0 +1,131 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Add New Clinician";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="card flex-fill">
+    <div class="card-header">
+        <h5 class="card-title text-dark mb-0">New Clinician Creation</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddNewClinician" method="post">
+
+            <div class="mb-3 row">
+                <div class="row">
+                    <label class="col-form-label col-sm-1 text-sm-end">Clinician Code</label>
+                    <div class="col-sm-11">
+                        <input type="text" name="clinCode" class="form-control">
+                    </div>
+                </div>
+                <div class="row">                    
+                        <label class ="col-form-label col-sm-3"> (leave blank to generate one automatically)</label>
+                    
+                </div>
+            </div>            
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Name</label>
+                <div class="col sm-1">
+                    <select name="title" class="form-select">
+                        <option value="">Select ...</option>
+                        @foreach (var item in Model.titles)
+                        {
+                            <option value=@item.Title>@item.Title</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="firstName" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="lastName" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Speciality</label>
+                <div class="col-sm-11">
+                    <input type="text" name="speciality" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Position</label>
+                <div class="col-sm-11">
+                    <input type="text" name="jobTitle" class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility</label>
+                <div class="col-sm-11">
+                    <select class="form-select js-choice" name="facilityCode">
+                        <option value="">Select ...</option>
+                        @foreach (var item in Model.facilities)
+                        {
+                            <option value=@item.MasterFacilityCode>@item.NAME - @item.MasterFacilityCode</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+            </div>
+            @* <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Not Currently Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+            </div> *@
+           
+
+            @*@
+        <div class="d-flex">
+            <div class="flex-grow-1 ms-3">
+                <strong>Active</strong>
+                <div class="text-muted">
+                    <select name="isActive">
+                        <option value=0>Yes</option>
+                        <option value=-1>No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        *@
+
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+
+    </div>
+</div>
+  
+
+<script>
+
+    function CheckCode()
+    {
+
+    }
+
+
+</script>

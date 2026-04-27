@@ -1,0 +1,53 @@
+﻿@model AdminX.ViewModels.NewEpicPatientVM
+@{
+    ViewData["Title"] = "Admin-X New Epic Patients";
+}
+
+
+<div >
+    <div class="card">
+        <h1 class="card-header">Epic patients awaiting CGU numbers</h1>
+
+        <div class="card-body">
+            <table class="table table-striped table-bordered defaultTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Date of Birth</th>
+                        <th>NHS Number</th>
+                        <th>Epic ID</th>
+                        <th>Pathway</th>
+                        <th>Referral Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.epicpatientList)
+                    {
+                        <tr>
+                            <td><a type="button" class="btn btn-primary" asp-controller="NewEpicPatient" asp-action="EpicPatientSearch" asp-route-id=@item.MPI>Select Patient</a></td>
+                            <td>@item.Title @item.FIRSTNAME @item.LASTNAME</td>
+                            @if (item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>Not known</td>
+                            }
+                            <td>@item.SOCIAL_SECURITY</td>
+                            <td>@item.ExternalID</td>
+                            <td>@item.PATHWAY</td>
+                            <td data-order="@(item.REFERRAL_DATE.HasValue? item.REFERRAL_DATE.Value.ToString("yyyyMMdd") : "0")">
+                                @if (item.REFERRAL_DATE.HasValue)
+                                {
+                                    @item.REFERRAL_DATE.Value.ToString("dd/MM/yyyy")
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

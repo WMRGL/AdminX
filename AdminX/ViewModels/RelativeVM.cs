@@ -10,10 +10,13 @@ namespace AdminX.ViewModels
         public Relative relativeDetails { get; set; }
         public List<Relative> phenotipsRelativesList { get; set; }
         public List<Relative> cgudbRelativesList { get; set; }
-        public List<Relation> relationslist { get; set; }
-
+        public List<Relation> relationsList { get; set; }
+        public List<Gender> genderList { get; set; }
         public int MPI { get; set; }
         public int WMFACSID { get; set; }
+        public StaffMember staffMember { get; set; }
+        public List<Relation> relationList { get; set; }
+        public List<PatientTitle> titleList { get; set; }
 
     }
 }

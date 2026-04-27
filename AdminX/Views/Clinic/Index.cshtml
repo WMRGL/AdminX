@@ -1,54 +1,97 @@
-﻿@*@model IEnumerable<ClinicalXPDataConnections.Models.Clinics>*@
-@model AdminX.ViewModels.ClinicVM
+﻿@model AdminX.ViewModels.ClinicVM
 @{
-    ViewData["Title"] = "Clinic-X - Clinics";
+    ViewData["Title"] = "Admin-X - Clinics";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
 }
 
-<div class="container card">
-    
-    <div class="d-grid">
+@if (Model.message != null)
+{
+    <div class="card">
+        <div class="card-body">
+            @if (Model.success)
+            {
+                <div class="alert alert-success alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <div class="alert-icon">
+                        <i class="far fa-fw fa-bell"></i>
+                    </div>
+                    <div class="alert-message">
+                        <h3>@Model.message</h3>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<div class="card">
+    <div class="card-body">
         <form id="frmPastClinics">
             <div class="row g-5 mb-3">
-                <h2>Past clinics</h2>
+                <h2>Outstanding Contact Outcomes</h2>
             </div>
             <div class="row g-5 mb-3">
-                <div class="col-md-2" class="text-right">
-                    <label>From date:</label>
+                <div class="col-md-2 text-right form-label">
+                    <label>Clinician:</label>
                 </div>
                 <div class="col-md-4">
-                    <input type="date" name="filterDate" asp-for=@Model.clinicFilterDate /> 
-                </div>
-                @*
-                <div class="col-md-2">
-                    <label>Only Show Outstanding:</label>
-                </div>
-                <div class="col-md-1">
-                    <input type="checkbox" id="chkIsShowOutstanding" class="check" asp-for=@Model.isClinicOutstanding onchange="SetShowOutstandingChecked()" />
-                </div>
-                <div class="col-md-1">
-                    <input type="text" id="txtIsShowOutstanding" name="isShowOutstanding" asp-for=@Model.isClinicOutstanding hidden="true" />
-                </div>*@
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-success">Update</button>
-                </div>
-            </div>
-            <div class="row g-5 mb-3">                
-                <div class="col-2">
-                </div>
-                <div class="col-8">
-                    <select class="form-select w-100" name="ddlPastClinics" id="ddlPastClinics">
-                        @foreach (var item in Model.pastClinicsList)
+                    <select class="form-select" id="filterClinician" name="filterClinician" asp-for=@Model.filterClinician>
+                        <option value="" selected>Select...</option>
+                        @foreach (var item in Model.staffMembers)
                         {
-                            <option value="@item.RefID">@item.CGU_No - @item.FIRSTNAME @item.LASTNAME, @item.Clinic (@item.FACILITY), @item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") - @item.BOOKED_TIME.Value.ToString("HH:mm") - @item.Attendance</option>
+                            <option value=@item.EMPLOYEE_NUMBER>@item.NAME</option>
                         }
                     </select>
-                </div>            
-                <div class="col-2">
-                    <input type="button" value="Select" id="btnSelectPastClinic" class="btn btn-default btn-success"  />
                 </div>
-                <div class="col-8"></div>
+                <div class="col-md-2">
+                    <button type="button" id="updateListButton" class="btn btn-outline-primary">Update List</button>
+                </div>
             </div>
-        </form>    
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-grid">
+            <div class="row g-5 mb-3">
+                <div id="tableContainer" class="table-responsive">
+                    <table id="clinicsTable" class="table defaultTable table-bordered table-responsive table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th></th>
+                                <th>Patient</th>
+                                <th>Clinician</th>
+                                <th>Clinic Details</th>
+                                <th>Date/time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in @Model.outstandingClinicsList)
+                            {
+                                <tr>
+                                    <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
+                                    <td>@item.CGU_No - @item.FIRSTNAME @item.LASTNAME</td>
+                                    <td>@item.Clinician</td>
+                                    <td>@item.Clinic (@item.FACILITY)</td>
+                                    <td>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy") at @item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -56,31 +99,25 @@
     //document.getElementById("btnBack").addEventListener("click", GoBack);
     document.getElementById("btnSelectPastClinic").addEventListener("click", OpenPastClinic);
     //document.getElementById("btnSelectFutureClinic").addEventListener("click", OpenFutureClinic);
-    
-    function GoBack() 
-    {
+
+    function GoBack() {
         window.history.back();
         //window.close();
     }
 
-    function OpenPastClinic() 
-    {
+    function OpenPastClinic() {
         OpenClinic(document.getElementById('ddlPastClinics'));
     }
 
-    function OpenFutureClinic() 
-    {   
+    function OpenFutureClinic() {
         OpenClinic(document.getElementById('ddlFutureClinics'));
     }
 
-    function OpenClinic(clinic)
-    {
-        if (clinic.value == "" || clinic.value == null)
-        {
+    function OpenClinic(clinic) {
+        if (clinic.value == "" || clinic.value == null) {
             alert("You must choose a clinic.");
         }
-        else
-        {
+        else {
             let _url = ""
             _url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + "/Clinic/ApptDetails?id=" + clinic.value;
             location.href = _url;
@@ -88,9 +125,40 @@
         }
     }
 
-    function SetShowOutstandingChecked()
-    {
+    function SetShowOutstandingChecked() {
         document.getElementById("txtIsShowOutstanding").value = document.getElementById("chkIsShowOutstanding").checked;
     }
 
 </script>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#updateListButton").click(function () {
+                var selectedClinician = $("#filterClinician").val();
+
+                $.ajax({
+                    url: "/Clinic/GetFilteredClinics",
+                    type: "GET",
+                    data: { filterClinician: selectedClinician },
+                    success: function (data) {
+                        $("#tableContainer").html(data);
+                        $("#tableContainer").html(data);
+
+                        $('#clinicsTable').DataTable({
+                            info: true,
+                            order: false, 
+                            paging: true,
+                            autoWidth: false,
+                            width: "100%"
+                                });
+                    },
+                    error: function () {
+                        alert("An error occurred while updating the list.");
+                    }
+                });
+            });
+        });
+
+    </script>
+}

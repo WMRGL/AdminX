@@ -1,0 +1,79 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - New Facility";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark"> New Clinical Facility</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="AddNewFacility">
+            <div class="mb-3 row ">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility Code</label>
+                <div class="col-sm-11">
+                    <input type="text" name="facCode" class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Name</label>
+                <div class="col-sm-11">
+                    <input type="text" name="name" class="form-control" />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Address</label>
+                <div class="col-sm-2">
+                    <input type="text" name="address" class="form-control" placeholder="Address" />
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="district" class="form-control" placeholder="District"/>
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="city" class="form-control" placeholder="City"/>
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="state" class="form-control" placeholder="County"/>
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" name="postCode" class="form-control" placeholder="Postcode" />
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive">
+                        <option value=0>Yes</option>
+                        <option value=-1>No</option>
+                    </select>
+                </div>
+                
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP">
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+                
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+

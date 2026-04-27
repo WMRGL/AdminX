@@ -1,0 +1,74 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration";
+}
+
+@if (Model.staffMember.SYSTEM_ADMINISTRATOR == -1)
+{
+
+    //@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers", hidden=true }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+        Html.ActionLink("Clinic Details", "CliniciansClinics", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicDetails" }),
+        Html.ActionLink("Duty Clinicians", "SetDutyClinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnDutyClinicians" }),
+    };
+    //}
+}
+
+<div class="card">
+    
+    <div class="card-header">
+        <h3 class="card-title text-dark">Welcome to the system administration home page.</h3>
+    </div>
+    <div class="card-body">
+        @if (Model.staffMember.SYSTEM_ADMINISTRATOR == 0)
+        {
+            <div class="alert alert-warning alert-outline-coloured alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h5>You do not have permission to view this page. If you believe you should be able to, 
+                        please speak to a system administrator for access.</h5>
+                </div>
+            </div>
+            
+            
+        }
+        else
+        {
+            <div class="alert alert-warning alert-outline-coloured alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h4>
+                        From here, you can set up clinics, referrers, referring facilities, etc. You have been given great power, but with
+                        power comes responsibility. Please be mindful of duplicating existing data, and verify that the data you are entering does not already exist.
+                    </h4>
+                </div>
+            </div>
+        }
+    </div>
+
+       
+
+</div>
+
+<script>
+    window.addEventListener("load", ShowStaffButton);
+
+    function ShowStaffButton() //because we can't do this in the html, for some reason!
+    {
+        @if(Model.isEditStaff)
+        {
+            @:document.getElementById("btnStaffMembers").hidden = false;
+        }
+
+    }
+</script>

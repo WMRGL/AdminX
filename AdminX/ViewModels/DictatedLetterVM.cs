@@ -1,4 +1,4 @@
-﻿using ClinicalXPDataConnections.Meta;
+﻿using AdminX.Models;
 using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,8 +24,13 @@ namespace AdminX.ViewModels
         public List<ExternalCliniciansAndFacilities> clinicians { get; set; }        
         public List<StaffMember> consultants { get; set; }
         public List<StaffMember> gcs { get; set; }
+        public List<StaffMember> clinicalStaff { get; set; }
         public List<string> secteams { get; set; }
         public List<string> specialities { get; set; }
         public List<ActivityItem> activities { get; set; }
+        public List<DictatedlettersReportClinicians> dictatedlettersReportClinicians { get; set; }
+        public List<DictatedLettersReport> dictatedLettersSecTeamReports { get; set; }
+        public string edmsLink { get; set; }
+        public List<ExternalCliniciansAndFacilities> hospitals { get; set; }
     }
 }

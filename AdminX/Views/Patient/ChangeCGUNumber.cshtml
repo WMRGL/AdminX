@@ -1,0 +1,93 @@
+﻿@model AdminX.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Admin-X - Patient Details";
+    ViewData["Page"] = "/ Patient / Details";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1"  }),
+    };
+}
+
+<div class="container">
+    <div class="row mb-5 g-5">
+        <h1>Enter the family file the patient is to be added to</h1>
+    </div>
+
+
+
+    <div class="row mb-5 g-5">
+        <form asp-action="ChangeCGUNumber">
+            <div id="metadata" hidden>
+                <input name="mpi" asp-for=@Model.patient.MPI />                
+            </div>
+            @*Delete this line because Isaiah says so*@
+            @*Lol this is not line 20*@
+            <div class="col-md-4">
+                <label>Enter Destination File Number: (without point numbers)</label>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="NewFileNo" asp-for=@Model.cguNumber />
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table">
+        @if (Model.patientsList.Count() > 0)
+        {
+            <h4>This file contains the following patients:</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CGU Number</th>
+                        <th>Name</th>
+                        <th>DOB</th>
+                        <th>Postcode</th>
+                        <th>NHS Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.patientsList)
+                    {
+                        <tr>
+                            <td>@item.CGU_No</td>
+                            <td>@item.FIRSTNAME @item.LASTNAME</td>
+                            @if(item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            } else
+                            {
+                                <td><p>No DOB</p></td>
+                            }
+                            <td>@item.POSTCODE</td>
+                            <td>@item.SOCIAL_SECURITY</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+
+            <form asp-controller="Patient" asp-action="UpdateCGUNumber">
+                <div class="row mb-5 g-5">
+                    <div id="metadata2" hidden>
+                        <input name="mpi" asp-for=@Model.patient.MPI />
+                        <input name="newFileNumber" asp-for=@Model.cguNumber />
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-outline-primary">Add Patient To This File</button>
+                    </div>
+                </div>
+            </form>
+        }
+
+
+    </div>
+
+</div>

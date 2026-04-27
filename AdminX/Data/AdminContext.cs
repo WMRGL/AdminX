@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AdminX.Models;
+﻿using AdminX.Models;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AdminX.Data
@@ -8,6 +8,31 @@ namespace AdminX.Data
     {
         public AdminContext(DbContextOptions<AdminContext> options) : base(options) { }
 
-        public DbSet<ActivityType> ActivityType { get; set; }
+        //public DbSet<ActivityType> ActivityType { get; set; }
+        public DbSet<Language> Language { get; set; }
+        public DbSet<ListStatusAdmin> ListStatusAdmin { get; set; }
+        public DbSet<ListDisease> ListDiseases { get; set; }
+        public DbSet<PatientSearches> PatientSearches { get; set; }
+        public DbSet<PatientSearchResults> PatientSearchResults { get; set; }
+        public DbSet<ListCity> ListCity { get; set; }
+        public DbSet<DictatedlettersReportClinicians> DictatedlettersReportClinicians { get; set; }
+        public DbSet<DictatedLettersSecTeamReport> DictatedLettersSecTeamReport { get; set; }
+        public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }
+        public DbSet<DiaryAction> DiaryAction { get; set; }
+        public DbSet<AlertTypes> AlertTypes { get; set; }
+        public DbSet<MergeHistory> MergeHistory { get; set; } 
+        public DbSet<GenderIdentity> GenderIdentity { get; set; }
+        public DbSet<HS> HS { get; set; }
+        public DbSet<CliniciansClinics> CliniciansClinics { get; set; }
+        public DbSet<EpicPatientReference> EpicPatientReferences { get; set; }
+        public DbSet<EpicReferralStaging> EpicReferralStaging { get; set; }
+        public DbSet<EpicReferralReference> EpicReferralReference { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<SSP> SSP { get; set; }
+        public DbSet<SocialService> SocialService { get; set; }
+        public DbSet<SocialWorker> SocialWorker { get; set; }
+        public DbSet<SocialServicePathwayOutcome> SocialServicePathwayOutcome { get; set; }
+        public DbSet<SocialServicePathwayStatus> SocialServicePathwayStatus { get; set; }
+
     }
 }

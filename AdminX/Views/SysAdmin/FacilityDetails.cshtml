@@ -1,0 +1,80 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+@{
+    ViewData["Title"] = "Admin-X - System Administration - External Facility Details";
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("System Administration Home", "", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnSysAdmin" }),
+        Html.ActionLink("Staff Members", "StaffMembers", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnStaffMembers" }),
+        Html.ActionLink("External Clinicians", "Clinicians", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicians" }),
+        Html.ActionLink("External Facilities", "Facilities", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnFacilities" }),
+        Html.ActionLink("Clinic Venues", "ClinicVenues", "SysAdmin", new {  }, new { @class = "btn btn-light bg-white me-2 m-1", id = "btnClinicVenues" }),
+
+    };
+}
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark"> Details for @Model.facility.NAME (@Model.facility.MasterFacilityCode)</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="FacilityDetails">
+            <div class="mb-3 row ">
+                <label class="col-form-label col-sm-1 text-sm-end">Facility Code</label>
+                <div class="col-sm-11">
+                    <input type="text" name="facCode" class="form-control" asp-for=@Model.facility.MasterFacilityCode readonly />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Name</label>
+                <div class="col-sm-11">
+                    <input type="text" name="name" class="form-control" asp-for=@Model.facility.NAME />
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end"> Address</label>
+                <div class="col-sm-2">
+                    <input type="text" name="address" class="form-control" asp-for=@Model.facility.ADDRESS />
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="district" class="form-control" asp-for=@Model.facility.DISTRICT />
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="city" class="form-control" asp-for=@Model.facility.CITY />
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" name="state" class="form-control" asp-for=@Model.facility.STATE />
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" name="postCode" class="form-control" asp-for=@Model.facility.ZIP />
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Active</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isActive" asp-for=@Model.facility.NONACTIVE>
+                        <option value=0>Yes</option>
+                        <option value=-1>No</option>
+                    </select>
+                </div>
+
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Is GP</label>
+                <div class="col-sm-11">
+                    <select class="form-select" name="isGP" asp-for=@Model.facility.IS_GP_SURGERY>
+                        <option value=0>No</option>
+                        <option value=-1>Yes</option>
+                    </select>
+                </div>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+

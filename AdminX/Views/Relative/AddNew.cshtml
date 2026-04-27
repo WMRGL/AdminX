@@ -1,108 +1,196 @@
-﻿@model AdminX.ViewModels.RelativeDiagnosisVM
+﻿@model AdminX.ViewModels.RelativeVM
 @{
     ViewData["Title"] = "Clinic-X - Relative Details";
 }
 
-<div class="container">
-    <div class="row mb-5 g-5">
-        <div class="col-md-2">            
-            <a type="button" class="btn btn-default btn-success" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to Patient</a>
-        </div>    
-    
-        <div class="col-md-6"></div>        
-    </div>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title text-dark">New Relative Details</h5>            
+        <a type="button" class="btn btn-outline-primary float-end" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
 
-    <div class="row mb-5">
-        <hr />
     </div>
-
-    <div class="row mb-5 g-5">
-        <h1>New Relative Details</h1>
-    </div>
-
-    <div class="row mb-5 g-5">
+    <div class="card-body">
         <form id="frmAddNew" asp-action="AddNew">
             <div class="row" id="Metadata">
-                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden="true"/>
+                <input asp-for=@Model.WMFACSID name="wmfacsid" hidden />
             </div>
-            <dl class="row">        
-                <dt class="col-sm-1">
-                    Full Name:
-                </dt>
-                <dd class="col-sm-1">
-                    <label>Title:</label> 
-                </dd>
-                <dd class="col-sm-1">
-                    <input class="w-50" asp-for=@Model.relativeDetails.RelTitle name="title" />
-                </dd>
-                <dd class="col-sm-1">
-                    <label>First name(s):</label>
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename1 name="forename1" />
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
-                </dd>
-                <dd class="col-sm-2">
-                    <label>Surname:</label>
-                </dd>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.RelSurname name="surname" />
-                </dd>
-                <dt class="col-sm-2">
-                    Relation to Proband:
-                </dt>
-                <dd class="col-sm-2">
-                    @*<input class="w-100" asp-for=@Model.relativeDetails.Relation name="relation" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Relation name="relation">
-                        <option value="">Select...</option>
-                        @foreach(var r in Model.relationList)
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label"> Title </label>
+                    <select class="form-select" name="title">
+                        <option ></option>
+                        @foreach (var r in Model.titleList)
                         {
-                            <option value=@r.RelCode>@r.relation</option>
+                            <option value=@r.Title>@r.Title</option>
                         }
                     </select>
-                </dd>
-                <dt class="col-sm-2">
-                    DOB:
-                </dt>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOB name="dob" />
-                </dd>               
-                <dt class="col-sm-2">DOD: (if deceased)</dt>
-                <dd class="col-sm-2">
-                    <input class="w-100" asp-for=@Model.relativeDetails.DOD name="dod" />
-                </dd>        
-                <dt class="col-sm-2">
-                    Sex:
-                </dt>
-                <dd class="col-sm-2">
-                    @*<input class="w-100" asp-for=@Model.relativeDetails.Sex name="sex" />*@
-                    <select class="w-100" asp-for=@Model.relativeDetails.Sex name="sex">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Firstname</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename1 name="forename1" required/>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Middlename</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
+                </div>
+             
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Surname:</label>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelSurname name="surname" required/>
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Salutation:</label>
+                    <input type="text" name="RelSalutation" class="form-control" asp-for="@Model.relativeDetails.RelSalutation" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Also Know As:</label>
+                    <input type="text" name="RelAKA" asp-for=@Model.relativeDetails.RelAKA class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" >Surname at Birth:</label>
+                    <input type="text" name="RelSurnameBirth" asp-for=@Model.relativeDetails.RelSurnameBirth class="form-control" required/>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Previous Names:</label>
+                    <input type="text" asp-for=@Model.relativeDetails.RelSurnamePrevious name="RelSurnamePrevious" class="form-control" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Address 1:</label>
+                    <input type="text" name="RelAdd1" class="form-control" asp-for=@Model.relativeDetails.RelAdd1 />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Address 2:</label>
+                    <input type="text" name="RelAdd2" class="form-control" asp-for=@Model.relativeDetails.RelAdd2 />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Town/City:</label>
+                    <input type="text" name="RelAdd3" class="form-control" asp-for=@Model.relativeDetails.RelAdd3 />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">County:</label>
+                    <input type="text" name="RelAdd4" class="form-control" asp-for=@Model.relativeDetails.RelAdd4 />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Telephone</label>
+                    <input type="text" class="form-control" name="RelTel" asp-for="@Model.relativeDetails.RelTel" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">NHS No:</label>
+                    <input type="number" name="RelNHSNo" class="form-control" asp-for="@Model.relativeDetails.RelNHSNo" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Postcode:</label>
+                    <input type="text" name="RelPC1" class="form-control" asp-for=@Model.relativeDetails.RelPC1 />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">DOB</label>
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOB name="sDOB" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">DOD (if deceased)</label>
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOD name="sDOD" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Death Age</label>
+                    <input type="number" class="form-control" asp-for="@Model.relativeDetails.DeathAge" name="DeathAge" />
+                </div>
+                
+                <div class="col-md-3">
+                    <label class="form-label">Gender</label>
+                    <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex" required>
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
                         {
                             <option value=@r.SexCode>@r.Sex</option>
                         }
                     </select>
-                </dd>
-                <dt class="col-sm-2">
-                    Affected:
-                </dt>
-                <dd class="col-sm-2">
-                    <select class="w-100" asp-for=@Model.relativeDetails.RelAffected name="isAffected">
+         
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Relation to Proband</label>
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation" required>
+                        <option value="">Select...</option>
+                        @foreach (var r in Model.relationList)
+                        {
+                            <option value=@r.RelCode>@r.relation</option>
+                        }
+                    </select>
+                </div>      
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Other, if not list:</label>
+                    <input type="text" name="RelOTher" asp-for="@Model.relativeDetails.RelOTher" class="form-control"/>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Affected</label>
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelAffected name="RelAffected" required>
+                        <option value="" selected>Select...</option>
                         <option value=0>No</option>
                         <option value=1>Yes</option>
-                        <option value=2>Don't know</option>
+                        <option value=2 >Don't know</option>
                     </select>
-                </dd>
-            </dl>
+
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Alive</label>
+                    <select class="form-select" asp-for="@Model.relativeDetails.RelAlive" name="RelAlive" required>
+                        <option value="" selected>Select...</option>
+                        <option value=0>No</option>
+                        <option value=1>Yes</option>
+                        <option value=2 >Don't know</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Maternal or Paternal</label>
+                    <select class="form-select" asp-for="@Model.relativeDetails.MatPat" name="MatPat" required>
+                        <option value=""selected>Select...</option>
+                        <option value="M">Maternal</option>
+                        <option value="P">Paternal</option>
+                        <option value="O">Other</option>
+                        <option value="U">Unknown</option>
+                    </select>
+                </div>
+
+              
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <label class="form-label">Notes for Cancer Registries:</label>
+                    <textarea name="Notes" asp-for=@Model.relativeDetails.Notes class="form-control"></textarea>
+                </div>
+                <div class="col-md-6 ">
+                    <button type="submit" class="btn btn-default btn-primary mt-5 float-end" value="Save" id="btnSave">Submit</button>
+                </div>
+            </div>
         </form>
+
+    </div>
+</div> 
+
+<div class="">
+    
+    <div class="row mb-5 g-5">
     </div>
 
     <div class="row g-5 mb-5">
         <div class="col-md-2">
-            <input type="button" class="btn btn-default btn-success" value="Save" id="btnSave" />
+            
         </div>
     </div>
 </div>
@@ -110,17 +198,17 @@
 
 <script type="text/javascript">
 
-    document.getElementById("btnSave").addEventListener("click", AddRelative);
+    // document.getElementById("btnSave").addEventListener("click", AddRelative);
         
 
-    function AddRelative() 
-    {
+    // function AddRelative() 
+    // {
 
-        if (CheckFormValid() == 1) 
-        {
-            document.getElementById("frmAddNew").submit();
-        }
-    }
+    //     if (CheckFormValid() == 1) 
+    //     {
+    //         document.getElementById("frmAddNew").submit();
+    //     }
+    // }
 
     function CheckFormValid() 
     { //validation to ensure all required data is entered

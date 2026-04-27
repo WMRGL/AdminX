@@ -1,0 +1,644 @@
+﻿@model AdminX.ViewModels.ReferralVM
+@{
+    ViewData["Title"] = "Admin-X - New Referral";
+    ViewData["Page"] = "/ Referral ";
+    ViewData["HomeBtn"] = Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+} 
+
+@if (Model.message != null)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <div class="alert-icon">
+            <i class="far fa-fw fa-bell"></i>
+        </div>
+        <div class="alert-message">
+            <h3>@Model.message</h3>
+        </div>
+    </div>
+}
+
+
+@{
+    var buttonList = new List<object>();
+
+    buttonList.Add(Html.ActionLink("Back to Patient Details", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    buttonList.Add(Html.ActionLink("Schedule Review", "Create", "Review", new { id = Model.referral.refid }, new { @class = "btn btn-light bg-white me-2 m-1" }));
+    
+    // @if (Model.staffMember.POSITION == "Admin Team Leader" || Model.staffMember.POSITION == "Admin Manager" || Model.staffMember.POSITION == "System Developer")
+    @if(Model.canDeleteICP)
+    {
+        var postUrl = Url.Action("MarkReferralDeleted", "Referral");
+        //var postUrl2 = Url.Action("ResetICP", "Referral");
+        var refId = Model.referral.refid;
+        var mpi = Model.patient.MPI;
+
+        string deleteForm = "<form method='post' action='" + postUrl + "' class='d-inline'>" +
+                            "<input type='hidden' name='refid' value='" + refId + "' />" +
+
+                           
+                            "<input type='hidden' name='logicaldelete' value='true' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi +"' />" +
+
+                            "<button type='submit' class='btn btn-danger me-2 m-1'>Delete Referral</button>" +
+                            "</form>";
+
+        @*
+        string icpResetForm = "<form method='post' action='" + postUrl2 + "' class='d-inline'>" +
+                            "<input type='hidden' name='refid' value='" + refId + "' />" +
+
+
+                            "<input type='hidden' name='logicaldelete' value='true' />" +
+                            "<input type='hidden' name='mpi' value='" + mpi + "' />" +
+
+                            "<button type='submit' class='btn btn-warning me-2 m-1'>Reset ICP</button>" +
+                            "</form>";
+
+        *@
+                            
+        buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(deleteForm));
+        //buttonList.Add(new Microsoft.AspNetCore.Html.HtmlString(icpResetForm));
+
+    }
+
+    ViewBag.HomeButton = buttonList;
+}
+
+<div class="row">
+    <div class="col-md-3 col-xl-2">
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Referral</h5>
+            </div>
+
+            <div class="list-group list-group-flush" role="tablist">
+                <a class="list-group-item list-group-item-action active" data-bs-toggle="list" href="#referral" role="tab" aria-selected="true">
+                    Referral Details
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#appointment" role="tab" aria-selected="false" tabindex="-1">
+                    Related Appointments/Contacts
+                </a>
+                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#icp" role="tab" aria-selected="false" tabindex="-1">
+                    ICP Details
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9 col-xl-10">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="referral" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row mb-2 mb-xl-3">
+                            <div class="col-auto d-none d-sm-block">
+                                <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - Referral Details</h5>
+                            </div>
+
+                            <div class="col-auto ms-auto text-end mt-n1">
+                                @*<a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>*@
+                                
+                                @if (Model.relatedICP != null)
+                                {                                    
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Triage" asp-action="ICPDetails" asp-route-id=@Model.relatedICP.ICPID>Triage Referral</a>                                    
+                                }                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-borderless my-0">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Referral ID</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.refid
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Referral Date</strong>
+                                        <div class="text-muted">
+                                            @if (Model.referral.RefDate != null)
+                                            {
+                                                @Model.referral.RefDate.Value.ToString("dd/MM/yyyy")
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>UBRN</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.UBRN
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                            <strong>Referral Type</strong>
+                                            <div class="text-muted">
+                                                @Model.referral.RefType
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Pathway</strong>
+                                        <div class="text-muted">
+                                            @if (string.IsNullOrEmpty(Model.referral.PATHWAY))
+                                            {
+                                                <form asp-controller="Referral" asp-action="SetPathway" method="post" class="row g-2 align-items-center">
+                                                    <input type="hidden" name="refID" value="@Model.referral.refid" />
+                                                    <div class="col-auto">
+                                                        <select name="pathway" class="form-select form-select-sm" required>
+                                                            <option value="" disabled selected>-- Assign --</option>
+                                                            @foreach (var p in Model.pathways)
+                                                            {
+                                                                <option value="@p">@p</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                                    </div>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                @Model.referral.PATHWAY
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Sub Pathway</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.Pathway_Subset
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Consultant</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.LeadClinician
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Counsellor/Nurse</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.GC
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                            <strong>Admin Contact</strong>
+                                            <div class="text-muted">
+                                                @Model.referral.AdminContact
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Referrer</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.ReferringClinician
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Referral Facility</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.ReferringFacility
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Comment</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.REASON_FOR_REFERRAL
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Pregnancy</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.PREGNANCY
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Indication</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.INDICATION
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Class</strong>
+                                        <div class="text-muted">
+                                            @Model.referral.RefClass
+                                        </div>
+                                    </td>
+                                    <td class="flex-grow-1 ms-3">
+                                        <strong>Clock Start</strong>
+                                        <div class="text-muted">
+                                            @if (Model.referral.ClockStartDate != null)
+                                            {
+                                                @Model.referral.ClockStartDate.Value.ToString("dd/MM/yyyy")
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                            <strong>Clock Stop</strong>
+                                            <div class="text-muted">
+                                                @if (Model.referral.ClockStopDate != null)
+                                                {
+                                                    @Model.referral.ClockStopDate.Value.ToString("dd/MM/yyyy")
+                                                }                                                    
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="flex-grow-1 ms-3">
+                                            <strong>Clock Age</strong>
+                                            <div class="text-muted">
+                                                @if (@Model.clockAgeDays == 1)
+                                                {
+                                                    <p>@Model.clockAgeDays day (@Model.clockAgeWeeks weeks)</p>
+                                                }
+                                                else if (@Model.clockAgeWeeks == 1)
+                                                {
+                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks week)</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@Model.clockAgeDays days (@Model.clockAgeWeeks weeks)</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Referral Status</strong>
+                                                <div class="text-muted">
+                                                    @Model.referral.COMPLETE
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    @if (Model.referral.PATHWAY?.Trim() != "Cancer")
+                                    { 
+                                        <td class="flex-grow-1 ms-3">
+                                            <strong>Information Gathering</strong>
+                                            <div class="text-muted">
+                                                 @Model.referral.Clics
+                                            </div>
+                                        </td>
+                                    }
+                                    <td></td>                                    
+                                </tr>
+                                @if (Model.referral.PATHWAY?.Trim() == "Cancer")
+                                {     
+                                    <tr>
+                                        <td class="flex-grow-1 ms-3">
+                                            <strong>Admin Status</strong>
+                                            <div class="text-muted">
+                                                @Model.referral.Status_Admin
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ms-3">
+                                                    <strong>Referred using FHF?</strong>
+                                                    <div class="text-muted">
+                                                        @if (@Model.referral.RefFHF == 0)
+                                                        {
+                                                            <span>No</span>
+                                                        }
+                                                        else if (@Model.referral.RefFHF == 1)
+                                                        {
+                                                            <p>Yes</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>Don't know/not recorded</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ms-3">
+                                                    <strong>Referral Reason</strong>
+                                                    <div class="text-muted">
+                                                        <ul class="list-unstyled">
+                                                            <li>@Model.referral.RefReason</li>
+                                                            <li>@Model.referral.OthReason1</li>
+                                                            <li>@Model.referral.OthReason2</li>
+                                                            <li>@Model.referral.OthReason3</li>
+                                                            <li>@Model.referral.OthReason4</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <div class="flex-grow-1 ms-3">
+                                                    <strong>Affected</strong>
+                                                    <div class="text-muted">
+                                                        <ul class="list-unstyled">
+                                                            <li>
+                                                                @if (@Model.referral.RefReasonAff == 0)
+                                                                {
+                                                                    <span>No</span>
+                                                                }
+                                                                else if (@Model.referral.RefReasonAff == -1)
+                                                                {
+                                                                    <span>Yes</span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>Unclear</span>
+                                                                }
+                                                            </li>
+                                                            @if (Model.referral.OthReason1 != null)
+                                                            {
+                                                                <li>
+                                                                    @if (@Model.referral.OthReason1Aff == 0)
+                                                                    {
+                                                                        <span>No</span>
+                                                                    }
+                                                                    else if (@Model.referral.OthReason1Aff == -1)
+                                                                    {
+                                                                        <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                            @if (Model.referral.OthReason2 != null)
+                                                            {
+                                                                <li>
+
+                                                                    @if (@Model.referral.OthReason2Aff == 0)
+                                                                    {
+                                                                        <span>No</span>
+                                                                    }
+                                                                    else if (@Model.referral.OthReason2Aff == -1)
+                                                                    {
+                                                                        <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                            @if (Model.referral.OthReason3 != null)
+                                                            {
+                                                                <li>
+
+                                                                    @if (@Model.referral.OthReason3Aff == 0)
+                                                                    {
+                                                                        <span>No</span>
+                                                                    }
+                                                                    else if (@Model.referral.OthReason3Aff == -1)
+                                                                    {
+                                                                        <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                            @if (Model.referral.OthReason4 != null)
+                                                            {
+                                                                <li>
+
+                                                                    @if (@Model.referral.OthReason4Aff == 0)
+                                                                    {
+                                                                        <span>No</span>
+                                                                    }
+                                                                    else if (@Model.referral.OthReason4Aff == -1)
+                                                                    {
+                                                                        <span>Yes</span>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <span>Unclear</span>
+                                                                    }
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="flex-grow-1 ms-3">
+                                            <strong>Symptomatic at referral?</strong>
+                                            <div class="text-muted">
+                                                @if (Model.referral.RefSympt == 0)
+                                                {
+                                                    <p>Definitely No</p>
+                                                }
+                                                else if (Model.referral.RefSympt == 1)
+                                                {
+                                                    <p>Definitely Yes</p>
+                                                }
+                                                else if (Model.referral.RefSympt == 2)
+                                                {
+                                                    <p>Don't know/unclear</p>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>                        
+                        <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@Model.referral.refid" class="btn btn-primary">Edit</a>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="appointment" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header">
+                            <div class="row mb-2 mb-xl-3">
+                                <div class="col-auto d-none d-sm-block">
+                                    <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.referral.RefType on @Model.referral.RefDate.Value.ToString("dd/MM/yyyy") - Related Appointments</h5>
+                                </div>
+
+                                <div class="col-auto ms-auto text-end mt-n1">
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                                </div>
+                            </div>
+                        </div>                       
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped defaultTable">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th></th>
+                                    <th>Type</th>
+                                    <th>Booked Date</th>
+                                    <th>Booked Time</th>
+                                    <th>Venue</th>
+                                    <th>To see/seen by</th>
+                                    <th>Outcome</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in @Model.ClinicList)
+                                {
+                                    <tr>
+                                        <td><a type="button" class="btn btn-outline-primary" asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@item.RefID>Details</a></td>
+                                        <td>@item.AppType</td>
+                                        <td data-sort=@item.BOOKED_DATE.Value.ToString("yyyyMMdd")>@item.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.BOOKED_TIME.Value.ToString("HH:mm")</td>
+                                        <td>@item.Clinic</td>
+                                        @if (@item.SeenBy != null)
+                                        {
+                                            <td>@item.SeenBy</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.Clinician</td>
+                                        }
+                                        <td>@item.Attendance</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>                
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="icp" role="tabpanel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header">
+                            <div class="row mb-2 mb-xl-3">
+                                <div class="col-auto d-none d-sm-block">
+                                    <h5 class="card-title mb-0">@Model.patient.FIRSTNAME @Model.patient.LASTNAME - @Model.referral.RefType on @Model.referral.RefDate.Value.ToString("dd/MM/yyyy") - ICP</h5>
+                                </div>
+
+                                <div class="col-auto ms-auto text-end mt-n1">
+                                    <a type="button" class="btn btn-outline-primary" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.patient.MPI>Back to patient</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if(Model.ICPDetails != null)
+                        {
+                            <h4>ICP Details</h4>
+
+                            @if (Model.referral.PATHWAY != null)
+                            {
+                                @if (Model.referral.PATHWAY.Contains("General"))
+                                {
+                                    @if (Model.icpGeneral != null)
+                                    {
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">Treatment pathway:</div>
+                                            <div class="col-md-10">@Model.icpGeneralAction1 - @Model.icpGeneralAction2</div>
+                                        </div>
+
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">CLICS pathway:</div>
+                                            @if (Model.referral.Clics == "CLICS")
+                                            {
+                                                <div class="col-md-2">Yes</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-2">No</div>
+                                            }
+                                        </div>
+
+                                        <div class="row mb-2 g-2">
+                                            @if (Model.icpGeneral != null)
+                                            {
+                                                @if (Model.icpGeneral.ConsWLAdded || Model.icpGeneral.GCWLAdded)
+                                                {
+                                                    <div class="col-md-2">Waiting List Details:</div>
+                                                    @if (Model.icpGeneral.ConsWLAdded)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-2">Consultant:</div>
+                                                            <div class="col-md-10">@Model.icpGeneral.ConsWLClinician at @Model.icpGeneral.ConsWLClinic</div>
+                                                        </div>
+                                                    }
+                                                    @if (Model.icpGeneral.GCWLAdded)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-md-2">GC:</div>
+                                                            <div class="col-md-10">@Model.icpGeneral.GCWLClinician at @Model.icpGeneral.GCWLClinic</div>
+                                                        </div>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h5>Not yet triaged</h5>
+                                    }
+                                }
+
+                                @if (Model.referral.PATHWAY.Contains("Cancer"))
+                                {
+                                    @if (Model.icpCancer != null)
+                                    {
+                                        <div class="row mb-2 g-2">
+                                            <div class="col-md-2">Action on Referral Letter:</div>
+                                            <div class="col-md-10">@Model.icpCancerAction</div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <h5>Not yet triaged</h5>
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <h4>There is no @Model.referral.PATHWAY ICP</h4>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

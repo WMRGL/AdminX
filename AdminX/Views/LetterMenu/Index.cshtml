@@ -1,0 +1,544 @@
+﻿@model AdminX.ViewModels.LettersMenuVM
+
+@{
+    ViewData["Title"] = "AdminX - Letters Menu";
+    ViewData["Page"] = "/ LettersMenu / Index";
+    ViewData["HomeBtn"] = Html.ActionLink("Home Page", "Index", "Home", new { }, new { @class = "btn btn-light bg-white me-2 m-1" });
+}
+
+@{
+    ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Patient Details", "PatientDetails", "Patient", new { id=Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+    };
+}
+
+
+<div class="card">
+    <div class="card-header">
+            
+            @if (!Model.isRelative)
+            {
+            <h5 class="card-title text-dark">
+                Letters for @Model.patient.FIRSTNAME @Model.patient.LASTNAME (@Model.patient.CGU_No)
+            </h5>
+            }
+            else
+            {
+                <h5 class="card-title text-dark">Letters for @Model.relative.RelForename1 @Model.relative.RelSurname (relative of @Model.patient.CGU_No)</h5>
+            }
+        
+    </div>
+    <div class="card-body">
+        <form method="post" id="frmDoLetter" asp-action="DoLetter">
+            <div class="col-md-2">
+                <input name="docCode" id="txtDocCode"  hidden />
+                <input name="isPreview" id="txtIsPreview" hidden />
+                @if (Model.isRelative)
+                {
+                    <input name="relID" asp-for=@Model.relative.relsid hidden />
+                }
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Referral</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="refID" id="ddlRefID">
+                        <option value="">Select</option>
+                        @foreach (var item in Model.referralList)
+                        {
+                            <option value=@item.refid>@item.refid - @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.ReferringClinician at @item.ReferringFacility</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Select Group</label>
+                <div class="col-sm-10 mb-2">
+                    <select id="letterGroups" class="form-select" asp-for=@Model.letterGroupSelected>
+                        <option value="">Select Group</option>
+                        <option value="Standard">Standard</option>
+                        <option value="MEDREC">Medical Records Requests</option>
+                        <option value="DNATS">DNA</option>
+                        <option value="Outcome">Outcome</option>
+                        <option value="REPORTS">Reports</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="col-sm-10 offset-sm-2">
+                    <select class="form-select" name="docID" id="docGroupStandard" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListStandard)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupMedRec" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListMedRec)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupDNA" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListDNA)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupOutcome" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListOutcome)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                    <select class="form-select" name="docID" id="docGroupReport" hidden>
+                        <option value="" selected>Select</option>
+                        @foreach (var item in Model.docsListReport)
+                        {
+                            <option value=@item.DocCode>@item.DocCode - @item.DocName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row" hidden id="divExtClinician">
+                <label class="col-form-label col-sm-2 text-sm-end">To clinician (if applicable)</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="clinicianCode" id="ddlExtClinician">
+                        <option value="">Select</option>                        
+                        @foreach (var item in Model.clinicianList)
+                        {
+                            @if(item != null)
+                            {
+                                <option value=@item.MasterClinicianCode>@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.FACILITY</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">From</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="txtLetterFrom" rows="3" name="letterFrom" spellcheck="false"></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">To</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="letterTo" id="txtLetterTo" rows="3" 
+                    spellcheck="false" asp-for=@Model.patientAddress></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Free text</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="additionalText"  rows="3" spellcheck="false" ></textarea>
+                </div>
+            </div>
+     
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Enclosures</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" name="enclosures" rows="3" spellcheck="false"></textarea>
+                </div>
+            </div>
+
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end">Leaflets</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="clinicianCode">
+                        <option value="0">Select</option>
+                        @foreach (var l in Model.leaflets)
+                        {
+                            <option value=@l.ID>@l.Code - @l.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-form-label col-sm-2 text-sm-end"></label>
+                <div class=" float-sm-2 col-sm-1 ms-1">
+                    <button type="button" class="btn btn-primary" id="btnPreview"> Preview </button>
+                </div>
+                <div class="col-sm-1 ms-1">
+                    <button type="button" class="btn btn-default btn-outline-primary" id="btnPrint">Print and Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.getElementById("letterGroups").addEventListener("change", ShowLetterMenu);
+    document.getElementById("docGroupStandard").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupMedRec").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupDNA").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupOutcome").addEventListener("change", SetDoccode);
+    document.getElementById("docGroupReport").addEventListener("change", SetDoccode);
+    document.getElementById("btnPreview").addEventListener("click", DoPreview);
+    document.getElementById("btnPrint").addEventListener("click", DoPrint);
+    document.getElementById("ddlRefID").addEventListener("change", SetLetterFromTo);
+    window.addEventListener("load", ShowLetterMenu);
+    
+    function ShowLetterMenu()
+    {
+        
+        var groupMenu = document.getElementById("letterGroups");
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReport");
+                
+
+        standardLetters.value = "";
+        standardLetters.hidden = true;
+        medrecLetters.value = "";
+        medrecLetters.hidden = true;
+        dnaLetters.value = "";
+        dnaLetters.hidden = true;
+        outcomeLetters.value = "";
+        outcomeLetters.hidden = true;
+        reports.hidden = true;
+        reports.value = "";
+
+        
+        if (groupMenu.value == "Standard")
+        {
+            standardLetters.hidden = false;
+            if("@Model.letterCodeSelected" != "")
+            {
+                standardLetters.value = "@Model.letterCodeSelected";
+                SetDoccode();
+            }
+        }
+
+        if (groupMenu.value == "MEDREC")
+        {
+            
+            medrecLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "DNATS")
+        {            
+            dnaLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "Outcome")
+        {
+            outcomeLetters.hidden = false;
+        }
+
+        if (groupMenu.value == "REPORTS")
+        {
+            reports.hidden = false;
+        }
+        
+    }
+
+    function SetDoccode()
+    {
+        var docCode = "";
+        var docGroup = "";
+
+        var standardLetters = document.getElementById("docGroupStandard");
+        var medrecLetters = document.getElementById("docGroupMedRec");
+        var dnaLetters = document.getElementById("docGroupDNA");
+        var outcomeLetters = document.getElementById("docGroupOutcome");
+        var reports = document.getElementById("docGroupReport");
+        var clinList = document.getElementById("ddlExtClinician");
+
+        var docCodeArray = [];
+        var recipArray = [];
+        var recip = "";
+
+        var clinCodeArray = [];
+        var clinNameArray = [];
+        var clinDeptArray = [];
+
+        var i, L = clinList.options.length - 1;
+        for(i = L; i >= 0; i--) 
+        {
+            clinList.remove(i);
+        }
+
+        @if (Model.patGP != null) //because there's ALWAYS A FUCKING NULL!!!!!!!!!!!!!
+        {
+            @:clinCodeArray.push("@Model.patGP.MasterClinicianCode");
+            @:clinNameArray.push("@Model.patGP.TITLE @Model.patGP.FIRST_NAME @Model.patGP.LAST_NAME");
+            @:clinDeptArray.push("@Model.patGP.FACILITY");
+        }
+
+        if(!standardLetters.hidden) //because we absolutely CAN FUCKING NOT simply pass the parameter to a function this way, because that would be far too fucking simple!!!!!
+        {
+            docCode = standardLetters.value;                        
+        }
+
+        if(!medrecLetters.hidden)
+        {
+            docCode = medrecLetters.value;
+        }
+
+        if(!dnaLetters.hidden)
+        {
+            docCode = dnaLetters.value;
+        }
+
+        if(!outcomeLetters.hidden)
+        {
+            docCode = outcomeLetters.value;
+        }
+
+        if(!reports.hidden)
+        {
+            docCode = reports.value;
+        }
+
+        document.getElementById("txtDocCode").value = docCode;
+        
+        @foreach (var item in Model.docContentList)
+        {
+            @:docCodeArray.push("@item.DocCode");
+            @:recipArray.push("@item.LetterTo");
+        }
+
+        for(var i = 0; i < docCodeArray.length; i++)
+        {
+            if(docCodeArray[i] == docCode)
+            {
+                recip = recipArray[i];
+            }
+        }
+
+        if(recip == "Histo")
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach(var item in Model.histoList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if(item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+
+        if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach (var item in Model.breastList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if (item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+        if(recip == "Other")
+        {
+            document.getElementById("divExtClinician").hidden = false;
+
+            @foreach (var item in Model.geneticsList)
+            {
+                @:clinCodeArray.push("@item.MasterClinicianCode");
+                if (item.POSITION != "Not known")
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME - @item.POSITION".replace("&amp;", "&").replace("&#x27;", "'"));
+                }
+                else
+                {
+                    @:clinNameArray.push("@item.TITLE @item.FIRST_NAME @item.LAST_NAME".replace("&#x27;", "'"));
+                }
+                @:clinDeptArray.push("@item.FACILITY");
+            }
+        }
+
+
+
+        for(var j = 0; j < clinCodeArray.length; j++)
+        {
+            var option = document.createElement('option');
+            option.value = clinCodeArray[j];
+            option.text = clinNameArray[j] + ", " + clinDeptArray[j].replace("&#x27;", "'").replace("&amp;", "&");
+            clinList.add(option, 0);
+        }
+        SetLetterFromTo();
+    }
+
+    function SetLetterFromTo()
+    {
+        var refID = document.getElementById("ddlRefID").value;
+        var docCode = document.getElementById("txtDocCode").value;
+
+        var referralArray = [];
+        var staffCodeArray = [];        
+        var consCodeArray = [];
+        var gcCodeArray = [];
+        var staffNameArray = []; //using Javascript to get C# data is so annoying!!!
+        var staffPositionArray = [];
+        var staffTypeArray = [];
+        var docCodeArray = [];
+        var letterFromArray = [];
+        var letterToArray = [];
+        var referrerCodeArray = [];
+        var staffName = "";
+        var staffCode = "";   
+        var letterFromType = "";
+        var letterToType = "";
+        var letterTo = "";
+        var referrerCode;
+                
+
+        @foreach (var item in Model.referralList)
+        {
+            @:referralArray.push("@item.refid");            
+            @:consCodeArray.push("@item.PATIENT_TYPE_CODE");            
+            @:gcCodeArray.push("@item.GC_CODE");
+            @:referrerCodeArray.push("@item.ReferrerCode");
+        }        
+
+        @foreach (var item in Model.staffMemberList)
+        {
+            @:staffCodeArray.push("@item.STAFF_CODE");
+            @:staffNameArray.push("@item.NAME");
+            @:staffTypeArray.push("@item.CLINIC_SCHEDULER_GROUPS");
+            @:staffPositionArray.push("@item.POSITION"); //so fucking annoying!!!
+        }
+
+        @foreach (var item in Model.docContentList) //like, seriously... all this just to get the sender name in there!!!
+        {
+            @:docCodeArray.push("@item.DocCode");
+            @:letterFromArray.push("@item.LetterFrom");
+            @:letterToArray.push("@item.LetterTo");
+        }
+
+        for (var k in docCodeArray)
+        {
+            if(docCode == docCodeArray[k])
+            {
+                letterFromType = letterFromArray[k];
+                letterToType = letterToArray[k];
+            }
+        }       
+
+        for (var i in referralArray)
+        {            
+            if(referralArray[i] == refID)
+            {
+                referrerCode = referrerCodeArray[i];
+                
+                if(letterFromType == "Cons")
+                {
+                    staffCode = consCodeArray[i];
+                }
+                else if(letterFromType == "GC")
+                {
+                    staffCode = gcCodeArray[i];
+                }
+                else
+                {
+                    staffCode = "@Model.loggedOnUser";
+                }
+            }
+        }
+
+        for (var j in staffCodeArray)
+        {
+            if(staffCodeArray[j] == staffCode)
+            {
+                staffName = staffNameArray[j] + "\n" + staffPositionArray[j];
+            }
+        }
+
+        if(letterToType == "PT")
+        {
+            letterTo = "@Model.patient.Title" + " " + "@Model.patient.FIRSTNAME" + " " + "@Model.patient.LASTNAME" + "\n" + 
+            "@Model.patient.ADDRESS1" + "\n";
+            if("@Model.patient.ADDRESS2" != "")
+            {
+                letterTo = letterTo + "@Model.patient.ADDRESS2"  + "\n";
+            }
+            if("@Model.patient.ADDRESS3" != "")
+            {
+                letterTo = letterTo + "@Model.patient.ADDRESS3"  + "\n";
+            }
+            letterTo = letterTo + "@Model.patient.ADDRESS4"  + "\n" + "@Model.patient.POSTCODE";
+        }
+        else if(letterToType == "RD")
+        {
+            var referrerCodeArray2 = [];
+            var referrerNameArray = [];
+            var facilityCodeArray = [];
+            var facilityNameArray = [];
+            var facilityAddressArray = [];
+            var postcodeArray = [];
+
+            @foreach (var item in Model.referrers) //yes, this is the level of obtuseness we need to go through to get the correct data in javascript!!
+            {
+                @:referrerCodeArray2.push("@item.MasterClinicianCode");
+                @:referrerNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");
+                @:facilityCodeArray.push("@item.MasterFacilityCode");
+                @:facilityNameArray.push("@item.FACILITY");
+                @:facilityAddressArray.push("@item.ADDRESS" + "\n" + "@item.CITY" + "\n" + "@item.DISTRICT");
+                @:postcodeArray.push("@item.ZIP");                
+            }
+
+            for(var l in referrerCodeArray2)
+            {
+                if(referrerCodeArray2[l] == referrerCode)
+                {
+                    letterTo = referrerNameArray[l] + "\n" + facilityAddressArray[l];
+                    if(postcodeArray[l] != "")
+                    {
+                        letterTo = letterTo + "\n" + postcodeArray[l];
+                    }
+                }
+            }
+        }
+        else if(letterToType == "GP")
+        {
+            letterTo = "@Model.patGP.TITLE" + " " + "@Model.patGP.FIRST_NAME" + " " + "@Model.patGP.LAST_NAME" + "\n" + "@Model.patGP.FACILITY" + "\n"
+            + "@Model.patGP.ADDRESS" + "\n" + "@Model.patGP.CITY" + "\n" + "@Model.patGP.DISTRICT" + "\n" + "@Model.patGP.ZIP";
+        }
+
+        document.getElementById("txtLetterFrom").value = staffName.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
+        document.getElementById("txtLetterTo").value = letterTo.replace("&#x27;", "'").replace("&#xD;&#xA;", "\n");
+    }
+
+    function DoPreview()
+    {
+        document.getElementById("txtIsPreview").value = "true";
+        
+        document.getElementById("frmDoLetter").submit();
+    }
+
+    function DoPrint()
+    {
+        document.getElementById("txtIsPreview").value = "false";
+
+        document.getElementById("frmDoLetter").submit();
+    }
+
+
+</script>
