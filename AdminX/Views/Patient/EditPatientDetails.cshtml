@@ -486,21 +486,21 @@
         var countyArray = [];
         var areaCodeArray = [];
 
-    @foreach (var item in Model.cityList)
-    {
-        @:cityArray.push("@item.TownCity");
-        @:countyArray.push("@item.County");
-        @:areaCodeArray.push("@item.AreaCode");
-    }
+        @foreach (var item in Model.cityList)
+        {
+            @:cityArray.push("@item.TownCity");
+            @:countyArray.push("@item.County");
+            @:areaCodeArray.push("@item.AreaCode");
+        }
 
         for (var i in cityArray)
         {
             if(cityArray[i] == cityUpper)
             {
                 county.value = countyArray[i];
-                areaCode.value = areaCodeArray[i];
+                //areaCode.value = areaCodeArray[i];
             }
-        }
+        }        
     }
 
     Inputmask("999 999 9999").mask(document.getElementById("nhsno"));

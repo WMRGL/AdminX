@@ -479,22 +479,16 @@
         document.getElementById("ddlPathway").addEventListener("change", ShowCancerStuff);
         window.addEventListener("load", ShowCancerStuff);
 
-    function updateFacility() 
-    {
-        if (!refCode || !facilityDetails) return;
-
+            // --- Initialise once at page load ---
         var facilityCodeArray = [];
         var facilityNameArray = [];
         var facilityAddressArray = [];
         var facilityCityArray = [];
         var facilityStateArray = [];
         var facilityPostcodeArray = [];
-
         var referrerCodes = [];
-        var facCodeArray = []; // Maps Referrer -> Facility Code
-        var facCode;
+        var facCodeArray = [];
 
-        // Populate Data Arrays
         @foreach (var item in Model.facilities)
         {
                 @:facilityCodeArray.push("@item.MasterFacilityCode");
@@ -511,47 +505,61 @@
                 @:facCodeArray.push("@item.MasterFacilityCode");
         }
 
-        // Handle GP Selection
-        if (refCode.value == "@Model.patient?.GP_Code") {
-            let fullDetails = "@Model.GPFacility.NAME" + ", " +
-                "@Model.GPFacility.ADDRESS" + ", " +
-                "@Model.GPFacility.CITY" + ", " +
-                "@Model.GPFacility.STATE" + " " +
-                "@Model.GPFacility.ZIP";
+           function updateFacility()
+        {
+            if (!refCode || !facilityDetails) return;
 
-        facilityDetails.value = fullDetails
+            var selectedCode = refCode.value;
+
+            if (selectedCode === "Self/FamMemb" ) {
+                facilityDetails.value = "Not Applicable"; 
+                return;
+            }
+
+            // Handle GP Selection
+            if (selectedCode === "@Model.patient?.GP_Code") {
+                let fullDetails = "@Model.GPFacility.NAME" + ", " +
+                    "@Model.GPFacility.ADDRESS" + ", " +
+                    "@Model.GPFacility.CITY" + ", " +
+                    "@Model.GPFacility.STATE" + " " +
+                    "@Model.GPFacility.ZIP";
+
+                facilityDetails.value = fullDetails
+                    .replace(/&#x27;/g, "'")
+                    .replace(/&amp;/g, "&")
+                    .replace(/&#xD;/g, "")
+                    .replace(/&#xA;/g, "\n");
+
+                return;
+            }
+
+            // OPTIMISED SEARCH: Use .indexOf() instead of a slow for...in loop
+            var refIndex = referrerCodes.indexOf(selectedCode);
+
+            if (refIndex !== -1) {
+                var facCode = facCodeArray[refIndex];
+                var facIndex = facilityCodeArray.indexOf(facCode);
+
+                if (facIndex !== -1) {
+                    let fullDetails = facilityNameArray[facIndex] + ", " +
+                        facilityAddressArray[facIndex] + ", " +
+                        facilityCityArray[facIndex] + ", " +
+                        facilityStateArray[facIndex] + " " +
+                        facilityPostcodeArray[facIndex];
+
+                    facilityDetails.value = fullDetails
                         .replace(/&#x27;/g, "'")
                         .replace(/&amp;/g, "&")
                         .replace(/&#xD;/g, "")
-                        .replace(/&#xA;/g, "\n");        }
-        else {
-           
-            for (var i in referrerCodes) {
-                if (referrerCodes[i] == refCode.value) {
-                    facCode = facCodeArray[i];
-                    break;
+                        .replace(/&#xA;/g, "\n");
+
+                    return;
                 }
             }
 
-            facilityDetails.value = ""; 
-            for (var i in facilityCodeArray) {
-                if (facilityCodeArray[i] == facCode) {
-                    let fullDetails = facilityNameArray[i] + ", " +
-                        facilityAddressArray[i] + ", " +
-                        facilityCityArray[i] + ", " +
-                        facilityStateArray[i] + " " +
-                        facilityPostcodeArray[i];
-
-                    facilityDetails.value = fullDetails
-                                .replace(/&#x27;/g, "'")
-                                .replace(/&amp;/g, "&")
-                                .replace(/&#xD;/g, "")
-                                .replace(/&#xA;/g, "\n");                    
-                                break;
-                }
-            }
+            facilityDetails.value = "";
         }
-    }
+
 
     // function CalculateClockAge() 
     // {
@@ -645,7 +653,7 @@
     CalculateClockAge();
 
 
-    if (document.getElementById("referrerCode").value.length > 8)
+        if (document.getElementById("referrerCode").value.length > 8 && document.getElementById("referrerCode").value != "Self/FamMemb")
     {
     window.alert("The selected referrer code is too long. Please select a different GP.");
     }
