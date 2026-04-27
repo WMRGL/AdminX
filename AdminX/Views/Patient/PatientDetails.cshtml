@@ -1521,6 +1521,7 @@
                                             <td>Type</td>
                                             <td>Outcome</td>
                                             <td></td>
+                                            <td></td>
 
                                         </tr>
                                     </thead>
@@ -1550,6 +1551,7 @@
                                                 <td>@a.AppType</td>
                                                 <td>@a.Attendance</td>
                                                 <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
+                                                <td><a asp-controller="Clinic" asp-action="EditAppointment" asp-route-id="@a.RefID" class="btn btn-outline-primary">Edit</a></td>
                                             </tr>
                                         }
                                     </tbody>
