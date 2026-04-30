@@ -134,5 +134,6 @@ namespace AdminX.Models
         public int? LinkedRefID { get; set; }
         public string? PatientID { get; set; }
         public int UpdateSts { get; set; }
+        public string? EpicClinicCode { get; set; }
     }
 }
