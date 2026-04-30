@@ -1,0 +1,108 @@
+﻿@model AdminX.ViewModels.ClinicVM
+@{
+    ViewData["Title"] = "Admin-X - Edit Appointment ";
+}
+
+
+@{ViewBag.HomeButton = new[]
+    {
+        Html.ActionLink("Back to Patient", "PatientDetails", "Patient", new { id = Model.patient.MPI }, new { @class = "btn btn-light bg-white me-2 m-1" }),
+        Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" }),
+
+
+    };
+}
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            @if (Model.patient.FIRSTNAME != null && Model.patient.LASTNAME != null)
+            {
+                <h3 class="card-title text-dark">Edit <span>@Model.patient.FIRSTNAME @Model.patient.LASTNAME</span> Appointment</h3>
+            } else {
+                <h3 class="card-title text-dark">Edit <span>@Model.patient.CGU_No</span> Appointment</h3>
+            }
+        </div>
+        <div class="card-body">
+            
+            <form asp-action="EditAppointment">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input type="hidden" asp-for="Clinic.RefID" />
+
+                @if (Model.Clinic.Attendance == "Attended")
+                {
+                    <div class="row">
+                        <input type="hidden" asp-for="Clinic.STAFF_CODE_1" />
+                        <input type="hidden" asp-for="Clinic.FACILITY" />
+                        <div class="col-md-3">
+                            <label class="form-label">Seen by</label>
+                            <select asp-for="Clinic.SeenBy" class="form-select js-choice">
+                                <option value="@Model.Clinic.SeenBy" selected>@Model.Clinic.SeenBy</option>
+                                @foreach (var clinician in Model.staffMembers)
+                                {
+                                    <option value="@clinician.STAFF_CODE" )>@clinician.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Seen by 2</label>
+                            <select asp-for="Clinic.SeenBy2" class="form-select js-choice">
+                                <option value="@Model.Clinic.SeenBy2" selected>@Model.Clinic.SeenBy2</option>
+                                @foreach (var clinician in Model.staffMembers)
+                                {
+                                    <option value="@clinician.STAFF_CODE" )>@clinician.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Seen by 3</label>
+                            <select asp-for="Clinic.SeenBy3" class="form-select js-choice">
+                                <option value="@Model.Clinic.SeenBy3" selected>@Model.Clinic.SeenBy3</option>
+                                @foreach (var clinician in Model.staffMembers)
+                                {
+                                    <option value="@clinician.STAFF_CODE" )>@clinician.NAME</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                } else
+                {
+                    <div class="row">
+                        <input type="hidden" asp-for="Clinic.SeenBy" />
+                        <input type="hidden" asp-for="Clinic.SeenBy2" />
+                        <input type="hidden" asp-for="Clinic.SeenBy3" />
+                        <div class="col-md-3">
+                           
+                            <label class="form-label">Clinician</label>
+                            <select asp-for="Clinic.STAFF_CODE_1" class="form-select js-choice">
+                                <option value="@Model.Clinic.STAFF_CODE_1" selected>@Model.Clinic.Clinician</option>
+                                @foreach (var clinician in Model.staffMembers)
+                                {
+                                    <option value="@clinician.STAFF_CODE" )>@clinician.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                           
+                            <label class="form-label">Clinic</label>
+                            <select asp-for="Clinic.FACILITY" class="form-select js-choice">
+                                <option value="@Model.Clinic.FACILITY" selected>@Model.Clinic.FACILITY</option>
+                                @foreach (var venue in Model.venueList)
+                                {
+                                    <option value="@venue.FACILITY" )>@venue.NAME</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                 
+                }
+             
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-outline-primary">Submit</button>
+                        </div>
+                    </div>
+               
+            </form>
+        </div>
+    </div>
+</div>
