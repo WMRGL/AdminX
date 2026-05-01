@@ -31,6 +31,8 @@ namespace AdminX.ViewModels
         public StaffMember dutyConsultant { get; set; }
         public StaffMember dutyGC { get; set; }
         public StaffMember dutySPR { get; set; }
+        public List<EpicClinicLink> epicClinicLinks { get; set; }
+        public EpicClinicLink epicClinicLink { get; set; }
 
     }
 }
