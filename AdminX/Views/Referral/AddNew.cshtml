@@ -158,6 +158,9 @@
                                 <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
                                     <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
                                 </button>
+                                <button type="button" class="btn btn-sm btn-outline-info flex-fill" onclick="SetToSelf()">
+                                    <i class="fa-solid fa-user me-1"></i> Self
+                                </button>
                             </div>
                         </div>
 
@@ -241,7 +244,7 @@
                                     {
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
-                                </select>
+                                </select>                                
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Affected?</label>
@@ -254,7 +257,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
-
+                                <input name="refReason1" class="form-control" asp-for=@Model.referral.OthReason1>
+                                @*
                                 <select class="form-select" name="refReason1">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -262,6 +266,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason1Aff">
@@ -273,6 +278,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason2" class="form-control" asp-for=@Model.referral.OthReason2>
+                                @*
                                 <select class="form-select" name="refReason2">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -280,6 +287,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason2Aff">
@@ -291,6 +299,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason3" class="form-control" asp-for=@Model.referral.OthReason3>
+                                @*
                                 <select class="form-select" name="refReason3">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -298,6 +308,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason3Aff">
@@ -309,6 +320,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-4">
+                                <input name="refReason4" class="form-control" asp-for=@Model.referral.OthReason4>
+                                @*
                                 <select class="form-select" name="refReason4">
                                     <option value="" selected></option>
                                     @foreach (var item in Model.referralReasonsList)
@@ -316,6 +329,7 @@
                                         <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
                                     }
                                 </select>
+                                *@
                             </div>
                             <div class="col-md-2">
                                 <select class="form-select" name="OthReason4Aff">
@@ -357,6 +371,45 @@
 
        
         SetClinicianTarget("ddlRefPhys");
+
+        if (document.getElementById("referrerCode").value.length > 8 && document.getElementById("referrerCode").value != "Self/FamMemb")
+    {
+    window.alert("The selected referrer code is too long. Please select a different GP.");
+    }
+
+    function SetToGP()
+    {
+        var _referrerList = document.getElementById("referrerCode");
+
+        const newCode = "@Model.patient.GP_Code";
+
+        _referrerList.value = newCode;
+
+        if (_referrerList.choices) {
+            _referrerList.choices.setChoiceByValue(newCode);
+        }
+
+        if (typeof updateFacility === "function") {
+            updateFacility();
+        }
+    }
+
+            function SetReferrerToGP() {
+                var _refer = document.getElementById("ddlRefPhys");
+            const _newRefer = "@Model.patient.GP_Code";
+
+            if (!_refer) {
+                    console.error("Dropdown element not found: " + "ddlRefPhys");
+                return;
+            }
+
+            if (_refer.choices) {
+                _refer.choices.setChoiceByValue(_newRefer);
+            } else {
+                _refer.value = _newRefer;
+            }
+        }
+
 
 </script>
 }

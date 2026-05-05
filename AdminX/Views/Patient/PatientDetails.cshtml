@@ -190,8 +190,31 @@
         </div>
     </div>
 }
+@if (Model.RequiresEpicClinicUpdate)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible mb-0" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>Action Required: Missing Epic Clinic Code</h3>
+                    <p>This patient has some missing Epic clinic code (<strong>@Model.MissingEpicClinicID</strong>)</p>
 
-
+                    <span>
+                        <a class="btn btn-outline-dark mt-2"
+                           asp-controller="SysAdmin"
+                           asp-action="EpicClinicCodes"
+                           asp-route-id="@Model.patient.MPI">
+                            Add Clinic Code
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 <div class="card">
     <div class="card-body">
         <div class="row">
@@ -993,6 +1016,18 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex">
+                                            <div class="flex-grow-1 ms-3">
+                                                <strong>Additional Notes:</strong>
+                                                <div class="text-muted">
+                                                    @Html.DisplayFor(model => model.patient.ADDITIONAL_NOTES)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
 
 
                             </tbody>
@@ -1397,6 +1432,7 @@
                                             <td>Referring Facility</td>
                                             <td>Indication</td>
                                             <td>Pathway</td>
+                                            <td>Sub-Pathway</td>
                                             <td>Consultant</td>
                                             <td>GC</td>
                                             <td>Referral Status</td>
@@ -1421,6 +1457,7 @@
                                                 }
                                                 <td>@r.INDICATION</td>
                                                 <td>@r.PATHWAY</td>
+                                                <td>@r.Pathway_Subset</td>
                                                 <td>@r.LeadClinician</td>
                                                 <td>@r.GC</td>
                                                 <td>@r.COMPLETE</td>
@@ -1528,6 +1565,7 @@
                                             <td>Type</td>
                                             <td>Outcome</td>
                                             <td></td>
+                                            <td></td>
 
                                         </tr>
                                     </thead>
@@ -1557,6 +1595,13 @@
                                                 <td>@a.AppType</td>
                                                 <td>@a.Attendance</td>
                                                 <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
+                                                @if (a.Attendance == "Attended" || a.Attendance == "NOT RECORDED" || a.Attendance == "Unknown Consultant")
+                                                {
+                                                    <td><a asp-controller="Clinic" asp-action="EditAppointment" asp-route-id="@a.RefID" class="btn btn-outline-primary">Edit</a></td>
+                                                } else
+                                                {
+                                                    <td></td>
+                                                }
                                             </tr>
                                         }
                                     </tbody>

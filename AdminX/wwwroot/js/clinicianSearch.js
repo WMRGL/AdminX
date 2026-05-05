@@ -77,6 +77,7 @@ function SelectExternalClinician(code, name, facility) {
 }
 
 function selectGen() {
+    // 1. Use the dynamic target ID so it works on ALL pages
     var referrerList = document.getElementById(_clinicianDropdownTargetId);
 
     if (!referrerList) {
@@ -84,18 +85,42 @@ function selectGen() {
         return;
     }
 
-    var genOption = Array.from(referrerList.options).find(opt => opt.value === "GEN");
+    const newCode = "GEN";
 
-    if (genOption) {
-        if (referrerList.choices) {
-            referrerList.choices.setChoiceByValue("GEN");
-        } else {
-            referrerList.value = "GEN";
-        }
+    // 2. Set the value directly without doing manual loops
+    if (referrerList.choices) {
+        referrerList.choices.setChoiceByValue(newCode);
     } else {
-        alert("GEN option not found in the referrer list.");
+        referrerList.value = newCode;
+    }
+
+    // 3. Force the facility update
+    if (typeof updateFacility === "function") {
+        updateFacility();
     }
 }
+
+function SetToSelf() {
+    var referrerList = document.getElementById(_clinicianDropdownTargetId);
+
+    if (!referrerList) {
+        console.error("Dropdown element not found: " + _clinicianDropdownTargetId);
+        return;
+    }
+
+    const newCode = "Self/FamMemb";
+
+    if (referrerList.choices) {
+        referrerList.choices.setChoiceByValue(newCode);
+    } else {
+        referrerList.value = newCode;
+    }
+
+    if (typeof updateFacility === "function") {
+        updateFacility();
+    }
+}
+
 
 function ToggleClinicianViews(view) {
     if (view === 'add') {
@@ -212,3 +237,7 @@ async function LoadTitles() {
         titleSelect.innerHTML = '<option value="">Error</option>';
     }
 }
+
+
+
+

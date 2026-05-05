@@ -29,10 +29,11 @@ namespace AdminX.Controllers
         private readonly ICRUD _crud;
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
+        private readonly IAppointmentDataAsync _appointmentData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData)
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -50,6 +51,7 @@ namespace AdminX.Controllers
             _crud = new CRUD(_config);
             _ip = new IPAddressFinder(HttpContext);
             _patientData = patientData;
+            _appointmentData = appointmentData;
         }
 
         [HttpGet]
@@ -87,6 +89,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> StaffMembers(string? message, bool? success)
         {
@@ -188,6 +191,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> StaffMemberDetails(string staffCode)
         {
@@ -238,6 +242,7 @@ namespace AdminX.Controllers
             return RedirectToAction("StaffMembers", new { message = "Changes saved.", success = true });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddNewStaffMember()
         {
@@ -271,6 +276,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddNewStaffMember(string loginName, string title, string firstname, string lastname, string role, string team,
             string type, DateTime startDate, string email, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator = false)
@@ -290,6 +296,7 @@ namespace AdminX.Controllers
             
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Clinicians(string? message, bool? success)
         {
@@ -360,6 +367,7 @@ namespace AdminX.Controllers
             }          
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ClinicianDetails(string clinCode)
         {
@@ -428,6 +436,7 @@ namespace AdminX.Controllers
             return RedirectToAction("Clinicians", new { message = sMessage, success = true });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddNewClinician()
         {
@@ -456,7 +465,7 @@ namespace AdminX.Controllers
 
             if (clinCode == null)
             {
-                clinCode = lastName;
+                clinCode = lastName + firstName.Substring(0, 1);
             }
 
             if (clinCode == lastName)
@@ -495,7 +504,7 @@ namespace AdminX.Controllers
 
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Facilities(string? message, bool? success)
         {
@@ -570,7 +579,7 @@ namespace AdminX.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> FacilityDetails(string facCode)
         {
@@ -604,6 +613,7 @@ namespace AdminX.Controllers
             return RedirectToAction("Facilities", new { message = "Changes saved.", success = true });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddNewFacility()
         {
@@ -635,6 +645,7 @@ namespace AdminX.Controllers
 
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ClinicVenues(string? message, bool? success)
         {
@@ -656,6 +667,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> ClinicVenues(string? codeSearch, string? nameSearch, bool? isOnlyCurrent = false) //I only added that variable because it throws a fit otherwise
         {
@@ -687,6 +699,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> VenueDetails(string clinCode)
         {
@@ -712,6 +725,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> VenueDetails(string clinCode, string name, string location, string notes, string locationCode, int isNonActive)
         {
@@ -727,6 +741,7 @@ namespace AdminX.Controllers
             return RedirectToAction("ClinicVenues", new { message = "Changes saved.", success = true });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddNewVenue()
         {
@@ -743,6 +758,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddNewVenue(string clinCode, string name, string location, string notes, string locationCode)
         {
@@ -760,6 +776,7 @@ namespace AdminX.Controllers
 
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> CliniciansClinics(string? message, bool? success)
         {
@@ -781,6 +798,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CliniciansClinics(string? siteSearch, string? message, bool? success)
         {
@@ -805,6 +823,7 @@ namespace AdminX.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ClinicDetails(string clinCode)
         {
@@ -818,6 +837,7 @@ namespace AdminX.Controllers
             return View(_savm);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> ClinicDetails(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site,
             string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, int? showLocalRef = 0)
@@ -834,6 +854,7 @@ namespace AdminX.Controllers
             return RedirectToAction("CliniciansClinics", new { message = "Changes saved.", success = true });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> AddNewCliniciansClinic(string? clinCodeToCreate)
         {
@@ -872,7 +893,7 @@ namespace AdminX.Controllers
 
             return RedirectToAction("CliniciansClinics", new { message = "New clinic details added.", success = true });
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> SetDutyClinicians(string? message, bool? success=false)
         {
@@ -901,7 +922,7 @@ namespace AdminX.Controllers
 
             return RedirectToAction("SetDutyClinicians", new { message = "Updated.", success = true });
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetFacilitiesAjax(string? searchTerm)
         {
@@ -979,6 +1000,69 @@ namespace AdminX.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EpicClinicCodes(int? id)
+        {
+            if (id != null)
+            {
+                
+                    var clinicCode = await _appointmentData.GetEpicClinicCode(id.Value);
+                    if (clinicCode != null && !string.IsNullOrEmpty(clinicCode.EpicClinicCode))
+                    {
+                        int missingCodes = 0;
+
+                    _savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
+                    }
+                    //_savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(id);
+                
+               
+            }
+            else
+            {
+                _savm.epicClinicLinks = await _clinicianData.GetEpicClinicLinks();
+            }
+            _savm.staffMembers = await _staffData.GetClinicalStaffList();
+            _savm.venues = await _venueData.GetVenueList();
+            return View(_savm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EpicClinicCodes(EpicClinicLink model)
+        {
+            try {
+             
+                    int success = _crud.SysAdminCRUD(
+                   sType: "EpicClinic",
+                   sOperation: "Edit",
+                   int1: 0,
+                   int2: 0,
+                   int3: 0,
+                   string1: model.EpicClinicID,
+                   string2: model.ClinicianID,
+                   string3: model.ClinicID,
+                   text: "",
+                   sLogin: User.Identity.Name
+               );
+
+                    if (success == 0)
+                    {
+                        return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-EpicClinicCodes(SQL)" });
+                    }
+
+                    TempData["SuccessMessage"] = "Clinician added successfully.";
+
+                    return RedirectToAction("EpicClinicCodes");
+               
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Epic Clinic Codes" });
+            }
+
         }
     }
 }

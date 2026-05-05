@@ -123,11 +123,21 @@
                     <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>
                 }
             </select>
-                    <button class="btn btn-outline-primary mb-2" type="button" onclick="SetToGP()">Use GP</button>
-                    <button type="button" class="btn btn-outline-success mx-2 mb-2" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
-                        Search External Referrer
-                    </button>
-                    <button type="button" onclick="selectGen()" class="btn btn-outline-warning mb-2">Use GEN</button>
+                   
+                    <div class="d-flex gap-2 ">
+                        <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetToGP()">
+                            <i class="fa-solid fa-user-md me-1"></i> Use GP
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-success flex-fill" data-bs-toggle="modal" data-bs-target="#centeredModalSuccess">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Search External
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="selectGen()">
+                            <i class="fa-solid fa-hospital-user me-1"></i> Use GEN
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-info flex-fill" onclick="SetToSelf()">
+                            <i class="fa-solid fa-user me-1"></i> Self
+                        </button>
+                    </div>
             </div>
                 <div class="mb-3 col-md-3">
                     <label class="form-label" for="clinClass">Class/Urgency</label>
@@ -242,14 +252,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4">
-
-                        <select class="form-select" name="refReason1">
-                            <option value="" selected></option>
-                            @foreach (var item in Model.referralReasonsList)
-                            {
-                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                            }
-                        </select>
+                        <input name="refReason1" class="form-control" asp-for=@Model.referral.OthReason1>
+                        @*
+                                <select class="form-select" name="refReason1">
+                                    <option value="" selected></option>
+                                    @foreach (var item in Model.referralReasonsList)
+                                    {
+                                        <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                    }
+                                </select>
+                                *@
                     </div>
                     <div class="col-md-2">
                         <select class="form-select" name="OthReason1Aff">
@@ -261,13 +273,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4">
-                        <select class="form-select" name="refReason2">
-                            <option value="" selected></option>
-                            @foreach (var item in Model.referralReasonsList)
-                            {
-                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                            }
-                        </select>
+                        <input name="refReason2" class="form-control" asp-for=@Model.referral.OthReason2>
+                        @*
+                                <select class="form-select" name="refReason2">
+                                    <option value="" selected></option>
+                                    @foreach (var item in Model.referralReasonsList)
+                                    {
+                                        <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                    }
+                                </select>
+                                *@
                     </div>
                     <div class="col-md-2">
                         <select class="form-select" name="OthReason2Aff">
@@ -279,13 +294,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4">
-                        <select class="form-select" name="refReason3">
-                            <option value="" selected></option>
-                            @foreach (var item in Model.referralReasonsList)
-                            {
-                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                            }
-                        </select>
+                        <input name="refReason3" class="form-control" asp-for=@Model.referral.OthReason3>
+                        @*
+                                <select class="form-select" name="refReason3">
+                                    <option value="" selected></option>
+                                    @foreach (var item in Model.referralReasonsList)
+                                    {
+                                        <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                    }
+                                </select>
+                                *@
                     </div>
                     <div class="col-md-2">
                         <select class="form-select" name="OthReason3Aff">
@@ -297,13 +315,16 @@
                 </div>
                 <div class="row">
                     <div class="col-md-4">
-                        <select class="form-select" name="refReason4">
-                            <option value="" selected></option>
-                            @foreach (var item in Model.referralReasonsList)
-                            {
-                                <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
-                            }
-                        </select>
+                        <input name="refReason4" class="form-control" asp-for=@Model.referral.OthReason4>
+                        @*
+                                <select class="form-select" name="refReason4">
+                                    <option value="" selected></option>
+                                    @foreach (var item in Model.referralReasonsList)
+                                    {
+                                        <option value=@item.RefReasonCode>@item.RefReasonCode - @item.RefReason</option>
+                                    }
+                                </select>
+                                *@
                     </div>
                     <div class="col-md-2">
                         <select class="form-select" name="OthReason4Aff">
@@ -434,6 +455,12 @@
             return 0;
         }
 
+                if (document.getElementById("referrerCode").value.length > 8 && document.getElementById("referrerCode").value != "Self/FamMemb")
+        {
+            window.alert("The selected referrer code is too long. Please select a different GP.");
+            return 0;
+        }
+
         return 1;
     }   
 
@@ -448,7 +475,7 @@
         _referrerList.choices.setChoiceByValue(newCode);
     }
 
- 
+        
    
 
 </script>

@@ -1,0 +1,72 @@
+﻿@model AdminX.ViewModels.SSPVM
+
+@{
+    ViewData["Title"] = "Admin-X - Social Service Pathways";
+    ViewData["Page"] = "/ Social Service Pathways";
+    ViewData["HomeBtn"] = Html.ActionLink("Back to Home Page", "Index", "Home", new { }, new { @class = "btn btn-primary m-1" });
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h1>New Social Worker</h1>
+        </div>
+        <div class="card-body">
+            <form asp-action="NewSocialWorker" method="post">
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <label for="Title" class="form-label">Title</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select name="title" id="Title" class="w-100 js-choice">
+                            <option value="">Select Title</option>
+                            @foreach (var item in Model.titles)
+                            {
+                                <option value="@item.Title">@item.Title</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="FirstName" class="form-label">First Name</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="FirstName" name="firstName" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="LastName" class="form-label">Last Name</label>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" id="LastName" name="lastName" />
+                    </div>
+                </div>
+
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <label for="txtJobTitle" class="form-label">Job Title</label>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="txtJobTitle" name="jobTitle" />
+                    </div>
+                    <div class="col-md-2">
+                        <label for="ddlSSFacility" class="form-label">Social Service Facility</label>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="ssFacility" id="ddlSSFacility" class="w-100 js-choice">
+                            <option value="">Select Facility</option>
+                            @foreach (var item in Model.socialServices)
+                            {
+                                <option value="@item.SocialServicesID">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-5 g-5">
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">Create Social Worker</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>

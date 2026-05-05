@@ -79,7 +79,8 @@ namespace AdminX.Controllers
 
                 if (!string.IsNullOrEmpty(fileNumber))
                 {
-                    var rawList = await _patientData.GetMatchingPatientsByCGUNo(fileNumber);
+                    fileNumber = fileNumber.Split(".")[0];
+                    var rawList = await _patientData.GetMatchingPatientsByPedNo(fileNumber);
 
                     _epvm.patientList = rawList
                         .OrderByDescending(p => p.CGU_No == fileNumber)

@@ -1,0 +1,100 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Epic Clinic Codes";
+}
+
+<partial name="_SysAdminNav" />
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title text-dark">Epic Clinic Codes</h3>
+    </div>
+    <div class="card-body">
+
+        <table class="table table-striped table-bordered defaultTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Epic Clinic ID</th>
+                    <th>Active</th>
+                    <th>Epic Description</th>
+                    <th>Clinician ID</th>
+                    <th>Clinic ID</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var code in Model.epicClinicLinks)
+                {
+                    <tr>
+                        <td>@code.EpicClinicID</td>
+                        <td>@(code.IsActive ? "Yes" : "No")</td>
+                        <td>@code.EpicDescription</td>
+                        <td>@code.ClinicianID</td>
+                        <td>@code.ClinicID</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-@code.EpicClinicID">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div> 
+</div> 
+@foreach (var code in Model.epicClinicLinks)
+{
+    <div class="modal fade" id="modal-@code.EpicClinicID" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-dark">@code.EpicDescription</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body m-3">
+                    <div class="mb-0">
+                        <form asp-action="EpicClinicCodes">
+                            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+                            <input type="hidden" name="EpicClinicID" value="@code.EpicClinicID" />
+                     
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="ClinicianID" class="form-label">Clinician</label>
+                                    <select class="form-select js-choice" name="ClinicianID" required>
+                                        <option value="">Select Clinician</option>
+                                        @foreach (var clinician in Model.staffMembers)
+                                        {
+                                            <option value="@clinician.STAFF_CODE" >@clinician.NAME</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="ClinicID" class="form-label">Clinic</label>
+                                    <select class="form-select js-choice" name="ClinicID" required>
+                                        <option value="">Select Clinic</option>
+                                        @foreach (var clinic in Model.venues)
+                                        {
+                                            <option value="@clinic.FACILITY" >@clinic.NAME</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-end">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

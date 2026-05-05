@@ -1,4 +1,6 @@
-﻿//using AdminX.Data;
+﻿
+
+//using AdminX.Data;
 using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
@@ -159,7 +161,8 @@ namespace AdminX.Controllers
                     _pvm.patientsList = patientList.OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
                 }
 
-                
+                List<Referral> referrals = await _referralData.GetReferralsList(id);
+                referrals = referrals.Where(r => r.COMPLETE != null).ToList();
                 _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "MISSING DATA").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
@@ -180,21 +183,41 @@ namespace AdminX.Controllers
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
+                var epicClinicCodes = await _appointmentData.GetEpicClinicCodes(_pvm.patient.MPI);
 
-                foreach (var item in referrals)
+                if (epicClinicCodes != null && epicClinicCodes.Count > 0)
                 {
-                    EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
-                    if (epicRef != null)
+                    foreach (var code in epicClinicCodes)
                     {
-                        _pvm.epicReferral = epicRef;   
-                        
-                        if(epicRef.LocalUpdateSts == 1)
+                        List<EpicClinicLink> epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(code);
+
+                        if (epicClinicLinks != null && epicClinicLinks.Any(e => e.UpdateSts == 1))
                         {
-                            _pvm.isEpicReferralChanged = true;
-                            _pvm.referral = item;
+                            _pvm.RequiresEpicClinicUpdate = true;
+                            _pvm.MissingEpicClinicID = code;
+
+                            
+                            break;
                         }
                     }
                 }
+
+
+                foreach (var item in referrals)
+                    {
+                        EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
+                        if (epicRef != null)
+                        {
+                            _pvm.epicReferral = epicRef;
+
+                            /*if(item.PATIENT_TYPE_CODE != epicRef.Consultant || item.GC_CODE != epicRef.GC || item.PATHWAY != epicRef.Pathway) //etc*/
+                            if (epicRef.LocalUpdateSts == 1)
+                            {
+                                _pvm.isEpicReferralChanged = true;
+                                _pvm.referral = item;
+                            }
+                        }
+                    }
 
                 if (_pvm.patientsList.Count > 0)
                 {
@@ -250,6 +273,11 @@ namespace AdminX.Controllers
 
                     if (clin != null)
                     {
+                        if(clin.NON_ACTIVE != 0)
+                        {
+                            _pvm.messages.Add("The assigned GP has been marked as non-active. Please check and amend.");
+                        }
+
                         var gp = await _gpData.GetClinicianDetails(_pvm.patient.GP_Code);
                         gpPractice = gp.FACILITY;
                     }
@@ -271,6 +299,10 @@ namespace AdminX.Controllers
                 {                 
                     _pvm.messages.Add("This patient's GP is no longer at this practice. Please check and select a new GP if necessary.");
                 }
+
+                
+
+                
 
                 string ptURL = await _constantsData.GetConstant("PhenotipsURL", 2);
 
@@ -548,15 +580,16 @@ namespace AdminX.Controllers
         public async Task<IActionResult> EditPatientDetails(int mpi, string title, string firstname, string lastname, string nhsno, DateTime dob, string postcode,
             string address1, string address2, string address3, string address4, string areaCode, string gpCode, string gpFacilityCode, string email, string prevName,
             string maidenName, string preferredName, string ethnicCode, string sex, string middleName, string tel, string workTel, string PtTelMobile, string language,
-            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string ptLetterAddressee, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE)
+            string isInterpreterReqd, bool isConsentToEmail, string SALUTATION, string ptLetterAddressee, string GenderIdentity, bool? DECEASED, DateTime? DECEASED_DATE,
+            string? additionalNotes)
         {
             try
             {
                 string deceased = Request.Form["DECEASED"];
-                bool deseasedStatus = false;
+                bool deceasedStatus = false;
                 if (deceased == "1")
                 {
-                    deseasedStatus = true;
+                    deceasedStatus = true;
                 }
 
                 _pvm.staffMember = await _staffUser.GetStaffMemberDetails(User.Identity.Name);
@@ -570,7 +603,7 @@ namespace AdminX.Controllers
                 int success = _crud.PatientDetail("Patient", "Update", User.Identity.Name, mpi, title, firstname, middleName, lastname, nhsno.Replace(" ", ""),
                     postcode, gpCode, address1, address2, address3, address4, email, prevName, dob, DECEASED_DATE, maidenName, interpreterBool,
                     isConsentToEmail, preferredName, ethnicCode, sex, middleName, tel, workTel, PtTelMobile, areaCode, ptLetterAddressee, SALUTATION,
-                    GenderIdentity, language, deseasedStatus);
+                    GenderIdentity, language, deceasedStatus, additionalNotes);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Patient-edit(SQL)" }); }
 
