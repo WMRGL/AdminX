@@ -160,8 +160,7 @@ namespace AdminX.Controllers
                     var patientList = await _patientData.GetPatientsInPedigree(_pvm.patient.PEDNO);
                     _pvm.patientsList = patientList.OrderBy(p => p.RegNo).ToList(); //for the next/back buttons
                 }
-
-                List<Referral> referrals = await _referralData.GetReferralsList(id);
+                                
                 referrals = referrals.Where(r => r.COMPLETE != null).ToList();
                 _pvm.incompleteReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "MISSING DATA").ToList();
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
