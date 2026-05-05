@@ -80,6 +80,7 @@ namespace AdminX.ViewModels
         public List<PatientAlert> PatientAlerts { get; set; } = new List<PatientAlert>();
         public List<WaitingList> waitingList { get; set; }
         public Pedigree pedigree { get; set; }
+        public List<EpicClinicLink> EpicClinicCodeStatus { get; set; }
     }
 
     public class PatientAlert

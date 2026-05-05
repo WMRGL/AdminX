@@ -237,6 +237,17 @@ namespace AdminX.Controllers
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
+                var clinicCode = await _appointmentData.GetEpicClinicCode(_pvm.patient.MPI);
+
+                if (clinicCode != null && !string.IsNullOrEmpty(clinicCode.EpicClinicCode))
+                {
+                    int missingCodes = 0;
+                    //_pvm.EpicClinicCodeStatus = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
+
+                    List<EpicClinicLink> codes = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
+                    Console.WriteLine("Codes retrieved: " + codes.Count);
+                }
+
 
                 foreach (var item in referrals)
                 {

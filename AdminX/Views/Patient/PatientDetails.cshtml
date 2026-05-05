@@ -170,6 +170,22 @@
     </div>
 }
 
+@if (Model.EpicClinicCodeStatus != null && Model.EpicClinicCodeStatus.Count > 0)
+{
+   <div class="card">
+        <div class="card-body">
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <div class="alert-icon">
+                    <i class="far fa-fw fa-bell"></i>
+                </div>
+                <div class="alert-message">
+                    <h3>This patient has Epic clinic codes.</h3> <span><a class="btn btn-outline-dark" asp-controller="SysAdmin" asp-action="EpicClinicCodes" asp-route-id=@Model.patient.MPI>View Clinic Codes</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+} 
+
 
 <div class="card">
     <div class="card-body">

@@ -29,10 +29,11 @@ namespace AdminX.Controllers
         private readonly ICRUD _crud;
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
+        private readonly IAppointmentDataAsync _appointmentData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData)
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -50,6 +51,7 @@ namespace AdminX.Controllers
             _crud = new CRUD(_config);
             _ip = new IPAddressFinder(HttpContext);
             _patientData = patientData;
+            _appointmentData = appointmentData;
         }
 
         [HttpGet]
@@ -1002,9 +1004,26 @@ namespace AdminX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> EpicClinicCodes()
+        public async Task<IActionResult> EpicClinicCodes(int? id)
         {
-            _savm.epicClinicLinks = await _clinicianData.GetEpicClinicLinks();
+            if (id != null)
+            {
+                
+                    var clinicCode = await _appointmentData.GetEpicClinicCode(id.Value);
+                    if (clinicCode != null && !string.IsNullOrEmpty(clinicCode.EpicClinicCode))
+                    {
+                        int missingCodes = 0;
+
+                    _savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
+                    }
+                    //_savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(id);
+                
+               
+            }
+            else
+            {
+                _savm.epicClinicLinks = await _clinicianData.GetEpicClinicLinks();
+            }
             _savm.staffMembers = await _staffData.GetClinicalStaffList();
             _savm.venues = await _venueData.GetVenueList();
             return View(_savm);
