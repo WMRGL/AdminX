@@ -185,7 +185,7 @@
                         <a class="btn btn-outline-dark mt-2"
                            asp-controller="SysAdmin"
                            asp-action="EpicClinicCodes"
-                           asp-route-id="325987">
+                           asp-route-id="@Model.patient.MPI">
                             Add Clinic Code
                         </a>
                     </span>
@@ -1574,7 +1574,13 @@
                                                 <td>@a.AppType</td>
                                                 <td>@a.Attendance</td>
                                                 <td><a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id="@a.RefID" class="btn btn-outline-primary">Details</a></td>
-                                                <td><a asp-controller="Clinic" asp-action="EditAppointment" asp-route-id="@a.RefID" class="btn btn-outline-primary">Edit</a></td>
+                                                @if (a.Attendance == "Attended" || a.Attendance == "NOT RECORDED" || a.Attendance == "Unknown Consultant")
+                                                {
+                                                    <td><a asp-controller="Clinic" asp-action="EditAppointment" asp-route-id="@a.RefID" class="btn btn-outline-primary">Edit</a></td>
+                                                } else
+                                                {
+                                                    <td></td>
+                                                }
                                             </tr>
                                         }
                                     </tbody>
