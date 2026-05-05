@@ -5,6 +5,7 @@ using ClinicalXPDataConnections.Meta;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIControllers.Controllers;
+using APIControllers.Data;
 //using APIControllers.Data;
 
 namespace AdminX.Controllers
@@ -26,11 +27,11 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
 
         public RelativeController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IRelativeDataAsync relative, ITitleDataAsync title, ICRUD crud, 
-            IAuditServiceAsync audit, APIController api)
+            IAuditServiceAsync audit, APIController api)//, APIContext aPIContext)
         {
             
             //_clinContext = context;            
-            //_apiContext = apiContext;
+            //_apiContext = aPIContext;
             _config = config;
             _crud = crud;
             _staffUser = staffUser;
@@ -240,9 +241,12 @@ namespace AdminX.Controllers
                 List<APIControllers.Models.Relative> relList = new List<APIControllers.Models.Relative>();
                 _rvm.phenotipsRelativesList = new List<ClinicalXPDataConnections.Models.Relative>();
 
+                //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
+                //relList = await api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
+
                 relList = await _api.ImportRelativesFromPhenotips(_rvm.patient.MPI);
 
-                foreach(var r in relList)
+                foreach (var r in relList)
                 {
                     _rvm.phenotipsRelativesList.Add(new ClinicalXPDataConnections.Models.Relative { WMFACSID = r.WMFACSID, RelTitle = r.RelTitle, RelForename1 = r.RelForename1,
                     RelForename2 = r.RelForename2, RelSurname = r.RelSurname, DOB = r.DOB, DOD = r.DOD, RelSex = r.RelSex });

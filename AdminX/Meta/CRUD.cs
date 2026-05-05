@@ -20,8 +20,9 @@ namespace AdminX.Meta
         public int PatientDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
        string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "",
-        bool? bool1 = false, bool? bool2 = false, string? string14 = "", string? string15 = "", string? string16 = "", string string17 = "", string string18 = "",
-        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 = "", string? string25 = "", bool? bool3 = false
+        bool? bool1 = false, bool? bool2 = false, string? string14 = "", string? string15 = "", string? string16 = "", string string17 = "", string string18 = "", 
+        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 = "", string? string25 = "", 
+        bool? bool3 = false, string? additionalNotes = ""
             );
 
         public int ReferralDetail(string sType, string sOperation, string sLogin, int int1, int? int2, int? int3, int? int4, int? int5, int? int6, int? int7,
@@ -38,6 +39,10 @@ namespace AdminX.Meta
             string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "", string? string10 = "", string? string11 = "",
         string? string12 = "", string? string13 = "", string? string14 = "", string? string15 = "", string? string16 = "", string? string17 = "", string? string18 = "",
         string? string19 = "", string? string20 = ""); //the Clinic Setup needs a ridiculous number of strings!!!
+
+
+        public int SSPCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, DateTime? dDate3 = null); 
 
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username);
 
@@ -84,6 +89,7 @@ namespace AdminX.Meta
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
             if (dDate2 == null || dDate2 == DateTime.Parse("0001-01-01")) { dDate2 = DateTime.Parse("1900-01-01"); }
             if (text == null) { text = ""; }
+            if (string2 == null) { string2 = ""; }
             if (string3 == null) { string3 = ""; }
 
 
@@ -133,6 +139,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string20", SqlDbType.VarChar).Value = string20;
             cmd.Parameters.Add("@string21", SqlDbType.VarChar).Value = string21;
 
+
             cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int); //return success or not
             returnValue.Direction = ParameterDirection.ReturnValue;
@@ -147,7 +154,8 @@ namespace AdminX.Meta
        string? string4 = "", string? string5 = "", string? string6 = "", string? string7 = "", string? string8 = "", string? string9 = "",
        string? string10 = "", string? string11 = "", string? string12 = "", DateTime? dDate1 = null, DateTime? dDate2 = null, string? string13 = "",
         bool? bool1 = false, bool? bool2 = false, string? string14 = "", string? string15 = "", string? string16 = "", string string17 = "", string string18 = "",
-        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 = "", string? string25 = "", bool? bool3 = false
+        string? string19 = "", string? string20 = "", string? string21 = "", string? string22 = "", string? string23 = "", string? string24 = "", string? string25 = "", 
+        bool? bool3 = false, string? additionalNotes = ""
         )
         {
             if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
@@ -193,6 +201,7 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@string24", SqlDbType.VarChar).Value = string24;
             cmd.Parameters.Add("@string25", SqlDbType.VarChar).Value = string25;
             cmd.Parameters.Add("@bool3", SqlDbType.Bit).Value = bool3;
+            cmd.Parameters.Add("@text2", SqlDbType.VarChar).Value = additionalNotes;
 
 
             // cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
@@ -399,6 +408,39 @@ namespace AdminX.Meta
             return iReturnValue;
         }
 
+        public int SSPCRUD(string sType, string sOperation, int int1, int int2, int int3, string? string1, string? string2, string? string3, string sLogin,
+        DateTime? dDate1 = null, DateTime? dDate2 = null, DateTime? dDate3 = null)
+        {
+            if (dDate1 == null) { dDate1 = DateTime.Parse("1900-01-01"); }
+            if (dDate2 == null) { dDate2 = DateTime.Parse("1900-01-01"); }
+            if (dDate3 == null) { dDate3 = DateTime.Parse("1900-01-01"); }
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXSSPCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = sType;
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = sOperation;
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = int1;
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = int2;
+            cmd.Parameters.Add("@int3", SqlDbType.Int).Value = int3;            
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = string1;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = string2;
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = string3;
+            cmd.Parameters.Add("@date1", SqlDbType.DateTime).Value = dDate1;
+            cmd.Parameters.Add("@date2", SqlDbType.DateTime).Value = dDate2;
+            cmd.Parameters.Add("@date3", SqlDbType.DateTime).Value = dDate3;
+
+            cmd.Parameters.Add("@machinename", SqlDbType.VarChar).Value = System.Environment.MachineName;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+
+            return iReturnValue;
+        }
 
         public int AddToWaitingList(int mpi, string clinicianID, string clinicID, int priorityLevel, int refID, string username)
         {

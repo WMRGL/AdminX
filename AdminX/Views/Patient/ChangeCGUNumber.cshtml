@@ -58,7 +58,13 @@
                         <tr>
                             <td>@item.CGU_No</td>
                             <td>@item.FIRSTNAME @item.LASTNAME</td>
-                            <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            @if(item.DOB != null)
+                            {
+                                <td>@item.DOB.Value.ToString("dd/MM/yyyy")</td>
+                            } else
+                            {
+                                <td><p>No DOB</p></td>
+                            }
                             <td>@item.POSTCODE</td>
                             <td>@item.SOCIAL_SECURITY</td>
                         </tr>

@@ -183,4 +183,6 @@ namespace AdminX.Models
         public bool IsCallToBookClinic { get; set; }
         public bool DateOnRef { get; set; }        
     }
+
+    
 }
