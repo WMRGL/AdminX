@@ -88,6 +88,7 @@
     </div>
 }
 
+
 @if(Model.messages.Count > 0)
 {
     @foreach(var m in Model.messages)    
@@ -102,6 +103,7 @@
         </div>
     }
 }
+
 
 @if (Model.incompleteReferrals.Count > 0)
 {
@@ -137,6 +139,7 @@
     </div>
 }
 
+
 @if (Model.alerts.Count > 0)
 {
     <div class="card">
@@ -152,6 +155,24 @@
         </div>
     </div>
 }
+
+
+@if(Model.PatientAlerts.Count > 0)
+{
+    @foreach (var m in Model.PatientAlerts)
+    {
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div class="alert-icon">
+                <i class="far fa-fw fa-bell"></i>
+            </div>
+            <div class="alert-message">
+                <h3>@m.Message</h3>
+                <h4><a href=@m.ActionUrl>@m.ActionText</a></h4>
+            </div>
+        </div>
+    }
+}
+
 
 @if (Model.patient.DCTM_Folder_ID == null)
 {
