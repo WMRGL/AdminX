@@ -237,33 +237,41 @@ namespace AdminX.Controllers
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
-                var clinicCode = await _appointmentData.GetEpicClinicCode(_pvm.patient.MPI);
+                var epicClinicCodes = await _appointmentData.GetEpicClinicCodes(_pvm.patient.MPI);
 
-                if (clinicCode != null && !string.IsNullOrEmpty(clinicCode.EpicClinicCode))
+                if (epicClinicCodes != null && epicClinicCodes.Count > 0)
                 {
-                    int missingCodes = 0;
-                    //_pvm.EpicClinicCodeStatus = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
+                    foreach (var code in epicClinicCodes)
+                    {
+                        List<EpicClinicLink> epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(code);
 
-                    List<EpicClinicLink> codes = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
-                    Console.WriteLine("Codes retrieved: " + codes.Count);
+                        if (epicClinicLinks != null && epicClinicLinks.Any(e => e.UpdateSts == 1))
+                        {
+                            _pvm.RequiresEpicClinicUpdate = true;
+                            _pvm.MissingEpicClinicID = code;
+
+                            
+                            break;
+                        }
+                    }
                 }
 
 
                 foreach (var item in referrals)
-                {
-                    EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
-                    if (epicRef != null)
                     {
-                        _pvm.epicReferral = epicRef;                        
-
-                        /*if(item.PATIENT_TYPE_CODE != epicRef.Consultant || item.GC_CODE != epicRef.GC || item.PATHWAY != epicRef.Pathway) //etc*/
-                        if(epicRef.LocalUpdateSts == 1)
+                        EpicReferralReference epicRef = await _epicReferralReferenceData.GetEpicReferral(item.refid);
+                        if (epicRef != null)
                         {
-                            _pvm.isEpicReferralChanged = true;
-                            _pvm.referral = item;
+                            _pvm.epicReferral = epicRef;
+
+                            /*if(item.PATIENT_TYPE_CODE != epicRef.Consultant || item.GC_CODE != epicRef.GC || item.PATHWAY != epicRef.Pathway) //etc*/
+                            if (epicRef.LocalUpdateSts == 1)
+                            {
+                                _pvm.isEpicReferralChanged = true;
+                                _pvm.referral = item;
+                            }
                         }
                     }
-                }
 
                 if (_pvm.patientsList.Count > 0)
                 {

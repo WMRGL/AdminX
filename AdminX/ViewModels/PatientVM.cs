@@ -81,6 +81,8 @@ namespace AdminX.ViewModels
         public List<WaitingList> waitingList { get; set; }
         public Pedigree pedigree { get; set; }
         public List<EpicClinicLink> EpicClinicCodeStatus { get; set; }
+        public bool RequiresEpicClinicUpdate { get; set; }
+        public string MissingEpicClinicID { get; set; }
     }
 
     public class PatientAlert
