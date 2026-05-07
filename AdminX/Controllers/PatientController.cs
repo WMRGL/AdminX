@@ -245,12 +245,10 @@ namespace AdminX.Controllers
                     {
                         List<EpicClinicLink> epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(code);
 
-                        if (epicClinicLinks != null && epicClinicLinks.Any(e => e.UpdateSts == 1))
+                        if (epicClinicLinks == null || epicClinicLinks.Count == 0 || epicClinicLinks.Any(e => e.UpdateSts == 1))
                         {
                             _pvm.RequiresEpicClinicUpdate = true;
                             _pvm.MissingEpicClinicID = code;
-
-                            
                             break;
                         }
                     }
