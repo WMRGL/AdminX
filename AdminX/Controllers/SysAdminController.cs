@@ -1004,28 +1004,38 @@ namespace AdminX.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> EpicClinicCodes(int? id)
+        public async Task<IActionResult> EpicClinicCodes(string? id)
         {
-            if (id != null)
+            if (!string.IsNullOrEmpty(id))
             {
-                
-                    var clinicCode = await _appointmentData.GetEpicClinicCode(id.Value);
-                    if (clinicCode != null && !string.IsNullOrEmpty(clinicCode.EpicClinicCode))
-                    {
-                        int missingCodes = 0;
+                _savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(id);
 
-                    _savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(clinicCode: clinicCode.EpicClinicCode);
-                    }
-                    //_savm.epicClinicLinks = await _appointmentData.GetEpicClinicCodeStatus(id);
-                
-               
+                if (_savm.epicClinicLinks == null || _savm.epicClinicLinks.Count == 0)
+                {
+                    string? realEpicName = await _appointmentData.GetEpicClinicLocationName(id);
+
+                    _savm.epicClinicLinks = new List<EpicClinicLink>
+            {
+                new EpicClinicLink
+                {
+                    EpicClinicID = id,
+                    
+                    EpicDescription = !string.IsNullOrEmpty(realEpicName) ? realEpicName : "Manually saved via AdminX",
+
+                    IsActive = true,
+                    UpdateSts = 1
+                }
+            };
+                }
             }
             else
             {
                 _savm.epicClinicLinks = await _clinicianData.GetEpicClinicLinks();
             }
+
             _savm.staffMembers = await _staffData.GetClinicalStaffList();
             _savm.venues = await _venueData.GetVenueList();
+
             return View(_savm);
         }
 
