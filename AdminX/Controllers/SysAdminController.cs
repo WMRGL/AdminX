@@ -468,7 +468,7 @@ namespace AdminX.Controllers
                 clinCode = lastName + firstName.Substring(0, 1);
             }
 
-            if (isGP == 0)
+            if (clinCode == lastName)
             {
                 if (clinCode.Length >= 7)
                 {
