@@ -60,8 +60,12 @@ namespace AdminX.Controllers
                 string destFilename = mpi.ToString() + "-" + docType + "-" + taskRouting.ToString() + "-" +
                     DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() +
                     DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() +
-                    fileToUpload.FileName.Substring(fileToUpload.FileName.IndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.IndexOf("."));
+                    fileToUpload.FileName.Substring(fileToUpload.FileName.LastIndexOf("."), fileToUpload.FileName.Length - fileToUpload.FileName.LastIndexOf("."));
 
+                if (destFilename.Split(".").Length > 2) // Prevents multiple decimal points in filename which causes issues with EDMS
+                {                    
+                    return RedirectToAction("Upload", new { mpi = mpi, message = "Please rename file and remove all decimal points", success = false });                    
+                }
 
                 string targetFileName = await _constantsData.GetConstant("FilePathEDMS", 1) + "\\" + destFilename;
 
