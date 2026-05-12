@@ -374,7 +374,7 @@ namespace AdminX.Controllers
                     int2: 0,
                     int3: 0,
                     string1: model.Clinic.STAFF_CODE_1,
-                    string2: "",
+                    string2: model.Clinic.STAFF_CODE_2,
                     string3: "",
                     text: "",
                     string4: model.Clinic.SeenBy ?? "",

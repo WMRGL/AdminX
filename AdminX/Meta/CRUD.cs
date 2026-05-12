@@ -49,7 +49,7 @@ namespace AdminX.Meta
         public void NewPatientSearch(string firstName, string lastName, DateTime dob, string postCode, string nhsNo, string staffCode);
 
         public int PatientReview(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string? string3 = "",
-       string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null,  int? int2 = 0);
+       string? string4 = "", string? string6 = "", string? string7 = "", string? string8 = "", DateTime? dDate1 = null, int? int2 = 0);
         public int MergePatient(int mpiFrom, int mpiTo, string staffCode);
 
         public void AddPatientToPhenotipsMirrorTable(string ptID, int mpi, string cguno, string firstname, string lastname, DateTime DOB, string postCode, string nhsNo);
@@ -58,6 +58,9 @@ namespace AdminX.Meta
 
         public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway,
             string? refStatus, DateTime createdDate);
+
+        public int EpicApptStaging(int id, string epicPatID, int epicApptID, DateTime ApptDate, DateTime? arrivedDate, DateTime? departedDate, DateTime? cancelledDate, DateTime? lastEventDate,
+            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location, string? cancelReason);
 
         public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0);
     }
@@ -88,7 +91,7 @@ namespace AdminX.Meta
             if (text == null) { text = ""; }
             if (string2 == null) { string2 = ""; }
             if (string3 == null) { string3 = ""; }
-            
+
 
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
@@ -144,7 +147,7 @@ namespace AdminX.Meta
             var iReturnValue = (int)returnValue.Value;
             conn.Close();
 
-            return iReturnValue; 
+            return iReturnValue;
         }
 
         public int PatientDetail(string sType, string sOperation, string sLogin, int int1, string string1, string string2, string text, string? string3 = "",
@@ -520,17 +523,17 @@ namespace AdminX.Meta
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
-            var iReturnValue = (int)returnValue.Value;            
+            var iReturnValue = (int)returnValue.Value;
             conn.Close();
             success = iReturnValue;
             return success;
         }
 
-        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway, 
+        public int EpicReferralStaging(int id, string epicPatID, int epicRefID, DateTime referralDate, string? refBy, string? refTo, string? speciality, string? pathway,
             string? refStatus, DateTime createdDate)
         {
             int success = 0;
-            if(refBy == null) { refBy = ""; }
+            if (refBy == null) { refBy = ""; }
             if (refTo == null) { refTo = ""; }
             if (speciality == null) { speciality = ""; }
             if (pathway == null) { pathway = ""; }
@@ -549,10 +552,44 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@ReferredTo", SqlDbType.VarChar).Value = refTo;
             cmd.Parameters.Add("@CreatedDate", SqlDbType.DateTime).Value = createdDate;
             cmd.Parameters.Add("@Speciality", SqlDbType.VarChar).Value = speciality;
-            cmd.Parameters.Add("@Pathway", SqlDbType.VarChar).Value = pathway;            
+            cmd.Parameters.Add("@Pathway", SqlDbType.VarChar).Value = pathway;
             cmd.Parameters.Add("@RefStatus", SqlDbType.VarChar).Value = refStatus;
 
-            cmd.ExecuteNonQuery();            
+            cmd.ExecuteNonQuery();
+            conn.Close();
+
+            success = 1;
+
+            return success;
+        }
+
+        public int EpicApptStaging(int id, string epicPatID, int epicApptID, DateTime ApptDate, DateTime? arrivedDate, DateTime? departedDate, DateTime? cancelledDate, DateTime? lastEventDate,
+            string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location, string? cancelReason)
+        {
+            int success = 0;
+
+            if (attendance == null) { attendance = ""; }
+            if (cancelReason == null) { cancelReason = ""; }            
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_DownstreamApptStagingTableInsert", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@ID", SqlDbType.Int).Value = id;
+            cmd.Parameters.Add("@PatientID", SqlDbType.VarChar).Value = epicPatID;
+            cmd.Parameters.Add("@Spec_Code", SqlDbType.VarChar).Value = specCode;
+            cmd.Parameters.Add("@Cons_Code", SqlDbType.VarChar).Value = clinicianCode;
+            cmd.Parameters.Add("@Clinic_Code", SqlDbType.VarChar).Value = clinicCode;
+            cmd.Parameters.Add("@Appt_DTTM", SqlDbType.DateTime).Value = ApptDate;
+            cmd.Parameters.Add("@Arrived_DTTM", SqlDbType.DateTime).Value = arrivedDate;
+            cmd.Parameters.Add("@Departed_DTTM", SqlDbType.DateTime).Value = departedDate;
+            cmd.Parameters.Add("@Cancel_DTTM", SqlDbType.DateTime).Value = cancelledDate;
+            cmd.Parameters.Add("@LastEvent_DTTM", SqlDbType.DateTime).Value = lastEventDate;
+            cmd.Parameters.Add("@Attendance", SqlDbType.VarChar).Value = attendance;
+            cmd.Parameters.Add("@ApptRefID", SqlDbType.Int).Value = epicApptID;
+            cmd.Parameters.Add("@CancelReason", SqlDbType.VarChar).Value = cancelReason;
+            //cmd.Parameters.Add("@Location", SqlDbType.VarChar).Value = location;
+            cmd.ExecuteNonQuery();
             conn.Close();
 
             success = 1;
@@ -579,8 +616,8 @@ namespace AdminX.Meta
             var iReturnValue = (int)returnValue.Value;
             conn.Close();
             success = iReturnValue;
-            
-            return success;           
+
+            return success;
         }
     }
 }
