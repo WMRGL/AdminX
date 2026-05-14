@@ -347,6 +347,7 @@ namespace AdminX.Controllers
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
                 _cvm.venueList = await _venueData.GetVenueList();
+                _cvm.appTypeList = await _activityTypeData.GetApptTypes();
                 return View(_cvm);
             }
             catch (Exception ex)
@@ -381,6 +382,7 @@ namespace AdminX.Controllers
                     string5: model.Clinic.SeenBy2 ?? "",
                     string6: model.Clinic.SeenBy3 ?? "",
                     string7: model.Clinic.FACILITY ?? "",
+                    string8: model.Clinic.AppType ?? "",
                     sLogin: User.Identity.Name
                 );
 

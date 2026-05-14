@@ -900,11 +900,12 @@ namespace AdminX.Controllers
                         {
                             _pvm.PatientAlerts.Add(new PatientAlert
                             {
-                                Severity = AlertSeverity.Critical,
-                                Message = "Unable to load patient appointment. A data mismatch was detected between AdminX and Epic. Please send the CGUNO to Genetics IT.",
-                                Icon = "fa-cog",
-                                ActionText = "Contact IT Support",
-                                ActionUrl = "mailto:bwc.RGLITTeam@nhs.net"
+                                Severity = AlertSeverity.Warning, 
+                                Message = "AdminX is waiting for the patient's referral from Epic. " +
+                                "Please make a minor update to the referral in Epic (e.g., re-save the decision to refer date) to force a sync, then refresh this page.",
+                                Icon = "fa-sync", 
+                                ActionText = "Refresh Page",
+                                ActionUrl = "javascript:window.location.reload(true);" 
                             });
                             break;
                         }
