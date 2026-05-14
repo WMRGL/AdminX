@@ -32,6 +32,8 @@
                 {
                     <div class="row">
                         <input type="hidden" asp-for="Clinic.STAFF_CODE_1" />
+                        <input type="hidden" asp-for="Clinic.STAFF_CODE_2" />
+                        <input type="hidden" asp-for="Clinic.AppType" />
                         <div class="col-md-3">
                             <label class="form-label">Seen by</label>
                             <select asp-for="Clinic.SeenBy" class="form-select js-choice">
@@ -110,6 +112,17 @@
                                 @foreach (var venue in Model.venueList)
                                 {
                                     <option value="@venue.FACILITY" )>@venue.NAME</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                           
+                            <label class="form-label">Type</label>
+                            <select asp-for="Clinic.AppType" class="form-select js-choice">
+                                <option value="@Model.Clinic.AppType" selected>@Model.Clinic.AppType</option>
+                                @foreach (var appType in Model.appTypeList)
+                                {
+                                    <option value="@appType.APP_TYPE" )>@appType.APP_TYPE</option>
                                 }
                             </select>
                         </div>
