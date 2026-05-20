@@ -48,7 +48,7 @@ namespace AdminX.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob)
+        public async Task<IActionResult> Index(string? cguNo, string? firstname, string? lastname, string? nhsNo, DateTime? dob, string? externalID)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace AdminX.Controllers
                 ViewBag.RecentPatients = await _newPatientSearchData.GetRecentlyViewedPatients(username); string searchTerm = "";
                 if (nhsNo != null) { nhsNo = nhsNo.Replace(" ", ""); }
 
-                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")))
+                if (cguNo != null || firstname != null || lastname != null || nhsNo != null || (dob != null && dob != DateTime.Parse("0001-01-01")) || externalID != null)
                 {
                     if (cguNo != null)
                     {
@@ -118,6 +118,20 @@ namespace AdminX.Controllers
                         searchTerm = searchTerm + "," + "DOB=" + dob.ToString();
                         _pvm.dobSearch = dob.GetValueOrDefault();
                     }
+                    if(externalID != null)
+                    {
+                        if (searchTerm == "")
+                        {
+                            _pvm.patientsList = await _patientSearchData.GetPatientsListByExternalID(externalID);
+                        }
+                        else
+                        {
+                            _pvm.patientsList = _pvm.patientsList.Where(p => p.ExternalID == externalID).ToList();
+                        }
+                        searchTerm = searchTerm + "," + "ExternalID=" + externalID;
+                        _pvm.externalIDSearch = externalID;
+                    }
+
 
                     //_pvm.patientsList = _pvm.patientsList.OrderBy(p => p.LASTNAME).ThenBy(p => p.FIRSTNAME).ToList();
                     _pvm.patientsList = _pvm.patientsList.OrderBy(p =>
