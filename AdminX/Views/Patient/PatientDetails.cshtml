@@ -248,6 +248,7 @@
                             }
                             @Model.patient.LASTNAME
                         </h1>
+                        
                     </div>
                     <div class="col-md-4">
                         @if (Model.patientsList.Count() > 1)
@@ -269,7 +270,14 @@
                         }
                     </div>
                 </div>
-            
+                @if (Model.patient.ExternalID != null)
+                {
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2 class="text-center">Epic Ref: @Model.patient.ExternalID</h2>
+                        </div>
+                    </div>
+                }
             </div>
             <div class="col-md-2">
                 @if (Model.nextPatient != null)
@@ -602,8 +610,7 @@
                         <div class="col-auto ms-auto text-end mt-n1">
                             <a asp-controller="Patient" asp-action="EditPatientDetails" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Edit Details</a>
                         </div>
-                        <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
-                        
+                        <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>                        
                         @if(Model.pedigree != null)
                         {
                             if (Model.pedigree.File_Dctm_Sts == 0)
