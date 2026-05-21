@@ -2,18 +2,21 @@
 using AdminX.Meta;
 using AdminX.Models;
 using AdminX.ViewModels;
+using ClinicalXPDataConnections.Data;
+
 //using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AdminX.Controllers
 {
     public class SysAdminController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
         //private readonly AdminContext _adminContext;
         private readonly IConfiguration _config;
@@ -30,12 +33,13 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
         private readonly IAppointmentDataAsync _appointmentData;
+        private readonly IClinicSlotDataAsync _clinicSlotData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData)
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicSlotDataAsync clinicSlotData, ClinicalContext context)
         {
-            //_clinContext = context;
+            _clinContext = context;
             //_docContext = docContext;
             //_adminContext = adminContext;
             _config = config;
@@ -52,6 +56,7 @@ namespace AdminX.Controllers
             _ip = new IPAddressFinder(HttpContext);
             _patientData = patientData;
             _appointmentData = appointmentData;
+            _clinicSlotData = clinicSlotData;
         }
 
         [HttpGet]
@@ -1057,22 +1062,31 @@ namespace AdminX.Controllers
                    sLogin: User.Identity.Name
                );
 
-                    if (success == 0)
-                    {
-                        return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-EpicClinicCodes(SQL)" });
-                    }
+                if (success == 0)
+                {
+                    return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-EpicClinicCodes(SQL)" });
+                }
 
-                    TempData["SuccessMessage"] = "Clinician added successfully.";
+                var appts = await _appointmentData.GetAppointmentsByClinic(model.ClinicianID, model.ClinicID, DateTime.Now, DateTime.Now.AddYears(3)); //we HAVE to give it a date, so let's go 3 years!
+                              
+                foreach (var appt in appts)
+                {
+                    string pedNum = _patientData.GetPatientDetails(appt.MPI).Result.PEDNO;
 
-                    return RedirectToAction("EpicClinicCodes");
-               
+                    var slot = await _clinicSlotData.GetMatchingSlot(appt.STAFF_CODE_1, appt.FACILITY, appt.BOOKED_DATE.GetValueOrDefault(), appt.BOOKED_TIME.Value.Hour, 
+                        appt.BOOKED_TIME.Value.Minute);
 
+                    int successSlot = _crud.UpdateRelatedClinicSlot(slot.SlotID, pedNum, appt.RefID, User.Identity.Name);                    
+                }
+
+                TempData["SuccessMessage"] = "Clinician added successfully.";
+
+                return RedirectToAction("EpicClinicCodes");
             }
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Epic Clinic Codes" });
             }
-
-        }
+        }        
     }
 }
