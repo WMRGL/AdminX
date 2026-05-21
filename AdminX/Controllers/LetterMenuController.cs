@@ -12,8 +12,8 @@ namespace AdminX.Controllers
     public class LetterMenuController : Controller
     {
         private readonly IConfiguration _config;
-        //private readonly ClinicalContext _context;
-        //private readonly DocumentContext _documentContext;
+        private readonly ClinicalContext _context;
+        private readonly DocumentContext _documentContext;
         //private readonly AdminContext _adminContext;
         //private readonly APIContext _apiContext;
         private readonly IDocumentsDataAsync _documentsData;        
@@ -36,11 +36,11 @@ namespace AdminX.Controllers
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData)//, ClinicalContext context, DocumentContext documentContext, APIContext apiContext)
+            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData, ClinicalContext context, DocumentContext documentContext, APIContext apiContext)
         {
             _config = config;   
-            //_context = context;
-            //_documentContext = documentContext;
+            _context = context;
+            _documentContext = documentContext;
             //_adminContext = adminContext;
             //_apiContext = apiContext;
             _documentsData = documents;
@@ -228,9 +228,7 @@ namespace AdminX.Controllers
                         {
                             qrCode = _api.GetPPQQRCode(mpi, _lvm.referral.PATHWAY).Result;
                         }
-                    }
-
-                    
+                    }                    
 
                     //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
                     _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
