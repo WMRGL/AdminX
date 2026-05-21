@@ -1,0 +1,142 @@
+﻿@model AdminX.ViewModels.SysAdminVM
+
+@{
+    ViewData["Title"] = "Admin-X - System Administration - Unknown Clinicians";
+}
+
+<partial name="_SysAdminNav" />
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title text-dark">Unknown Clinicians</h3>
+    </div>
+    <div class="card-body">
+
+        <table class="table table-striped table-bordered defaultTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Booked Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Clinician</th>
+                    <th>Clinic</th>
+                    <th>Type</th>
+                    <th>OutCome</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.unknownClinicians)
+                {
+                    <tr>
+                        <td>@c.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                        <td>@(c.BOOKED_TIME.Value.ToString("HH:mm"))</td>
+                        <td>@c.ClinicLocation</td>
+                        <td>@c.Clinician</td>
+                        <td>@c.Clinic</td>
+                        <td>@c.AppType</td>
+                        <td>@c.OUTCOME_ENTERED</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-@c.ReferralRefID">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+@foreach (var code in Model.unknownClinicians)
+{
+    <div class="modal fade" id="modal-@code.ReferralRefID" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-dark">@code.BOOKED_DATE</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body m-3">
+                    <div class="mb-0">
+                        <form asp-controller="Clinic" asp-action="EditAppointment">
+                            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+                            <input type="hidden" name="Clinic.RefID" value="@code.RefID" />
+                            <input type="hidden" name="Clinic.SeenBy" value="@code.SeenBy" />
+                            <input type="hidden" name="Clinic.SeenBy2" value="@code.SeenBy2" />
+                            <input type="hidden" name="Clinic.SeenBy3" value="@code.SeenBy3" />
+
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label for="StaffCode1_@code.RefID" class="form-label">Clinician</label>
+                                    <select id="StaffCode1_@code.RefID" name="Clinic.STAFF_CODE_1" class="form-select js-choice" required>
+                                        <option value="">Select Clinician</option>
+                                        @foreach (var clinician in Model.staffMembers)
+                                        {
+                                            if (code.STAFF_CODE_1 == clinician.STAFF_CODE)
+                                            {
+                                                <option value="@clinician.STAFF_CODE" selected>@clinician.NAME</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@clinician.STAFF_CODE">@clinician.NAME</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="StaffCode2_@code.RefID" class="form-label">Clinician 2</label>
+                                    <select id="StaffCode2_@code.RefID" name="Clinic.STAFF_CODE_2" class="form-select js-choice">
+                                        <option value="">Select Clinician</option>
+                                        @foreach (var clinician in Model.staffMembers)
+                                        {
+                                            if (code.STAFF_CODE_2 == clinician.STAFF_CODE)
+                                            {
+                                                <option value="@clinician.STAFF_CODE" selected>@clinician.NAME</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@clinician.STAFF_CODE">@clinician.NAME</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="Facility_@code.RefID" class="form-label">Clinic</label>
+                                    <select id="Facility_@code.RefID" name="Clinic.FACILITY" class="form-select js-choice">
+                                        <option value="@code.Clinic" selected>@code.Clinic</option>
+                                        @foreach (var clinic in Model.venues)
+                                        {
+                                            <option value="@clinic.FACILITY">@clinic.NAME</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="AppType_@code.RefID" class="form-label">Type</label>
+                                    <select id="AppType_@code.RefID" name="Clinic.AppType" class="form-select js-choice">
+                                        <option value="@code.AppType" selected>@code.AppType</option>
+                                        @foreach (var appType in Model.appTypeList)
+                                        {
+                                            <option value="@appType.APP_TYPE">@appType.APP_TYPE</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-end">
+                                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

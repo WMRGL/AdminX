@@ -30,10 +30,12 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
         private readonly IAppointmentDataAsync _appointmentData;
+        private readonly IClinicDataAsync _clinicData;
+        private readonly IActivityTypeDataAsync _activityTypeData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData)
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicDataAsync clinicData, IActivityTypeDataAsync activityTypeData)
         {
             //_clinContext = context;
             //_docContext = docContext;
@@ -52,6 +54,8 @@ namespace AdminX.Controllers
             _ip = new IPAddressFinder(HttpContext);
             _patientData = patientData;
             _appointmentData = appointmentData;
+            _clinicData = clinicData;
+            _activityTypeData = activityTypeData;
         }
 
         [HttpGet]
@@ -1073,6 +1077,27 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Epic Clinic Codes" });
             }
 
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> UnknownClinicians()
+        {
+            try
+            {
+                string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
+                _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Unknown Clinicians", "", _ip.GetIPAddress());
+                _savm.unknownClinicians = await _clinicData.GetUnknownClinicians();
+
+                _savm.staffMembers = await _staffData.GetClinicalStaffList();
+                _savm.venues = await _venueData.GetVenueList();
+                _savm.appTypeList = await _activityTypeData.GetApptTypes();
+                return View(_savm);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Unknown Clinicians" });
+            }
         }
     }
 }
