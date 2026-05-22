@@ -33,6 +33,8 @@ namespace AdminX.ViewModels
         public StaffMember dutySPR { get; set; }
         public List<EpicClinicLink> epicClinicLinks { get; set; }
         public EpicClinicLink epicClinicLink { get; set; }
+        public List<Appointment> unknownClinicians { get; set; }
+        public List<ActivityType> appTypeList { get; set; }
 
     }
 }
