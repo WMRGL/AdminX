@@ -33,7 +33,7 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
         private readonly IAppointmentDataAsync _appointmentData;
-        
+        private readonly IClinicSlotDataAsync _clinicSlotData;
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
