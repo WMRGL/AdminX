@@ -33,12 +33,13 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly IPatientDataAsync _patientData;
         private readonly IAppointmentDataAsync _appointmentData;
+        private readonly IClinicSlotDataAsync _clinicSlotData;
         private readonly IClinicDataAsync _clinicData;
         private readonly IActivityTypeDataAsync _activityTypeData;
 
-        public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
-            IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicDataAsync clinicData, IActivityTypeDataAsync activityTypeData)
+        public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility,
+            IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud,
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicSlotDataAsync clinicSlotData)
         {
             //_clinContext = context;
             //_docContext = docContext
@@ -50,15 +51,14 @@ namespace AdminX.Controllers
             _venueData = clinicVenue;
             _clinicDetailsData = cliniciansClinic;
             _titleData = title;
-            _savm = new SysAdminVM();            
+            _savm = new SysAdminVM();
             _audit = audit;
             _constants = constants;
             _crud = new CRUD(_config);
             _ip = new IPAddressFinder(HttpContext);
             _patientData = patientData;
             _appointmentData = appointmentData;
-            _clinicData = clinicData;
-            _activityTypeData = activityTypeData;
+            _clinicSlotData = clinicSlotData;
         }
 
         [HttpGet]
@@ -66,7 +66,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> Index()
         {
             try
-            { 
+            {
                 if (User.Identity.Name is null)
                 {
                     return RedirectToAction("NotFound", "WIP");
@@ -92,7 +92,7 @@ namespace AdminX.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName="SysAdmin" });
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "SysAdmin" });
             }
         }
 
@@ -101,7 +101,7 @@ namespace AdminX.Controllers
         public async Task<IActionResult> StaffMembers(string? message, bool? success)
         {
             try
-            {                
+            {
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
@@ -128,23 +128,23 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StaffMembers(string? staffCodeSearch, string? nameSearch, string? teamSearch, 
-            bool? isOnlyCurrent=false, bool? isNotExternal=false, bool? isOnlyAdmin=false, bool? isOnlyClinical=false)
+        public async Task<IActionResult> StaffMembers(string? staffCodeSearch, string? nameSearch, string? teamSearch,
+            bool? isOnlyCurrent = false, bool? isNotExternal = false, bool? isOnlyAdmin = false, bool? isOnlyClinical = false)
         {
             try
             {
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Members", "", _ip.GetIPAddress());
 
-                var staffMemberList = await _staffData.GetStaffMemberListAll();                
+                var staffMemberList = await _staffData.GetStaffMemberListAll();
                 staffMemberList = staffMemberList.Where(s => s.BILL_ID != "Exclude").ToList();
                 IQueryable<StaffMember> staffMembers = staffMemberList.AsQueryable();
-               
+
                 _savm.teams = new List<string>();
 
-                foreach(var item in staffMembers)
+                foreach (var item in staffMembers)
                 {
-                    if(!_savm.teams.Contains(item.BILL_ID))
+                    if (!_savm.teams.Contains(item.BILL_ID))
                     {
                         _savm.teams.Add(item.BILL_ID);
                     }
@@ -158,7 +158,7 @@ namespace AdminX.Controllers
                 if (nameSearch != null)
                 {
                     staffMembers = staffMembers.Where(s => s.NAME != null);
-                    staffMembers = staffMembers.Where(s => s.NAME.Contains(nameSearch));                    
+                    staffMembers = staffMembers.Where(s => s.NAME.Contains(nameSearch));
                 }
 
                 if (teamSearch != null)
@@ -178,7 +178,7 @@ namespace AdminX.Controllers
                 }
 
                 if (isOnlyAdmin.GetValueOrDefault())
-                {                    
+                {
                     staffMembers = staffMembers.Where(s => s.CLINIC_SCHEDULER_GROUPS == "Admin");
                 }
 
@@ -207,7 +207,7 @@ namespace AdminX.Controllers
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Staff Member Details", "", _ip.GetIPAddress());
 
-                _savm.staffMember = await _staffData.GetStaffMemberDetailsByStaffCode(staffCode);                
+                _savm.staffMember = await _staffData.GetStaffMemberDetailsByStaffCode(staffCode);
                 _savm.staffMembers = await _staffData.GetStaffMemberListAll();
                 _savm.teams = new List<string>();
                 _savm.types = new List<string>();
@@ -219,7 +219,7 @@ namespace AdminX.Controllers
                     {
                         _savm.teams.Add(item.BILL_ID);
                     }
-                    if(!_savm.types.Contains(item.CLINIC_SCHEDULER_GROUPS))
+                    if (!_savm.types.Contains(item.CLINIC_SCHEDULER_GROUPS))
                     {
                         _savm.types.Add(item.CLINIC_SCHEDULER_GROUPS);
                     }
@@ -234,8 +234,8 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> StaffMemberDetails(string staffCode, string title, string firstname, string lastname, string role, string team, 
-            string type, DateTime startDate, DateTime endDate, bool isInPost, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator=false)
+        public async Task<IActionResult> StaffMemberDetails(string staffCode, string title, string firstname, string lastname, string role, string team,
+            string type, DateTime startDate, DateTime endDate, bool isInPost, string? gmcNumber, bool? isSupervisor = false, bool? isSystemAdministrator = false)
         {
 
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
@@ -286,7 +286,7 @@ namespace AdminX.Controllers
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddNewStaffMember(string loginName, string title, string firstname, string lastname, string role, string team,
-            string type, DateTime startDate, string email, string? gmcNumber, bool? isSupervisor=false, bool? isSystemAdministrator = false)
+            string type, DateTime startDate, string email, string? gmcNumber, bool? isSupervisor = false, bool? isSystemAdministrator = false)
         {
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Staff Member", "", _ip.GetIPAddress());
@@ -297,10 +297,10 @@ namespace AdminX.Controllers
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Clinic-edit(SQL)" }); }
 
             StaffMember newStaff = await _staffData.GetStaffMemberDetails(loginName);
-            string password = newStaff.PASSWORD;                       
+            string password = newStaff.PASSWORD;
 
             return RedirectToAction("StaffMembers", new { message = "New staff member added. Please advise new staff member of password: " + password, success = true });
-            
+
         }
 
         [Authorize]
@@ -323,7 +323,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinicians" });
             }
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Clinicians(string? firstNameSearch, string? lastNameSearch, bool? isOnlyCurrent = false, bool? isOnlyGP = false, bool? isOnlyNonGP = false)
         {
@@ -332,7 +332,7 @@ namespace AdminX.Controllers
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Clinicians", "", _ip.GetIPAddress());
 
-                _savm.clinicians = new List<ExternalClinician>(); 
+                _savm.clinicians = new List<ExternalClinician>();
 
                 if (firstNameSearch != null || lastNameSearch != null)
                 {
@@ -371,7 +371,7 @@ namespace AdminX.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Clinicians" });
-            }          
+            }
         }
 
         [Authorize]
@@ -419,7 +419,7 @@ namespace AdminX.Controllers
 
                 if (isNonActive != 0) { isGPChanged = true; }
 
-                if(curFac != facility) { isGPChanged = true; }
+                if (curFac != facility) { isGPChanged = true; }
 
                 if (isGPChanged)
                 {
@@ -455,7 +455,7 @@ namespace AdminX.Controllers
                 _savm.titles = await _titleData.GetTitlesList();
                 var fac = await _facilityData.GetFacilityListAll();
                 _savm.facilities = fac.Where(f => f.NONACTIVE == 0).ToList();
-                
+
                 return View(_savm);
             }
             catch (Exception ex)
@@ -535,7 +535,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Facilities(string? nameSearch, string? citySearch, string? codeSearch, bool? isOnlyCurrent = false, bool? isOnlyGP = false, bool? isOnlyNonGP = false)
-        {            
+        {
             try
             {
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
@@ -545,19 +545,19 @@ namespace AdminX.Controllers
                 IQueryable<ExternalFacility> facs = facList.AsQueryable();
 
                 if (nameSearch != null)
-                {                    
+                {
                     facs = facs.Where(s => s.NAME != null);
                     facs = facs.Where(s => s.NAME.ToUpper().Contains(nameSearch.ToUpper()));
                 }
 
                 if (citySearch != null)
-                {                    
+                {
                     facs = facs.Where(s => s.CITY != null);
                     facs = facs.Where(s => s.CITY.ToUpper().Contains(citySearch.ToUpper()));
                 }
 
                 if (codeSearch != null)
-                {                    
+                {
                     facs = facs.Where(s => s.MasterFacilityCode.ToUpper().Contains(codeSearch.ToUpper()));
                 }
 
@@ -690,7 +690,7 @@ namespace AdminX.Controllers
                     venues = venues.Where(v => v.NAME.ToUpper().Contains(nameSearch.ToUpper())).ToList();
                 }
 
-                if(isOnlyCurrent.GetValueOrDefault())
+                if (isOnlyCurrent.GetValueOrDefault())
                 {
                     venues = venues.Where(v => v.NON_ACTIVE == 0).ToList();
                 }
@@ -772,7 +772,7 @@ namespace AdminX.Controllers
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Venue", "", _ip.GetIPAddress());
 
-            if(notes == null) { notes = ""; }
+            if (notes == null) { notes = ""; }
 
             int iSuccess = _crud.SysAdminCRUD("Venue", "Create", 0, 0, 0, clinCode, name, location, notes, User.Identity.Name, null, null,
                 false, false, false, 0, 0, 0, locationCode, "", "");
@@ -837,7 +837,7 @@ namespace AdminX.Controllers
             _savm.cliniciansClinic = await _clinicDetailsData.GetCliniciansClinic(clinCode);
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
-            
+
             _savm.venues = await _venueData.GetVenueList();
             _savm.staffMembers = await _staffData.GetStaffMemberListByRole("Admin");
 
@@ -857,7 +857,7 @@ namespace AdminX.Controllers
                 showDate, showLocalRef, 0, 0, postLude, position, telephone, address, town, county, postCode, secretary);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "ClinicSetup-edit(SQL)" }); }
-            
+
             return RedirectToAction("CliniciansClinics", new { message = "Changes saved.", success = true });
         }
 
@@ -870,7 +870,7 @@ namespace AdminX.Controllers
                 string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
                 _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
-                if(clinCodeToCreate != null) { _savm.clinCodeToCreate = clinCodeToCreate; }
+                if (clinCodeToCreate != null) { _savm.clinCodeToCreate = clinCodeToCreate; }
 
                 _savm.venues = await _venueData.GetVenueList();
                 _savm.staffMembers = await _staffData.GetStaffMemberListByRole("Admin");
@@ -884,36 +884,36 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddNewCliniciansClinic(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site, 
+        public async Task<IActionResult> AddNewCliniciansClinic(string clinCode, string? addressee, string? salutation, string? position, string? preAmble, string? postLude, string? copiesTo, string? site,
             string? telephone, string? address, string? town, string? county, string? postCode, string secretary, bool? callToBook = false, bool? includeSPR = false, bool? showDate = false, bool? showLocalRef = false)
         {
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - New Clinic Details", "", _ip.GetIPAddress());
 
             int iShowLocalRef = 0;
-            if(showLocalRef.GetValueOrDefault()) { iShowLocalRef = 1; }
+            if (showLocalRef.GetValueOrDefault()) { iShowLocalRef = 1; }
 
-            int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Create", 0,0,0,clinCode, addressee, salutation, preAmble, User.Identity.Name, null,null, callToBook, includeSPR, 
-                showDate, iShowLocalRef,0,0,postLude, position, telephone, address, town, county, postCode, secretary);
-            
+            int iSuccess = _crud.SysAdminCRUD("ClinicSetup", "Create", 0, 0, 0, clinCode, addressee, salutation, preAmble, User.Identity.Name, null, null, callToBook, includeSPR,
+                showDate, iShowLocalRef, 0, 0, postLude, position, telephone, address, town, county, postCode, secretary);
+
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "ClinicSetup-add(SQL)" }); }
 
             return RedirectToAction("CliniciansClinics", new { message = "New clinic details added.", success = true });
         }
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> SetDutyClinicians(string? message, bool? success=false)
+        public async Task<IActionResult> SetDutyClinicians(string? message, bool? success = false)
         {
-            if(message != null)
+            if (message != null)
             {
                 _savm.message = message;
                 _savm.success = success.GetValueOrDefault();
             }
 
             _savm.consultants = await _staffData.GetConsultantsList();
-            _savm.gcs = await _staffData.GetGCList();            
+            _savm.gcs = await _staffData.GetGCList();
             _savm.sprs = await _staffData.GetSpRList();
-            _savm.dutyConsultant = _savm.consultants.FirstOrDefault(s => s.isDutyClinician == true);            
+            _savm.dutyConsultant = _savm.consultants.FirstOrDefault(s => s.isDutyClinician == true);
             _savm.dutySPR = _savm.sprs.FirstOrDefault(s => s.isDutyClinician == true);
 
             return View(_savm);
@@ -1026,7 +1026,7 @@ namespace AdminX.Controllers
                 new EpicClinicLink
                 {
                     EpicClinicID = id,
-                    
+
                     EpicDescription = !string.IsNullOrEmpty(realEpicName) ? realEpicName : "Manually saved via AdminX",
 
                     IsActive = true,
@@ -1049,20 +1049,21 @@ namespace AdminX.Controllers
         [HttpPost]
         public async Task<IActionResult> EpicClinicCodes(EpicClinicLink model)
         {
-            try {
-             
-                    int success = _crud.SysAdminCRUD(
-                   sType: "EpicClinic",
-                   sOperation: "Edit",
-                   int1: 0,
-                   int2: 0,
-                   int3: 0,
-                   string1: model.EpicClinicID,
-                   string2: model.ClinicianID,
-                   string3: model.ClinicID,
-                   text: "",
-                   sLogin: User.Identity.Name
-               );
+            try
+            {
+
+                int success = _crud.SysAdminCRUD(
+               sType: "EpicClinic",
+               sOperation: "Edit",
+               int1: 0,
+               int2: 0,
+               int3: 0,
+               string1: model.EpicClinicID,
+               string2: model.ClinicianID,
+               string3: model.ClinicID,
+               text: "",
+               sLogin: User.Identity.Name
+           );
 
                 if (success == 0)
                 {
@@ -1070,15 +1071,15 @@ namespace AdminX.Controllers
                 }
 
                 var appts = await _appointmentData.GetAppointmentsByClinic(model.ClinicianID, model.ClinicID, DateTime.Now, DateTime.Now.AddYears(3)); //we HAVE to give it a date, so let's go 3 years!
-                              
+
                 foreach (var appt in appts)
                 {
                     string pedNum = _patientData.GetPatientDetails(appt.MPI).Result.PEDNO;
 
-                    var slot = await _clinicSlotData.GetMatchingSlot(appt.STAFF_CODE_1, appt.FACILITY, appt.BOOKED_DATE.GetValueOrDefault(), appt.BOOKED_TIME.Value.Hour, 
+                    var slot = await _clinicSlotData.GetMatchingSlot(appt.STAFF_CODE_1, appt.FACILITY, appt.BOOKED_DATE.GetValueOrDefault(), appt.BOOKED_TIME.Value.Hour,
                         appt.BOOKED_TIME.Value.Minute);
 
-                    int successSlot = _crud.UpdateRelatedClinicSlot(slot.SlotID, pedNum, appt.RefID, User.Identity.Name);                    
+                    int successSlot = _crud.UpdateRelatedClinicSlot(slot.SlotID, pedNum, appt.RefID, User.Identity.Name);
                 }
 
                 TempData["SuccessMessage"] = "Clinician added successfully.";
@@ -1089,7 +1090,6 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Epic Clinic Codes" });
             }
-
         }
 
         [Authorize]
@@ -1112,5 +1112,6 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Unknown Clinicians" });
             }
         }
+
     }
 }
