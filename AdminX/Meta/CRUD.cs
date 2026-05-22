@@ -63,6 +63,8 @@ namespace AdminX.Meta
             string? clinicianCode, string? clinicCode, string? attendance, string? specCode, string? location, string? cancelReason);
 
         public int EpicAcceptChanges(int mpi, string epicID, string sLogin, string itemType, int? refID = 0);
+
+        public int UpdateRelatedClinicSlot(int slotid, string pednum, int relatedRefID, string sLogin);
     }
 
 
@@ -610,6 +612,34 @@ namespace AdminX.Meta
             cmd.Parameters.Add("@RefID", SqlDbType.Int).Value = refID;
             cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = itemType;
             cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+            var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
+            returnValue.Direction = ParameterDirection.ReturnValue;
+            cmd.ExecuteNonQuery();
+            var iReturnValue = (int)returnValue.Value;
+            conn.Close();
+            success = iReturnValue;
+
+            return success;
+        }
+
+        public int UpdateRelatedClinicSlot(int slotid, string pednum, int relatedRefID, string sLogin)
+        {
+            int success = 0;
+
+            SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
+            conn.Open();
+            SqlCommand cmd = new SqlCommand("dbo.sp_AXCRUD", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@int1", SqlDbType.Int).Value = slotid;            
+            cmd.Parameters.Add("@int2", SqlDbType.Int).Value = relatedRefID;
+            cmd.Parameters.Add("@int3", SqlDbType.Int).Value = 0;
+            cmd.Parameters.Add("@string1", SqlDbType.VarChar).Value = pednum;
+            cmd.Parameters.Add("@string2", SqlDbType.VarChar).Value = "";
+            cmd.Parameters.Add("@string3", SqlDbType.VarChar).Value = "";
+            cmd.Parameters.Add("@ItemType", SqlDbType.VarChar).Value = "ClinicSlot";
+            cmd.Parameters.Add("@Operation", SqlDbType.VarChar).Value = "Update";
+            cmd.Parameters.Add("@login", SqlDbType.VarChar).Value = sLogin;
+
             var returnValue = cmd.Parameters.Add("@ReturnValue", SqlDbType.Int);
             returnValue.Direction = ParameterDirection.ReturnValue;
             cmd.ExecuteNonQuery();
