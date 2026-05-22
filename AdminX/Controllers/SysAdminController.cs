@@ -16,7 +16,7 @@ namespace AdminX.Controllers
 {
     public class SysAdminController : Controller
     {
-        private readonly ClinicalContext _clinContext;
+        //private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
         //private readonly AdminContext _adminContext;
         private readonly IConfiguration _config;
@@ -37,10 +37,10 @@ namespace AdminX.Controllers
 
         public SysAdminController(IConfiguration config, IStaffUserDataAsync staffUser, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, 
             IClinicVenueDataAsync clinicVenue, ICliniciansClinicDataAsync cliniciansClinic, ITitleDataAsync title, IAuditServiceAsync audit, IConstantsDataAsync constants, ICRUD crud, 
-            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicSlotDataAsync clinicSlotData, ClinicalContext context)
+            IPatientDataAsync patientData, IAppointmentDataAsync appointmentData, IClinicSlotDataAsync clinicSlotData)
         {
-            _clinContext = context;
-            //_docContext = docContext;
+            //_clinContext = context;
+            //_docContext = docContext
             //_adminContext = adminContext;
             _config = config;
             _staffData = staffUser;
