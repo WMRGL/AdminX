@@ -153,6 +153,18 @@ namespace AdminX.Controllers
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
                 _cvm.linkedReferral = await _referralData.GetReferralDetails(_cvm.Clinic.ReferralRefID);
                 _cvm.patient = await _patientData.GetPatientDetails(_cvm.Clinic.MPI);
+                var clinicList = await _clinicData.GetClinicByPatientsList(_cvm.Clinic.MPI);
+
+                if (clinicList.Count > 0)
+                {
+                    _cvm.clinicList = clinicList.Where(c => c.RefID != id).ToList(); //because the view duplicates the entries when there's multiple alerts
+
+                    var clinicListFuture = _cvm.clinicList.Where(c => c.RefID >= _cvm.Clinic.RefID).OrderBy(c => c.RefID).ToList();
+                    var clinicListPast = _cvm.clinicList.Where(c => c.RefID <= _cvm.Clinic.RefID).OrderByDescending(c => c.RefID).ToList();
+
+                    _cvm.ClinicNext = clinicListFuture.FirstOrDefault();
+                    _cvm.ClinicPrevious = clinicListPast.FirstOrDefault();
+                }
 
                 if (_cvm.Clinic == null)
                 {

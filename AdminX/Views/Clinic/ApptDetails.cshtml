@@ -32,12 +32,43 @@ else
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
+
+            <div class="row">
+                @if (Model.clinicList.Count > 0)
+                {
+                    <div class="row mb-2 g-2">
+                        <div class="col-md-4">
+                            @if (Model.ClinicPrevious != null)
+                            {
+                                <a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.ClinicPrevious.RefID>
+                                    <h4>
+                                        <i class="fa-solid fa-arrow-left fa-2xl ml-"></i>Previous: @Model.ClinicPrevious.AppType on @Model.ClinicPrevious.BOOKED_DATE.Value.ToString("dd/MM/yyyy") with @Model.ClinicPrevious.Clinician
+                                    </h4>
+                                </a>
+                            }
+                        </div>
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                            @if (Model.ClinicNext != null)
+                            {
+                                <a asp-controller="Clinic" asp-action="ApptDetails" asp-route-id=@Model.ClinicNext.RefID>
+                                    <h4>
+                                        Next: @Model.ClinicNext.AppType on @Model.ClinicNext.BOOKED_DATE.Value.ToString("dd/MM/yyyy") with @Model.ClinicNext.Clinician<i class="fa-solid fa-arrow-right fa-2xl ml-"></i>
+                                    </h4>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
             <div class="card-title text-dark">
                 <h3>Appointment Details</h3>
             </div>
         </div>
-        <div class="card-body">
-            <div class="row ">
+        <div class="card-body">            
+
+            <div class="row mb-2 g-2">
                 <div>
                     <dl class="row mb-5 mt-2">
                         <dt class="col-sm-2">
@@ -76,6 +107,13 @@ else
                         <dd class="col-sm-10">
                             @Html.DisplayFor(model => model.Clinic.Clinic)
                         </dd>
+                        <dt class="col-sm-2">
+                            @Html.DisplayNameFor(model => model.Clinic.Location):
+                        </dt>
+                        <dd class="col-sm-10">
+                            @Html.DisplayFor(model => model.Clinic.Location)
+                        </dd>
+
                         @if (Model.Clinic.Notes != null)
                         {
                             <dt class="col-sm-2">
