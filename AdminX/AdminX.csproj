@@ -50,6 +50,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\DOTLetterPreviews\" />
     <Folder Include="wwwroot\ErrorLogs\" />
+    <Folder Include="wwwroot\DOTLetterPreviews\" />
     <Folder Include="wwwroot\StandardLetterPreviews\" />
   </ItemGroup>
 

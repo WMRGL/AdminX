@@ -7,9 +7,12 @@ namespace AdminX.ViewModels
     public class ClinicVM
     {
         public List<StaffMember> staffMembers { get; set; }
-        public List<ActivityItem> activityItems { get; set; }
+        public List<ActivityItem> activityItems { get; set; }        
         public ActivityItem activityItem { get; set; }
         public Appointment Clinic { get; set; }
+        public List<Appointment> clinicList { get; set; }
+        public Appointment ClinicPrevious { get; set; }
+        public Appointment ClinicNext { get; set; }
         public Referral linkedReferral { get; set; }
         public List<Outcome> outcomes { get; set; }        
         public Patient patient { get; set; }        

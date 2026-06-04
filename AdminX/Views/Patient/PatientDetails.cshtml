@@ -1308,13 +1308,12 @@
                             <div class="">
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
-                                        <tr>
-                                            
+                                        <tr>                                            
                                             <th scope="col">Diary Date</th>
                                             <th scope="col">Diary With</th>
                                             <th scope="col">Action</th>
                                             <th scope="col">Text</th>
-                                            <th scope="col">Doc Code</th>
+                                            <th scope="col">Doc Code</th>                                            
                                             <th scope="col">Related Ref ID</th>
                                             <th></th>
                                         </tr>
@@ -1335,7 +1334,14 @@
                                                 <td>@d.DiaryWithName</td>
                                                 <td>@d.DiaryAction</td>
                                                 <td>@d.DiaryText</td>
-                                                <td>@d.DocCode</td>
+                                                @if(d.DocCode != null)
+                                                {
+                                                    <td>@d.DocCode - @d.DocName</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                }
                                                 <td>@d.RefID</td>
                                                 <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
                                             </tr>

@@ -210,7 +210,7 @@
             // choice js
             const elements = document.querySelectorAll('.js-choice');
             elements.forEach(function(element) {
-            element.choices = new Choices(element, {searchEnabled: true, shouldSort: false});
+            element.choices = new Choices(element, {searchEnabled: true, shouldSort: false, searchResultLimit: -1});
           });
 
           // toastr js
