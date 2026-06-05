@@ -320,12 +320,20 @@ namespace AdminX.Controllers
             if (appType == "Tel. Admin")
             {
                 Patient patient = await _patientData.GetPatientDetails(mpi);
-                string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {urgency} Telephone Message";
 
-                string emailMessage = $"Caller - {callersName}%0D%0A%0D%0A" +
-                    $"Organisation - {callersOrg}%0D%0A%0D%0A" +
-                $"Contact Tel No - {callersTelNo}%0D%0A%0D%0A" +
-                message;
+                //Sanitise all raw user inputs to strip out dangerous carriage returns
+                string safeUrgency = Uri.EscapeDataString(urgency ?? "");
+                string safeCallersName = Uri.EscapeDataString(callersName ?? "");
+                string safeCallersOrg = Uri.EscapeDataString(callersOrg ?? "");
+                string safeCallersTelNo = Uri.EscapeDataString(callersTelNo ?? "");
+                string safeMessage = Uri.EscapeDataString(message ?? "");
+
+                string emailSubject = $"{patient.CGU_No} - {patient.FIRSTNAME} {patient.LASTNAME} - {safeUrgency} Telephone Message";
+
+                string emailMessage = $"Caller - {safeCallersName}%0D%0A%0D%0A" +
+                                      $"Organisation - {safeCallersOrg}%0D%0A%0D%0A" +
+                                      $"Contact Tel No - {safeCallersTelNo}%0D%0A%0D%0A" +
+                                      safeMessage;
 
                 string emailBodyText = "";
                 bool isHidden = true;
@@ -339,11 +347,10 @@ namespace AdminX.Controllers
                 _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
 
                 emailBodyText = emailBodyText + emailMessage;
-               
+
                 TempData["SuccessMessage"] = "Created successfully.";
                 TempData["MailtoLink"] = $"mailto:?subject={emailSubject}&body={emailBodyText}";
-
-                //return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+                // return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
                 return RedirectToAction("ApptDetails", new { id = refID });
             }
 
