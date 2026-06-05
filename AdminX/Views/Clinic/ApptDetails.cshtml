@@ -263,3 +263,10 @@ else
 
 
 </script>
+
+@if (TempData["MailtoLink"] != null)
+{
+    <script>
+        window.location.href = '@Html.Raw(TempData["MailtoLink"])';
+    </script>
+}

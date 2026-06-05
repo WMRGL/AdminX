@@ -339,10 +339,12 @@ namespace AdminX.Controllers
                 _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
 
                 emailBodyText = emailBodyText + emailMessage;
-
+               
                 TempData["SuccessMessage"] = "Created successfully.";
+                TempData["MailtoLink"] = $"mailto:?subject={emailSubject}&body={emailBodyText}";
 
-                return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+                //return Redirect($"mailto:?subject={emailSubject}&body={emailBodyText}");
+                return RedirectToAction("ApptDetails", new { id = refID });
             }
 
             return RedirectToAction("ApptDetails", new { id = refID });
