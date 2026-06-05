@@ -1917,7 +1917,7 @@ namespace ClinicalXPDataConnections.Meta
                 spacer = section.AddParagraph();
 
 
-                if (ccs[0] != "")
+                if (ccs[0] != "None")
                 {
                     section.AddPageBreak();
 
