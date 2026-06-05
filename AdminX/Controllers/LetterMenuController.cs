@@ -30,13 +30,13 @@ namespace AdminX.Controllers
         private readonly IStaffUserDataAsync _staffData;
         private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _mirrorData;
         private readonly IExternalFacilityDataAsync _externalFacilityData;
 
         public LetterMenuController(IConfiguration config, IDocumentsDataAsync documents, IPatientDataAsync patient, IRelativeDataAsync relative, IReferralDataAsync referral, LetterController letter, 
             ICRUD crud, IDiaryDataAsync diary, ILeafletDataAsync leaflet, IExternalClinicianDataAsync clinician, IStaffUserDataAsync staffUser, IPhenotipsMirrorDataAsync ptmirror, 
-            IAuditServiceAsync audit, HSController hs, APIController api, IExternalFacilityDataAsync externalFacilityData, ClinicalContext context, DocumentContext documentContext, APIContext apiContext)
+            IAuditServiceAsync audit, HSController hs, IApiController api, IExternalFacilityDataAsync externalFacilityData, ClinicalContext context, DocumentContext documentContext, APIContext apiContext)
         {
             _config = config;   
             _context = context;

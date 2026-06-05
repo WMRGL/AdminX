@@ -23,11 +23,11 @@ namespace AdminX.Controllers
         private readonly ITitleDataAsync _titleData;
         private readonly ICRUD _crud;
         private readonly IAuditServiceAsync _audit;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPAddressFinder _ip;
 
         public RelativeController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IRelativeDataAsync relative, ITitleDataAsync title, ICRUD crud, 
-            IAuditServiceAsync audit, APIController api, APIContext aPIContext)
+            IAuditServiceAsync audit, IApiController api, APIContext aPIContext)
         {
             
             //_clinContext = context;            

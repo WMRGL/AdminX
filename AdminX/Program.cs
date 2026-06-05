@@ -98,7 +98,7 @@ builder.Services.AddScoped<IClinicSlotDataAsync, ClinicSlotDataAsync>();
 builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
 builder.Services.AddScoped<ICRUD, CRUD>();
 builder.Services.AddScoped<LetterController>();
-builder.Services.AddScoped<APIController>();
+builder.Services.AddScoped<IApiController, APIController>();
 builder.Services.AddScoped<HSController>();
 
 

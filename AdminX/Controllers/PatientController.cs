@@ -48,7 +48,7 @@ namespace AdminX.Controllers
         private readonly IAreaNamesDataAsync _areaNamesData;
         private readonly IGenderDataAsync _genderData;
         private readonly IConstantsDataAsync _constantsData;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
         private readonly IAlertTypeDataAsync _alertTypeData;
         private readonly IDiaryActionDataAsync _diaryActionData;
@@ -67,7 +67,7 @@ namespace AdminX.Controllers
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, IApiController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
             IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
