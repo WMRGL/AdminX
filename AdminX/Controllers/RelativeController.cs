@@ -14,7 +14,7 @@ namespace AdminX.Controllers
     {
         
         //private readonly ClinicalContext _clinContext;        
-        //private readonly APIContext _apiContext;        
+        private readonly APIContext _apiContext;        
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;        
@@ -27,11 +27,11 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
 
         public RelativeController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IRelativeDataAsync relative, ITitleDataAsync title, ICRUD crud, 
-            IAuditServiceAsync audit, APIController api)//, APIContext aPIContext)
+            IAuditServiceAsync audit, APIController api, APIContext aPIContext)
         {
             
             //_clinContext = context;            
-            //_apiContext = aPIContext;
+            _apiContext = aPIContext;
             _config = config;
             _crud = crud;
             _staffUser = staffUser;

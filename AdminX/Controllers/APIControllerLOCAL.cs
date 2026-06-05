@@ -339,9 +339,9 @@ namespace APIControllers.Controllers
                 APIRelativeData relData = new APIRelativeData(_context); 
 
                 foreach (var rel in relListAll)
-                {
-                    if (relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname).Count() == 0 &&
-                            rel.RelForename1 != patient.FIRSTNAME && rel.RelSurname != patient.LASTNAME)
+                {                    
+                    if (relData.GetRelativeDetailsByName(rel.RelForename1, rel.RelSurname).Count == 0 &&
+                            !(rel.RelForename1 == patient.FIRSTNAME && rel.RelSurname == patient.LASTNAME))
                     {
                         relatives.Add(new Relative
                         {
@@ -353,7 +353,7 @@ namespace APIControllers.Controllers
                             DOD = rel.DOD,
                             RelSex = rel.RelSex
                         });
-                    }
+                    }                    
                 }
             }            
 
