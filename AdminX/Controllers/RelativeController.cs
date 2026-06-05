@@ -260,6 +260,26 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
-        }        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob,
+            DateTime dod, string sex, string relation)
+        {
+            try
+            {
+                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, 0, 0, "", firstname, "", lastname,
+                    User.Identity.Name, dob, dod, false, false, 0, 0, 0, relation, sex);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
+
+                return RedirectToAction("ImportRelatives", "Relative", new { id = wmfacsid });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
+            }
+        }
+
     }
 }
