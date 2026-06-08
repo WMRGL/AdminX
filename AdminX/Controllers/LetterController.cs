@@ -1,6 +1,7 @@
 ﻿using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.ViewModels;
+using HtmlAgilityPack;
 //using Microsoft.Office.Interop.Outlook;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
@@ -9,7 +10,11 @@ using PdfSharpCore.Drawing;
 using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 using System.Drawing;
+using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ClinicalXPDataConnections.Meta
@@ -153,7 +158,9 @@ namespace ClinicalXPDataConnections.Meta
 
             if (letterContent.Contains("</"))
             {
-                letterContent = RemoveHTML(letterContent);
+                //letterContent = RemoveHTML(letterContent);
+                letterContent = CleanWordHtmlToText(letterContent);
+                //letterContent = ConvertToPlainText()
             }
 
             Paragraph contentLetterContent = section.AddParagraph();
@@ -354,7 +361,6 @@ namespace ClinicalXPDataConnections.Meta
                     row2.Height = 110;
                     row3.Height = 20;
 
-
                     quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
                     quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
                     quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
@@ -372,7 +378,6 @@ namespace ClinicalXPDataConnections.Meta
                     {
                         row3.Cells[1].AddParagraph(_lvm.documentsContent.OurEmailAddress);
                     }
-
                 }
                 else
                 {
@@ -380,7 +385,6 @@ namespace ClinicalXPDataConnections.Meta
                     //contentOurAddress.Format.Font.Size = 12;
                     contentOurAddress.Format.Alignment = ParagraphAlignment.Right;
                 }
-
 
                 patAddress = _add.GetAddress("PT", refID);
 
@@ -409,7 +413,8 @@ namespace ClinicalXPDataConnections.Meta
                     address = _add.GetAddress("GP", refID);
                 }
 
-                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4"))
+                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
+                    || (clinicianCode != "" && clinicianCode != null))
                 {
                     ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
                     name = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
@@ -422,7 +427,6 @@ namespace ClinicalXPDataConnections.Meta
                     address += hospital.STATE + Environment.NewLine;
                     address += hospital.ZIP + Environment.NewLine;
                 }
-
 
                 row2.Cells[0].AddParagraph(address);
 
@@ -493,7 +497,6 @@ namespace ClinicalXPDataConnections.Meta
                 //////All letter templates need to be defined individually here////////////////////////            
                 ///////////////////////////////////////////////////////////////////////////////////////
                 ///////////////////////////////////////////////////////////////////////////////////////
-
 
 
                 //Ack letter
@@ -891,12 +894,19 @@ namespace ClinicalXPDataConnections.Meta
                     {
                         foreach (var item in screening)
                         {
-                            contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString() + " to " +
-                                item.SurvStopAge.ToString() + Environment.NewLine;
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+                                if (item.SurvStopAge != 0)
+                                {
+                                    contentscreening += " to " + item.SurvStopAge.ToString();
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
                         }
                     }
 
-                    content2 = _lvm.documentsContent.Para2 + " " + additionalText;
+                    content2 = _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine + additionalText;
                     if (isScreeningRels.GetValueOrDefault())
                     {
                         content3 = _lvm.documentsContent.Para8;
@@ -922,6 +932,10 @@ namespace ClinicalXPDataConnections.Meta
                             content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
                         }
                     }
+                    if (leafletID != 0)
+                    {
+                        content6 = _lvm.documentsContent.Para6;
+                    }
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -945,6 +959,11 @@ namespace ClinicalXPDataConnections.Meta
                     if (content5 != "")
                     {
                         Paragraph letterContent5 = section.AddParagraph(content5);
+                        spacer = section.AddParagraph();
+                    }
+                    if (content6 != "")
+                    {
+                        Paragraph letterContent6 = section.AddParagraph(content6);
                         spacer = section.AddParagraph();
                     }
                 }
@@ -1031,11 +1050,15 @@ namespace ClinicalXPDataConnections.Meta
 
                     foreach (var item in _riskList)
                     {
-                        _surv = _survData.GetSurvDetails(item.RiskID);
-                        content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
-                        if (item.SurvStopAge != null)
+                        if (item.IncludeLetter.GetValueOrDefault() > 0)
                         {
-                            content2 = content2 + " to " + item.SurvStopAge.ToString();
+                            _surv = _survData.GetSurvDetails(item.RiskID);
+
+                            content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
+                            if (item.SurvStopAge != 0)
+                            {
+                                content2 += " to " + item.SurvStopAge.ToString();
+                            }
                         }
                     }
                     content3 = _lvm.documentsContent.Para3;
@@ -1058,7 +1081,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
-                    content4 = _lvm.documentsContent.Para9;
+                    //content4 = _lvm.documentsContent.Para9; //apparently this paragraph shouldn't be there
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -1066,8 +1089,8 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);
-                    spacer = section.AddParagraph();
+                    //Paragraph letterContent4 = section.AddParagraph(content4);
+                    //spacer = section.AddParagraph();
                 }
 
                 //O4
@@ -1665,7 +1688,7 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (docCode == "VHRProC")
                 {
-                    content1 = _lvm.documentsContent.Para1;
+                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText;
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -1916,10 +1939,20 @@ namespace ClinicalXPDataConnections.Meta
 
                 spacer = section.AddParagraph();
 
-
-                if (ccs[0] != "None")
+                if (ccs[0] != "None") //assuming that if the first one is "None" then there are no CCs
                 {
-                    section.AddPageBreak();
+                    DocumentRenderer renderer = new DocumentRenderer(document); //we have to do a rendering pass to get the page count!
+
+                    renderer.PrepareDocument();
+
+                    int totalPages = renderer.FormattedDocument.PageCount;
+
+                    RenderInfo[] pageObjects = renderer.GetRenderInfoFromPage(totalPages); //get the last page and see if it actually has content
+
+                    if (pageObjects != null && pageObjects.Length >= 5) //test for blank page - add a page break if there isn't one
+                    {
+                        section.AddPageBreak();
+                    }
 
                     int ccLength = 50;
                     spacer = section.AddParagraph();
@@ -1930,8 +1963,9 @@ namespace ClinicalXPDataConnections.Meta
                     {
                         string cc = "";
 
-                        if (ccs[i] != null && ccs[i] != "")
+                        if (ccs[i] != null && ccs[i] != "" && ccs[i] != "None")
                         {
+
                             if (ccs[i].Contains("Ganesan")) //because of course it's hard-coded
                             {
                                 cc = ccs[i];
@@ -2416,19 +2450,112 @@ namespace ClinicalXPDataConnections.Meta
             }
         }
 
-        string RemoveHTML(string text)
+        public static string CleanWordHtmlToText(string dirtyHtml)
+        {
+            if (string.IsNullOrWhiteSpace(dirtyHtml))
+                return string.Empty;
+
+            dirtyHtml = dirtyHtml.Replace("<b>", "[[strong]]"); //we have to do this, or the bold tags will get wiped by the "everything" tag
+            dirtyHtml = dirtyHtml.Replace("</b>", "[[/strong]]");
+            dirtyHtml = dirtyHtml.Replace("<strong>", "[[strong]]");
+            dirtyHtml = dirtyHtml.Replace("</strong>", "[[/strong]]");
+
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(dirtyHtml);
+
+            var sb = new StringBuilder();
+            using (var sw = new StringWriter(sb))
+            {
+                ConvertToPlainText(htmlDoc.DocumentNode, sw);
+                sw.Flush();
+            }
+
+            string result = WebUtility.HtmlDecode(sb.ToString()).Trim();
+
+            // 1. Strip out Word's internal hard line breaks that split sentences in half
+            result = result.Replace("\r", "").Replace("\n", " ");
+
+            // 2. Clear out heavy duplicate spaces left behind
+            result = Regex.Replace(result, @"[ ]{2,}", " ");
+
+            // 3. THE FIX: Convert tokens into single or double line breaks exactly as preferred
+            result = result.Replace("__REAL_DOUBLE_BREAK__", Environment.NewLine + Environment.NewLine);
+            result = result.Replace("__REAL_SINGLE_BREAK__", Environment.NewLine);
+
+            // 4. Clean up any trailing spaces sitting at the start of new lines
+            result = Regex.Replace(result, @"(?<=\r?\n)[ ]+", "");
+
+            // 5. Final polish: If three or more newlines clump up together, scale them back to a double break
+            return Regex.Replace(result, @"(\r?\n){3,}", Environment.NewLine + Environment.NewLine).Trim();
+        }
+
+        private static void ConvertToPlainText(HtmlNode node, TextWriter writer)
+        {
+            switch (node.NodeType)
+            {
+                case HtmlNodeType.Comment:
+                    break;
+
+                case HtmlNodeType.Document:
+                case HtmlNodeType.Element:
+                    string name = node.Name.ToLower();
+                    if (name == "script" || name == "style" || name == "head" || name == "title" || name == "xml")
+                        break;
+
+                    if (node.HasChildNodes)
+                    {
+                        foreach (var child in node.ChildNodes)
+                        {
+                            ConvertToPlainText(child, writer);
+                        }
+                    }
+
+                    // Differentiate between standalone breaks (<br>) and major block items (<p>, <li>, <div>)
+                    if (name == "br")
+                    {
+                        writer.Write("__REAL_SINGLE_BREAK__");
+                    }
+                    else if (name == "p" || name == "div" || name == "tr" || name == "h1" || name == "h2" || name == "h3" || name == "li")
+                    {
+                        writer.Write("__REAL_DOUBLE_BREAK__");
+                    }
+                    break;
+
+                case HtmlNodeType.Text:
+                    string text = ((HtmlTextNode)node).Text;
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                        writer.Write(text);
+                    }
+                    break;
+            }
+        }
+
+
+
+        string RemoveHTML(string text) //possibly depreciated, since I can't get this to work cleanly!
         {
             //text = text.Replace("<div>", "");
+            text = text.Replace("  ", " "); //because of the stupid double spaces, which are now causing line breaks for some reason!!!!!
+
             text = text.Replace("<div><br></div>", "newline");
             text = text.Replace("</div>", "newline");
+
+            //what utter fucking bullshit!!!
+            //this line is making certain spaces now cause line breaks, for some reason - but only sometimes!!!
             text = text.Replace(Environment.NewLine, "newline");
+            //I can't eliminate all of the single line breaks because that will fuck up all other letters!!!
+            //WHY YOU GOTTA DO THIS TO ME???????
+
             text = text.Replace("<div>&nbsp;</div>", "newline");
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine); //don't fucking ask!!!
             text = text.Replace("newlinenewlinenewlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
             text = text.Replace("newlinenewlinenewlinenewline", Environment.NewLine + Environment.NewLine);
             text = text.Replace("newlinenewlinenewline", Environment.NewLine); //because there are SOOOOO many different ways of getting line breaks!!
-            //text = text.Replace("newlinenewline", System.Environment.NewLine);
+            text = text.Replace("newlinenewline", System.Environment.NewLine);
+
             text = text.Replace("newline", System.Environment.NewLine);
+
             text = text.Replace("&nbsp;", " ");
 
             text = text.Replace("&amp;", "&");
