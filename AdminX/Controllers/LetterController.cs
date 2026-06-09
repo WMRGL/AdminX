@@ -399,21 +399,18 @@ namespace ClinicalXPDataConnections.Meta
                         address = patAddress;
                     }
                 }
-
-                if (_lvm.documentsContent.LetterTo == "RD")
+                else if (_lvm.documentsContent.LetterTo == "RD")
                 {
                     if (!_lvm.documentsContent.DocCode.Contains("O4")) //because somebody hard-coded this overriding feature in CGU_DB                    
                     {
                         address = _add.GetAddress("RD", refID);
                     }
                 }
-
-                if (_lvm.documentsContent.LetterTo == "GP")
+                else if (_lvm.documentsContent.LetterTo == "GP")
                 {
                     address = _add.GetAddress("GP", refID);
                 }
-
-                if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
+                else if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
                     || (clinicianCode != "" && clinicianCode != null))
                 {
                     ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);

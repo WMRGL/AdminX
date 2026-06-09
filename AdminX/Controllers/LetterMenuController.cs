@@ -230,8 +230,8 @@ namespace AdminX.Controllers
                         }
                     }                    
 
-                    //LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
-                    _lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                    LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
+                    lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
                            "", null, isPreview, qrCode, leafletID);
                 }
 
