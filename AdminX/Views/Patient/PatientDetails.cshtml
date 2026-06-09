@@ -1316,6 +1316,7 @@
                                             <th scope="col">Doc Code</th>                                            
                                             <th scope="col">Related Ref ID</th>
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1343,7 +1344,22 @@
                                                     <td></td>
                                                 }
                                                 <td>@d.RefID</td>
-                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
+                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" 
+                                                    asp-route-id=@d.DiaryID>Details</a></td>
+                                                <td>
+                                                    @if (d.DocCode != null)
+                                                    {
+                                                        <form asp-controller="LetterMenu" asp-action="DoLetter" method="post" target="_blank" class="d-inline">
+                                                            <input type="hidden" name="refID" value="@d.RefID" />
+                                                            <input type="hidden" name="docCode" value="@d.DocCode" />
+                                                            <input type="hidden" name="isPreview" value="true" />
+
+                                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                                View Doc Letter
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>
