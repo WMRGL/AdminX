@@ -482,7 +482,7 @@ namespace ClinicalXPDataConnections.Meta
                         sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
                         break;
                     case "Logon":
-                        //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                        signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                         break;
                     default:
                         signOff = "";

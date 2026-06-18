@@ -117,22 +117,37 @@ namespace APIControllers.Controllers
                 apiCall = apiCall + ",\"sex\":\"" + $"{patient.SEX.Substring(0, 1)}" + "\",\"external_id\":\"" + $"{patient.CGU_No}" + "\"";
                 apiCall = apiCall + ",\"labeled_eids\":[{\"label\":\"NHS Number\",\"value\":\"" + $"{patient.SOCIAL_SECURITY}" + "\"}";
                 apiCall = apiCall + ",{\"label\":\"MPI\",\"value\":\"" + $"{patient.MPI}" + "\"}]";
-                apiCall = apiCall + "}";
-
+                //apiCall = apiCall + ",\"studyId\":\"xwiki:Studies.BWCH\"";
+                apiCall = apiCall + "}";               
                 request.AddJsonBody(apiCall, false);
-                var response = await client.PostAsync(request);
-
+                var response = await client.PostAsync(request); //TEMPORARILY DISABLED WHILE I BANG MY HEAD ON THE FUCKING KEYBOARD
+                
                 //SetPhenotipsOwner(patient.MPI, User.Identity.Name); - not currently necessary
                                 
-                if (response.Content == "")
+                if (response.Content == "")                
                 {
                     //isSuccess = true;
                     //sMessage = "Push to Phenotips successful";
                     result = 1; //success result
 
                     string ptID = await GetPhenotipsPatientID(patient.MPI);
-                    AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
-                        patient.POSTCODE, patient.SOCIAL_SECURITY);
+                    
+                    //AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                    //    patient.POSTCODE, patient.SOCIAL_SECURITY);
+
+                    //Add the Study ID
+
+                    //apiURL = apiURLBase + $":443/rest/patients/{ptID}?policy=update";
+                    string apiURL2 = apiURLBase + $":443/rest/patients/{ptID}/study";
+                    var options2 = new RestClientOptions(apiURL2);
+                    var client2 = new RestClient(options2);                    
+                    var request2 = new RestRequest("");
+                    request2.AddHeader("authorization", $"Basic {authKey}");
+                    request2.AddHeader("X-Gene42-Secret", apiKey);
+                    string apiCall2 = "{\"studyId\":\"xwiki:Studies.BWCH\"}";                    
+                    request2.AddJsonBody(apiCall2, false);
+                    var response2 = await client2.PutAsync(request2);
+
                 }
                 else
                 {
@@ -382,8 +397,7 @@ namespace APIControllers.Controllers
             Console.WriteLine(GetPPQUrl(patient.MPI, ppqType));
 
             if (!CheckPPQExists(id, ppqType).Result)
-            {
-                Console.WriteLine("PPQ doesn't exist");
+            {                
                 if (pID != "" && pID != null)
                 {
                     DateTime DOB = patient.DOB.GetValueOrDefault();
@@ -401,9 +415,7 @@ namespace APIControllers.Controllers
                     apiCall = apiCall + "\"mrn\":\"" + $"{patient.CGU_No}" + "\","; //mrn needs to be the "External Identifier" - the CGU number in this case
                     apiCall = apiCall + "\"firstName\":\"" + $"{patient.FIRSTNAME}" + "\",\"lastName\":\"" + $"{patient.LASTNAME}" + "\"";
                     apiCall = apiCall + ",\"dateOfBirth\":{\"day\":" + dob.ToString() + ",\"month\":" + mob.ToString() + ",\"year\":" + yob.ToString() + "},";
-                    apiCall = apiCall + "\"associatedStudy\":null}";
-
-                    Console.WriteLine(apiCall);
+                    apiCall = apiCall + "\"associatedStudy\":\"xwiki:Studies.BWCH\"}";
 
                     request.AddJsonBody(apiCall, false);
                     var response = await client.PostAsync(request);
@@ -600,7 +612,7 @@ namespace APIControllers.Controllers
             SqlConnection conn = new SqlConnection(_config.GetConnectionString("ConString"));
             conn.Open();
             SqlCommand cmd = new SqlCommand("Insert into dbo.PhenotipsPatients (PhenotipsID, MPI, CGUNumber, FirstName, Lastname, DOB, PostCode, NHSNo) values('"
-                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
+                + ptID + "', " + mpi + ", '" + cguno + "', '" + firstname + "', '" + lastname.Replace("'", "''") + "', '" + DOB.ToString("yyyy-MM-dd") + "', '" + postCode +
                 "', '" + nhsNo + "')", conn);
             cmd.ExecuteNonQuery();
             conn.Close();

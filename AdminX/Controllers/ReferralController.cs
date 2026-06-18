@@ -137,7 +137,10 @@ namespace AdminX.Controllers
                     if (_rvm.icpGeneral.TreatPath != null) 
                     { 
                         var icpAction2 = await _icpActions.GetGeneralReferralAction2(_rvm.icpGeneral.TreatPath2.GetValueOrDefault());
-                        _rvm.icpGeneralAction2 = icpAction2.Action;
+                        if (icpAction2 != null)
+                        {
+                            _rvm.icpGeneralAction2 = icpAction2.Action;
+                        }
                     }
                     
                     /*

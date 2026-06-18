@@ -1,30 +1,33 @@
-﻿using APIControllers.Controllers;
+﻿using AdminX.ViewModels;
+using APIControllers.Controllers;
+using APIControllers.Data;
+using ClinicalXPDataConnections.Data;
 using ClinicalXPDataConnections.Meta;
 using ClinicalXPDataConnections.Models;
-using AdminX.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using System;
 
 
 namespace AdminX.Controllers
 {
     public class PhenotipsController : Controller
     {
-        //private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;
         //private readonly DocumentContext _docContext;
-        //private readonly APIContext _apiContext;
+        private readonly APIContext _apiContext;
         private readonly IConfiguration _config;
         private readonly IApiController _api;
         private readonly IPatientDataAsync _patientData;
         private readonly PhenotipsVM _pvm;
         private readonly LetterController _lc;
 
-        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, LetterController lc)
+        public PhenotipsController(IConfiguration config, IApiController aPIController, IPatientDataAsync patientData, LetterController lc, APIContext aPIContext)
         {
-            //_clinContext = clinContext;
+            //_clinContext = clinicalContext;
             //_docContext = docContext;
-            //_apiContext = apiContext;
+            _apiContext = aPIContext;
             _config = config;
             _api = aPIController;
             _patientData = patientData;
@@ -37,6 +40,8 @@ namespace AdminX.Controllers
         {
             string sMessage = "";
             bool isSuccess = false;
+
+            //APIControllerLOCAL api = new APIControllerLOCAL(_apiContext, _config);
 
             Int16 result = await _api.PushPtToPhenotips(mpi); //initiates the push, returns 1 (success), 0 (already exists), or -1 (failed)
 
