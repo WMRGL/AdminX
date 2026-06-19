@@ -132,8 +132,8 @@ namespace APIControllers.Controllers
 
                     string ptID = await GetPhenotipsPatientID(patient.MPI);
                     
-                    //AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
-                    //    patient.POSTCODE, patient.SOCIAL_SECURITY);
+                    AddPatientToPhenotipsMirrorTable(ptID, patient.MPI, patient.CGU_No, patient.FIRSTNAME, patient.LASTNAME, patient.DOB.GetValueOrDefault(), 
+                        patient.POSTCODE, patient.SOCIAL_SECURITY);
 
                     //Add the Study ID
 

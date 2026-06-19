@@ -166,7 +166,8 @@ namespace AdminX.Controllers
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
                 _pvm.tempReges = await _referralData.GetTempRegList(id);
-                _pvm.appointments = await _appointmentData.GetAppointmentListByPatient(id);
+                var appointments = await _appointmentData.GetAppointmentListByPatient(id);
+                _pvm.appointments = appointments.Distinct().ToList();
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = await _alertData.GetAlertsList(id);
                 _pvm.diary = await _diaryData.GetDiaryList(id);
