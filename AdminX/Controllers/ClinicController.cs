@@ -287,7 +287,7 @@ namespace AdminX.Controllers
             _cvm.patient = await _patientData.GetPatientDetails(mpi);
             _cvm.outcomes = await _outcomeData.GetOutcomeList();
             _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
-            _cvm.referralsList = await _referralData.GetActiveReferralsListForPatient(mpi);
+            _cvm.referralsList = await _referralData.GetReferralsList(mpi);
             _cvm.venueList = await _venueData.GetVenueList();
             _cvm.appTypeList = await _activityTypeData.GetApptTypes();
 
