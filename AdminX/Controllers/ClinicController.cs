@@ -209,6 +209,7 @@ namespace AdminX.Controllers
                 _cvm.staffMembers = await _staffUser.GetClinicalStaffList();
                 _cvm.activityItems = await _activityData.GetClinicDetailsList(id);
                 _cvm.activityItem = await _activityData.GetActivityDetails(id);
+                
                 _cvm.outcomes = await _clinicData.GetOutcomesList();
                 int mpi = _cvm.activityItem.MPI;
                 _cvm.patient = await _patientData.GetPatientDetails(mpi);
@@ -369,6 +370,8 @@ namespace AdminX.Controllers
                 _cvm.Clinic = await _clinicData.GetClinicDetails(id);
                 _cvm.venueList = await _venueData.GetVenueList();
                 _cvm.appTypeList = await _activityTypeData.GetApptTypes();
+                _cvm.referralsList = await _referralData.GetReferralsList(_cvm.activityItem.MPI);
+                _cvm.referralsList = _cvm.referralsList.Where(r => !r.logicaldelete).ToList();
                 return View(_cvm);
             }
             catch (Exception ex)
@@ -393,7 +396,7 @@ namespace AdminX.Controllers
                     sType: "Appointment",
                     sOperation: "EditAppointment",
                     int1: model.Clinic.RefID,
-                    int2: 0,
+                    int2: model.Clinic.ReferralRefID,
                     int3: 0,
                     string1: model.Clinic.STAFF_CODE_1,
                     string2: model.Clinic.STAFF_CODE_2,
