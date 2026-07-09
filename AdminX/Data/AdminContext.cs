@@ -17,8 +17,7 @@ namespace AdminX.Data
         public DbSet<ListCity> ListCity { get; set; }
         public DbSet<DictatedlettersReportClinicians> DictatedlettersReportClinicians { get; set; }
         public DbSet<DictatedLettersSecTeamReport> DictatedLettersSecTeamReport { get; set; }
-        public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }
-        public DbSet<DiaryAction> DiaryAction { get; set; }
+        public DbSet<DictatedLettersReport> DictatedLettersReport { get; set; }        
         public DbSet<AlertTypes> AlertTypes { get; set; }
         public DbSet<MergeHistory> MergeHistory { get; set; }
         public DbSet<GenderIdentity> GenderIdentity { get; set; }
