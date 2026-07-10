@@ -48,7 +48,7 @@ namespace AdminX.Controllers
         private readonly IAreaNamesDataAsync _areaNamesData;
         private readonly IGenderDataAsync _genderData;
         private readonly IConstantsDataAsync _constantsData;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPhenotipsMirrorDataAsync _phenotipsMirrorData;
         private readonly IAlertTypeDataAsync _alertTypeData;
         private readonly IDiaryActionDataAsync _diaryActionData;
@@ -68,8 +68,8 @@ namespace AdminX.Controllers
             IDiaryDataAsync diary, IExternalClinicianDataAsync extClinician, IExternalFacilityDataAsync extFacility, IAuditServiceAsync audit, ILanguageDataAsync language, IPatientAlertDataAsync patientAlert,
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
-            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
-            IApptStagingDataAsync apptStagingDataAsync, ILanguageDataAsync languageDataAsync) //, ClinicalContext clinContext)
+            IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, IApiController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
+            IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
@@ -168,7 +168,8 @@ namespace AdminX.Controllers
                 _pvm.activeReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "ACTIVE" && !r.logicaldelete).ToList();
                 _pvm.inactiveReferrals = referrals.Where(r => r.COMPLETE.ToUpper() == "COMPLETE" && !r.logicaldelete).ToList();
                 _pvm.tempReges = await _referralData.GetTempRegList(id);
-                _pvm.appointments = await _appointmentData.GetAppointmentListByPatient(id);
+                var appointments = await _appointmentData.GetAppointmentListByPatient(id);
+                _pvm.appointments = appointments.Distinct().ToList();
                 _pvm.patientPathway = await _pathwayData.GetPathwayDetails(id);
                 _pvm.alerts = await _alertData.GetAlertsList(id);
                 _pvm.diary = await _diaryData.GetDiaryList(id);

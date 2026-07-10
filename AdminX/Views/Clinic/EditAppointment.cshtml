@@ -28,6 +28,13 @@
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <input type="hidden" asp-for="Clinic.RefID" />
 
+                <select asp-for=@Model.Clinic.ReferralRefID>
+                    @foreach (var item in Model.referralsList)
+                    {
+                        <option value=@item.refid>@item.RefType = @item.RefDate.Value.ToString("dd/MM/yyyy") - @item.ReferringFacility</option>
+                    }
+                </select>
+
                 @if (Model.Clinic.Attendance == "Attended")
                 {
                     <div class="row">

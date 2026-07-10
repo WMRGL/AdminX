@@ -14,7 +14,7 @@ namespace AdminX.Controllers
     {
         
         //private readonly ClinicalContext _clinContext;        
-        //private readonly APIContext _apiContext;        
+        private readonly APIContext _apiContext;        
         private readonly RelativeVM _rvm;
         private readonly IConfiguration _config;
         private readonly IStaffUserDataAsync _staffUser;        
@@ -23,15 +23,15 @@ namespace AdminX.Controllers
         private readonly ITitleDataAsync _titleData;
         private readonly ICRUD _crud;
         private readonly IAuditServiceAsync _audit;
-        private readonly APIController _api;
+        private readonly IApiController _api;
         private readonly IPAddressFinder _ip;
 
         public RelativeController(IConfiguration config, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IRelativeDataAsync relative, ITitleDataAsync title, ICRUD crud, 
-            IAuditServiceAsync audit, APIController api)//, APIContext aPIContext)
+            IAuditServiceAsync audit, IApiController api, APIContext aPIContext)
         {
             
             //_clinContext = context;            
-            //_apiContext = aPIContext;
+            _apiContext = aPIContext;
             _config = config;
             _crud = crud;
             _staffUser = staffUser;
@@ -260,6 +260,26 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
             }
-        }        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportRelatives(int wmfacsid, string firstname, string lastname, DateTime dob,
+            DateTime dod, string sex, string relation)
+        {
+            try
+            {
+                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, 0, 0, "", firstname, "", lastname,
+                    User.Identity.Name, dob, dod, false, false, 0, 0, 0, relation, sex);
+
+                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
+
+                return RedirectToAction("ImportRelatives", "Relative", new { id = wmfacsid });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "Relative-add" });
+            }
+        }
+
     }
 }

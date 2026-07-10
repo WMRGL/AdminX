@@ -75,31 +75,7 @@ namespace AdminX.Controllers
                     if (_pvm.patientFrom.FIRSTNAME == _pvm.patientTo.FIRSTNAME && _pvm.patientFrom.LASTNAME == _pvm.patientTo.LASTNAME && _pvm.patientFrom.DOB == _pvm.patientTo.DOB
                         && _pvm.patientFrom.POSTCODE == _pvm.patientTo.POSTCODE && _pvm.patientFrom.SOCIAL_SECURITY == _pvm.patientTo.SOCIAL_SECURITY)
                     {
-                        /* //temporarily disabled - do we want to test for matching Alerts?
-                        List<Alert> alertsForPatientFrom = _alert.GetAlertsList(mpiFrom);
-                        List<Alert> alertsForPatientTo = _alert.GetAlertsList(mpiTo);
-
-                        int matchingAlertCount = 0;
-
-                        foreach (var alertFrom in alertsForPatientFrom)
-                        {
-                            foreach(var alertTo in alertsForPatientTo)
-                            {
-                                if(alertFrom.MPI == alertTo.MPI && alertFrom.Comments == alertTo.Comments && alertFrom.EffectiveFromDate == alertTo.EffectiveFromDate)
-                                {
-                                    matchingAlertCount++;
-                                }
-                            }
-                        }
-
-                        if (matchingAlertCount == alertsForPatientFrom.Count && matchingAlertCount == alertsForPatientTo.Count) 
-                        {
-                            isMatch = true;
-                        }
-                        else
-                        {
-                            sMessage = "Patients' alerts don't match.";
-                        }*/
+                        
                         if (_pvm.patientFrom.INFECTION_RISK == _pvm.patientTo.INFECTION_RISK && _pvm.patientFrom.ADDITIONAL_NOTES == _pvm.patientTo.ADDITIONAL_NOTES)
                         {
                             isMatch = true;
@@ -112,7 +88,15 @@ namespace AdminX.Controllers
                     }
                     else
                     {
-                        sMessage = "Merge failed: Patients' details don't match, please check both and try the merge again.";
+                        sMessage = "Merge failed: Patients' details don't match:";
+
+                        if (_pvm.patientFrom.FIRSTNAME != _pvm.patientTo.FIRSTNAME) { sMessage += "<br /> First Name: " + _pvm.patientFrom.FIRSTNAME + " - " + _pvm.patientTo.FIRSTNAME; }
+                        if (_pvm.patientFrom.LASTNAME != _pvm.patientTo.LASTNAME) { sMessage += "<br /> Last Name: " + _pvm.patientFrom.LASTNAME + " - " + _pvm.patientTo.LASTNAME; }
+                        if (_pvm.patientFrom.DOB != _pvm.patientTo.DOB) { sMessage += "<br /> DOB: " + _pvm.patientFrom.DOB.Value.ToString("dd/MM/yyyy") + " - " + _pvm.patientTo.DOB.Value.ToString("dd/MM/yyyy"); }
+                        if (_pvm.patientFrom.POSTCODE != _pvm.patientTo.POSTCODE) { sMessage += "<br /> Postcode: " + _pvm.patientFrom.POSTCODE + " - " + _pvm.patientTo.POSTCODE; }
+                        if (_pvm.patientFrom.SOCIAL_SECURITY != _pvm.patientTo.SOCIAL_SECURITY) { sMessage += "<br /> NHS Number: " + _pvm.patientFrom.SOCIAL_SECURITY + " - " + _pvm.patientTo.SOCIAL_SECURITY; }
+
+                        sMessage += Environment.NewLine + "<br /> Please check both and try the merge again.";
                     }
 
                     if (isMatch)
