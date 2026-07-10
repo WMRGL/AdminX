@@ -12,6 +12,7 @@ using PdfSharp.Snippets.Drawing;
 using System;
 using System.Numerics;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace AdminX.Controllers
@@ -275,10 +276,33 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> UpdateReferralDetails(int refID)
+        public async Task<IActionResult> UpdateReferralDetails(int refID, bool? duplicate = false, int? mpi = null)
         {
             try
             {
+                if (duplicate == true && mpi != null)
+                {
+                    List<Referral> referrals = await _referralData.GetReferralsList((int)mpi);
+
+                    var duplicateReferrals = referrals
+                        .Where(r => r.COMPLETE != null && (r.COMPLETE.ToUpper() == "ACTIVE" || r.COMPLETE.ToUpper() == "MISSING DATA") && !r.logicaldelete)
+                        .OrderByDescending(r => r.RefDate)
+                        .ToList();
+
+                    if (duplicateReferrals.Count > 1)
+                    {
+                        var duplicateToDelete = duplicateReferrals.FirstOrDefault(x => x.refid != refID);
+
+                        if (duplicateToDelete != null)
+                        {
+                            ViewBag.DuplicateReferralId = duplicateToDelete.refid;
+                            ViewBag.DuplicateReferralDate = duplicateToDelete.RefDate;
+                            ViewBag.DuplicateReferralPathway = duplicateToDelete.PATHWAY;
+                            ViewBag.DuplicateReferralEPICId = duplicateToDelete.EPIC_Referral_ID;
+
+                        }
+                    }
+                }
                 _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
@@ -362,7 +386,7 @@ namespace AdminX.Controllers
         public IActionResult UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
              string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
              string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
-             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic, DateTime RefDate)
+             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic, DateTime RefDate, int? duplicateRefIdToDelete)
         {
             try
             {
@@ -372,6 +396,26 @@ namespace AdminX.Controllers
                 {
                     UBRN = UBRN.Replace(" ", "");
                 }
+
+                if (duplicateRefIdToDelete.HasValue)
+                {
+                    _CRUD.ReferralDetail(
+                        sType: "Referral",
+                        sOperation: "LogicalDelete",
+                        sLogin: login,
+                        int1: duplicateRefIdToDelete.Value,
+                        bool1: true,
+                        string1: null, string2: null, text: null, string3: null,
+                        string4: null, string5: null, string6: null, string7: null,
+                        string8: null, string9: null, string10: null, string11: null,
+                        string12: null, dDate1: null, dDate2: null, string13: null,
+                        string14: null, int2: null, int3: null, int4: null, int5: null,
+                        int6: null, int7: null, int8: null
+                    );
+                    TempData["SuccessMessage"] = "Referral details updated successfully.";
+                    return RedirectToAction("ReferralDetails", new { refID = refid });
+                }
+               
 
                 if (PATHWAY.Trim() == "Cancer")
                 {
@@ -409,9 +453,6 @@ namespace AdminX.Controllers
                          string17: OthReason3,
                          string18: OthReason4,
                          dDate3: RefDate
-
-
-
                      );
                     if (success != 1)
                     {
@@ -449,7 +490,6 @@ namespace AdminX.Controllers
                         dDate2: ClockStopDate,
                         string13: Status_Admin,
                         dDate3: RefDate
-
                     );
                     if (success != 1)
                     {

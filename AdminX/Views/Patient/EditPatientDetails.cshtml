@@ -116,7 +116,13 @@
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="language">Primary Language (if not English)</label>
-                        <input type="text" name="language" class="form-control" id="language" asp-for=@Model.patient.PrimaryLanguage>
+                        @* <input type="text" name="language" class="form-control" id="language" asp-for=@Model.patient.PrimaryLanguage> *@
+                        <select class="form-select js-choice" name="language" id="language">
+                            @foreach (var item in Model.languages)
+                            {
+                                <option value="@item.LanguageName">@item.LanguageName</option>
+                            }
+                        </select>
                     </div>
                     <div class="mb-3 col-md-3">
                         <label class="form-label" for="dob">Interpreter required</label>

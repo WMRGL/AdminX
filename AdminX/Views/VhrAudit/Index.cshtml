@@ -1,0 +1,36 @@
+﻿@model AdminX.ViewModels.VhrAuditVM
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">VHR Audit</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-striped defaultTable">
+            <thead>
+                <tr>
+                    <th>CGU No</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>NHS No</th>
+                    <th>VHR letter code</th>
+                    <th>Screening Unit</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var audit in Model.vhrAuditList)
+                {
+                    <tr>
+                        <td>@audit.CGU_No</td>
+                        <td>@audit.FIRSTNAME @audit.LASTNAME</td>
+                        <td>@(audit.DOB != null ? ((DateTime)audit.DOB).ToString("dd/MM/yyyy") : "")</td>
+                        <td>@audit.SOCIAL_SECURITY</td>
+                        <td>@audit.DocCode</td>
+                        <td>@audit.BreastScreeningService</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

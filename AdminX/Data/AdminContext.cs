@@ -1,4 +1,5 @@
 ﻿using AdminX.Models;
+using ClinicalXPDataConnections.Models;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -35,6 +36,7 @@ namespace AdminX.Data
         public DbSet<SocialWorker> SocialWorker { get; set; }
         public DbSet<SocialServicePathwayOutcome> SocialServicePathwayOutcome { get; set; }
         public DbSet<SocialServicePathwayStatus> SocialServicePathwayStatus { get; set; }
+        public DbSet<VhrAudit> VhrAudits { get; set; }
 
     }
 }

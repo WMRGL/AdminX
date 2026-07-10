@@ -25,6 +25,66 @@
     };
 }
 
+@if (ViewBag.HasDuplicates != null && ViewBag.HasDuplicates)
+{
+    <!-- Duplicate Referrals Modal -->
+    <div class="modal fade" id="duplicateReferralModal" tabindex="-1" aria-labelledby="duplicateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="duplicateModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Potential Duplicates Detected
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This patient has multiple active or incomplete referrals for the same pathway. Please review these records and delete any duplicates.</p>
+
+                    <table class="table table-bordered table-striped mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Referral Date</th>
+                                <th>Type</th>
+                                <th>Pathway</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                                <th>Keep this referral</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dup in ViewBag.DuplicateReferrals)
+                            {
+                                <tr>
+                                    <td>@(dup.RefDate?.ToString("dd/MM/yyyy"))</td>
+                                    <td>@dup.RefType</td>
+                                    <td>@dup.PATHWAY</td>
+                                    <td>
+                                        <span class="badge @(dup.COMPLETE.ToUpper() == "ACTIVE" ? "bg-success" : "bg-secondary")">
+                                            @dup.COMPLETE
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a target="_blank" asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@dup.refid" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@dup.refid" asp-route-duplicate="true" 
+                                        asp-route-mpi="@Model.patient.MPI" class="btn btn-sm btn-outline-primary">Keep this referral</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                   
+                    <button type="button" class="btn btn-secondary-outline" >Process Referral</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @if (Model.isPhenotipsAvailable)
 {
     if (Model.isPatientInPhenotips)
@@ -1852,5 +1912,15 @@
             // });
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+                var duplicateModalElement = document.getElementById('duplicateReferralModal');
+                if (duplicateModalElement) {
+                    var duplicateModal = new bootstrap.Modal(duplicateModalElement);
+                    duplicateModal.show();
+                }
+            });
+
     </script>
 }
+
+

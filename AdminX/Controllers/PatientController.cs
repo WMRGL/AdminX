@@ -61,6 +61,7 @@ namespace AdminX.Controllers
         private readonly IPAddressFinder _ip;
         private readonly IAgeCalculator _ageCalculator;
         private readonly IWaitingListDataAsync _waitingListData;
+        private readonly ILanguageDataAsync _languageDataAsync;
 
         public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
             ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
@@ -68,7 +69,7 @@ namespace AdminX.Controllers
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
             IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, APIController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
-            IApptStagingDataAsync apptStagingDataAsync) //, ClinicalContext clinContext)
+            IApptStagingDataAsync apptStagingDataAsync, ILanguageDataAsync languageDataAsync) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
@@ -111,6 +112,7 @@ namespace AdminX.Controllers
             _ageCalculator = ageCalculator;
             _waitingListData = waitingListData;
             _apptStagingData = apptStagingDataAsync;
+            _languageDataAsync = languageDataAsync;
             //_clinContext = clinContext;
         }
 
@@ -182,6 +184,18 @@ namespace AdminX.Controllers
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
+
+                var duplicateReferrals = referrals
+                    .Where(r => r.COMPLETE != null && (r.COMPLETE.ToUpper() == "ACTIVE" || r.COMPLETE.ToUpper() == "MISSING DATA") && !r.logicaldelete)
+                    .OrderByDescending(r => r.RefDate)
+                    .ToList();
+
+                if (duplicateReferrals.Count > 1)
+                {
+                    ViewBag.HasDuplicates = true;
+                    ViewBag.DuplicateReferrals = duplicateReferrals;
+                }
+
                 var epicClinicCodes = await _appointmentData.GetEpicClinicCodes(_pvm.patient.MPI);
 
                 if (epicClinicCodes != null && epicClinicCodes.Count > 0)
@@ -407,7 +421,8 @@ namespace AdminX.Controllers
                 _pvm.areaNamesList = areaNames.OrderBy(a => a.AreaName).ToList();
                 _pvm.genders = await _genderData.GetGenderList();
                 _pvm.genderAtBirth = await _genderData.GetGenderList();
-               _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();              
+               _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();      
+                _pvm.languages = await _languageDataAsync.GetLanguages();
 
                 if (success.HasValue)
                 {
@@ -547,7 +562,8 @@ namespace AdminX.Controllers
                 _pvm.genders = await _genderData.GetGenderList();
                 _pvm.genderIdentities = await _genderIdentityData.GetGenderIdentities();
                 _pvm.currentAgeYears = _ageCalculator.DateDifferenceYear(_pvm.patient.DOB.GetValueOrDefault(), DateTime.Now);
-                
+                _pvm.languages = await _languageDataAsync.GetLanguages();
+
                 var ptareaCodes = await _areaNamesData.GetAreaNames();
                 if (ptareaCodes is not null && _pvm.patient.PtAreaName != null)
                 {

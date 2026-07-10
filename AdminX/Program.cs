@@ -1,6 +1,7 @@
 using AdminX.Controllers;
 using AdminX.Data;
 using AdminX.Meta;
+using AdminX.ViewModels;
 using APIControllers.Controllers;
 using APIControllers.Data;
 using Audit.Core;
@@ -100,6 +101,9 @@ builder.Services.AddScoped<ICRUD, CRUD>();
 builder.Services.AddScoped<LetterController>();
 builder.Services.AddScoped<APIController>();
 builder.Services.AddScoped<HSController>();
+builder.Services.AddScoped<IVHRAuditDataAsync, VhrAuditDataAsync>();
+builder.Services.AddScoped<VhrAuditVM>();  
+
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
