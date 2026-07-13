@@ -301,7 +301,8 @@ namespace AdminX.Controllers
                             ViewBag.DuplicateReferralId = duplicateToDelete.refid;
                             ViewBag.DuplicateReferralDate = duplicateToDelete.RefDate;
                             ViewBag.DuplicateReferralPathway = duplicateToDelete.PATHWAY;
-                            ViewBag.DuplicateReferralEPICId = duplicateToDelete.EPIC_Referral_ID;
+                            ViewBag.DuplicateReferralEPICReferralId = duplicateToDelete.EPIC_Referral_ID;
+                            ViewBag.DuplicateReferralEPICPatientId = duplicateToDelete.EPIC_Patient_ID;
 
                         }
                     }
@@ -402,7 +403,7 @@ namespace AdminX.Controllers
 
                 if (duplicateRefIdToDelete.HasValue)
                 {
-                    _CRUD.ReferralDetail(
+                    int success = _CRUD.ReferralDetail(
                         sType: "Referral",
                         sOperation: "LogicalDelete",
                         sLogin: login,
@@ -415,8 +416,15 @@ namespace AdminX.Controllers
                         string14: null, int2: null, int3: null, int4: null, int5: null,
                         int6: null, int7: null, int8: null
                     );
-                    TempData["SuccessMessage"] = "Referral details updated successfully.";
-                    return RedirectToAction("ReferralDetails", new { refID = refid });
+
+                    if (success != 1)
+                    {
+                        Console.WriteLine($"{success} duplicate not merged");
+                        return RedirectToAction("ErrorHome", "Error", new { error = $"The referral has not been updated. please send this number to " +
+                            $"Genetics IT: {success}", formName = "Referral-edit(SQL)" });
+
+                    }
+
                 }
                
 
