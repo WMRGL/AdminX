@@ -99,7 +99,7 @@ else
                             @Html.DisplayNameFor(model => model.Clinic.BOOKED_TIME):
                         </dt>
                         <dd class="col-sm-10">
-                            @Html.DisplayFor(model => model.Clinic.BOOKED_TIME)
+                            @Html.DisplayFor(model => model.Clinic.BOOKED_TIME) @if(Model.Clinic.Duration != null && Model.Clinic.Duration != 0){ <span> for @Model.Clinic.Duration minutes</span> }
                         </dd>
                         <dt class="col-sm-2">
                             @Html.DisplayNameFor(model => model.Clinic.Clinic):
