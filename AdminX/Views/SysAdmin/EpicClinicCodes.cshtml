@@ -79,7 +79,7 @@
                                         <option value="">Select Clinic</option>
                                         @foreach (var clinic in Model.venues)
                                         {
-                                            <option value="@clinic.FACILITY" >@clinic.NAME</option>
+                                            <option value="@clinic.FACILITY" >@clinic.FACILITY - @clinic.NAME</option>
                                         }
                                     </select>
                                 </div>
