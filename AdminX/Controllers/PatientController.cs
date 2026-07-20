@@ -312,8 +312,8 @@ namespace AdminX.Controllers
                 {
                     new BreadcrumbItem { Text = "Home", Controller = "Home", Action = "Index" },
                     new BreadcrumbItem { Text = "Patient" }
-                };
-                
+                };               
+
                 return View(_pvm);
             }
             catch (Exception ex)

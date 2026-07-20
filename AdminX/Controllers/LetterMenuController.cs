@@ -172,8 +172,10 @@ namespace AdminX.Controllers
         {
             try
             {
+                bool printSuccess = false;
                 int docID = 0;
                 var doc = await _documentsData.GetDocumentDetailsByDocCode(docCode);
+                string message = "";
 
                 if (docCode != "HS")
                 {                    
@@ -231,7 +233,7 @@ namespace AdminX.Controllers
                     }                    
 
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
-                    lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
+                    printSuccess = await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
                            "", null, isPreview, qrCode, leafletID);
                 }
 
@@ -242,7 +244,16 @@ namespace AdminX.Controllers
                     return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
                 }
 
-                TempData["SuccessMessage"] = "Letter has been sent to EDMS ";
+                if (printSuccess)
+                {
+                    message = "Letter has been sent to EDMS";
+                }
+                else
+                {
+                    message = "Letter was not sent to EDMS - please check the letter has been created and contact IT if necessary.";
+                }
+                
+                TempData["SuccessMessage"] = message;
                 return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
             }
             catch (Exception ex)

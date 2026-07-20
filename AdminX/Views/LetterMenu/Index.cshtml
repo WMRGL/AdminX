@@ -494,7 +494,8 @@
             var facilityAddressArray = [];
             var postcodeArray = [];
 
-            @foreach (var item in Model.referrers) //yes, this is the level of obtuseness we need to go through to get the correct data in javascript!!
+            @foreach (var item 
+                in Model.referrers) //yes, this is the level of obtuseness we need to go through to get the correct data in javascript!!
             {
                 @:referrerCodeArray2.push("@item.MasterClinicianCode");
                 @:referrerNameArray.push("@item.TITLE" + " " + "@item.FIRST_NAME" + " " + "@item.LAST_NAME");

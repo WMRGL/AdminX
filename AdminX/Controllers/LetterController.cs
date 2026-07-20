@@ -2,7 +2,6 @@
 using ClinicalXPDataConnections.Models;
 using ClinicalXPDataConnections.ViewModels;
 using HtmlAgilityPack;
-//using Microsoft.Office.Interop.Outlook;
 using MigraDoc.DocumentObjectModel;
 using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
@@ -13,8 +12,6 @@ using System.Drawing;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace ClinicalXPDataConnections.Meta
@@ -289,11 +286,13 @@ namespace ClinicalXPDataConnections.Meta
             }
         }
 
-        public async Task DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
+        public async Task<bool> DoPDF(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
             string? tissueType = "", bool? isResearchStudy = false, bool? isScreeningRels = false, int? diaryID = 0, string? freeText1 = "", string? freeText2 = "",
             int? relID = 0, string? clinicianCode = "", string? siteText = "", DateTime? diagDate = null, bool? isPreview = false, string? qrCodeText = "", int? leafletID = 0,
             bool? adminToPrint = false)
         {
+            bool success = false;
+
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
             _lvm.patient = _patientData.GetPatientDetails(mpi);
             _lvm.documentsContent = _documentsData.GetDocumentDetails(id);
@@ -399,12 +398,12 @@ namespace ClinicalXPDataConnections.Meta
                         address = patAddress;
                     }
                 }
-                else if (_lvm.documentsContent.LetterTo == "RD")
+                else if (_lvm.documentsContent.LetterTo == "RD" && !_lvm.documentsContent.DocCode.Contains("O4"))
                 {
-                    if (!_lvm.documentsContent.DocCode.Contains("O4")) //because somebody hard-coded this overriding feature in CGU_DB                    
-                    {
-                        address = _add.GetAddress("RD", refID);
-                    }
+                    //if () //because somebody hard-coded this overriding feature in CGU_DB                    
+                    //{
+                    address = _add.GetAddress("RD", refID);
+                    //}
                 }
                 else if (_lvm.documentsContent.LetterTo == "GP")
                 {
@@ -449,6 +448,19 @@ namespace ClinicalXPDataConnections.Meta
                     otherName = _lvm.other.TITLE + " " + _lvm.other.FIRST_NAME + " " + _lvm.other.NAME;
                 }
 
+                string relName = "";
+                string relDOB = "Unknown";
+
+                if (relID != 0 && relID != null)
+                {
+                    _lvm.relative = _relativeData.GetRelativeDetails(relID.GetValueOrDefault());
+                    relName = _lvm.relative.RelForename1 + " " + _lvm.relative.RelSurname;
+                    if (_lvm.relative.DOB != null)
+                    {
+                        relDOB = _lvm.relative.DOB.Value.ToString("dd/MM/yyyy");
+                    }
+                }
+
                 string[] ccs = { _lvm.documentsContent.cc1, _lvm.documentsContent.cc2, _lvm.documentsContent.cc3 };
 
                 int printCount = 0;
@@ -472,9 +484,17 @@ namespace ClinicalXPDataConnections.Meta
                 switch (_lvm.documentsContent.LetterFrom)
                 {
                     case "GC":
-                        var gc = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
-                        signOff = gc.NAME + Environment.NewLine + gc.POSITION;
-                        sigFilename = gc.StaffForename + gc.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        if (_lvm.staffMember.CLINIC_SCHEDULER_GROUPS == "Admin")
+                        {
+                            var gc = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                            signOff = gc.NAME + Environment.NewLine + gc.POSITION;
+                            sigFilename = gc.StaffForename + gc.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
+                        else
+                        {
+                            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                            sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
                         break;
                     case "Cons":
                         var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
@@ -570,9 +590,18 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it!
 
-                    content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 +
-                        Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para3 +
-                        Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+                    content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine;
+
+                    if (qrCodeText != null && qrCodeText != "")
+                    {
+                        content1 += _lvm.documentsContent.Para6 + Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para7;
+                    }
+                    else
+                    {
+                        content1 += _lvm.documentsContent.Para3;
+                    }
+                    content1 += Environment.NewLine + Environment.NewLine + _lvm.documentsContent.Para4;
+
                     content2 = _lvm.documentsContent.Para5;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -685,11 +714,26 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para3);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    if (qrCodeText != null && qrCodeText != "")
+                    {
+                        Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para6);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para7);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para8);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para9);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent6 = section.AddParagraph(_lvm.documentsContent.Para10);
+                    }
+                    else
+                    {
+                        Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para3);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
+                    }
                 }
 
                 if (docCode == "RejFHAW")
@@ -893,10 +937,18 @@ namespace ClinicalXPDataConnections.Meta
                         {
                             if (item.UseLetter.GetValueOrDefault())
                             {
-                                contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
-                                if (item.SurvStopAge != 0)
+                                if (item.SurvFreqCode == "Single")
                                 {
-                                    contentscreening += " to " + item.SurvStopAge.ToString();
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
                                 }
                                 contentscreening += Environment.NewLine;
                             }
@@ -929,7 +981,7 @@ namespace ClinicalXPDataConnections.Meta
                             content5 = content5 + "We may be able to do further tests on samples of tumour tissue which may have been stored from your relatives who have had cancer. This could help to clarify whether the cancers in the family may be due to a family predisposition. In turn, we may then be able to give more accurate screening advice for you and your relatives. It may also be useful to store a sample of blood from one of your relatives who has had cancer.  This may enable genetic testing to be pursued in the future if there are further developments in knowledge or technology. If you are interested in discussing this further, please contact the department to discuss this with the genetic counsellor.";
                         }
                     }
-                    if (leafletID != 0)
+                    if (leafletID != 0 || (enclosures != "" && enclosures != null))
                     {
                         content6 = _lvm.documentsContent.Para6;
                     }
@@ -1041,10 +1093,12 @@ namespace ClinicalXPDataConnections.Meta
                     RiskData _rData = new RiskData(_clinContext);
                     Surveillance _surv = new Surveillance();
                     SurveillanceData _survData = new SurveillanceData(_clinContext);
-                    _riskList = _rData.GetRiskListByRefID(refID);
+                    //_riskList = _rData.GetRiskListByRefID(refID);
+                    _riskList = _rData.GetRiskListForPatient(mpi);
 
                     content1 = _lvm.documentsContent.Para1;
 
+                    /*
                     foreach (var item in _riskList)
                     {
                         if (item.IncludeLetter.GetValueOrDefault() > 0)
@@ -1052,9 +1106,36 @@ namespace ClinicalXPDataConnections.Meta
                             _surv = _survData.GetSurvDetails(item.RiskID);
 
                             content2 = item.SurvSite + " surveillance " + " by " + item.SurvType + " " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
-                            if (item.SurvStopAge != 0)
+                            if (item.SurvStopAge != 0 && item.SurvStopAge != null)
                             {
                                 content2 += " to " + item.SurvStopAge.ToString();
+                            }
+                        }
+                    }
+                    */
+
+                    string contentscreening = "";
+                    var screening = _survData.GetSurveillanceList(mpi);
+                    if (screening.Count > 0)
+                    {
+                        foreach (var item in screening)
+                        {
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvFreqCode == "Single")
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
+                                }
+                                contentscreening += Environment.NewLine;
                             }
                         }
                     }
@@ -1064,7 +1145,8 @@ namespace ClinicalXPDataConnections.Meta
 
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    Paragraph letterContent2 = section.AddParagraph();
+                    letterContent2.AddFormattedText(contentscreening, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
@@ -1093,11 +1175,32 @@ namespace ClinicalXPDataConnections.Meta
                 //O4
                 if (docCode == "O4")
                 {
-                    List<Risk> _riskList = new List<Risk>();
-                    RiskData _rData = new RiskData(_clinContext);
+
+                    Table tableo4 = section.AddTable();
+                    Column contentPatAddress = tableo4.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = tableo4.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Center;
+                    Column contentPatNHS = tableo4.AddColumn();
+                    contentPatNHS.Format.Alignment = ParagraphAlignment.Right;
+                    tableo4.Rows.Height = 50;
+                    tableo4.Columns.Width = 150;
+                    Row row1_1 = tableo4.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1_1.Cells[1].AddParagraph(patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[2].AddParagraph("NHS number: " + patNHSNo);
+                    spacer = section.AddParagraph();
+
+                    List<PatientRisk> _riskList = new List<PatientRisk>();
+                    List<Surveillance> _survList = new List<Surveillance>();
+                    RiskDataAsync _rData = new RiskDataAsync(_clinContext);
                     Surveillance _surv = new Surveillance();
-                    SurveillanceData _survData = new SurveillanceData(_clinContext);
-                    _riskList = _rData.GetRiskListByRefID(refID);
+                    SurveillanceDataAsync _survData = new SurveillanceDataAsync(_clinContext);
+                    //_riskList = await _rData.GetPatientRiskList(refID);
+                    _riskList = await _rData.GetPatientRiskList(mpi);
+
 
                     content1 = _lvm.documentsContent.Para1;
                     content2 = _lvm.documentsContent.Para7;
@@ -1127,50 +1230,109 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     foreach (var item in _riskList)
                     {
-                        string riskText = item.SurvSite + " cancer risk category:";
+                        if (item.IncludeLetter != 0 && item.RiskName != null)
+                        {
+                            string riskText = item.SurvSite + " cancer risk category:";
 
-                        Table riskTable = section.AddTable();
-                        Column riskCol1 = riskTable.AddColumn();
-                        riskCol1.Width = 180;
-                        Column riskCol2 = riskTable.AddColumn();
-                        Column riskCol3 = riskTable.AddColumn();
-                        riskCol3.Width = 150;
-                        Column riskCol4 = riskTable.AddColumn();
-                        Row riskRow1 = riskTable.AddRow();
-                        Row riskRow2 = riskTable.AddRow();
-                        Row riskRow3 = riskTable.AddRow();
-                        riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
-                        riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
-                        riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
-                        riskRow1.Cells[3].AddParagraph().AddFormattedText(item.LifetimeRiskPercentage.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow2.Cells[0].AddParagraph().AddFormattedText("10 year risk age 30-40 (%):", TextFormat.Bold);
-                        riskRow2.Cells[1].AddParagraph().AddFormattedText(item.R30_40.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow2.Cells[2].AddParagraph().AddFormattedText("10 year risk age 50-60 (%):", TextFormat.Bold);
-                        riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
-                        riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
-                        riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            Table riskTable = section.AddTable();
+                            Column riskCol1 = riskTable.AddColumn();
+                            riskCol1.Width = 180;
+                            Column riskCol2 = riskTable.AddColumn();
+                            Column riskCol3 = riskTable.AddColumn();
+                            riskCol3.Width = 150;
+                            Column riskCol4 = riskTable.AddColumn();
+                            Row riskRow1 = riskTable.AddRow();
+                            Row riskRow2 = riskTable.AddRow();
+                            Row riskRow3 = riskTable.AddRow();
+                            riskRow1.Cells[0].AddParagraph().AddFormattedText(riskText, TextFormat.Bold);
+                            riskRow1.Cells[1].AddParagraph().AddFormattedText(item.RiskName, TextFormat.Bold).Color = Colors.Red;
+                            riskRow1.Cells[2].AddParagraph().AddFormattedText("Lifetime risk (%):", TextFormat.Bold);
+                            riskRow1.Cells[3].AddParagraph().AddFormattedText(item.LifetimeRiskPercentage.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            if (item.R30_40 != null)
+                            {
+                                riskRow2.Cells[0].AddParagraph().AddFormattedText("10 year risk age 30-40 (%):", TextFormat.Bold);
+                                riskRow2.Cells[1].AddParagraph().AddFormattedText(item.R30_40.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R50_60 != null)
+                            {
+                                riskRow2.Cells[2].AddParagraph().AddFormattedText("10 year risk age 50-60 (%):", TextFormat.Bold);
+                                riskRow2.Cells[3].AddParagraph().AddFormattedText(item.R50_60.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                            if (item.R40_50 != null)
+                            {
+                                riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
+                                riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
+                            }
+                        }
 
+                        var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
+                        foreach (var srv in survs)
+                        {
+                            _survList.Add(srv);
+                        }
                     }
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    foreach (var item in _riskList)
-                    {
-                        _surv = _survData.GetSurvDetails(item.RiskID);
-                        string contentSurv = item.SurvSite + " surveillance ";
-                        if (item.SurvType != null)
-                        {
-                            contentSurv += " by " + item.SurvType;
-                        }
-                        contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
 
-                        if (item.SurvStopAge != null)
+
+                    /*
+                    foreach (var item in _survList)
+                    {
+                        if (item != null)
+                        {                            
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvSite != null && item.SurvFreq != null)
+                                {
+                                    string contentSurv = item.SurvSite + " surveillance ";
+                                    if (item.SurvType != null)
+                                    {
+                                        contentSurv += " by " + item.SurvType;
+                                    }
+                                    contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+                                    }
+                                    Paragraph letterContent3 = section.AddParagraph();
+                                    letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
+                                }
+                            }
+                        }                       
+                    }*/
+
+                    string contentscreening = "";
+                    var screening = await _survData.GetSurveillanceList(mpi);
+
+                    if (screening.Count > 0)
+                    {
+                        foreach (var item in screening)
                         {
-                            contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvFreqCode == "Single")
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq.ToUpper() + " by " + item.SurvType + " at the age of " + item.SurvStartAge.ToString();
+                                }
+                                else
+                                {
+                                    contentscreening += item.SurvSite + " surveillance " + item.SurvFreq + " by " + item.SurvType + " from the age of " + item.SurvStartAge.ToString();
+
+                                    if (item.SurvStopAge != 0 && item.SurvStopAge != null)
+                                    {
+                                        contentscreening += " to " + item.SurvStopAge.ToString();
+                                    }
+                                }
+                                contentscreening += Environment.NewLine;
+                            }
                         }
-                        Paragraph letterContent3 = section.AddParagraph();
-                        letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
                     }
+
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(contentscreening, TextFormat.Bold);
+
                     spacer = section.AddParagraph();
                     Paragraph letterContent4 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
@@ -1181,11 +1343,29 @@ namespace ClinicalXPDataConnections.Meta
                 //O4am
                 if (docCode == "O4am")
                 {
-                    List<Risk> _riskList = new List<Risk>();
-                    RiskData _rData = new RiskData(_clinContext);
+                    Table tableo4 = section.AddTable();
+                    Column contentPatAddress = tableo4.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = tableo4.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Center;
+                    Column contentPatNHS = tableo4.AddColumn();
+                    contentPatNHS.Format.Alignment = ParagraphAlignment.Right;
+                    tableo4.Rows.Height = 50;
+                    tableo4.Columns.Width = 150;
+                    Row row1_1 = tableo4.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1_1.Cells[1].AddParagraph(patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[2].AddParagraph("NHS number: " + patNHSNo);
+                    spacer = section.AddParagraph();
+
+                    List<PatientRisk> _riskList = new List<PatientRisk>();
+                    List<Surveillance> _survList = new List<Surveillance>();
+                    RiskDataAsync _rData = new RiskDataAsync(_clinContext);
                     Surveillance _surv = new Surveillance();
-                    SurveillanceData _survData = new SurveillanceData(_clinContext);
-                    _riskList = _rData.GetRiskListByRefID(refID);
+                    SurveillanceDataAsync _survData = new SurveillanceDataAsync(_clinContext);
+                    _riskList = await _rData.GetPatientRiskList(refID);
 
                     pageCount = 2;
 
@@ -1221,28 +1401,41 @@ namespace ClinicalXPDataConnections.Meta
                         riskRow3.Cells[0].AddParagraph().AddFormattedText("10 year risk age 40-50 (%):", TextFormat.Bold);
                         riskRow3.Cells[1].AddParagraph().AddFormattedText(item.R40_50.ToString(), TextFormat.Bold).Color = Colors.Red;
 
+                        var survs = await _survData.GetSurveillanceListByRiskID(item.RiskID);
+                        foreach (var srv in survs)
+                        {
+                            _survList.Add(srv);
+                        }
                     }
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    foreach (var item in _riskList)
+
+                    foreach (var item in _survList)
                     {
-                        _surv = _survData.GetSurvDetails(item.RiskID);
-                        string contentSurv = item.SurvSite + " surveillance ";
-                        if (item.SurvType != null)
+                        if (item != null)
                         {
-                            contentSurv += " by " + item.SurvType;
-                        }
+                            if (item.UseLetter.GetValueOrDefault())
+                            {
+                                if (item.SurvSite != null && item.SurvFreq != null)
+                                {
+                                    string contentSurv = item.SurvSite + " surveillance ";
+                                    if (item.SurvType != null)
+                                    {
+                                        contentSurv += " by " + item.SurvType;
+                                    }
+                                    contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString(); //TODO - get this to display properly
 
-                        contentSurv += " - " + item.SurvFreq + " from the age of " + item.SurvStartAge.ToString();
-
-                        if (item.SurvStopAge != null)
-                        {
-                            contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+                                    if (item.SurvStopAge != null)
+                                    {
+                                        contentSurv = contentSurv + " to " + item.SurvStopAge.ToString();
+                                    }
+                                    Paragraph letterContent3 = section.AddParagraph();
+                                    letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
+                                }
+                            }
                         }
-                        Paragraph letterContent3 = section.AddParagraph();
-                        letterContent3.AddFormattedText(contentSurv, TextFormat.Bold);
                     }
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para3;
@@ -1389,10 +1582,34 @@ namespace ClinicalXPDataConnections.Meta
                 //DT11
                 if (docCode == "DT11")
                 {
-                    Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
+
                     spacer = section.AddParagraph();
 
-                    ExternalClinician clin = _externalClinicianData.GetClinicianDetails(clinicianCode);
+                    //ExternalClinician clin = _externalClinicianData.GetClinicianDetails(clinicianCode);
+                    string recipient = _lvm.documentsContent.Para10;
 
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
@@ -1400,7 +1617,9 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                    //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                    Paragraph letterContentRecipient = section.AddParagraph();
+                    letterContentRecipient.AddFormattedText(recipient, TextFormat.Bold);
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
                     content4 = _lvm.documentsContent.Para4;
@@ -1413,21 +1632,40 @@ namespace ClinicalXPDataConnections.Meta
                     //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
                     enclosures = "copy of completed consent form (Letter code CF04)";
                     pageCount += 1; //because it's impossible to force it to go to the next page otherwise!
-                    ccs[0] = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME;
+                    ccs[0] = recipient;
                 }
 
                 //DT11e
                 if (docCode == "DT11e")
                 {
-                    string recipient = "Dr Raji Ganesan" + Environment.NewLine +
-                        "Cellular Pathology" + Environment.NewLine +
-                        "Birmingham Women’s Hospital" + Environment.NewLine +
-                        "Mindelsohn Way" + Environment.NewLine +
-                        "Birmingham" + Environment.NewLine +
-                        "B15 2TG"; //because of course it's hard-coded in CGU_DB
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
 
-                    Paragraph letterContentPatName = section.AddParagraph("Re: " + patName);
                     spacer = section.AddParagraph();
+
+                    string recipient = _lvm.documentsContent.Para10;
+
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -1449,14 +1687,128 @@ namespace ClinicalXPDataConnections.Meta
                     ccs[0] = recipient; //overrides the standard one
                 }
 
+                //DT12
+                if (docCode == "DT12")
+                {
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
+                    spacer = section.AddParagraph();
+
+                    string recipient = _lvm.documentsContent.Para10;
+
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
+                    Paragraph letterContentRecipient = section.AddParagraph();
+                    letterContentRecipient.AddFormattedText(recipient, TextFormat.Bold);
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    spacer = section.AddParagraph();
+                    content5 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent5 = section.AddParagraph(content5);
+                    spacer = section.AddParagraph();
+
+                    //signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                    enclosures = "copy of completed consent form (Letter code CF04)";
+                    pageCount += 1; //because it's impossible to force it to go to the next page otherwise!
+                    ccs[0] = recipient;
+                }
+
+                //DT12e
+                if (docCode == "DT12e")
+                {
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
+                    spacer = section.AddParagraph();
+
+                    string recipient = _lvm.documentsContent.Para10;
+
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContentRecipient = section.AddParagraph();
+                    letterContentRecipient.AddFormattedText(recipient, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    content3 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    spacer = section.AddParagraph();
+
+                    enclosures = "copy of completed consent form (Letter code CF04)";
+
+                    ccs[0] = recipient; //overrides the standard one
+                }
+
                 //DT13
                 if (docCode == "DT13")
                 {
                     Paragraph letterContentPatName = section.AddParagraph();
-                    letterContentPatName.AddFormattedText("Re: " + patName + System.Environment.NewLine + patAddress, TextFormat.Bold);
-                    spacer = section.AddParagraph();
                     Paragraph letterContentPatDOB = section.AddParagraph();
-                    letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
+                    if (relID == 0)
+                    {
+                        letterContentPatName.AddFormattedText("Re: " + patName + System.Environment.NewLine + patAddress, TextFormat.Bold);
+                        spacer = section.AddParagraph();
+
+                        letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy"), TextFormat.Bold);
+                    }
+                    else
+                    {
+                        letterContentPatName.AddFormattedText("Re: " + relName, TextFormat.Bold);
+                        letterContentPatDOB.AddFormattedText("Date of birth: " + relDOB, TextFormat.Bold);
+                    }
                     spacer = section.AddParagraph();
                     Paragraph letterContentCancerSite = section.AddParagraph();
                     letterContentCancerSite.AddFormattedText("Cancer Site: " + siteText, TextFormat.Bold);
@@ -1484,11 +1836,30 @@ namespace ClinicalXPDataConnections.Meta
                     string somatic = freeText2;
                     string furtherDetails = additionalText;
 
-                    Paragraph letterContentPatName = section.AddParagraph();
-                    letterContentPatName.AddFormattedText("Re: " + patName + "CGUbo: " + _lvm.patient.CGU_No, TextFormat.Bold);
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
 
-                    Paragraph letterContentPatDOB = section.AddParagraph();
-                    letterContentPatDOB.AddFormattedText("Date of birth: " + patDOB.ToString("dd/MM/yyyy") + "NHS number: " + _lvm.patient.SOCIAL_SECURITY, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     string titleText = "Request for formalin-fixed paraffin embedded (FFPE) tissue to enable genetic tissue";
                     Paragraph letterTitle = section.AddParagraph();
@@ -1601,16 +1972,70 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                 }
 
+                //DT16
+                if (docCode == "DT16")
+                {
+                    pageCount = 2;
+                    string germline = freeText1;
+                    string somatic = freeText2;
+                    string furtherDetails = additionalText;
+
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 20;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 20;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re:");
+                    if (relID == 0)
+                    {
+                        row1_1.Cells[1].AddParagraph(patName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    }
+                    else
+                    {
+                        row1_1.Cells[1].AddParagraph(relName);
+                        row1_1.Cells[2].AddParagraph("Date of Birth: " + relDOB);
+                    }
+
+                    spacer = section.AddParagraph();
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(_lvm.documentsContent.Para10, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para4);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para8);
+                    spacer = section.AddParagraph();
+                }
+
                 //PC01
                 if (docCode == "PC01")
                 {
-                    string relDets = "Re: Affected relative's details" + patName + "  Date of birth: " + patDOB.ToString("dd/MM/yyyy");
-                    string patDets = "Our patient's details:" + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
+                    if (relName != "")
+                    {
+                        string relDets = "Re: Affected relative's details: " + relName + "  Date of birth: " + relDOB;
+                        Paragraph letterContentRelDets = section.AddParagraph();
+                        letterContentRelDets.AddFormattedText(relDets, TextFormat.Bold);
+                        spacer = section.AddParagraph();
+                    }
+
+                    string patDets = "Our patient's details: " + _lvm.patient.Title + " " + _lvm.patient.FIRSTNAME + " " + _lvm.patient.LASTNAME +
                         " Date of birth: " + _lvm.patient.DOB.Value.ToString("dd/MM/yyyy");
 
-                    Paragraph letterContentRelDets = section.AddParagraph(relDets);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContentPatDets = section.AddParagraph(patDets);
+                    Paragraph letterContentPatDets = section.AddParagraph();
+                    letterContentPatDets.AddFormattedText(patDets, TextFormat.Bold);
                     spacer = section.AddParagraph();
                     content1 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
@@ -1618,7 +2043,12 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para10;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    content3 = _lvm.documentsContent.Para5;
+                    Paragraph letterContent3 = section.AddParagraph();
+                    letterContent3.AddFormattedText(content3, TextFormat.Bold);
+                    spacer = section.AddParagraph();
+                    content4 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
                 }
 
@@ -1882,7 +2312,10 @@ namespace ClinicalXPDataConnections.Meta
 
                 //tf.DrawString("Letter code: " + docCode, font, XBrushes.Black, new XRect(400, 800, 500, 20));
                 spacer = section.AddParagraph();
-                sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                if (sigFilename == null || sigFilename == "")
+                {
+                    sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                }
 
                 if (docCode != "DT15")
                 {
@@ -1921,7 +2354,7 @@ namespace ClinicalXPDataConnections.Meta
 
                     if (enclosures != "" && enclosures != null)
                     {
-                        paraEnclosures = paraEnclosures + Environment.NewLine + enclosures;
+                        paraEnclosures = paraEnclosures + Environment.NewLine + enclosures.Replace(",", Environment.NewLine);
                     }
 
                     if (leafletID != 0)
@@ -1963,7 +2396,7 @@ namespace ClinicalXPDataConnections.Meta
                         if (ccs[i] != null && ccs[i] != "" && ccs[i] != "None")
                         {
 
-                            if (ccs[i].Contains("Ganesan")) //because of course it's hard-coded
+                            if (ccs[i].Contains("Ganesan") || ccs[i].Contains("Taniere")) //because of course it's hard-coded
                             {
                                 cc = ccs[i];
                             }
@@ -2032,8 +2465,15 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     string edmsPath = _constantsData.GetConstant("PrintPathEDMS", 1);
                     File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf");
+
+                    //if (File.Exists($@"{edmsPath}\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{diaryIDString}.pdf"))
+                    //{
+                    success = true;
+                    //} //this might cause problems in Production!
                 }
             }
+
+            return success;
         }
 
         public void DoConsentForm(int id, int mpi, int refID, string user, string referrer, string? additionalText = "", string? enclosures = "", int? reviewAtAge = 0,
@@ -2411,22 +2851,11 @@ namespace ClinicalXPDataConnections.Meta
             int len = imageSig.PixelWidth;
             int hig = imageSig.PixelHeight;
 
-            /*
-            var par = _docContext.Constants.FirstOrDefault(p => p.ConstantCode == "FilePathEDMS");
-            string filePath = par.ConstantValue;
-
-            //EDMS flename - we have to strip out the spaces that keep inserting themselves into the backend data!
-            //Also, we only have a constant value for the OPEX scanner, not the letters folder!
-            string letterFileName = filePath.Replace(" ", "") + "\\CaStdLetter-" + fileCGU + "-" + docCode + "-" + mpiString + "-0-" + refIDString + "-" + printCount.ToString() + "-" + dateTimeString + "-" + diaryIDString;
-            letterFileName = letterFileName.Replace("ScannerOPEX2", "Letters");
-            */
-            //document.Save(letterFileName + ".pdf"); - the server can't save it to the watchfolder due to permission issues.
-            //So we have to create it locally and have a scheduled job to move it instead.
-
-            //document.Save($@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-{1}-{dateTimeString}-{diaryIDString}.pdf");
 
             document.Save(Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf"));
 
+
+            /*
             if (!isPreview.GetValueOrDefault())
             {
                 //System.IO.File.Copy($"wwwroot\\StandardLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
@@ -2434,6 +2863,9 @@ namespace ClinicalXPDataConnections.Meta
 
                 File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\Letters\CaStdLetter-{fileCGU}-{docCode}-{mpiString}-0-{refIDString}-1-{dateTimeString}-{diaryIDString}.pdf");
             }
+            */
+
+            //we don't want to actually file consent forms, because they are not part of the patient record - they are just a copy for the patient to keep.
         }
 
 
