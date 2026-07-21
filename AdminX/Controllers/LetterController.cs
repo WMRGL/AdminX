@@ -2131,13 +2131,28 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para2;
                     content3 = _lvm.documentsContent.Para3;
                     content4 = _lvm.documentsContent.Para4;
+                    content5 = _lvm.documentsContent.Para5;
+                    content6 = _lvm.documentsContent.Para6;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    Paragraph letterContent2 = section.AddParagraph(content2);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent3 = section.AddParagraph(content3);
-                    spacer = section.AddParagraph();
-                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    enclosures = "CGS Leaflet";
+                    if (qrCodeText == "")
+                    {
+                        Paragraph letterContent2 = section.AddParagraph(content2);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent3 = section.AddParagraph(content3);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent4 = section.AddParagraph(content4);
+
+                        enclosures += Environment.NewLine + "FHF" + Environment.NewLine + "Prepaid envelope";
+                    }
+                    else
+                    {
+                        Paragraph letterContent5 = section.AddParagraph(content5);
+                        spacer = section.AddParagraph();
+                        Paragraph letterContent6 = section.AddParagraph(content6);
+                    }
+
                     spacer = section.AddParagraph();
 
                     ccs[0] = "RD";
@@ -2297,9 +2312,9 @@ namespace ClinicalXPDataConnections.Meta
                             CreateQRImageFile(qrCodeText, user);
 
                             spacer = section.AddParagraph();
-                            Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
-                                "receive an emailed link, let us know by contacting the department using the details above.");
-                            spacer = section.AddParagraph();
+                            //Paragraph contentQRText = section.AddParagraph("Please scan the QR code below to access the online pre-clinic questionaire. If you would prefer to " +
+                            //    "receive an emailed link, let us know by contacting the department using the details above.");
+                            //spacer = section.AddParagraph();
                             Paragraph contentQR = section.AddParagraph();
                             MigraDoc.DocumentObjectModel.Shapes.Image imgQRCode = contentQR.AddImage($"wwwroot\\Images\\qrCode-{user}.jpg");
                             imgQRCode.ScaleWidth = new Unit(1.5, UnitType.Point);
@@ -2350,21 +2365,16 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     spacer = section.AddParagraph();
 
-                    string paraEnclosures = "Enc: ";
+                    Table tableEncs = section.AddTable();
 
-                    if (enclosures != "" && enclosures != null)
-                    {
-                        paraEnclosures = paraEnclosures + Environment.NewLine + enclosures.Replace(",", Environment.NewLine);
-                    }
+                    Column colEnc1 = tableEncs.AddColumn();
+                    Column colEnc2 = tableEncs.AddColumn();
+                    Row rowcc = tableEncs.AddRow();
+                    colEnc1.Width = 30;
+                    colEnc2.Width = 300;
 
-                    if (leafletID != 0)
-                    {
-                        Leaflet enc = _leafletData.GetLeafletDetails(leafletID.GetValueOrDefault());
-                        paraEnclosures = paraEnclosures + Environment.NewLine + $"{enc.Code} Leaflet - ({enc.Name})";
-                    }
-
-                    Paragraph contentEncs = section.AddParagraph(paraEnclosures);
-                    contentEncs.Format.Font.Size = 12;
+                    rowcc[0].AddParagraph("Enc:");
+                    rowcc[1].AddParagraph(enclosures);
                 }
 
                 spacer = section.AddParagraph();
