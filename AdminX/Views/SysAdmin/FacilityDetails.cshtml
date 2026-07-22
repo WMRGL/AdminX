@@ -43,6 +43,16 @@
             </div>
 
             <div class="mb-3 row">
+                <label class="col-form-label col-sm-1 text-sm-end">Email address</label>
+                <div class="col-sm-4">
+                    <input type="text" name="emailAddress" class="form-control" asp-for=@Model.facility.EmailAddress />
+                </div>
+                <label class="col-form-label col-sm-2 text-sm-end">Email Only:</label>
+                <div class="col-sm-4">
+                    <input type="checkbox" name="isEmailOnly" asp-for=@Model.facility.isEmailOnly />
+                </div>
+            </div>
+            <div class="mb-3 row">
                 <label class="col-form-label col-sm-1 text-sm-end">Active</label>
                 <div class="col-sm-11">
                     <select class="form-select" name="isActive" asp-for=@Model.facility.NONACTIVE>

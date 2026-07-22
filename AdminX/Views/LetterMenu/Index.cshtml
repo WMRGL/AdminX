@@ -184,8 +184,59 @@
     document.getElementById("btnPreview").addEventListener("click", DoPreview);
     document.getElementById("btnPrint").addEventListener("click", DoPrint);
     document.getElementById("ddlRefID").addEventListener("change", SetLetterFromTo);
+    document.getElementById("ddlExtClinician").addEventListener("change", CheckEmailOnly);
     window.addEventListener("load", ShowLetterMenu);
     
+    function CheckEmailOnly()
+    {
+        var clinList = document.getElementById("ddlExtClinician");
+        var selectedClin = clinList.value;
+        var emailOnly = false;
+        var emailAddress = "";
+              
+        @foreach (var item in Model.clinicianList) //we have to check them all!
+        {
+            @:if(selectedClin == "@item.MasterClinicianCode")
+            @:{
+               @:emailOnly = "@item.isEmailOnly";
+               @:emailAddress = "@item.EmailAddress";
+            @:}
+        }
+
+        @foreach (var item in Model.histoList)
+        {
+            @:if(selectedClin == "@item.MasterClinicianCode")
+            @:{               
+                @:emailOnly = "@item.isEmailOnly";
+                @:emailAddress = "@item.EmailAddress";
+            @:}
+        }
+
+        @foreach (var item in Model.breastList)
+        {
+            @:if(selectedClin == "@item.MasterClinicianCode")
+            @:{
+                @:emailOnly = "@item.isEmailOnly";
+                @:emailAddress = "@item.EmailAddress";
+            @:}
+        }
+
+        @foreach (var item in Model.geneticsList)
+        {
+            @:if(selectedClin == "@item.MasterClinicianCode")
+            @:{
+                @:emailOnly = "@item.isEmailOnly";
+                @:emailAddress = "@item.EmailAddress";
+            @:}
+        }
+        
+        if(emailOnly == "True" && emailAddress != null && emailAddress != "")
+        {
+            alert("This clinician is set to receive letters by email only. Please email correspondence to " + emailAddress);
+            clinList.value = "";
+        }
+    }
+
     function ShowLetterMenu()
     {
         
