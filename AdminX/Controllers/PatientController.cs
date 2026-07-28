@@ -945,7 +945,12 @@ namespace AdminX.Controllers
 
                 _pvm.isCancerPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "Cancer").Result;
                 _pvm.isGeneralPPQComplete = _api.CheckPPQSubmitted(_pvm.patient.MPI, "General").Result;
-                _pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
+
+                string ptlink = await _constantsData.GetConstant("PhenotipsURL", 1);
+                string ptid = await _api.GetPhenotipsPatientID(id);
+
+                _pvm.phenotipsLink = ptlink + "/" + ptid;
+                //_pvm.phenotipsLink = _constantsData.GetConstant("PhenotipsURL", 1) + "/" + _api.GetPhenotipsPatientID(id).Result;
             }
         }        
     }

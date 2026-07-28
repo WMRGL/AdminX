@@ -161,8 +161,14 @@ namespace ClinicalXPDataConnections.Meta
             }
 
             Paragraph contentLetterContent = section.AddParagraph();
-            contentLetterContent.Format.Font.Size = 10;
-
+            if (_lvm.dictatedLetter.UseLargeFont)
+            {
+                contentLetterContent.Format.Font.Size = 14;
+            }
+            else
+            {
+                contentLetterContent.Format.Font.Size = 10;
+            }
 
             if (letterContent.Contains("[[strong]]") || letterContent.Contains("<b>")) //This is all required because there's no other way to get the bold text into the letter!!
             {
@@ -590,6 +596,7 @@ namespace ClinicalXPDataConnections.Meta
                 {
                     pageCount = 2; //because this can't happen automatically, obviously, so we have to hard code it!
 
+                    /*
                     content1 = _lvm.documentsContent.Para1 + " " + referrerName + " " + _lvm.documentsContent.Para2 + Environment.NewLine + Environment.NewLine;
 
                     if (qrCodeText != null && qrCodeText != "")
@@ -606,6 +613,36 @@ namespace ClinicalXPDataConnections.Meta
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(content2);
+                    */
+
+                    content1 = _lvm.documentsContent.Para6;
+                    content2 = _lvm.documentsContent.Para7;
+                    content3 = _lvm.documentsContent.Para8;
+                    if (qrCodeText != null && qrCodeText != "")
+                    {
+                        content4 = _lvm.documentsContent.Para9;
+                    }
+                    else
+                    {
+                        content4 = _lvm.documentsContent.Para10;
+                    }
+                    content5 = additionalText;
+                    content6 = _lvm.documentsContent.Para11;
+
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(content4);
+                    spacer = section.AddParagraph();
+                    if (content5 != null && content5 != "")
+                    {
+                        Paragraph letterContent5 = section.AddParagraph(content5);
+                        spacer = section.AddParagraph();
+                    }
+                    Paragraph letterContent6 = section.AddParagraph(content6);
                 }
 
                 if (docCode == "K")
@@ -2127,31 +2164,28 @@ namespace ClinicalXPDataConnections.Meta
                 //Clics letters
                 if (docCode == "ClicsFHF")
                 {
-                    content1 = referrerName + " " + _lvm.documentsContent.Para1;
-                    content2 = _lvm.documentsContent.Para2;
-                    content3 = _lvm.documentsContent.Para3;
-                    content4 = _lvm.documentsContent.Para4;
-                    content5 = _lvm.documentsContent.Para5;
-                    content6 = _lvm.documentsContent.Para6;
+                    content1 = referrerName + " " + _lvm.documentsContent.Para5;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     enclosures = "CGS Leaflet";
                     if (qrCodeText == "")
                     {
-                        Paragraph letterContent2 = section.AddParagraph(content2);
-                        spacer = section.AddParagraph();
-                        Paragraph letterContent3 = section.AddParagraph(content3);
-                        spacer = section.AddParagraph();
-                        Paragraph letterContent4 = section.AddParagraph(content4);
-
+                        content2 = _lvm.documentsContent.Para2;
+                        content3 = _lvm.documentsContent.Para3;
+                        content4 = _lvm.documentsContent.Para4;
                         enclosures += Environment.NewLine + "FHF" + Environment.NewLine + "Prepaid envelope";
                     }
                     else
                     {
-                        Paragraph letterContent5 = section.AddParagraph(content5);
-                        spacer = section.AddParagraph();
-                        Paragraph letterContent6 = section.AddParagraph(content6);
+                        content2 = _lvm.documentsContent.Para6;
+                        content3 = _lvm.documentsContent.Para7;
+                        content4 = _lvm.documentsContent.Para8;
                     }
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+                    spacer = section.AddParagraph();
+                    Paragraph letterContent4 = section.AddParagraph(content4);
 
                     spacer = section.AddParagraph();
 

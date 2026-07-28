@@ -237,7 +237,7 @@ namespace AdminX.Controllers
                            "", null, isPreview, qrCode, leafletID);
                 }
 
-
+                
 
                 if (isPreview)
                 {
