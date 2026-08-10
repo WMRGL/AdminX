@@ -23,6 +23,8 @@ namespace AdminX.Controllers
         private readonly IDiaryActionDataAsync _diaryActionData;        
         private readonly IAuditServiceAsync _audit;
         private readonly IPAddressFinder _ip;
+        private object _context;
+
         public RelativeDiaryController(IConfiguration config, IRelativeDataAsync relative, IRelativeDiaryDataAsync relativeDiary, IPatientDataAsync patient, ICRUD crud, IStaffUserDataAsync staffUser,
             IDocumentsDataAsync documents, IDiaryActionDataAsync diaryAction, IAuditServiceAsync audit)
         {
@@ -88,12 +90,23 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText)
+        public IActionResult AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText,
+            DateTime? diaryRec, int WMFACSID, bool? vhr)
         {
             try
             {
-                int success = _crud.CallStoredProcedure("RelativeDiary", "Create", relID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
-                    null, false, false, 0, 0, 0, diaryText, letterText);
+                int success = 0;
+                if (vhr == true)
+                {
+                     success = _crud.CallStoredProcedure("VHR", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                      diaryRec, false, false, 0, 0, 0, diaryText, letterText);
+                }
+                else
+                {
+                    success = _crud.CallStoredProcedure("RelativeDiary", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                   null, false, false, 0, 0, 0, diaryText, letterText);
+                }
+                
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
 
@@ -130,15 +143,27 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int diaryID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText, bool? isNotReturnExpected=false)
+        public async Task<IActionResult> Edit(int diaryID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText,
+          bool? vhr, DateTime diaryRec,  bool? isNotReturnExpected=false)
         {
             try
             {
                 _rdvm.relativeDiary = await _relDiaryData.GetRelativeDiaryDetails(diaryID);
                 int relID = _rdvm.relativeDiary.RelsID;
+                int success = 0;
+                if (vhr == true)
+                {
+                    success = _crud.CallStoredProcedure("VHR", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                     diaryRec, false, false, 0, 0, 0, diaryText, letterText);
+                }
+                else
+                {
+                    success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                     null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
+                }
 
-                int success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
-                    null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
+                //int success = _crud.CallStoredProcedure("RelativeDiary", "Edit", diaryID, 0, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                    //null, isNotReturnExpected, false, 0, 0, 0, diaryText, letterText);
 
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
                 TempData["SuccessMessage"] = "Relative Diary entry updated successfully.";
@@ -148,6 +173,41 @@ namespace AdminX.Controllers
             {
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "EditRelativeDiary" });
             }
+        }
+
+        [HttpGet]
+        [Route("api/Relative/GetOrCreateRelativeId")]
+        public async Task<IActionResult> GetOrCreateRelativeId(int wmfacsId)
+        {
+            if (wmfacsId <= 0)
+            {
+                return BadRequest("WMFACSID is required.");
+            }
+
+            var relative = await _relData.GetRelativeByWMFACSID(wmfacsId);
+
+            if (relative == null)
+            {
+                var patient = await _patientData.GetPatientDetailsByWMFACSID(wmfacsId);
+
+                if (patient == null)
+                {
+                    return NotFound(new { message = "Patient not found in main demographic records." });
+                }
+
+                relative = await _relData.GetRelativebyDemographics(wmfacsId, patient.FIRSTNAME, patient.LASTNAME, (DateTime)patient.DOB);
+            }
+
+            if (relative == null)
+            {
+                return NotFound(new
+                {
+                    code = "RELATIVE_NOT_FOUND",
+                    message = "No relative record exists for this patient. Please create a 'Self' relative record first."
+                });
+            }
+
+            return Ok(new { relsId = relative.relsid });
         }
     }
 }

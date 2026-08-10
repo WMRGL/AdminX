@@ -62,6 +62,7 @@ namespace AdminX.Controllers
         private readonly IAgeCalculator _ageCalculator;
         private readonly IWaitingListDataAsync _waitingListData;
         private readonly ILanguageDataAsync _languageDataAsync;
+        private readonly IVHRAuditDataAsync _vhrAuditData;
 
         public PatientController(IConfiguration config, ICRUD crud, IStaffUserDataAsync staffUser, IPatientDataAsync patient, IPatientSearchDataAsync patientSearch, IPedigreeDataAsync pedigree,
             ITitleDataAsync title, IEthnicityDataAsync ethnicity, IRelativeDataAsync relative, IPathwayDataAsync pathway, IAlertDataAsync alert, IReferralDataAsync referral, IAppointmentDataAsync appointment,
@@ -69,12 +70,13 @@ namespace AdminX.Controllers
             IReviewDataAsync review, ICityDataAsync city, IAreaNamesDataAsync areaNames, IGenderDataAsync gender, IConstantsDataAsync constants, IPhenotipsMirrorDataAsync phenotipsMirror, 
             IAlertTypeDataAsync alertType, IDiaryActionDataAsync diaryAction, IDocumentsDataAsync documents, IGenderIdentityDataAsync genderIdentity, IReferralStagingDataAsync referralStaging,
             IEpicPatientReferenceDataAsync epicPatientReference, IEpicReferralReferenceDataAsync epicReferralReference, IApiController api, IAgeCalculator ageCalculator, IWaitingListDataAsync waitingListData,
-            IApptStagingDataAsync apptStagingDataAsync, ILanguageDataAsync languageDataAsync) //, ClinicalContext clinContext)
+            IApptStagingDataAsync apptStagingDataAsync, ILanguageDataAsync languageDataAsync, IVHRAuditDataAsync vhrAuditData) //, ClinicalContext clinContext)
         {
             //_adminContext = adminContext;
             //_documentContext = documentContext;
             //_apiContext = apiContext;
             _config = config;
+            _vhrAuditData = vhrAuditData;
             _crud = crud;
             _pvm = new PatientVM();
             _staffUser = staffUser;
@@ -185,7 +187,7 @@ namespace AdminX.Controllers
                 _pvm.documentsList = await _docsData.GetDocumentsList();
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
-
+                _pvm.vhrAudit = await _vhrAuditData.GetVHRAuditDetails(_pvm.patient.WMFACSID);
                 var duplicateReferrals = referrals
                     .Where(r => r.COMPLETE != null && (r.COMPLETE.ToUpper() == "ACTIVE" || r.COMPLETE.ToUpper() == "MISSING DATA") && !r.logicaldelete)
                     .OrderByDescending(r => r.RefDate)

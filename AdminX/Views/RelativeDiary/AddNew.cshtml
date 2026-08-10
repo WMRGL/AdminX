@@ -15,28 +15,25 @@
     };
 }
 
-<div class="container">   
+<div class="card">   
+    <div class="card-header">
+        <h3 card-title text-dark>New Diary Entry for @Model.relative.RelForename1 @Model.relative.RelSurname</h3>
 
-    <div class="row mb-5 g-5">
-        <h1>New Diary Entry for @Model.relative.RelForename1 @Model.relative.RelSurname</h1>
     </div>
-
-    <div class="row mb-5 g-5">
+    <div class="card-body">
         <form id="frmAddNew" asp-action="AddNew">
-            <div class="row mb-5 g-5">
+            <div class="row ">
                 <input asp-for=@Model.relative.relsid name="RelID" hidden />
-                <div class="col-md-1">
-                    <label>Diary Date:</label>
+                <input asp-for=@Model.relative.WMFACSID name="WMFACSID" hidden />
+
+                <div class="col-md-4">
+                    <label class="form-label">Ref sent date:</label>
+                    <input type="date" name="diaryDate" class="form-control" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+
                 </div>
-                <div class="col-md-2">
-                    <input type="date" name="diaryDate" class="w-100" value=@DateTime.Today.ToString("yyyy-MM-dd") />
-                </div>
-                
-                <div class="col-md-1">
-                    <label>Action Code:</label>
-                </div>
-                <div class="col-md-2">
-                    <select name="actionCode" class="w-100">
+                <div class="col-md-4">
+                    <label class="form-label">Action Code:</label>
+                    <select name="actionCode" class="form-select js-choice">
                         <option value="">Select</option>
                         @foreach (var item in Model.diaryActionsList)
                         {
@@ -51,38 +48,45 @@
                         }
                     </select>
                 </div>
-            </div>
-            <div class="row mb-5 g-5">
-                <div class="col-md-1">
-                    DocCode:
-                </div>
-                <div class="col-md-6">
-                    <select name="docCode" class="w-100">
+              
+                <div class="col-md-4">
+                    <label class="form-label">DocCode:</label>
+                    <select name="docCode" class="form-select js-choice">
                         <option value="">Select</option>
                         @foreach (var item in Model.documentsList)
                         {
                             <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
                         }
                     </select>
-                </div>                
-            </div>
+                </div>
+                <div class="col-md-4 mt-3">
+                        <label class="form-label">Diary Text:</label>
+                        <input name="diaryText" class="form-control" />
 
-            <div class="row mb-5 g-5">
-                <div class="col-md-1">
-                    DiaryText:
-                </div>
-                <div class="col-md-8">
-                    <input name="diaryText" class="w-100" />
-                </div>
+                    </div>
+                @* <div class="col-md-4 mt-3">
+                        <label class="form-label">Ref sent date</label>
+                    <input class="form-control" type="date" value="" name="DiaryDate" />
+                    </div> *@
+                <div class="col-md-4 mt-3">
+                        <label class="form-label">Ref received confo date</label>
+                    <input class="form-control" type="date" name="DiaryRec" value="" />
+                    </div>               
+               
             </div>
+        
+
         </form>
+        <input type="button" class="btn btn-default btn-primary mt-3" value="Save" id="btnSave" />
     </div>
 
-    <div class="row g-5 mb-5">
+    </div>
+
+    @* <div class="row g-5 mb-5">
         <div class="col-md-2">
             <input type="button" class="btn btn-default btn-primary" value="Save" id="btnSave" />
         </div>
-    </div>
+    </div> *@
 </div>
 
 <script>
