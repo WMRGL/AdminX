@@ -238,12 +238,6 @@ namespace AdminX.Controllers
                 }
 
                 
-
-                if (isPreview)
-                {
-                    return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
-                }
-
                 if (printSuccess)
                 {
                     message = "Letter has been sent to EDMS";
@@ -254,7 +248,8 @@ namespace AdminX.Controllers
                 }
                 
                 TempData["SuccessMessage"] = message;
-                return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
+                //return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
+                return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
             catch (Exception ex)
             {
