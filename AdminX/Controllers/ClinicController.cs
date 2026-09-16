@@ -345,7 +345,7 @@ namespace AdminX.Controllers
                     isHidden = false;
                 }
 
-                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", emailBodyText, User.Identity.Name, null, null, isHidden);
+                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", message, User.Identity.Name, null, null, isHidden);
 
                 emailBodyText = emailBodyText + emailMessage;
 
