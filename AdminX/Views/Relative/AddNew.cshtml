@@ -1,15 +1,20 @@
 ﻿@model AdminX.ViewModels.RelativeVM
 @{
-    ViewData["Title"] = "Clinic-X - Relative Details";
+    ViewData["Title"] = "Admin-X - Relative Details";
 }
 
 <div class="card">
     <div class="card-header">
         <h5 class="card-title text-dark">New Relative Details</h5>            
         <a type="button" class="btn btn-outline-primary float-end" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
-
     </div>
     <div class="card-body">
+        <div class="row mb-2 g-2">
+            <div class="col-md-2">
+                <button type="button" class="btn btn-secondary" id="btnUsePatient">Use Patient:</button>
+            </div>
+        </div>
+
         <form id="frmAddNew" asp-action="AddNew">
             <div class="row" id="Metadata">
                 <input asp-for=@Model.WMFACSID name="wmfacsid" hidden />
@@ -17,7 +22,7 @@
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <label class="form-label"> Title </label>
-                    <select class="form-select" name="title">
+                    <select class="form-select" name="title" id="ddlTitle">
                         <option ></option>
                         @foreach (var r in Model.titleList)
                         {
@@ -28,16 +33,16 @@
                 
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Firstname</label>
-                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename1 name="forename1" required/>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename1 name="forename1" id="txtForename1" required/>
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Middlename</label>
-                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename2 name="forename2" />
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelForename2 name="forename2" id="txtForename2" />
                 </div>
              
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Surname:</label>
-                    <input class="form-control" asp-for=@Model.relativeDetails.RelSurname name="surname" required/>
+                    <input class="form-control" asp-for=@Model.relativeDetails.RelSurname name="surname" id="txtSurname" required/>
                 </div>
 
             </div>
@@ -63,19 +68,19 @@
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">Address 1:</label>
-                    <input type="text" name="RelAdd1" class="form-control" asp-for=@Model.relativeDetails.RelAdd1 />
+                    <input type="text" name="RelAdd1" class="form-control" asp-for=@Model.relativeDetails.RelAdd1 id="txtAddress1" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Address 2:</label>
-                    <input type="text" name="RelAdd2" class="form-control" asp-for=@Model.relativeDetails.RelAdd2 />
+                    <input type="text" name="RelAdd2" class="form-control" asp-for=@Model.relativeDetails.RelAdd2 id="txtAddress2" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Town/City:</label>
-                    <input type="text" name="RelAdd3" class="form-control" asp-for=@Model.relativeDetails.RelAdd3 />
+                    <input type="text" name="RelAdd3" class="form-control" asp-for=@Model.relativeDetails.RelAdd3 id="txtAddress3" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">County:</label>
-                    <input type="text" name="RelAdd4" class="form-control" asp-for=@Model.relativeDetails.RelAdd4 />
+                    <input type="text" name="RelAdd4" class="form-control" asp-for=@Model.relativeDetails.RelAdd4 id="txtAddress4" />
                 </div>
             </div>
 
@@ -86,21 +91,21 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">NHS No:</label>
-                    <input type="number" name="RelNHSNo" class="form-control" asp-for="@Model.relativeDetails.RelNHSNo" />
+                    <input type="number" name="RelNHSNo" class="form-control" asp-for="@Model.relativeDetails.RelNHSNo" id="txtNHSNo" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Postcode:</label>
-                    <input type="text" name="RelPC1" class="form-control" asp-for=@Model.relativeDetails.RelPC1 />
+                    <input type="text" name="RelPC1" class="form-control" asp-for=@Model.relativeDetails.RelPC1 id="txtPostcode" />
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">DOB</label>
-                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOB name="sDOB" />
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOB name="sDOB" id="txtDOB"/>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label class="form-label">DOD (if deceased)</label>
-                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOD name="sDOD" />
+                    <input type="date" class="form-control" asp-for=@Model.relativeDetails.DOD name="sDOD" id="txtDOD" />
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Death Age</label>
@@ -109,7 +114,7 @@
                 
                 <div class="col-md-3">
                     <label class="form-label">Gender</label>
-                    <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex" required>
+                    <select class="form-control" asp-for=@Model.relativeDetails.Sex name="sex" required id="ddlGender">
                         <option value="">Select...</option>
                         @foreach (var r in Model.genderList)
                         {
@@ -120,7 +125,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Relation to Proband</label>
-                    <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation" required>
+                    <select class="form-select" asp-for=@Model.relativeDetails.RelCode name="relation" required id="ddlRelation">
                         <option value="">Select...</option>
                         @foreach (var r in Model.relationList)
                         {
@@ -199,6 +204,7 @@
 <script type="text/javascript">
 
     // document.getElementById("btnSave").addEventListener("click", AddRelative);
+        document.getElementById("btnUsePatient").addEventListener("click", UsePatient);
         
 
     // function AddRelative() 
@@ -219,6 +225,27 @@
         //    return 0;
         //}
         return 1;
+    }
+
+    function UsePatient()
+    {        
+        document.getElementById("ddlTitle").value = "@Model.patient.Title";
+        document.getElementById("txtForename1").value = "@Model.patient.FIRSTNAME";
+        document.getElementById("txtForename1").value = "@Model.patient.PtForename2";
+        document.getElementById("txtSurname").value = "@Model.patient.LASTNAME";
+        document.getElementById("txtAddress1").value = "@Model.patient.ADDRESS1";
+        document.getElementById("txtAddress2").value = "@Model.patient.ADDRESS2";
+        document.getElementById("txtAddress3").value = "@Model.patient.ADDRESS3";
+        document.getElementById("txtAddress4").value = "@Model.patient.ADDRESS4";
+        document.getElementById("txtPostcode").value = "@Model.patient.POSTCODE";
+        document.getElementById("txtDOB").value = "@Model.patient.DOB?.ToString("yyyy-MM-dd")";        
+        if("@Model.patient.DOB" != null)
+        {
+            document.getElementById("txtDOD").value = "@Model.patient.DECEASED_DATE?.ToString("yyyy-MM-dd")";
+        }
+        document.getElementById("txtNHSNo").value = "@Model.patient.SOCIAL_SECURITY";
+        document.getElementById("ddlGender").value = "@Model.patient.SEX";
+        document.getElementById("ddlRelation").value = 1;
     }
 
 </script>
