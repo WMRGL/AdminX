@@ -337,15 +337,20 @@ namespace AdminX.Controllers
                                       safeMessage;
 
                 string emailBodyText = "";
+                string clinicalNoteText = "";
                 bool isHidden = true;
 
-                if (isAddAsNote.GetValueOrDefault())
+                if (isAddAsNote.GetValueOrDefault()) //for the clinical note - the new lines have to be different here so we need to reconstruct it
                 {
-                    emailBodyText = "A copy of this message has already been queued for creation in EDMS%0D%0A%0D%0A";
+                    emailBodyText = "A copy of this message has already been queued for creation in EDMS %0D%0A%0D%0A";
                     isHidden = false;
+                    clinicalNoteText = $"Caller - {callersName} {Environment.NewLine + Environment.NewLine}" +
+                                      $"Organisation - {callersOrg} {Environment.NewLine + Environment.NewLine}" +
+                                      $"Contact Tel No - {callersTelNo} {Environment.NewLine + Environment.NewLine}" +
+                                      message;
                 }
 
-                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", message, User.Identity.Name, null, null, isHidden);
+                _crud.CallStoredProcedure("ClinicalNote", "Create", refID, 0, 0, "", "", "", clinicalNoteText, User.Identity.Name, null, null, isHidden);
 
                 emailBodyText = emailBodyText + emailMessage;
 

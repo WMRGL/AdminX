@@ -19,7 +19,7 @@ namespace ClinicalXPDataConnections.Meta
 
     public class LetterControllerLOCAL
     {
-        private readonly ClinicalContext _clinContext;
+        private readonly ClinicalContext _clinContext;        
         private readonly DocumentContext _docContext;
         private readonly LetterVM _lvm;
         private readonly IPatientData _patientData;
@@ -35,6 +35,7 @@ namespace ClinicalXPDataConnections.Meta
         private readonly ILeafletData _leafletData;
         private readonly IAlertData _alertData;
         private readonly ISurveillanceDataAsync _survData;
+        private readonly IScreeningServiceDataAsync _screeningServiceData;
 
         public LetterControllerLOCAL(ClinicalContext clinContext, DocumentContext docContext) //to be used for testing only
         {
@@ -54,11 +55,12 @@ namespace ClinicalXPDataConnections.Meta
             _leafletData = new LeafletData(_docContext);
             _alertData = new AlertData(_clinContext);
             _survData = new SurveillanceDataAsync(_clinContext);
+            _screeningServiceData = new ScreeningServiceDataAsync(_clinContext);
         }
 
 
         //Creates a preview of the DOT letter
-        public void PrintDOTPDF(int dID, string user, bool isPreview)
+        public async Task PrintDOTPDF(int dID, string user, bool isPreview)
         {
 
             _lvm.staffMember = _staffUser.GetStaffMemberDetails(user);
@@ -141,7 +143,7 @@ namespace ClinicalXPDataConnections.Meta
             if (_lvm.dictatedLetter.LetterRe != null)
             {
                 Paragraph contentLetterRe = section.AddParagraph();
-                contentLetterRe.AddFormattedText(_lvm.dictatedLetter.LetterRe, TextFormat.Bold);
+                contentLetterRe.AddFormattedText("Re: " + _lvm.dictatedLetter.LetterRe, TextFormat.Bold);
                 spacer = section.AddParagraph();
 
             }
@@ -197,27 +199,57 @@ namespace ClinicalXPDataConnections.Meta
 
 
 
-            string signOff = _lvm.dictatedLetter.LetterFrom;
-            StaffMember signatory = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.LetterFromCode);
-
-            string sigFilename = $"{signatory.StaffForename.Replace(" ", "")}{signatory.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
-
-
-
             spacer = section.AddParagraph();
             spacer = section.AddParagraph();
 
             Paragraph contentSignOff = section.AddParagraph("Yours sincerely,");
 
             spacer = section.AddParagraph();
-            Paragraph contentSig = section.AddParagraph();
-            if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
-            {
-                MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(@$"wwwroot\Signatures\{sigFilename}");
-            }
-            spacer = section.AddParagraph();
-            Paragraph contentSignOffName = section.AddParagraph(signOff);
 
+            string signOff = _lvm.dictatedLetter.LetterFrom;
+
+            StaffMember signatory = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.LetterFromCode);
+
+            string sigFilename = $"{signatory.StaffForename.Replace(" ", "")}{signatory.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+
+            if (_lvm.dictatedLetter.ApprovedBy != null && (_lvm.dictatedLetter.LetterFromCode != _lvm.dictatedLetter.ApprovedBy))
+            {
+                StaffMember signatory2 = _staffUser.GetStaffMemberDetailsByStaffCode(_lvm.dictatedLetter.ApprovedBy);
+                string sigFilename2 = $"{signatory2.StaffForename.Replace(" ", "")}{signatory2.StaffSurname.Replace("'", "").Replace(" ", "")}.jpg";
+                string signOff2 = signatory2.NAME + Environment.NewLine + signatory2.POSITION;
+
+                Table tableSigs = section.AddTable();
+                Column sig1Col = tableSigs.AddColumn();
+                Column sig2Col = tableSigs.AddColumn();
+                tableSigs.Columns.Width = 300;
+                Row sigRow = tableSigs.AddRow();
+                sigRow.Height = 40;
+                Row signoffRow = tableSigs.AddRow();
+                signoffRow.Height = 20;
+
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig1 = sigRow.Cells[0].AddImage(@$"wwwroot\Signatures\{sigFilename}");
+                }
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename2}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig2 = sigRow.Cells[1].AddImage(@$"wwwroot\Signatures\{sigFilename2}");
+                }
+
+                signoffRow.Cells[0].AddParagraph(signOff);
+                signoffRow.Cells[1].AddParagraph(signOff2);
+            }
+
+            else
+            {
+                Paragraph contentSig = section.AddParagraph();
+                if (File.Exists(@$"wwwroot\Signatures\{sigFilename}"))
+                {
+                    MigraDoc.DocumentObjectModel.Shapes.Image sig = contentSig.AddImage(@$"wwwroot\Signatures\{sigFilename}");
+                }
+                spacer = section.AddParagraph();
+                Paragraph contentSignOffName = section.AddParagraph(signOff);
+            }
             if (_lvm.dictatedLetter.Enclosures != null)
             {
                 spacer = section.AddParagraph();
@@ -284,11 +316,7 @@ namespace ClinicalXPDataConnections.Meta
 
                 File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
 
-                //System.IO.File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"C:\CGU_DB\Letters\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
-
-                /*                 
-                can't actually print it because there's no way to give it your username, so it'll all be under the server's name
-                */
+                //can't actually print it because there's no way to give it your username, so it'll all be under the server's name                
             }
         }
 
@@ -391,43 +419,64 @@ namespace ClinicalXPDataConnections.Meta
                     contentOurAddress.Format.Alignment = ParagraphAlignment.Right;
                 }
 
-                patAddress = _add.GetAddress("PT", refID);
-
-                if (_lvm.documentsContent.LetterTo == "PT" || _lvm.documentsContent.LetterTo == "PTREL")
+                if (docCode == "VHRProC")
                 {
-                    if (docCode != "CF01")
+                    var screeningService = await _screeningServiceData.GetScreeningServiceDetails(_lvm.patient.GP_Facility_Code);
+
+                    address = screeningService.Contact + Environment.NewLine;
+                    address += screeningService.Add1 + Environment.NewLine ?? "";
+                    address += screeningService.Add2 + Environment.NewLine ?? "";
+                    address += screeningService.Add3 + Environment.NewLine ?? "";
+                    address += screeningService.Add4 + Environment.NewLine ?? "";
+                    address += screeningService.Add5 + Environment.NewLine ?? "";
+                    address += screeningService.Add6 + Environment.NewLine ?? "";
+                    address += screeningService.Add7 + Environment.NewLine ?? "";
+                    address += screeningService.Add8 + Environment.NewLine ?? "";
+                    address += screeningService.Add9 + Environment.NewLine ?? "";
+                    address += screeningService.Add10 + Environment.NewLine ?? "";
+
+                    salutation = screeningService.Contact;
+                }
+                else
+                {
+                    patAddress = _add.GetAddress("PT", refID);
+
+                    if (_lvm.documentsContent.LetterTo == "PT" || _lvm.documentsContent.LetterTo == "PTREL")
                     {
-                        name = _lvm.patient.PtLetterAddressee; //relatives' letters get sent to the patient - we don't contact the relative directly, and 
-                        salutation = _lvm.patient.SALUTATION; //don't even store their address most of the time
+                        if (docCode != "CF01")
+                        {
+                            name = _lvm.patient.PtLetterAddressee; //relatives' letters get sent to the patient - we don't contact the relative directly, and 
+                            salutation = _lvm.patient.SALUTATION; //don't even store their address most of the time
 
-                        //patAddress = _add.GetAddress("PT", refID);
-                        address = patAddress;
+                            //patAddress = _add.GetAddress("PT", refID);
+                            address = patAddress;
+                        }
                     }
-                }
-                else if (_lvm.documentsContent.LetterTo == "RD" && !_lvm.documentsContent.DocCode.Contains("O4"))
-                {
-                    //if () //because somebody hard-coded this overriding feature in CGU_DB                    
-                    //{
-                    address = _add.GetAddress("RD", refID);
-                    //}
-                }
-                else if (_lvm.documentsContent.LetterTo == "GP")
-                {
-                    address = _add.GetAddress("GP", refID);
-                }
-                else if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
-                    || (clinicianCode != "" && clinicianCode != null))
-                {
-                    ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
-                    name = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
-                    var hospital = _externalFacilityData.GetFacilityDetails(clinician.FACILITY);
-                    salutation = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
-                    address = salutation + Environment.NewLine;
-                    address += hospital.NAME + Environment.NewLine;
-                    address += hospital.ADDRESS + Environment.NewLine;
-                    address += hospital.CITY + Environment.NewLine;
-                    address += hospital.STATE + Environment.NewLine;
-                    address += hospital.ZIP + Environment.NewLine;
+                    else if (_lvm.documentsContent.LetterTo == "RD" && !_lvm.documentsContent.DocCode.Contains("O4"))
+                    {
+                        //if () //because somebody hard-coded this overriding feature in CGU_DB                    
+                        //{
+                        address = _add.GetAddress("RD", refID);
+                        //}
+                    }
+                    else if (_lvm.documentsContent.LetterTo == "GP")
+                    {
+                        address = _add.GetAddress("GP", refID);
+                    }
+                    else if (_lvm.documentsContent.LetterTo == "Other" || _lvm.documentsContent.LetterTo == "Histo" || _lvm.documentsContent.DocCode.Contains("O4")
+                        || (clinicianCode != "" && clinicianCode != null))
+                    {
+                        ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(clinicianCode);
+                        name = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
+                        var hospital = _externalFacilityData.GetFacilityDetails(clinician.FACILITY);
+                        salutation = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
+                        address = salutation + Environment.NewLine;
+                        address += hospital.NAME + Environment.NewLine;
+                        address += hospital.ADDRESS + Environment.NewLine;
+                        address += hospital.CITY + Environment.NewLine;
+                        address += hospital.STATE + Environment.NewLine;
+                        address += hospital.ZIP + Environment.NewLine;
+                    }
                 }
 
                 row2.Cells[0].AddParagraph(address);
@@ -1344,13 +1393,16 @@ namespace ClinicalXPDataConnections.Meta
                         */
                     }
 
+                    spacer = section.AddParagraph();
+
+                    Paragraph letterContentGuidline = section.AddParagraph("Our current guidelines would suggest surveillance as outlined below:");
+                    spacer = section.AddParagraph();
+
                     string contentscreening = "";
                     var screening = await _survData.GetSurveillanceList(mpi);
 
                     if (screening.Count > 0)
                     {
-                        contentscreening = "Our current guidelines would suggest surveillance as outlined below:" + Environment.NewLine + Environment.NewLine;
-
                         foreach (var item in screening)
                         {
                             if (item.UseLetter.GetValueOrDefault())
@@ -2253,6 +2305,10 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (docCode == "VHRProC")
                 {
+                    Paragraph letterContentPt = section.AddParagraph();
+                    letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
+                    spacer = section.AddParagraph();
+
                     content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText;
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
@@ -2554,7 +2610,14 @@ namespace ClinicalXPDataConnections.Meta
                                 //if (ccs[i] == referrerName)
                                 if (ccs[i] == "RD")
                                 {
-                                    cc = referrerName + _externalClinicianData.GetCCDetails(_lvm.referrer);
+                                    if (_lvm.referrer != _lvm.gp) //if it's a GP, don't show it twice
+                                    {
+                                        cc = referrerName + _externalClinicianData.GetCCDetails(_lvm.referrer);
+                                    }
+                                    else
+                                    {
+                                        cc = "None";
+                                    }
                                 }
                                 //if (ccs[i] == gpName)
                                 if (ccs[i] == "GP")
@@ -2572,22 +2635,27 @@ namespace ClinicalXPDataConnections.Meta
 
                             Column colCC = tableCC.AddColumn();
                             Column colADDRESS = tableCC.AddColumn();
-                            Row rowcc = tableCC.AddRow();
-                            colCC.Width = 20;
-                            colADDRESS.Width = 300;
 
-                            rowcc[0].AddParagraph("cc:");
-                            rowcc[1].AddParagraph(cc);
-                            spacer = section.AddParagraph();
-                            spacer = section.AddParagraph();
-                            printCount = printCount += 1;
-                            ccLength += 150;
-                            //if (_documentsData.GetDocumentData(docCode).HasAdditionalActions)
-                            if (printCount > 0 && adminToPrint == true && isPreview == false)
+                            if (cc != "None")
                             {
-                                printCount = printCount += 1;
+                                Row rowcc = tableCC.AddRow();
+                                colCC.Width = 20;
+                                colADDRESS.Width = 300;
+
+                                rowcc[0].AddParagraph("cc:");
+                                rowcc[1].AddParagraph(cc);
+                                spacer = section.AddParagraph();
+                                spacer = section.AddParagraph();
+                                //printCount = printCount += 1;
+                                ccLength += 150;
+
+                                //if (_documentsData.GetDocumentData(docCode).HasAdditionalActions)
+                                if (printCount > 0 && adminToPrint == true && isPreview == false)
+                                {
+                                    printCount = printCount += 1;
+                                }
+                                spacer = section.AddParagraph();
                             }
-                            spacer = section.AddParagraph();
                         }
                     }
                 }
