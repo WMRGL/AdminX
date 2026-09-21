@@ -149,7 +149,7 @@ namespace AdminX.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AddNew(int wmfacsid)
+        public async Task<IActionResult> AddNew(int wmfacsid, bool? vhr)
         {
             try
             {
@@ -164,6 +164,11 @@ namespace AdminX.Controllers
                 _rvm.relationList = rels.OrderBy(r => r.ReportOrder).ToList();
                 _rvm.genderList = await _relativeData.GetGenderList();
                 _rvm.titleList = await _titleData.GetTitlesList();
+                if (vhr == true)
+                {
+                    ViewBag.vhr = true;
+                    _rvm.patient = pat;
+                }
                 return View(_rvm);
             }
             catch (Exception ex)
@@ -177,7 +182,7 @@ namespace AdminX.Controllers
             string forename2, string surname, string relation, string sDOB, string sDOD, int RelAffected, string sex, string? RelAKA, 
             string? RelSurnameBirth, string? RelSurnamePrevious, string RelAdd1, string? RelAdd2, string? RelAdd3, string? RelAdd4, 
             string? RelTel, string? RelSalutation, string? RelNHSNo, string? RelPC1, string? DeathAge, string? RelAlive, string? Notes,
-            string? MatPat, string? RelOTher)
+            string? MatPat, string? RelOTher, bool? vhr)
         {
             try
             {
@@ -208,11 +213,22 @@ namespace AdminX.Controllers
                 {
                     forename2 = "";
                 }
+                int success = 0;
+                if (vhr == true)
+                    if (vhr == true)
+                    {
+                        string relationParam = "1";
 
-                int success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, RelAffected, 0, title, forename1, forename2, surname,
-                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, RelAKA, 0,0,0,0,0, RelSurnameBirth, RelSurnamePrevious,
+                        success = _crud.CallStoredProcedure("RelativeVHR", "Create", wmfacsid, RelAffected, 0, title, forename1, forename2, surname,
+                            User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relationParam, sex, RelAKA, 0, 0, 0, 0, 0, RelSurnameBirth, RelSurnamePrevious,
+                            RelAdd1, RelAdd2, RelAdd3, RelAdd4, RelTel, RelSalutation, RelNHSNo, RelPC1, DeathAge, RelAlive, Notes, MatPat, RelOTher);
+                    }
+                    else
+                {
+                    success = _crud.CallStoredProcedure("Relative", "Create", wmfacsid, RelAffected, 0, title, forename1, forename2, surname,
+                    User.Identity.Name, birthDate, deathDate, false, false, 0, 0, 0, relation, sex, RelAKA, 0, 0, 0, 0, 0, RelSurnameBirth, RelSurnamePrevious,
                     RelAdd1, RelAdd2, RelAdd3, RelAdd4, RelTel, RelSalutation, RelNHSNo, RelPC1, DeathAge, RelAlive, Notes, MatPat, RelOTher);
-
+                }
                 if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Relative-add(SQL)" }); }
 
                 var patient = _patientData.GetPatientDetailsByWMFACSID(wmfacsid);

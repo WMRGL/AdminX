@@ -85,6 +85,8 @@ namespace AdminX.ViewModels
         public bool RequiresEpicClinicUpdate { get; set; }
         public string MissingEpicClinicID { get; set; }
         public VhrAudit vhrAudit { get; set; }
+        public Relative relativeDetails { get; set; }
+        public bool VHRFacilityCheck { get; set; }
     }
 
     public class PatientAlert

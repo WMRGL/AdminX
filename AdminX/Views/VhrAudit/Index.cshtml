@@ -15,6 +15,7 @@
                     <th>VHR letter code</th>
                     <th>Screening Unit</th>
                     <th>Ref sent date</th>
+                    <th>Admin Contact</th>
                     <th>Ref received confo date</th>
                 </tr>
             </thead>
@@ -29,6 +30,7 @@
                         <td>@audit.DocCode</td>
                         <td>@audit.BreastScreeningService</td>
                         <td>@(audit.DiaryDate != null ? ((DateTime)audit.DiaryDate).ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(audit.NAME != null ? audit.NAME : "")</td>
                         <td>@(audit.DiaryRec != null ? ((DateTime)audit.DiaryRec).ToString("dd/MM/yyyy") : "")</td>
                     </tr>
                 }

@@ -1843,93 +1843,110 @@
 
 
             <div class="tab-pane fade" id="vhr" role="tabpanel">
-                @if (Model.vhrAudit != null)
+                @if (Model.VHRFacilityCheck == false)
                 {
-                    <!-- PENDING CONFIRMATION: Show Edit Form -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Update VHR Confirmation Date</h5>
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
-                        <div class="card-body">
-                            <form id="frmEdit" asp-controller="RelativeDiary" asp-action="Edit" method="post">
-                                <div class="row ">
-                                    <input type="hidden" name="diaryID" id="hiddendiaryID" value="@Model.vhrAudit.DiaryID" />
-                                    <input type="hidden" name="WMFACSID" id="WmfacsId" value="@Model.vhrAudit.WMFACSID" />
-                                    <input type="hidden" name="vhr" value="true" />
+                        <div class="alert-message">
+                            <strong>Incomplete Screening Service Details:</strong>
+                            This patient's GP Practice (<code>@Model.patient.GP_Facility</code>) does not a valid Mcode.
+                            A VHR referral cannot be created until the patient GP Details has been updated.
+                        </div>
+                    </div>
+                } else
+                {
+
+                    @if (Model.vhrAudit != null)
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Update VHR Confirmation Date</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="frmEdit" asp-controller="RelativeDiary" asp-action="Edit" method="post">
+                                    <div class="row ">
+                                        <input type="hidden" name="diaryID" id="hiddendiaryID" value="@Model.vhrAudit.DiaryID" />
+                                        <input type="hidden" name="WMFACSID" id="WmfacsId" value="@Model.vhrAudit.WMFACSID" />
+                                        <input type="hidden" name="vhr" value="true" />
+                                        <input type="hidden" name="gpFacility" value="@Model.patient.GP_Facility" />
+                                        <input type="hidden" name="mpi" value="@Model.patient.MPI" />
 
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">Ref sent date:</label>
-                                        <input type="date" name="diaryDate" class="form-control" value=@Model.vhrAudit.DiaryDate.Value.ToString("yyyy-MM-dd") />
+                                        <div class="col-md-3">
+                                            <label class="form-label">Ref sent date:</label>
+                                            <input type="date" name="diaryDate" class="form-control" value=@Model.vhrAudit.DiaryDate.Value.ToString("yyyy-MM-dd") />
 
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Action Code:</label>
-                                        <select name="actionCode" class="form-select js-choice">
-                                            <option value="@Model.vhrAudit.DiaryAction" selected>@Model.vhrAudit.DiaryAction</option>
-                                            @foreach (var item in Model.diaryActionsList)
-                                            {
-                                                @if (item.Action != null)
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Action Code:</label>
+                                            <select name="actionCode" class="form-select js-choice">
+                                                <option value="@Model.vhrAudit.DiaryAction" selected>@Model.vhrAudit.DiaryAction</option>
+                                                @foreach (var item in Model.diaryActionsList)
                                                 {
-                                                    <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                                                    @if (item.Action != null)
+                                                    {
+                                                        <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value=@item.ActionCode>@item.ActionCode</option>
+                                                    }
                                                 }
-                                                else
-                                                {
-                                                    <option value=@item.ActionCode>@item.ActionCode</option>
-                                                }
-                                            }
-                                        </select>
-                                    </div>
+                                            </select>
+                                        </div>
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">DocCode:</label>
-                                        <select name="docCode" class="form-select js-choice">
-                                            <option value="@Model.vhrAudit.DocCode" selected>@Model.vhrAudit.DocCode</option>
-                                            @foreach (var item in Model.documentsList)
-                                            {
-                                                <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    @* <div class="col-md-4 mt-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">DocCode:</label>
+                                            <select name="docCode" class="form-select js-choice">
+                                                <option value="@Model.vhrAudit.DocCode" selected>@Model.vhrAudit.DocCode</option>
+                                                @foreach (var item in Model.documentsList)
+                                                {
+                                                    <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        @* <div class="col-md-4 mt-3">
                                         <label class="form-label">Diary Text:</label>
                                         <input name="diaryText" class="form-control" />
 
                                     </div> *@
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">Ref received confo date</label>
-                                        <input class="form-control" type="date" name="diaryRec" value="" />
-                                    </div>
-
-                                </div>
-
-                                <button type="submit" class="btn btn-default btn-primary mt-3">Save</button>   
-                            </form>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <!-- NO OPEN AUDIT: Show New Referral Form -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Log New VHR Referral</h5>
-                        </div>
-                        <div class="card-body">
-                            <form id="frmAddNew" asp-controller="RelativeDiary" asp-action="AddNew" method="post">
-                                <div class="row ">
-                                    <input type="hidden" name="relID" id="hiddenRelsID" value="" />
-                                    <input type="hidden" name="WMFACSID" id="hiddenWmfacsId" value="@Model.patient.WMFACSID" />
-                                    <input type="hidden" name="vhr" value="true" />
-
-
-                                    <div class="col-md-4">
-                                        <label class="form-label">Ref sent date:</label>
-                                        <input type="date" name="diaryDate" class="form-control" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                                        <div class="col-md-3">
+                                            <label class="form-label">Ref received confo date</label>
+                                            <input class="form-control" type="date" name="diaryRec" value="" />
+                                        </div>
 
                                     </div>
-                                    <div class="col-md-4">
+
+                                    <button type="submit" class="btn btn-default btn-primary mt-3">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Log New VHR Referral</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="frmAddNew" asp-controller="RelativeDiary" asp-action="AddNew" method="post">
+                                    <div class="row ">
+                                        <input type="hidden" name="relID" id="hiddenRelsID" value="" />
+                                        <input type="hidden" name="WMFACSID" id="hiddenWmfacsId" value="@Model.patient.WMFACSID" />
+                                        <input type="hidden" name="vhr" value="true" />
+                                        <input type="hidden" name="actionCode" value="VHR" />
+                                        <input type="hidden" name="docCode" value="VHRProC" />
+
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Ref sent date:</label>
+                                            <input type="date" name="diaryDate" class="form-control" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+
+                                        </div>
+                                        @* <div class="col-md-4">
                                         <label class="form-label">Action Code:</label>
                                         <select name="actionCode" class="form-select js-choice">
                                             <option value="">Select</option>
@@ -1945,9 +1962,9 @@
                                                 }
                                             }
                                         </select>
-                                    </div>
+                                    </div> *@
 
-                                    <div class="col-md-4">
+                                        @* <div class="col-md-4">
                                         <label class="form-label">DocCode:</label>
                                         <select name="docCode" class="form-select js-choice">
                                             <option value="">Select</option>
@@ -1956,28 +1973,31 @@
                                                 <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
                                             }
                                         </select>
-                                    </div>
-                                    <div class="col-md-4 mt-3">
+                                    </div> *@
+                                        @* <div class="col-md-4 mt-3">
                                         <label class="form-label">Diary Text:</label>
                                         <input name="diaryText" class="form-control" />
 
-                                    </div>
-                                    @* <div class="col-md-4 mt-3">
+                                    </div> *@
+                                        @* <div class="col-md-4 mt-3">
                         <label class="form-label">Ref sent date</label>
                     <input class="form-control" type="date" value="" name="DiaryDate" />
                     </div> *@
-                                    <div class="col-md-4 mt-3">
-                                        <label class="form-label">Ref received confo date</label>
-                                        <input class="form-control" type="date" name="diaryRec" value="" />
+                                        <div class="col-md-4 mt-3">
+                                            <label class="form-label">Ref received confo date</label>
+                                            <input class="form-control" type="date" name="diaryRec" value="" />
+                                        </div>
+
                                     </div>
 
-                                </div>
-
-                                <input type="submit" class="btn btn-default btn-primary mt-3" value="Save" id="btnSave" disabled />
-                            </form>
+                                    <input type="submit" class="btn btn-primary mt-3" value="Save" id="btnSave"
+                                           @(Model.VHRFacilityCheck == false ? "" : "disabled") />
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
+
             </div>
 
         </div>
@@ -2111,11 +2131,12 @@
                         const errorData = await response.json();
                         alert(errorData.message || "No relative record found. Please create one first.");
 
-                        const relativesTabLink = document.querySelector('a[href="#relatives"]');
-                        if (relativesTabLink) {
-                            const tabInstance = new bootstrap.Tab(relativesTabLink);
-                            tabInstance.show();
-                        }
+                        // const relativesTabLink = document.querySelector('a[href="#relatives"]');
+                        // if (relativesTabLink) {
+                        //     const tabInstance = new bootstrap.Tab(relativesTabLink);
+                        //     tabInstance.show();
+                        // }
+                         window.location.href = '@Html.Raw(Url.Action("AddNew", "Relative", new { wmfacsid = Model.patient.WMFACSID, vhr = true }))';
                         return;
                     }
 

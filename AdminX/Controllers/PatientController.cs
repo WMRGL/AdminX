@@ -188,6 +188,8 @@ namespace AdminX.Controllers
                 _pvm.waitingList = await _waitingListData.GetWaitingListByCGUNo(_pvm.patient.CGU_No);
                 _pvm.pedigree = await _pedigreeData.GetPedigree(_pvm.patient.PEDNO);
                 _pvm.vhrAudit = await _vhrAuditData.GetVHRAuditDetails(_pvm.patient.WMFACSID);
+                string? screeningServiceCheck = await _vhrAuditData.GetBreastScreeningService(_pvm.patient.GP_Facility_Code);
+                _pvm.VHRFacilityCheck = !string.IsNullOrEmpty(screeningServiceCheck);
                 var duplicateReferrals = referrals
                     .Where(r => r.COMPLETE != null && (r.COMPLETE.ToUpper() == "ACTIVE" || r.COMPLETE.ToUpper() == "MISSING DATA") && !r.logicaldelete)
                     .OrderByDescending(r => r.RefDate)

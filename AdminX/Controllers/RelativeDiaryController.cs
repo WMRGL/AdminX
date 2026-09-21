@@ -14,6 +14,7 @@ namespace AdminX.Controllers
         private readonly IRelativeDiaryDataAsync _relDiaryData;
         private readonly IRelativeDataAsync _relData;
         private readonly IPatientDataAsync _patientData;
+        private readonly IVHRAuditDataAsync _vhrAuditData;
         private readonly ICRUD _crud;
         private readonly RelativeDiaryVM _rdvm;
         //private readonly AdminContext _adminContext;
@@ -26,7 +27,7 @@ namespace AdminX.Controllers
         private object _context;
 
         public RelativeDiaryController(IConfiguration config, IRelativeDataAsync relative, IRelativeDiaryDataAsync relativeDiary, IPatientDataAsync patient, ICRUD crud, IStaffUserDataAsync staffUser,
-            IDocumentsDataAsync documents, IDiaryActionDataAsync diaryAction, IAuditServiceAsync audit)
+            IDocumentsDataAsync documents, IDiaryActionDataAsync diaryAction, IAuditServiceAsync audit, IVHRAuditDataAsync vHRAuditData)
         {
             //_context = context;
             _config = config;
@@ -43,6 +44,7 @@ namespace AdminX.Controllers
             _diaryActionData = diaryAction;            
             _audit = audit;
             _ip = new IPAddressFinder(HttpContext);
+            _vhrAuditData = vHRAuditData;
         }
         public async Task<IActionResult> Index(int relID)
         {
@@ -90,15 +92,26 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText,
-            DateTime? diaryRec, int WMFACSID, bool? vhr)
+        public async Task<IActionResult> AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText,
+            DateTime? diaryRec, int WMFACSID, bool? vhr, string gpFacility, string mpi)
         {
             try
             {
                 int success = 0;
                 if (vhr == true)
                 {
-                     success = _crud.CallStoredProcedure("VHR", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
+                     
+                    var screeningService = await _vhrAuditData.GetBreastScreeningService(gpFacility);
+                    if (string.IsNullOrWhiteSpace(screeningService))
+                    {
+                        return RedirectToAction("PatientDetails", "Patient", new
+                        {
+                            id = mpi,
+                            message = "Cannot create VHR referral: GP Practice is not mapped to a Breast Screening Service.",
+                            success = false
+                        });
+                    }
+                    success = _crud.CallStoredProcedure("VHR", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
                       diaryRec, false, false, 0, 0, 0, diaryText, letterText);
                 }
                 else
