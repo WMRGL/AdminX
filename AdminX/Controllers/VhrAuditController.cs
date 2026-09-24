@@ -11,14 +11,14 @@ namespace AdminX.Controllers
     public class VhrAuditController : Controller
     {
 
-      
+
         private readonly IConfiguration _config;
         private readonly VhrAuditVM _vAVM;
         private readonly IVHRAuditDataAsync _vhrAuditData;
 
-        public VhrAuditController( IConfiguration config, VhrAuditVM vavm, IVHRAuditDataAsync vhrAuditData)
+        public VhrAuditController(IConfiguration config, VhrAuditVM vavm, IVHRAuditDataAsync vhrAuditData)
         {
-           
+
             _config = config;
             _vAVM = vavm;
             _vhrAuditData = vhrAuditData;
@@ -28,6 +28,13 @@ namespace AdminX.Controllers
         public async Task<IActionResult> Index()
         {
             _vAVM.vhrAuditList = await _vhrAuditData.GetVHRAuditList();
+            return View(_vAVM);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Details(string id)
+        {
+            _vAVM.vhrAuditDetails = await _vhrAuditData.GetVHRAuditDetailsByCguno(id);
             return View(_vAVM);
         }
     }

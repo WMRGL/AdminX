@@ -406,9 +406,13 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#wait-list" role="tab" aria-selected="false" tabindex="-1">
                     Waiting List
                 </a>
-                <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#vhr" role="tab" aria-selected="false" tabindex="-1">
-                    VHR
-                </a>
+                @if (Model.patientPathway != null && Model.patientPathway.PATHWAY.Trim() == "Cancer")
+                {
+                    <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#vhr" role="tab" aria-selected="false" tabindex="-1">
+                        VHR
+                    </a>
+                }
+                
             </div>
         </div>
     </div>
@@ -1870,7 +1874,7 @@
                                         <input type="hidden" name="diaryID" id="hiddendiaryID" value="@Model.vhrAudit.DiaryID" />
                                         <input type="hidden" name="WMFACSID" id="WmfacsId" value="@Model.vhrAudit.WMFACSID" />
                                         <input type="hidden" name="vhr" value="true" />
-                                        <input type="hidden" name="gpFacility" value="@Model.patient.GP_Facility" />
+                                        <input type="hidden" name="gpFacility" value="@Model.patient.GP_Facility_Code" />
                                         <input type="hidden" name="mpi" value="@Model.patient.MPI" />
 
 
@@ -1939,6 +1943,8 @@
                                         <input type="hidden" name="vhr" value="true" />
                                         <input type="hidden" name="actionCode" value="VHR" />
                                         <input type="hidden" name="docCode" value="VHRProC" />
+                                        <input type="hidden" name="mpi" value="@Model.patient.MPI" />
+                                        <input type="hidden" name="cguNo" value="@Model.patient.CGU_No" />
 
 
                                         <div class="col-md-4">
@@ -1983,14 +1989,15 @@
                         <label class="form-label">Ref sent date</label>
                     <input class="form-control" type="date" value="" name="DiaryDate" />
                     </div> *@
-                                        <div class="col-md-4 mt-3">
+                                        <div class="col-md-4 ">
                                             <label class="form-label">Ref received confo date</label>
                                             <input class="form-control" type="date" name="diaryRec" value="" />
                                         </div>
 
                                     </div>
 
-                                    <input type="submit" class="btn btn-primary mt-3" value="Save" id="btnSave" disabled />
+                                    <input type="submit" class="btn btn-primary mt-3" value="Save" id="btnSave"
+                                           @(Model.VHRFacilityCheck == false ? "" : "disabled") />
                                 </form>
                             </div>
                         </div>

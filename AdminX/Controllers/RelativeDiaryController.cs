@@ -93,7 +93,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddNew(int relID, DateTime diaryDate, string actionCode, string docCode, string? diaryText, string? letterText,
-            DateTime? diaryRec, int WMFACSID, bool? vhr, string gpFacility, string mpi)
+            DateTime? diaryRec, int WMFACSID, bool? vhr, string gpFacility, string mpi, string cguNo)
         {
             try
             {
@@ -101,29 +101,32 @@ namespace AdminX.Controllers
                 if (vhr == true)
                 {
                      
-                    var screeningService = await _vhrAuditData.GetBreastScreeningService(gpFacility);
-                    if (string.IsNullOrWhiteSpace(screeningService))
-                    {
-                        return RedirectToAction("PatientDetails", "Patient", new
-                        {
-                            id = mpi,
-                            message = "Cannot create VHR referral: GP Practice is not mapped to a Breast Screening Service.",
-                            success = false
-                        });
-                    }
+                    //var screeningService = await _vhrAuditData.GetBreastScreeningService(gpFacility);
+                    //if (string.IsNullOrWhiteSpace(screeningService))
+                    //{
+                    //    return RedirectToAction("PatientDetails", "Patient", new
+                    //    {
+                    //        id = mpi,
+                    //        message = "Cannot create VHR referral: GP Practice is not mapped to a Breast Screening Service.",
+                    //        success = false
+                    //    });
+                    //}
                     success = _crud.CallStoredProcedure("VHR", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
                       diaryRec, false, false, 0, 0, 0, diaryText, letterText);
+                   
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
+
+                    return RedirectToAction("Details", "VhrAudit", new { id = cguNo });
                 }
                 else
                 {
                     success = _crud.CallStoredProcedure("RelativeDiary", "Create", relID, WMFACSID, 0, actionCode, docCode, "", "", User.Identity.Name, diaryDate,
                    null, false, false, 0, 0, 0, diaryText, letterText);
+                    if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
+
+                    return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
                 }
                 
-
-                if (success == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "RelativeDiary-new(SQL)" }); }
-
-                return RedirectToAction("Index", "RelativeDiary", new { relID = relID });
             }
             catch (Exception ex)
             {

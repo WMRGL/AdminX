@@ -6,5 +6,6 @@ namespace AdminX.ViewModels
     public class VhrAuditVM
     {
         public List<VhrAudit> vhrAuditList { get; set; }
+        public VhrAudit vhrAuditDetails { get; set; }
     }
 }
