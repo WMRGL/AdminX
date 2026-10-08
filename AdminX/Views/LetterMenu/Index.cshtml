@@ -131,6 +131,13 @@
                     spellcheck="false" asp-for=@Model.patientAddress></textarea>
                 </div>
             </div>
+
+            <div class="mb-3 row" id="divDT13" hidden>
+                <label class="col-form-label col-sm-2 text-sm-end">Cancer Site</label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="cancerSite" />
+                </div>
+            </div>
      
             <div class="mb-3 row">
                 <label class="col-form-label col-sm-2 text-sm-end">Free text</label>
@@ -313,6 +320,8 @@
         var clinNameArray = [];
         var clinDeptArray = [];
 
+        document.getElementById("divDT13").hidden = true;
+
         var i, L = clinList.options.length - 1;
         for(i = L; i >= 0; i--) 
         {
@@ -352,6 +361,7 @@
         }
 
         document.getElementById("txtDocCode").value = docCode;
+               
         
         @foreach (var item in Model.docContentList)
         {
@@ -384,8 +394,12 @@
                 }
                 @:clinDeptArray.push("@item.FACILITY");
             }
-        }
+        }        
 
+        if(docCode == "DT13")
+        {            
+            document.getElementById("divDT13").hidden = false;
+        }
 
         if(docCode == "O4" || docCode == "O4am") //because the "LetterTo" is "RD" - but that's "referrer" in every other letter! So... what the actual fuck, CGU_DB??
         {

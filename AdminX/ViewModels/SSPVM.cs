@@ -5,8 +5,8 @@ namespace AdminX.ViewModels
 {
     public class SSPVM
     {
-        public SSP ssp { get; set; }
-        public List<SSP> ssps { get; set; }
+        public SocialServicePathway ssp { get; set; }
+        public List<SocialServicePathway> ssps { get; set; }
         public List<SocialServicePathwayOutcome> sspOutcomes { get; set; }
         public List<SocialServicePathwayStatus> sspStatuses { get; set; }
         public List<SocialService> socialServices { get; set; }

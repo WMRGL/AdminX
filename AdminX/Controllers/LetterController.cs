@@ -19,7 +19,7 @@ namespace ClinicalXPDataConnections.Meta
 
     public class LetterControllerLOCAL
     {
-        private readonly ClinicalContext _clinContext;        
+        private readonly ClinicalContext _clinContext;
         private readonly DocumentContext _docContext;
         private readonly LetterVM _lvm;
         private readonly IPatientData _patientData;
@@ -269,7 +269,8 @@ namespace ClinicalXPDataConnections.Meta
             }
 
             //CCs, print count, etc
-            int printCount = 1;
+            //int printCount = 1;
+            int printCount = 0;
 
             List<DictatedLettersCopy> ccList = _dictatedLetterData.GetDictatedLettersCopiesList(_lvm.dictatedLetter.DoTID);
 
@@ -295,7 +296,7 @@ namespace ClinicalXPDataConnections.Meta
                     ccRow.Cells[0].AddParagraph("cc:");
                     ccRow.Cells[1].AddParagraph(item.CC);
 
-                    printCount = printCount += 1;
+                    //printCount = printCount += 1; //DOT Letters shouldn't have a print count
                 }
             }
 
@@ -343,7 +344,7 @@ namespace ClinicalXPDataConnections.Meta
             string salutation = "";
             DateTime patDOB = DateTime.Now; //have to give it an initial value or the program throws a fit
             if (_lvm.patient.DOB != null) { patDOB = _lvm.patient.DOB.GetValueOrDefault(); } //because you KNOW there's gonna be a null!
-            string patNHSNo = _lvm.patient.SOCIAL_SECURITY;
+            string patNHSNo = _lvm.patient.NHSNumber;
             string content1 = "";
             string content2 = "";
             string content3 = "";
@@ -395,7 +396,7 @@ namespace ClinicalXPDataConnections.Meta
                     row3.Height = 20;
 
                     quoteRef = "Please quote this reference on all correspondence: " + _lvm.patient.CGU_No + Environment.NewLine;
-                    quoteRef = quoteRef + "NHS number: " + _lvm.patient.SOCIAL_SECURITY + Environment.NewLine;
+                    quoteRef = quoteRef + "NHS number: " + _lvm.patient.NHSNumber + Environment.NewLine;
                     quoteRef = quoteRef + "Consultant: " + referral.LeadClinician + Environment.NewLine;
                     quoteRef = quoteRef + "Genetic Counsellor: " + referral.GC;
 
@@ -457,6 +458,8 @@ namespace ClinicalXPDataConnections.Meta
                         //if () //because somebody hard-coded this overriding feature in CGU_DB                    
                         //{
                         address = _add.GetAddress("RD", refID);
+                        ExternalClinician clinician = _externalClinicianData.GetClinicianDetails(referrer);
+                        salutation = clinician.TITLE + " " + clinician.FIRST_NAME + " " + clinician.NAME;
                         //}
                     }
                     else if (_lvm.documentsContent.LetterTo == "GP")
@@ -552,9 +555,17 @@ namespace ClinicalXPDataConnections.Meta
                         }
                         break;
                     case "Cons":
-                        var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
-                        signOff = cons.NAME + Environment.NewLine + cons.POSITION;
-                        sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        if (_lvm.staffMember.CLINIC_SCHEDULER_GROUPS == "Admin")
+                        {
+                            var cons = _staffUser.GetStaffMemberDetailsByStaffCode(referral.PATIENT_TYPE_CODE);
+                            signOff = cons.NAME + Environment.NewLine + cons.POSITION;
+                            sigFilename = cons.StaffForename + cons.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
+                        else
+                        {
+                            signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
+                            sigFilename = _lvm.staffMember.StaffForename + _lvm.staffMember.StaffSurname.Replace("'", "").Replace(" ", "") + ".jpg";
+                        }
                         break;
                     case "Logon":
                         signOff = _lvm.staffMember.NAME + Environment.NewLine + _lvm.staffMember.POSITION;
@@ -709,9 +720,56 @@ namespace ClinicalXPDataConnections.Meta
                     content4 = _lvm.documentsContent.Para5;
                     Paragraph letterContent4 = section.AddParagraph(content4);
                     spacer = section.AddParagraph();
+
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
+
                     content5 = _lvm.documentsContent.Para6;
                     Paragraph letterContent5 = section.AddParagraph(content5);
                     spacer = section.AddParagraph();
+                }
+
+                if (docCode == "Kref")
+                {
+                    Table table1 = section.AddTable();
+                    Column contentRe = table1.AddColumn();
+                    Column contentPatAddress = table1.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = table1.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Right;
+                    table1.Rows.Height = 50;
+                    table1.Columns.Width = 150;
+                    contentRe.Width = 120;
+                    Row row1_1 = table1.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re. recent referral of:");
+                    row1_1.Cells[1].AddParagraph(patAddress);
+                    row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
+                    spacer = section.AddParagraph();
+
+                    content1 = _lvm.documentsContent.Para1;
+                    Paragraph letterContent1 = section.AddParagraph(content1);
+                    spacer = section.AddParagraph();
+                    content2 = _lvm.documentsContent.Para2;
+
+                    Paragraph letterContent2 = section.AddParagraph(content2);
+                    spacer = section.AddParagraph();
+
+                    content3 = _lvm.documentsContent.Para3;
+                    Paragraph letterContent3 = section.AddParagraph(content3);
+
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
+
+                    content4 = _lvm.documentsContent.Para4;
+                    Paragraph letterContent4 = section.AddParagraph(content4);
                 }
 
                 if (docCode == "Krem")
@@ -722,6 +780,13 @@ namespace ClinicalXPDataConnections.Meta
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
+
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
+
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
                 }
@@ -744,16 +809,21 @@ namespace ClinicalXPDataConnections.Meta
                     row1_1.Cells[1].AddParagraph(patAddress);
                     row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy") + Environment.NewLine + "NHS Number: " + patNHSNo);
                     spacer = section.AddParagraph();
+
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
                     content2 = _lvm.documentsContent.Para2;
-                    if (additionalText != null && additionalText != "")
-                    {
-                        content2 = content2 + Environment.NewLine + Environment.NewLine + additionalText;
-                    }
+
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
+
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
+
                     content3 = _lvm.documentsContent.Para3;
                     Paragraph letterContent3 = section.AddParagraph(content3);
                 }
@@ -810,6 +880,13 @@ namespace ClinicalXPDataConnections.Meta
                         spacer = section.AddParagraph();
                         Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para9);
                         spacer = section.AddParagraph();
+
+                        if (additionalText != null && additionalText != "")
+                        {
+                            Paragraph addText = section.AddParagraph(additionalText);
+                            spacer = section.AddParagraph();
+                        }
+
                         Paragraph letterContent6 = section.AddParagraph(_lvm.documentsContent.Para10);
                     }
                     else
@@ -818,6 +895,13 @@ namespace ClinicalXPDataConnections.Meta
                         spacer = section.AddParagraph();
                         Paragraph letterContent3 = section.AddParagraph(_lvm.documentsContent.Para4);
                         spacer = section.AddParagraph();
+
+                        if (additionalText != null && additionalText != "")
+                        {
+                            Paragraph addText = section.AddParagraph(additionalText);
+                            spacer = section.AddParagraph();
+                        }
+
                         Paragraph letterContent4 = section.AddParagraph(_lvm.documentsContent.Para5);
                     }
                 }
@@ -856,7 +940,7 @@ namespace ClinicalXPDataConnections.Meta
                     row1_1.Cells[1].AddParagraph(patAddress);
                     row1_1.Cells[2].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
                     spacer = section.AddParagraph();
-                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
@@ -881,7 +965,7 @@ namespace ClinicalXPDataConnections.Meta
                     row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
                     row1_1.Cells[1].AddParagraph("Date of Birth: " + patDOB.ToString("dd/MM/yyyy"));
                     spacer = section.AddParagraph();
-                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1 + " " + patName + " " + _lvm.documentsContent.Para2);
+                    Paragraph letterContent1 = section.AddParagraph(_lvm.documentsContent.Para1);
                     spacer = section.AddParagraph();
                     Paragraph letterContent2 = section.AddParagraph(_lvm.documentsContent.Para2);
                     spacer = section.AddParagraph();
@@ -904,6 +988,11 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent3 = section.AddParagraph(content3);
                     spacer = section.AddParagraph();
+                    if (additionalText != null && additionalText != "")
+                    {
+                        Paragraph addText = section.AddParagraph(additionalText);
+                        spacer = section.AddParagraph();
+                    }
                     Paragraph letterContent4 = section.AddParagraph(content4);
                 }
 
@@ -1470,7 +1559,7 @@ namespace ClinicalXPDataConnections.Meta
                     pageCount = 2;
 
                     Paragraph contentRe = section.AddParagraph();
-                    contentRe.AddFormattedText("Re: " + patName + " - " + patDOB.ToString("dd/MM/yyyy") + " - " + _lvm.patient.SOCIAL_SECURITY, TextFormat.Bold);
+                    contentRe.AddFormattedText("Re: " + patName + " - " + patDOB.ToString("dd/MM/yyyy") + " - " + _lvm.patient.NHSNumber, TextFormat.Bold);
                     spacer = section.AddParagraph();
 
                     content1 = _lvm.documentsContent.Para1;
@@ -1682,7 +1771,7 @@ namespace ClinicalXPDataConnections.Meta
                         ptDOB = ptDOB + "Date of death: " + _lvm.patient.DECEASED_DATE.Value.ToString("dd/MM/yyyy");
                     }
 
-                    ptDOB = ptDOB + "NHS Number: " + _lvm.patient.SOCIAL_SECURITY;
+                    ptDOB = ptDOB + "NHS Number: " + _lvm.patient.NHSNumber;
                     spacer = section.AddParagraph();
                     Table table1 = section.AddTable();
                     Column contentPtName = table.AddColumn();
@@ -1804,7 +1893,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
@@ -1859,7 +1948,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     Paragraph letterContentRecipient = section.AddParagraph();
@@ -1910,7 +1999,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     //content3 = clin.TITLE + " " + clin.FIRST_NAME + clin.NAME + _externalClinicianData.GetCCDetails(clin);
@@ -1964,7 +2053,7 @@ namespace ClinicalXPDataConnections.Meta
                     content1 = _lvm.documentsContent.Para1;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
-                    content2 = _lvm.documentsContent.Para2 + " " + siteText + " " + _lvm.documentsContent.Para3;
+                    content2 = _lvm.documentsContent.Para2 + " " + siteText.ToLower() + " " + _lvm.documentsContent.Para3;
                     Paragraph letterContent2 = section.AddParagraph(content2);
                     spacer = section.AddParagraph();
                     Paragraph letterContentRecipient = section.AddParagraph();
@@ -2305,11 +2394,28 @@ namespace ClinicalXPDataConnections.Meta
 
                 if (docCode == "VHRProC")
                 {
-                    Paragraph letterContentPt = section.AddParagraph();
-                    letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
+                    //Paragraph letterContentPt = section.AddParagraph();
+                    //letterContentPt.AddFormattedText(patName + ", DOB:" + patDOB.ToString("dd/MM/yyyy") ?? "DOB unknown", TextFormat.Bold);
+                    //spacer = section.AddParagraph();
+
+                    Table tableo4 = section.AddTable();
+                    Column contentPatAddress = tableo4.AddColumn();
+                    contentPatAddress.Format.Alignment = ParagraphAlignment.Left;
+                    Column contentPatDOB = tableo4.AddColumn();
+                    contentPatDOB.Format.Alignment = ParagraphAlignment.Center;
+                    Column contentPatNHS = tableo4.AddColumn();
+                    contentPatNHS.Format.Alignment = ParagraphAlignment.Right;
+                    tableo4.Rows.Height = 20;
+                    tableo4.Columns.Width = 150;
+                    Row row1_1 = tableo4.AddRow();
+                    row1_1.VerticalAlignment = VerticalAlignment.Top;
+                    row1_1.Format.Font.Bold = true;
+                    row1_1.Cells[0].AddParagraph("Re: " + patName + System.Environment.NewLine + patAddress);
+                    row1_1.Cells[1].AddParagraph(patDOB.ToString("dd/MM/yyyy"));
+                    row1_1.Cells[2].AddParagraph("NHS number: " + patNHSNo);
                     spacer = section.AddParagraph();
 
-                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText;
+                    content1 = _lvm.documentsContent.Para1 + Environment.NewLine + Environment.NewLine + additionalText; //apparently we don't need the risk etc, just the additional text
                     content2 = _lvm.documentsContent.Para2;
                     Paragraph letterContent1 = section.AddParagraph(content1);
                     spacer = section.AddParagraph();
@@ -2486,8 +2592,8 @@ namespace ClinicalXPDataConnections.Meta
                     spacer = section.AddParagraph();
                     Paragraph letterContent5 = section.AddParagraph(_lvm.documentsContent.Para5);
 
-                    StaffMember referralGC = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
-                    signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
+                    //StaffMember referralGC = _staffUser.GetStaffMemberDetailsByStaffCode(referral.GC_CODE);
+                    //signOff = referralGC.NAME + Environment.NewLine + referralGC.POSITION;
                 }
 
                 string phenotipsAvailable = _constantsData.GetConstant("PhenotipsURL", 2);
@@ -3119,20 +3225,12 @@ namespace ClinicalXPDataConnections.Meta
 
             string result = WebUtility.HtmlDecode(sb.ToString()).Trim();
 
-            // 1. Strip out Word's internal hard line breaks that split sentences in half
             result = result.Replace("\r", "").Replace("\n", " ");
-
-            // 2. Clear out heavy duplicate spaces left behind
             result = Regex.Replace(result, @"[ ]{2,}", " ");
-
-            // 3. THE FIX: Convert tokens into single or double line breaks exactly as preferred
             result = result.Replace("__REAL_DOUBLE_BREAK__", Environment.NewLine + Environment.NewLine);
             result = result.Replace("__REAL_SINGLE_BREAK__", Environment.NewLine);
-
-            // 4. Clean up any trailing spaces sitting at the start of new lines
             result = Regex.Replace(result, @"(?<=\r?\n)[ ]+", "");
 
-            // 5. Final polish: If three or more newlines clump up together, scale them back to a double break
             return Regex.Replace(result, @"(\r?\n){3,}", Environment.NewLine + Environment.NewLine).Trim();
         }
 
