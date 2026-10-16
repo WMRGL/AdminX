@@ -606,14 +606,15 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FacilityDetails(string facCode, string name, string address, string district, string city, string state, string zip, int nonActive, int isGP)
+        public async Task<IActionResult> FacilityDetails(string facCode, string name, string address, string district, string city, string state, string zip, 
+            int nonActive, int isGP, string? emailAddress, bool? isEmailOnly = false)
         {
 
             string userStaffCode = await _staffData.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(userStaffCode, "AdminX - SysAdmin - Facility Details", "", _ip.GetIPAddress());
 
             int iSuccess = _crud.SysAdminCRUD("Facility", "Edit", isGP, nonActive, 0, facCode, name, address, district, User.Identity.Name, null, null,
-                false, false, false, 0, 0, 0, city, state, zip);
+                isEmailOnly, false, false, 0, 0, 0, city, state, zip, emailAddress);
 
             if (iSuccess == 0) { return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Facility-edit(SQL)" }); }
 
