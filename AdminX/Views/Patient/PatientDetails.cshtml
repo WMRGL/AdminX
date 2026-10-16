@@ -29,7 +29,7 @@
 {
     <!-- Duplicate Referrals Modal -->
     <div class="modal fade" id="duplicateReferralModal" tabindex="-1" aria-labelledby="duplicateModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title" id="duplicateModalLabel">
@@ -38,11 +38,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>This patient has multiple referrals please review the details below.</p>
+                    <p class="mb-2">
+                        This patient has multiple referrals. Tick the duplicate referrals you wish to remove, then click
+                        <strong>Keep</strong> on the referral you want to retain.
+                    </p>
+                    <p class="text-muted small mb-3">
+                        <em>Note: When you click "Keep" on a row, that referral will automatically be kept even if its box is ticked. Untick any other referral if it is a legitimate separate pathway you also wish to keep.</em>
+                    </p>
 
-                    <table class="table table-bordered table-striped mt-3">
+                    <table class="table table-bordered table-striped mt-3 align-middle">
                         <thead class="table-light">
                             <tr>
+                                <th class="text-center">Delete Duplicate?</th>
+                                <th>Ref ID</th>
                                 <th>Referral Date</th>
                                 <th>Type</th>
                                 <th>Pathway</th>
@@ -50,34 +58,46 @@
                                 <th>Epic Patient ID</th>
                                 <th>Epic Referral ID</th>
                                 <th>Action</th>
-                                <th>Select Referral</th>
-
+                                <th>Select Referral to Keep</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var dup in ViewBag.DuplicateReferrals)
                             {
+                                bool isMissingData = dup.COMPLETE != null && dup.COMPLETE.ToUpper() == "MISSING DATA";
                                 <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input dup-delete-checkbox" value="@dup.refid" checked title="Tick if this referral is a duplicate to be deleted when keeping another referral" />
+                                    </td>
+                                    <td>@dup.refid</td>
                                     <td>@(dup.RefDate?.ToString("dd/MM/yyyy"))</td>
                                     <td>@dup.RefType</td>
                                     <td>@dup.PATHWAY</td>
                                     <td>
-                                        <span class="badge @(dup.COMPLETE.ToUpper() == "ACTIVE" ? "bg-success" : "bg-secondary")">
+                                        <span class="badge @(!isMissingData ? "bg-success" : "bg-secondary")">
                                             @dup.COMPLETE
                                         </span>
                                     </td>
-                                    <td>
-                                        @dup.EPIC_Patient_ID
-                                    </td>
-                                    <td>
-                                        @dup.EPIC_Referral_ID
-                                    </td>
+                                    <td>@dup.EPIC_Patient_ID</td>
+                                    <td>@dup.EPIC_Referral_ID</td>
                                     <td>
                                         <a target="_blank" asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@dup.refid" class="btn btn-sm btn-outline-primary">View Details</a>
                                     </td>
                                     <td>
-                                        <a asp-controller="Referral" asp-action="UpdateReferralDetails" asp-route-refID="@dup.refid" asp-route-duplicate="true"
-                                           asp-route-mpi="@Model.patient.MPI" class="btn btn-sm btn-outline-primary">Keep this referral</a>
+                                        @if (isMissingData)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                    onclick="resolveDuplicateReferral(@dup.refid, @Model.patient.MPI, 'ProcessNewReferral')">
+                                                Process &amp; Keep Referral
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="resolveDuplicateReferral(@dup.refid, @Model.patient.MPI, 'UpdateReferralDetails')">
+                                                Update &amp; Keep Referral
+                                            </button>
+                                        }
                                     </td>
                                 </tr>
                             }
@@ -85,9 +105,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-
-                    <button type="button" class="btn btn-secondary-outline">Process Referral</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close (Keep All)</button>
                 </div>
             </div>
         </div>
@@ -2172,6 +2190,33 @@
             console.warn("Could not find navigation link with href='#vhr'");
         }
         });
+
+                function resolveDuplicateReferral(keepRefId, mpi, targetAction) {
+            const checkboxes = document.querySelectorAll('.dup-delete-checkbox:checked');
+            const idsToDelete = [];
+
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.value, 10);
+                if (id !== keepRefId) {
+                    idsToDelete.push(id);
+                }
+            });
+
+            if (idsToDelete.length === 0) {
+                if (!confirm("No other referrals are ticked for deletion. Continue without deleting any duplicate referrals?")) {
+                    return;
+                }
+            }
+
+            const params = new URLSearchParams();
+            params.append("refID", keepRefId);
+            params.append("duplicate", "true");
+            params.append("mpi", mpi);
+
+            idsToDelete.forEach(id => params.append("duplicateIdsToDelete", id));
+
+            window.location.href = `/Referral/${targetAction}?${params.toString()}`;
+        }
                 
    
 

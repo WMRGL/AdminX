@@ -32,7 +32,29 @@
         </div>
 
 
-    <form id="frmProcessReferral" asp-action="ProcessNewReferral">
+        <form id="frmProcessReferral" asp-action="ProcessNewReferral">
+            @if (ViewBag.DuplicatesToDelete != null)
+            {
+                var dups = (IEnumerable<ClinicalXPDataConnections.Models.Referral>)ViewBag.DuplicatesToDelete;
+                foreach (var dup in dups)
+                {
+                    <input type="hidden" name="duplicateIdsToDelete" value="@dup.refid" />
+                }
+
+                <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Merge Mode Active:</strong> You are choosing to process and keep this referral (RefID: <strong>@Model.referral.refid</strong>). When you confirm below, an ICP will be created for this referral and the following duplicate referral(s) will be automatically closed and removed:
+                    <ul class="mb-0 mt-2">
+                        @foreach (var dup in dups)
+                        {
+                            <li>
+                                RefID: <strong>@dup.refid</strong> &mdash; Date: <strong>@(dup.RefDate?.ToString("dd/MM/yyyy") ?? "N/A")</strong> (Pathway: <strong>@(string.IsNullOrWhiteSpace(dup.PATHWAY) ? "Unassigned" : dup.PATHWAY)</strong>, Status: <strong>@dup.COMPLETE</strong>)
+                            </li>
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
         <div class="row mb-3">
             <div class="col">
                 <label class="form-label">Referral Pathway</label>
@@ -115,14 +137,14 @@
         <div class="row mb-3">
             <div class="mb-3 col-md-3">
                 <label class="form-label" for="referrerCode">Referrer Code:</label>
-                <select id="referrerCode" name="referrerCode" class="form-select js-choice">
-                <option selected="">@Model.referral.ReferrerCode - @Model.referral.ReferringClinician - @Model.referral.ReferringFacility</option>
-                <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
-                @foreach (var item in Model.referrers)
-                {
-                    <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>
-                }
-            </select>
+                    <select id="referrerCode" name="referrerCode" class="form-select js-choice">
+                        <option value="@Model.referral.ReferrerCode" selected>@Model.referral.ReferrerCode - @Model.referral.ReferringClinician - @Model.referral.ReferringFacility</option>
+                        <option value=@Model.patient.GP_Code>Use GP - @Model.patient.GP</option>
+                        @foreach (var item in Model.referrers)
+                        {
+                            <option value=@item.MasterClinicianCode>@item.MasterClinicianCode - @item.TITLE @item.FIRST_NAME @item.LAST_NAME, @item.FACILITY, - @item.ADDRESS</option>
+                        }
+                    </select>
                    
                     <div class="d-flex gap-2 ">
                         <button type="button" class="btn btn-sm btn-outline-primary flex-fill" onclick="SetToGP()">
