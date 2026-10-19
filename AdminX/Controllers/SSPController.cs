@@ -10,14 +10,14 @@ namespace AdminX.Controllers
     {
         private readonly IPatientDataAsync _patientData;
         private readonly SSPVM _sspvm;
-        private readonly ISSPDataAsync _sspData;
+        private readonly ISocialServicePathwayDataAsync _sspData;
         private readonly IStaffUserDataAsync _staffUser;
         private readonly IAuditServiceAsync _audit;
         private readonly ITitleDataAsync _titleData;
         private readonly IPAddressFinder _ip;
         private readonly ICRUD _crud;
 
-        public SSPController(IPatientDataAsync patientDataAsync, ISSPDataAsync sspData, IStaffUserDataAsync staffUser, IAuditServiceAsync audit, ITitleDataAsync titleData, ICRUD crud)
+        public SSPController(IPatientDataAsync patientDataAsync, ISocialServicePathwayDataAsync sspData, IStaffUserDataAsync staffUser, IAuditServiceAsync audit, ITitleDataAsync titleData, ICRUD crud)
         {
             _patientData = patientDataAsync;
             _sspData = sspData;
@@ -31,7 +31,7 @@ namespace AdminX.Controllers
 
         public async Task<IActionResult> Index()
         {
-            _sspvm.ssps = await _sspData.GetSSPList();
+            _sspvm.ssps = await _sspData.GetAllSocialServicePathways();
 
             return View(_sspvm);
         }
@@ -47,7 +47,7 @@ namespace AdminX.Controllers
             string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - SSP Details", "SSPID=" + id.ToString(), _ip.GetIPAddress());
 
-            _sspvm.ssp = await _sspData.GetSSPDetails(id);
+            _sspvm.ssp = await _sspData.GetSocialServicePathwayById(id);
             _sspvm.patient = await _patientData.GetPatientDetails(_sspvm.ssp.MPI);
 
             return View(_sspvm);
@@ -64,12 +64,12 @@ namespace AdminX.Controllers
             string staffCode = await _staffUser.GetStaffCode(User.Identity.Name);
             _audit.CreateUsageAuditEntry(staffCode, "AdminX - Edit SSP", "SSPID=" + id.ToString(), _ip.GetIPAddress());
 
-            _sspvm.ssp = await _sspData.GetSSPDetails(id);
+            _sspvm.ssp = await _sspData.GetSocialServicePathwayById(id);
             _sspvm.patient = await _patientData.GetPatientDetails(_sspvm.ssp.MPI);
             _sspvm.socialServices = await _sspData.GetSocialServices();
             _sspvm.socialWorkers = await _sspData.GetSocialWorkers();
-            _sspvm.sspOutcomes = await _sspData.GetSSPOutcomes();
-            _sspvm.sspStatuses = await _sspData.GetSSPStatuses();
+            _sspvm.sspOutcomes = await _sspData.GetSocialServicePathwayOutcomes();
+            _sspvm.sspStatuses = await _sspData.GetSocialServicePathwayStatuses();
 
             return View(_sspvm);
         }

@@ -93,7 +93,7 @@ builder.Services.AddScoped<IRefReasonDataAsync, RefReasonDataAsync>();
 builder.Services.AddScoped<IDocKindsDataAsync, DocKindsDataAsync>();
 builder.Services.AddScoped<IEpicReferralReferenceDataAsync, EpicReferralReferenceDataAsync>();
 builder.Services.AddScoped<IWaitingListDataAsync, WaitingListDataAsync>();
-builder.Services.AddScoped<ISSPDataAsync, SSPDataAsync>();
+builder.Services.AddScoped<ISocialServicePathwayDataAsync, SocialServicePathwayDataAsync>();
 builder.Services.AddScoped<IClinicSlotDataAsync, ClinicSlotDataAsync>();
 
 builder.Services.AddScoped<IAuditServiceAsync, AuditServiceAsync>();
@@ -117,10 +117,7 @@ builder.Services.AddScoped<IPatientDQData, PatientDQData>();
 builder.Services.AddScoped<IGenderIdentityData, GenderIdentityData>();
 
 builder.Services.AddControllersWithViews(options =>
-{
-    // Adds auditing to ALL controllers automatically
-     //THIS IS CAUSING THE WHOLE THING TO THROW A FIT IN LIVE - check with Isaiah to see what's required to be added
-     // Hi Martin this buggy feature has been fixed....
+{    
     options.Filters.Add(new AuditAttribute()
     {
         IncludeHeaders = true,

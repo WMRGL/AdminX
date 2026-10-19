@@ -1,13 +1,12 @@
 ﻿@model AdminX.ViewModels.RelativeVM
 @{
-    ViewData["Title"] = "Clinic-X - Relative Details";
+    ViewData["Title"] = "Admin-X - Relative Details";
 }
 
 <div class="card">
     <div class="card-header">
         <h5 class="card-title text-dark">New Relative Details</h5>            
         <a type="button" class="btn btn-outline-primary float-end" asp-controller="Patient" asp-action="PatientDetails" asp-route-id=@Model.MPI>Back to patient</a>
-
     </div>
     <div class="card-body">
         @if(ViewBag.vhr != null && ViewBag.vhr == true)
@@ -374,6 +373,7 @@
 <script type="text/javascript">
 
     // document.getElementById("btnSave").addEventListener("click", AddRelative);
+        document.getElementById("btnUsePatient").addEventListener("click", UsePatient);
         
 
     // function AddRelative() 
@@ -394,6 +394,27 @@
         //    return 0;
         //}
         return 1;
+    }
+
+    function UsePatient()
+    {        
+        document.getElementById("ddlTitle").value = "@Model.patient.Title";
+        document.getElementById("txtForename1").value = "@Model.patient.FIRSTNAME";
+        document.getElementById("txtForename1").value = "@Model.patient.PtForename2";
+        document.getElementById("txtSurname").value = "@Model.patient.LASTNAME";
+        document.getElementById("txtAddress1").value = "@Model.patient.ADDRESS1";
+        document.getElementById("txtAddress2").value = "@Model.patient.ADDRESS2";
+        document.getElementById("txtAddress3").value = "@Model.patient.ADDRESS3";
+        document.getElementById("txtAddress4").value = "@Model.patient.ADDRESS4";
+        document.getElementById("txtPostcode").value = "@Model.patient.POSTCODE";
+        document.getElementById("txtDOB").value = "@Model.patient.DOB?.ToString("yyyy-MM-dd")";        
+        if("@Model.patient.DOB" != null)
+        {
+            document.getElementById("txtDOD").value = "@Model.patient.DECEASED_DATE?.ToString("yyyy-MM-dd")";
+        }
+        document.getElementById("txtNHSNo").value = "@Model.patient.SOCIAL_SECURITY";
+        document.getElementById("ddlGender").value = "@Model.patient.SEX";
+        document.getElementById("ddlRelation").value = 1;
     }
 
 </script>

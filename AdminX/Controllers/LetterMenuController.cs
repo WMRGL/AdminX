@@ -168,7 +168,7 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> DoLetter(int refID, string docCode, bool isPreview, string? additionalText, string? enclosures, string? clinicianCode, string? letterFrom, string? letterTo,
-            int? relID = 0, int? leafletID = 0, bool? isRelative = false)
+            string? cancerSite, string? histopathologist, int? relID = 0, int? leafletID = 0, bool? isRelative = false)
         {
             try
             {
@@ -234,16 +234,10 @@ namespace AdminX.Controllers
 
                     LetterControllerLOCAL lc = new LetterControllerLOCAL(_context, _documentContext); //for testing
                     printSuccess = await lc.DoPDF(docID, mpi, refID, User.Identity.Name, _lvm.referral.ReferrerCode, additionalText, enclosures, 0, "", false, false, diaryID, "", "", relID, clinicianCode,
-                           "", null, isPreview, qrCode, leafletID);
+                           cancerSite, null, isPreview, qrCode, leafletID);
                 }
 
                 
-
-                if (isPreview)
-                {
-                    return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
-                }
-
                 if (printSuccess)
                 {
                     message = "Letter has been sent to EDMS";
@@ -254,7 +248,8 @@ namespace AdminX.Controllers
                 }
                 
                 TempData["SuccessMessage"] = message;
-                return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
+                //return RedirectToAction("Index", new { id = mpi, isRelative = isRelative });
+                return File($"~/StandardLetterPreviews/preview-{User.Identity.Name}.pdf", "Application/PDF");
             }
             catch (Exception ex)
             {

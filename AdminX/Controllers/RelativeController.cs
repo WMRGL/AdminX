@@ -159,6 +159,7 @@ namespace AdminX.Controllers
 
                 _rvm.WMFACSID = wmfacsid;
                 var pat = await _patientData.GetPatientDetailsByWMFACSID(wmfacsid);
+                _rvm.patient = pat;
                 _rvm.MPI = pat.MPI;
                 var rels = await _relativeData.GetRelationsList();
                 _rvm.relationList = rels.OrderBy(r => r.ReportOrder).ToList();
