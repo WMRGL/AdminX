@@ -232,6 +232,7 @@
                         <tr>
                             <th>CGU No</th>
                             <th>Patient</th>
+                            <th>Urgent</th>
                             <th>Letter To</th>
                             <th>@Html.DisplayNameFor(model => model.dictatedLetters.DateDictated)</th>
                             <th>Status</th>
@@ -243,13 +244,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model.dictatedLettersForPrinting)
-                        {
-                            @if (item.Status == "For Printing")
+                            @foreach (var item in Model.dictatedLettersForPrinting.OrderByDescending(l => l.IsUrgent))
+                            if (item.Status == "For Printing")
                             {
-                                <tr>
+                                <tr class="@(item.IsUrgent ? "table-danger" : "")">
                                     <td><a asp-controller="DictatedLetter" asp-action="Edit" asp-route-id=@item.DoTID class="btn btn-outline-primary">@item.CGU_No</a></td>
                                     <td>@item.Patient</td>
+                                    <td>@item.IsUrgent</td>
                                     <td>@item.LetterTo</td>
                                     @if (@item.DateDictated.HasValue)
                                     {
@@ -283,7 +284,7 @@
                                     <td>@item.Comments</td>
                                 </tr>
                             }
-                        }
+                        
                     </tbody>
                 </table>
 
@@ -354,3 +355,14 @@
             </div>
         </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.defaultTable').DataTable({
+                "destroy": true,
+                "order": [[ 2, "desc" ]]
+            });
+        });
+    </script>
+}

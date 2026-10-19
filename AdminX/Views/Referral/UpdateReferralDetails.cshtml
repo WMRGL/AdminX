@@ -41,10 +41,35 @@
                     <div class="card-body">
                         <div class="card-body">
                             <form method="post">
+                                <input type="hidden" name="mpi" value="@Model.patient.MPI" />
+                                @if (ViewBag.DuplicatesToDelete != null)
+                                {
+                                    var dups = (IEnumerable<ClinicalXPDataConnections.Models.Referral>)ViewBag.DuplicatesToDelete;
+                                    foreach (var dup in dups)
+                                    {
+                                        <input type="hidden" name="duplicateIdsToDelete" value="@dup.refid" />
+                                    }
+
+                                    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Merge Mode Active:</strong> You are choosing to keep this referral (RefID: <strong>@Model.referral.refid</strong>). When you save your changes below, the following duplicate referral(s) will be automatically closed and removed:
+                                        <ul class="mb-0 mt-2">
+                                            @foreach (var dup in dups)
+                                            {
+                                                <li>
+                                                    RefID: <strong>@dup.refid</strong> &mdash; Date: <strong>@(dup.RefDate?.ToString("dd/MM/yyyy") ?? "N/A")</strong> (Pathway: <strong>@(string.IsNullOrWhiteSpace(dup.PATHWAY) ? "Unassigned" : dup.PATHWAY)</strong>, Status: <strong>@dup.COMPLETE</strong>)
+                                                </li>
+                                            }
+                                        </ul>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                }
                                 <div class="row">
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="refid">Referral ID</label>
                                         <input type="text" class="form-control" value="@Model.referral.refid" id="refid" name="refid" readonly>
+                                       
+
                                     </div>
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="ddlPathway">Pathway</label>
@@ -117,7 +142,7 @@
                                     <div class="mb-3 col-md-3">
                                         <label class="form-label" for="admin">Admin Contact</label>
                                         <select asp-for=@Model.referral.AdminContactCode id="admin" name="AdminContact" class="form-select">
-                                            <option selected="">@Model.referral.AdminContact</option>
+                                            <option value="@Model.referral.AdminContactCode" selected>@Model.referral.AdminContact</option>
                                             @foreach (var item in Model.admin)
                                             {
                                                 <option value=@item.STAFF_CODE>@item.NAME</option>

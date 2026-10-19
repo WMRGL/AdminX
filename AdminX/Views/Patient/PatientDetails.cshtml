@@ -25,6 +25,93 @@
     };
 }
 
+@if (ViewBag.HasDuplicates != null && ViewBag.HasDuplicates)
+{
+    <!-- Duplicate Referrals Modal -->
+    <div class="modal fade" id="duplicateReferralModal" tabindex="-1" aria-labelledby="duplicateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="duplicateModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Potential Duplicates Detected
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">
+                        This patient has multiple referrals. Tick the duplicate referrals you wish to remove, then click
+                        <strong>Keep</strong> on the referral you want to retain.
+                    </p>
+                    <p class="text-muted small mb-3">
+                        <em>Note: When you click "Keep" on a row, that referral will automatically be kept even if its box is ticked. Untick any other referral if it is a legitimate separate pathway you also wish to keep.</em>
+                    </p>
+
+                    <table class="table table-bordered table-striped mt-3 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Delete Duplicate?</th>
+                                <th>Ref ID</th>
+                                <th>Referral Date</th>
+                                <th>Type</th>
+                                <th>Pathway</th>
+                                <th>Status</th>
+                                <th>Epic Patient ID</th>
+                                <th>Epic Referral ID</th>
+                                <th>Action</th>
+                                <th>Select Referral to Keep</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dup in ViewBag.DuplicateReferrals)
+                            {
+                                bool isMissingData = dup.COMPLETE != null && dup.COMPLETE.ToUpper() == "MISSING DATA";
+                                <tr>
+                                    <td class="text-center">
+                                        <input type="checkbox" class="form-check-input dup-delete-checkbox" value="@dup.refid" checked title="Tick if this referral is a duplicate to be deleted when keeping another referral" />
+                                    </td>
+                                    <td>@dup.refid</td>
+                                    <td>@(dup.RefDate?.ToString("dd/MM/yyyy"))</td>
+                                    <td>@dup.RefType</td>
+                                    <td>@dup.PATHWAY</td>
+                                    <td>
+                                        <span class="badge @(!isMissingData ? "bg-success" : "bg-secondary")">
+                                            @dup.COMPLETE
+                                        </span>
+                                    </td>
+                                    <td>@dup.EPIC_Patient_ID</td>
+                                    <td>@dup.EPIC_Referral_ID</td>
+                                    <td>
+                                        <a target="_blank" asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@dup.refid" class="btn btn-sm btn-outline-primary">View Details</a>
+                                    </td>
+                                    <td>
+                                        @if (isMissingData)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                    onclick="resolveDuplicateReferral(@dup.refid, @Model.patient.MPI, 'ProcessNewReferral')">
+                                                Process &amp; Keep Referral
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    onclick="resolveDuplicateReferral(@dup.refid, @Model.patient.MPI, 'UpdateReferralDetails')">
+                                                Update &amp; Keep Referral
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close (Keep All)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @if (Model.isPhenotipsAvailable)
 {
     if (Model.isPatientInPhenotips)
@@ -89,9 +176,9 @@
 }
 
 
-@if(Model.messages.Count > 0)
+@if (Model.messages.Count > 0)
 {
-    @foreach(var m in Model.messages)    
+    @foreach (var m in Model.messages)
     {
         <div class="alert alert-danger alert-dismissible" role="alert">
             <div class="alert-icon">
@@ -122,7 +209,7 @@
 }
 
 
-@if(Model.isEpicPatientChanged || Model.isEpicReferralChanged)
+@if (Model.isEpicPatientChanged || Model.isEpicReferralChanged)
 {
     <div class="card">
         <div class="card-body">
@@ -131,7 +218,7 @@
                     <i class="far fa-fw fa-bell"></i>
                 </div>
                 <div class="alert-message">
-                    <h3>There have been changes in Epic.</h3> 
+                    <h3>There have been changes in Epic.</h3>
                     <a type="button" class="btn btn-outline-dark" asp-controller="Patient" asp-action="EpicPatientChanges" asp-route-id=@Model.patient.MPI>See Epic Changes</a>
                 </div>
             </div>
@@ -157,7 +244,7 @@
 }
 
 
-@if(Model.PatientAlerts.Count > 0)
+@if (Model.PatientAlerts.Count > 0)
 {
     @foreach (var m in Model.PatientAlerts)
     {
@@ -224,7 +311,7 @@
                     <a asp-action="PatientDetails" asp-route-id=@Model.previousPatient.MPI>
                         <h4>
                             <i class="fa-solid fa-arrow-left fa-2xl ml-"></i>
-                          &nbsp;  @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
+                            &nbsp;  @Model.previousPatient.FIRSTNAME @Model.previousPatient.LASTNAME
                         </h4>
                     </a>
                 }
@@ -232,7 +319,7 @@
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-8"></div>
-                    @if(Model.patient.CGU_No == ".")
+                    @if (Model.patient.CGU_No == ".")
                     {
                         <div class="col-md-4">
                             <a type="button" class="btn btn-primary" asp-controller="NewEpicPatient" asp-action="EpicPatientSearch" asp-route-id=@Model.patient.MPI>Assign CGU Number to Patient</a>
@@ -244,11 +331,14 @@
                         <h1 class="text-center">
                             @Model.patient.CGU_No - @Model.patient.FIRSTNAME @if(Model.patient.PtAKA != null)
                             {
-                                <span>"</span>@Model.patient.PtAKA<span>"</span>
+                                <span>"</span>
+                                @Model.patient.PtAKA
+                            
+                                <span>"</span>
                             }
                             @Model.patient.LASTNAME
                         </h1>
-                        
+
                     </div>
                     <div class="col-md-4">
                         @if (Model.patientsList.Count() > 1)
@@ -285,8 +375,8 @@
                     <a asp-action="PatientDetails" asp-route-id=@Model.nextPatient.MPI>
                         <h4>
                             @Model.nextPatient.FIRSTNAME @Model.nextPatient.LASTNAME &nbsp;
-                            <i class="fa-solid fa-arrow-right fa-2xl ml-" ></i>
-                            
+                            <i class="fa-solid fa-arrow-right fa-2xl ml-"></i>
+
                         </h4>
                     </a>
                 }
@@ -334,6 +424,13 @@
                 <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#wait-list" role="tab" aria-selected="false" tabindex="-1">
                     Waiting List
                 </a>
+                @if (Model.patientPathway != null && Model.patientPathway.PATHWAY.Trim() == "Cancer")
+                {
+                    <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#vhr" role="tab" aria-selected="false" tabindex="-1">
+                        VHR
+                    </a>
+                }
+                
             </div>
         </div>
     </div>
@@ -610,8 +707,8 @@
                         <div class="col-auto ms-auto text-end mt-n1">
                             <a asp-controller="Patient" asp-action="EditPatientDetails" asp-route-mpi=@Model.patient.MPI class="btn btn-primary">Edit Details</a>
                         </div>
-                        <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>                        
-                        @if(Model.pedigree != null)
+                        <h5 class="card-title mb-0">@Html.DisplayNameFor(model => model.patient.CGU_No):  @Html.DisplayFor(model => model.patient.CGU_No)</h5>
+                        @if (Model.pedigree != null)
                         {
                             if (Model.pedigree.File_Dctm_Sts == 0)
                             {
@@ -621,7 +718,7 @@
                             }
                         }
 
-                       
+
                     </div>
                     <div class="card-body">
                         <table class="table table-borderless my-0">
@@ -957,7 +1054,7 @@
                                             </div>
                                         </div>
                                     </td>
-                                    
+
                                     <td>
                                         <div class="d-flex">
                                             <div class="flex-grow-1 ms-3">
@@ -1268,14 +1365,14 @@
                                                     <label class="col-form-label col-sm-3 text-sm-end">Referral:</label>
                                                     <div class="col-sm-9">
                                                         <select name="refID" class="form-select" asp-for=@Model.defaultRef.refid>
-                                                          
+
                                                             @foreach (var item in Model.referralsList)
                                                             {
                                                                 <option value=@item.refid>@item.refid - @item.RefType, @item.RefDate</option>
                                                             }
                                                         </select>
 
-                                                        
+
                                                     </div>
                                                 </div>
 
@@ -1308,13 +1405,14 @@
                             <div class="">
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
-                                        <tr>                                            
+                                        <tr>
                                             <th scope="col">Diary Date</th>
                                             <th scope="col">Diary With</th>
                                             <th scope="col">Action</th>
                                             <th scope="col">Text</th>
-                                            <th scope="col">Doc Code</th>                                            
+                                            <th scope="col">Doc Code</th>
                                             <th scope="col">Related Ref ID</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -1334,7 +1432,7 @@
                                                 <td>@d.DiaryWithName</td>
                                                 <td>@d.DiaryAction</td>
                                                 <td>@d.DiaryText</td>
-                                                @if(d.DocCode != null)
+                                                @if (d.DocCode != null)
                                                 {
                                                     <td>@d.DocCode - @d.DocName</td>
                                                 }
@@ -1343,7 +1441,24 @@
                                                     <td></td>
                                                 }
                                                 <td>@d.RefID</td>
-                                                <td><a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails" asp-route-id=@d.DiaryID>Details</a></td>
+                                                <td>
+                                                    <a type="button" class="btn btn-outline-primary" asp-controller="Diary" asp-action="DiaryDetails"
+                                                       asp-route-id=@d.DiaryID>Details</a>
+                                                </td>
+                                                <td>
+                                                    @if (d.DocCode == "DOT")
+                                                    {
+                                                        <form asp-controller="LetterMenu" asp-action="DoLetter" method="post" target="_blank" class="d-inline">
+                                                            <input type="hidden" name="refID" value="@d.RefID" />
+                                                            <input type="hidden" name="docCode" value="@d.DocCode" />
+                                                            <input type="hidden" name="isPreview" value="true" />
+
+                                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                                View Doc Letter
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>
@@ -1438,7 +1553,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            
+
                                             <td>Referral Date</td>
                                             <td>Type</td>
                                             <td>Referring Clinician</td>
@@ -1505,7 +1620,7 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            
+
                                             <td>Referral Date</td>
                                             <td>Type</td>
                                             <td>Referring Clinician</td>
@@ -1519,29 +1634,29 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                      @foreach (var r in Model.tempReges)
-                                            {
-                                                <tr>
-                                                    <td data-sort=@r.RefDate.Value.ToString("yyyyMMdd")>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
-                                                    <td>@r.RefType</td>
-                                                    @if (@r.ReferringFacilityCode != "GP")
-                                                    {
-                                                        <td>@r.ReferringClinician</td>
-                                                        <td>@r.ReferringFacility</td>
-                                                    }
-                                                    else
-                                                    {
-                                                        <td>@Model.patient.GP</td>
-                                                        <td>@Model.patient.GP_Facility</td>
-                                                    }
-                                                    <td>@r.INDICATION</td>
-                                                    <td>@r.PATHWAY</td>
-                                                    <td>@r.LeadClinician</td>
-                                                    <td>@r.GC</td>
-                                                    <td>@r.COMPLETE</td>
-                                                    <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
-                                                </tr>
-                                            }
+                                        @foreach (var r in Model.tempReges)
+                                        {
+                                            <tr>
+                                                <td data-sort=@r.RefDate.Value.ToString("yyyyMMdd")>@r.RefDate.Value.ToString("dd/MM/yyyy")</td>
+                                                <td>@r.RefType</td>
+                                                @if (@r.ReferringFacilityCode != "GP")
+                                                {
+                                                    <td>@r.ReferringClinician</td>
+                                                    <td>@r.ReferringFacility</td>
+                                                }
+                                                else
+                                                {
+                                                    <td>@Model.patient.GP</td>
+                                                    <td>@Model.patient.GP_Facility</td>
+                                                }
+                                                <td>@r.INDICATION</td>
+                                                <td>@r.PATHWAY</td>
+                                                <td>@r.LeadClinician</td>
+                                                <td>@r.GC</td>
+                                                <td>@r.COMPLETE</td>
+                                                <td><a asp-controller="Referral" asp-action="ReferralDetails" asp-route-refID="@r.refid" class="btn btn-outline-primary">Details</a></td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </div>
@@ -1570,10 +1685,11 @@
                                 <table class="table mb-0 table-hover defaultTable">
                                     <thead class="">
                                         <tr>
-                                            
+
                                             <td>Booked Date</td>
                                             <td>Time</td>
                                             <td>Location</td>
+                                            <td>Address</td>
                                             <td>Clinician</td>
                                             <td>Type</td>
                                             <td>Outcome</td>
@@ -1588,8 +1704,9 @@
                                             <tr>
                                                 @if (a.BOOKED_DATE != null)
                                                 {
-                                                    <td data-sort= @a.BOOKED_DATE.Value.ToString("yyyyMMdd")>
-                                                        @a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")</td>
+                                                    <td data-sort=@a.BOOKED_DATE.Value.ToString("yyyyMMdd")>
+                                                        @a.BOOKED_DATE.Value.ToString("dd/MM/yyyy")
+                                                    </td>
                                                 }
                                                 else
                                                 {
@@ -1604,6 +1721,7 @@
                                                     <td></td>
                                                 }
                                                 <td>@a.Clinic</td>
+                                                <td>@a.ClinicLocation</td>
                                                 <td>@a.Clinician</td>
                                                 <td>@a.AppType</td>
                                                 <td>@a.Attendance</td>
@@ -1611,7 +1729,8 @@
                                                 @if (a.Attendance == "Attended" || a.Attendance == "NOT RECORDED" || a.Attendance == "Unknown Consultant")
                                                 {
                                                     <td><a asp-controller="Clinic" asp-action="EditAppointment" asp-route-id="@a.RefID" class="btn btn-outline-primary">Edit</a></td>
-                                                } else
+                                                }
+                                                else
                                                 {
                                                     <td></td>
                                                 }
@@ -1714,22 +1833,22 @@
                                         @foreach (var item in Model.waitingList)
                                         {
                                             <tr>
-                                               
+
                                                 <td>@item.ClinicianName</td>
                                                 <td>@item.ClinicName</td>
                                                 @if (@item.AddedDate.HasValue)
                                                 {
-                                                <td data-sort=@item.AddedDate.Value.ToString("yyyyMMdd")>@item.AddedDate.Value.ToString("dd/MM/yyyy")</td>
+                                                    <td data-sort=@item.AddedDate.Value.ToString("yyyyMMdd")>@item.AddedDate.Value.ToString("dd/MM/yyyy")</td>
                                                 }
                                                 else
                                                 {
-                                                <td data-sort="0">Not known</td>
+                                                    <td data-sort="0">Not known</td>
                                                 }
                                                 <td>@item.Duration</td>
                                                 <td>@item.Priority</td>
                                                 <td>@item.Comment</td>
                                                 <td>@item.Instructions</td>
-                                                
+
                                             </tr>
                                         }
                                     </tbody>
@@ -1740,13 +1859,176 @@
                         {
                             <h4>Patient is not on a waiting list.</h4>
                         }
-
                     </div>
                 </div>
-               
             </div>
+
+
+            <div class="tab-pane fade" id="vhr" role="tabpanel">
+                @if (Model.VHRFacilityCheck == false)
+                {
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <div class="alert-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="alert-message">
+                            <strong>Incomplete Screening Service Details:</strong>
+                            This patient's GP Practice (<code>@Model.patient.GP_Facility</code>) does not a valid Mcode.
+                            A VHR referral cannot be created until the patient GP Details has been updated.
+                        </div>
+                    </div>
+                } else
+                {
+
+                    @if (Model.vhrAudit != null)
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Update VHR Confirmation Date</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="frmEdit" asp-controller="RelativeDiary" asp-action="Edit" method="post">
+                                    <div class="row ">
+                                        <input type="hidden" name="diaryID" id="hiddendiaryID" value="@Model.vhrAudit.DiaryID" />
+                                        <input type="hidden" name="WMFACSID" id="WmfacsId" value="@Model.vhrAudit.WMFACSID" />
+                                        <input type="hidden" name="vhr" value="true" />
+                                        <input type="hidden" name="gpFacility" value="@Model.patient.GP_Facility_Code" />
+                                        <input type="hidden" name="mpi" value="@Model.patient.MPI" />
+
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Ref sent date:</label>
+                                            <input type="date" name="diaryDate" class="form-control" value=@Model.vhrAudit.DiaryDate.Value.ToString("yyyy-MM-dd") />
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Action Code:</label>
+                                            <select name="actionCode" class="form-select js-choice">
+                                                <option value="@Model.vhrAudit.DiaryAction" selected>@Model.vhrAudit.DiaryAction</option>
+                                                @foreach (var item in Model.diaryActionsList)
+                                                {
+                                                    @if (item.Action != null)
+                                                    {
+                                                        <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value=@item.ActionCode>@item.ActionCode</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">DocCode:</label>
+                                            <select name="docCode" class="form-select js-choice">
+                                                <option value="@Model.vhrAudit.DocCode" selected>@Model.vhrAudit.DocCode</option>
+                                                @foreach (var item in Model.documentsList)
+                                                {
+                                                    <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        @* <div class="col-md-4 mt-3">
+                                        <label class="form-label">Diary Text:</label>
+                                        <input name="diaryText" class="form-control" />
+
+                                    </div> *@
+
+                                        <div class="col-md-3">
+                                            <label class="form-label">Ref received confo date</label>
+                                            <input class="form-control" type="date" name="diaryRec" value="" />
+                                        </div>
+
+                                    </div>
+
+                                    <button type="submit" class="btn btn-default btn-primary mt-3">Save</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Log New VHR Referral</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="frmAddNew" asp-controller="RelativeDiary" asp-action="AddNew" method="post">
+                                    <div class="row ">
+                                        <input type="hidden" name="relID" id="hiddenRelsID" value="" />
+                                        <input type="hidden" name="WMFACSID" id="hiddenWmfacsId" value="@Model.patient.WMFACSID" />
+                                        <input type="hidden" name="vhr" value="true" />
+                                        <input type="hidden" name="actionCode" value="VHR" />
+                                        <input type="hidden" name="docCode" value="VHRProC" />
+                                        <input type="hidden" name="mpi" value="@Model.patient.MPI" />
+                                        <input type="hidden" name="cguNo" value="@Model.patient.CGU_No" />
+
+
+                                        <div class="col-md-4">
+                                            <label class="form-label">Ref sent date:</label>
+                                            <input type="date" name="diaryDate" class="form-control" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+
+                                        </div>
+                                        @* <div class="col-md-4">
+                                        <label class="form-label">Action Code:</label>
+                                        <select name="actionCode" class="form-select js-choice">
+                                            <option value="">Select</option>
+                                            @foreach (var item in Model.diaryActionsList)
+                                            {
+                                                @if (item.Action != null)
+                                                {
+                                                    <option value=@item.ActionCode>@item.ActionCode - @item.Action</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value=@item.ActionCode>@item.ActionCode</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div> *@
+
+                                        @* <div class="col-md-4">
+                                        <label class="form-label">DocCode:</label>
+                                        <select name="docCode" class="form-select js-choice">
+                                            <option value="">Select</option>
+                                            @foreach (var item in Model.documentsList)
+                                            {
+                                                <option value=@item.DocCode>@item.DocCode- @item.DocName</option>
+                                            }
+                                        </select>
+                                    </div> *@
+                                        @* <div class="col-md-4 mt-3">
+                                        <label class="form-label">Diary Text:</label>
+                                        <input name="diaryText" class="form-control" />
+
+                                    </div> *@
+                                        @* <div class="col-md-4 mt-3">
+                        <label class="form-label">Ref sent date</label>
+                    <input class="form-control" type="date" value="" name="DiaryDate" />
+                    </div> *@
+                                        <div class="col-md-4 ">
+                                            <label class="form-label">Ref received confo date</label>
+                                            <input class="form-control" type="date" name="diaryRec" value="" />
+                                        </div>
+
+                                    </div>
+
+                                    <input type="submit" class="btn btn-primary mt-3" value="Save" id="btnSave"
+                                           @(Model.VHRFacilityCheck == false ? "" : "disabled") />
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+
         </div>
+
     </div>
+</div>
+</div>
 </div>
 
 <script type="text/javascript">
@@ -1776,12 +2058,12 @@
             document.getElementById("btnPhenotipsSynch").hidden = true;
             document.getElementById("btnImportRelative").hidden = true;
         }
-                
+
 
         if("@(Model.isPhenotipsAvailable)" == "True")
-        {         
+        {
             document.getElementById("btnPedigree").hidden = true; //don't show the PA button if Phenotips is available
-        }        
+        }
     }
 
     function GoBack()
@@ -1802,25 +2084,25 @@
             {
                 @if (Model.reviewList.Count() > 0)
                 {
-                                            <text>
-                                                if (confirm("This patient already has a review. Do you want to add a new one?"))
-                                                {
-                                                    window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
-                                                }
-                                                else
-                                                {
-                                                    $("#reviewAlertCard").hide();
-                                                }
-                                            </text>
+                    <text>
+                        if (confirm("This patient already has a review. Do you want to add a new one?"))
+                        {
+                            window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                        }
+                        else
+                        {
+                            $("#reviewAlertCard").hide();
+                        }
+                    </text>
                 }
                 else
                 {
-                                            <text>
-                                                window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
-                                            </text>
+                    <text>
+                        window.location.href = '@Html.Raw(Url.Action("AddReview", "Review", new { mpi = Model.patient.MPI }))';
+                    </text>
                 }
 
-             
+
             });
 
             //     $('.defaultTable').DataTable({
@@ -1833,6 +2115,113 @@
 
             // });
         });
+        document.addEventListener("DOMContentLoaded", function () {
+                var duplicateModalElement = document.getElementById('duplicateReferralModal');
+                if (duplicateModalElement) {
+                    var duplicateModal = new bootstrap.Modal(duplicateModalElement);
+                    duplicateModal.show();
+                }
+                  const vhrTabLink = document.querySelector('a[href="#vhr"]');
+       
+        // Add click event listener to the VHR tab link
+        if (vhrTabLink) {
+            vhrTabLink.addEventListener('click', async function () {
+                console.log("VHR tab clicked!");
+
+                const relsIdInput = document.getElementById('hiddenRelsID');
+                const wmfacsIdInput = document.getElementById('hiddenWmfacsId');
+                const saveBtn = document.getElementById('btnSave');
+
+                if (!wmfacsIdInput) {
+                    console.error("Could not find hiddenWmfacsId element!");
+                    return;
+                }
+
+
+                const wmfacsId = wmfacsIdInput.value;
+
+                if (relsIdInput && relsIdInput.value !== "") {
+                    return;
+                }
+
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                }
+
+                try {
+                    const response = await fetch(`/api/Relative/GetOrCreateRelativeId?wmfacsId=${wmfacsId}`);
+
+                    if (response.status === 404) {
+                        const errorData = await response.json();
+                        alert(errorData.message || "No relative record found. Please create one first.");
+
+                        // const relativesTabLink = document.querySelector('a[href="#relatives"]');
+                        // if (relativesTabLink) {
+                        //     const tabInstance = new bootstrap.Tab(relativesTabLink);
+                        //     tabInstance.show();
+                        // }
+                         window.location.href = '@Html.Raw(Url.Action("AddNew", "Relative", new { wmfacsid = Model.patient.WMFACSID, vhr = true }))';
+                        return;
+                    }
+
+                    if (!response.ok) throw new Error('Failed to retrieve RelID');
+
+                    const data = await response.json();
+
+                    const resolvedId = data.relsId;
+
+                    if (!resolvedId) {
+                        throw new Error("ID was missing from the server response.");
+                    }
+
+                    if (relsIdInput) {
+                        relsIdInput.value = resolvedId;
+                    }
+                    if (saveBtn) {
+                        saveBtn.disabled = false;
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching Relative ID:", error);
+                    alert("Could not initialise VHR Audit form.");
+                }
+            });
+        } else {
+            console.warn("Could not find navigation link with href='#vhr'");
+        }
+        });
+
+                function resolveDuplicateReferral(keepRefId, mpi, targetAction) {
+            const checkboxes = document.querySelectorAll('.dup-delete-checkbox:checked');
+            const idsToDelete = [];
+
+            checkboxes.forEach(cb => {
+                const id = parseInt(cb.value, 10);
+                if (id !== keepRefId) {
+                    idsToDelete.push(id);
+                }
+            });
+
+            if (idsToDelete.length === 0) {
+                if (!confirm("No other referrals are ticked for deletion. Continue without deleting any duplicate referrals?")) {
+                    return;
+                }
+            }
+
+            const params = new URLSearchParams();
+            params.append("refID", keepRefId);
+            params.append("duplicate", "true");
+            params.append("mpi", mpi);
+
+            idsToDelete.forEach(id => params.append("duplicateIdsToDelete", id));
+
+            window.location.href = `/Referral/${targetAction}?${params.toString()}`;
+        }
+                
+   
+
 
     </script>
 }
+
+

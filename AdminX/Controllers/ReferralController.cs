@@ -12,6 +12,7 @@ using PdfSharp.Snippets.Drawing;
 using System;
 using System.Numerics;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 
 namespace AdminX.Controllers
@@ -275,13 +276,86 @@ namespace AdminX.Controllers
             }
         }
 
+        private static string GetDuplicateDeleteBlockedReason(int code) => code switch
+        {
+            0 => "the duplicate referral could not be found",
+            -100 => "it still has an active ICP",
+            -200 => "it has a prenatal ICP",
+            -300 => "it has diary entries",
+            -400 => "it has dictated letters",
+            -500 => "it has appointments linked to it",
+            -600 => "it has clinical notes",
+            -700 => "it has risk items",
+            -800 => "it has review items",
+            _ => $"of an unexpected problem (Error code: {code})"
+        };
+
+        private async Task PopulateDuplicateViewBagAsync(int keepRefId, int mpi, List<int>? duplicateIdsToDelete)
+        {
+            if (duplicateIdsToDelete == null || duplicateIdsToDelete.Count == 0)
+            {
+                return;
+            }
+
+            List<Referral> referrals = await _referralData.GetReferralsList(mpi);
+
+            var duplicatesToDelete = referrals
+                .Where(r => r.COMPLETE != null &&
+                           (r.COMPLETE.ToUpper() == "ACTIVE" || r.COMPLETE.ToUpper() == "MISSING DATA") &&
+                           !r.logicaldelete &&
+                           r.refid != keepRefId &&
+                           duplicateIdsToDelete.Contains(r.refid))
+                .OrderByDescending(r => r.RefDate)
+                .ToList();
+
+            if (duplicatesToDelete.Count > 0)
+            {
+                ViewBag.DuplicatesToDelete = duplicatesToDelete;
+            }
+        }
+
+        private bool TryDeleteDuplicateReferrals(List<int>? duplicateIdsToDelete, string login, out string? errorMessage)
+        {
+            errorMessage = null;
+            if (duplicateIdsToDelete == null || duplicateIdsToDelete.Count == 0)
+            {
+                return true;
+            }
+
+            foreach (int dupId in duplicateIdsToDelete.Distinct())
+            {
+                int deleteResult = _CRUD.ReferralDetail(
+                    sType: "Referral",
+                    sOperation: "LogicalDelete",
+                    sLogin: login,
+                    int1: dupId,
+                    bool1: true,
+                    string1: null, string2: null, text: null, string3: null,
+                    string4: null, string5: null, string6: null, string7: null,
+                    string8: null, string9: null, string10: null, string11: null,
+                    string12: null, dDate1: null, dDate2: null, string13: null,
+                    string14: null, int2: null, int3: null, int4: null, int5: null,
+                    int6: null, int7: null, int8: null
+                );
+
+                if (deleteResult != 1)
+                {
+                    string reason = GetDuplicateDeleteBlockedReason(deleteResult);
+                    errorMessage = $"The duplicate referral (RefID {dupId}) could not be removed because {reason}. Nothing has been updated.";
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> UpdateReferralDetails(int refID)
+        public async Task<IActionResult> UpdateReferralDetails(int refID, bool? duplicate = false, int? mpi = null, List<int>? duplicateIdsToDelete = null)
         {
             try
             {
+              
                 _rvm.staffMember = await _staffUserData.GetStaffMemberDetails(User.Identity.Name);
                 string staffCode = _rvm.staffMember.STAFF_CODE;
                 IPAddressFinder _ip = new IPAddressFinder(HttpContext);
@@ -289,6 +363,10 @@ namespace AdminX.Controllers
 
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
+                if (duplicate == true)
+                {
+                    await PopulateDuplicateViewBagAsync(refID, mpi ?? _rvm.referral.MPI, duplicateIdsToDelete);
+                }
                 _rvm.activities = await _activityTypeData.GetReferralTypes();
                 _rvm.consultants = await _staffUserData.GetConsultantsList();
                 _rvm.gcs = await _staffUserData.GetGCList();
@@ -361,21 +439,36 @@ namespace AdminX.Controllers
             }
         }
 
+
+
         [HttpPost]
-        public IActionResult UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
-             string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
-             string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
-             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic, DateTime RefDate)
+        public async Task<IActionResult> UpdateReferralDetails(int refid, string? UBRN, string RefType, string PATHWAY, string? Pathway_Subset, string? PATIENT_TYPE_CODE, string? GC_CODE, string? AdminContact,
+              string? ReferrerCode, string? REASON_FOR_REFERRAL, string? PREGNANCY, string? INDICATION, string? RefClass, DateTime? ClockStartDate, DateTime? ClockStopDate, string? COMPLETE,
+              string? Status_Admin, string? RefReasonCode, string? OthReason1, string? OthReason2, string? OthReason3, string? OthReason4, int? RefReasonAff, int? OthReason1Aff,
+              int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? RefFHF, string? consultant, string? Clics, int? symptomatic, DateTime RefDate, List<int>? duplicateIdsToDelete, int? mpi)
         {
             try
             {
                 string login = User.Identity?.Name ?? "Unknown";
 
-                if(UBRN != null)
+                if (UBRN != null)
                 {
                     UBRN = UBRN.Replace(" ", "");
                 }
 
+                //  Delete selected duplicate referrals first (abort whole operation if blocked)
+                if (!TryDeleteDuplicateReferrals(duplicateIdsToDelete, login, out string? deleteError))
+                {
+                    int patientMpi = mpi ?? (await _referralData.GetReferralDetails(refid)).MPI;
+                    return RedirectToAction("PatientDetails", "Patient", new
+                    {
+                        id = patientMpi,
+                        message = deleteError,
+                        success = false
+                    });
+                }
+
+                // Update the kept referral
                 if (PATHWAY.Trim() == "Cancer")
                 {
                     int success = _CRUD.ReferralDetail(
@@ -412,9 +505,6 @@ namespace AdminX.Controllers
                          string17: OthReason3,
                          string18: OthReason4,
                          dDate3: RefDate
-
-
-
                      );
                     if (success != 1)
                     {
@@ -452,13 +542,13 @@ namespace AdminX.Controllers
                         dDate2: ClockStopDate,
                         string13: Status_Admin,
                         dDate3: RefDate
-
                     );
                     if (success != 1)
                     {
                         return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-edit(SQL)" });
                     }
                 }
+
                 TempData["SuccessMessage"] = "Referral details updated successfully.";
                 return RedirectToAction("ReferralDetails", new { refID = refid });
             }
@@ -469,20 +559,18 @@ namespace AdminX.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MarkReferralDeleted(int refid, int mpi, bool logicaldelete)
+        public IActionResult MarkReferralDeleted(int refid, int mpi, bool logicaldelete)
         {
             try
             {
                 string login = User.Identity?.Name ?? "Unknown";
 
-
-                int success = _CRUD.ReferralDetail(
+                int result = _CRUD.ReferralDetail(
                      sType: "Referral",
                      sOperation: "LogicalDelete",
                      sLogin: login,
                      int1: refid,
                      bool1: logicaldelete,
-
                      string1: null, string2: null, text: null, string3: null,
                      string4: null, string5: null, string6: null, string7: null,
                      string8: null, string9: null, string10: null, string11: null,
@@ -491,13 +579,16 @@ namespace AdminX.Controllers
                      int6: null, int7: null, int8: null
                  );
 
-                var statusDto = await _referralData.GetDeletionStatusAsync(mpi, refid);
+                bool isDeleted = (result == 1);
+                string message = isDeleted
+                    ? "Referral deleted successfully."
+                    : $"Unable to delete referral because {GetDuplicateDeleteBlockedReason(result)}.";
 
                 return RedirectToAction("PatientDetails", "Patient", new
                 {
                     id = mpi,
-                    message = statusDto.Reason,
-                    success = statusDto.IsDeleted
+                    message = message,
+                    success = isDeleted
                 });
             }
             catch (Exception ex)
@@ -505,7 +596,7 @@ namespace AdminX.Controllers
                 return RedirectToAction("ErrorHome", "Error", new { error = ex.Message, formName = "MarkReferralDeleted" });
             }
         }
-               
+
 
         [HttpGet]
         [Authorize]
@@ -586,7 +677,7 @@ namespace AdminX.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ProcessNewReferral(int refID)
+        public async Task<IActionResult> ProcessNewReferral(int refID, bool? duplicate = false, int? mpi = null, List<int>? duplicateIdsToDelete = null)
         {
             try
             {
@@ -597,8 +688,14 @@ namespace AdminX.Controllers
 
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
                 _rvm.patient = await _patientData.GetPatientDetails(_rvm.referral.MPI);
+
+                if (duplicate == true)
+                {
+                    await PopulateDuplicateViewBagAsync(refID, mpi ?? _rvm.referral.MPI, duplicateIdsToDelete);
+                }
+
                 _rvm.pathways = new List<string>();
-                var referrers = await _externalClinicianData.GetClinicianList();                
+                var referrers = await _externalClinicianData.GetClinicianList();
                 _rvm.referrers = referrers.OrderBy(r => r.LAST_NAME).ToList();
                 var indication = await _indicationData.GetDiseaseList();
                 _rvm.indicationList = indication.Where(d => d.EXCLUDE_CLINIC == 0).ToList();
@@ -616,7 +713,7 @@ namespace AdminX.Controllers
                     return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.patient.MPI, message = "You need to assign an area code before processing the referral.", success = false });
                 }
                 _rvm.areaName = await _areaNamesData.GetAreaNameDetailsByAreaName(_rvm.patient.PtAreaName); //because the MPT doesn't record the unique ID, only the name and the non-unique code!!!
-                                                                                                            //seriously, wtf was whoever designed this thinking???
+                                                                                                              //seriously, wtf was whoever designed this thinking???
                 _rvm.admin_status = await _adminStatusData.GetStatusAdmin();
                 _rvm.referralReasonsList = await _refReasonData.GetRefReasonList();
                 _rvm.activities = await _activityTypeData.GetReferralTypes();
@@ -634,25 +731,48 @@ namespace AdminX.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ProcessNewReferral(
-    int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
-    string? refReason1, string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff,
-    int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? symptomatic, int? RefFHF, string? Status_Admin, string? refReason,
-    string? refType, DateTime? refDate, string? subPathway, string? clinClass, string? pregnancy, string? comments)
+             int refID, string pathway, string consultant, string gc, string admin, string referrerCode, string indication,
+             string? refReason1, string? refReason2, string? refReason3, string? refReason4, int? refReasonAff, int? OthReason1Aff,
+             int? OthReason2Aff, int? OthReason3Aff, int? OthReason4Aff, int? symptomatic, int? RefFHF, string? Status_Admin, string? refReason,
+             string? refType, DateTime? refDate, string? subPathway, string? clinClass, string? pregnancy, string? comments, List<int>? duplicateIdsToDelete)
         {
             try
             {
+                string login = User.Identity?.Name ?? "Unknown";
                 _rvm.referral = await _referralData.GetReferralDetails(refID);
-                int success = _CRUD.ReferralDetail("Referral",
-                "Process", User.Identity.Name, refID, RefFHF, refReasonAff, OthReason1Aff, OthReason2Aff, OthReason3Aff, OthReason4Aff, symptomatic,pathway,consultant,
-                comments, gc, admin, referrerCode,indication, refReason, Status_Admin, refReason1,refReason2,refReason3,refReason4,refDate,null,refType,subPathway,
-                clinClass,pregnancy);
+
+                // Delete selected duplicate referrals first (abort whole operation if blocked)
+                if (!TryDeleteDuplicateReferrals(duplicateIdsToDelete, login, out string? deleteError))
+                {
+                    return RedirectToAction("PatientDetails", "Patient", new
+                    {
+                        id = _rvm.referral.MPI,
+                        message = deleteError,
+                        success = false
+                    });
+                }
+
+                // Process the kept referral and generate its ICP
+                int success = _CRUD.ReferralDetail(
+                    "Referral", "Process", login, refID, RefFHF, refReasonAff, OthReason1Aff, OthReason2Aff, OthReason3Aff, OthReason4Aff,
+                    symptomatic, pathway, consultant, comments, gc, admin, referrerCode, indication, refReason, Status_Admin,
+                    refReason1, refReason2, refReason3, refReason4, refDate, null, refType, subPathway, clinClass, pregnancy
+                );
 
                 if (success != 1)
                 {
                     return RedirectToAction("ErrorHome", "Error", new { error = "Something went wrong with the database update.", formName = "Referral-process(SQL)" });
                 }
+
                 TempData["SuccessMessage"] = "Referral processed successfully.";
-                return RedirectToAction("PatientDetails", "Patient", new { id = _rvm.referral.MPI });
+                return RedirectToAction("PatientDetails", "Patient", new
+                {
+                    id = _rvm.referral.MPI,
+                    message = duplicateIdsToDelete != null && duplicateIdsToDelete.Count > 0
+                        ? "Referral processed and duplicate referral(s) removed successfully."
+                        : "Referral processed successfully.",
+                    success = true
+                });
             }
             catch (Exception ex)
             {

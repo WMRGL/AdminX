@@ -20,7 +20,8 @@ namespace AdminX.Meta
 
         public async Task<List<Language>> GetLanguages()
         {
-            List<Language> listLanguages = await _adminContext.Language.ToListAsync();
+            List<Language> listLanguages = await _adminContext.Language.Where(x => x.InUse)
+                .OrderBy(x => x.LanguageName).ToListAsync();
 
             return listLanguages;
         }

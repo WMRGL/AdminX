@@ -9,5 +9,8 @@ namespace AdminX.Models
         [Key]
         public int ID { get; set; }
         public string LanguageName { get; set; }
+        public bool InUse { get; set; }
+        public string ExternalID { get; set; }
+
     }
 }
