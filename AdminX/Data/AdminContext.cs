@@ -29,13 +29,7 @@ namespace AdminX.Data
         public DbSet<EpicReferralReference> EpicReferralReference { get; set; }
         public DbSet<EpicApptStaging> EpicApptStaging { get; set; }
         public DbSet<EpicApptReference> EpicApptReference { get; set; }
-        public DbSet<AuditLog> AuditLogs { get; set; }
-        public DbSet<SSP> SSP { get; set; }
-        public DbSet<SocialService> SocialService { get; set; }
-        public DbSet<SocialWorker> SocialWorker { get; set; }
-        public DbSet<SocialServicePathwayOutcome> SocialServicePathwayOutcome { get; set; }
-        public DbSet<SocialServicePathwayStatus> SocialServicePathwayStatus { get; set; }
-        public DbSet<VhrAudit> VhrAudits { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }        
 
     }
 }
