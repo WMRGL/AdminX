@@ -315,7 +315,8 @@ namespace ClinicalXPDataConnections.Meta
                 string edmspath = _constantsData.GetConstant("PrintPathEDMS", 1);
 
 
-                File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
+                //File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{printCount.ToString()}-{dateTimeString}-{dID.ToString()}.pdf");
+                File.Copy($"wwwroot\\DOTLetterPreviews\\preview-{user}.pdf", $@"{edmspath}\DOTLetter-{fileCGU}-DOT-{mpiString}-0-{refIDString}-{0}-{dateTimeString}-{dID.ToString()}.pdf");
 
                 //can't actually print it because there's no way to give it your username, so it'll all be under the server's name                
             }
